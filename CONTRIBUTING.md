@@ -112,7 +112,7 @@ Please follow the coding style of the project. Sonnat-UI uses prettier and eslin
   - 🚸 when improving UX
   - 💄 when improving UI
   - ⚰️ when removing dead code
-  - 🗑️ when deprecating code🤺
+  - 🗑️ when deprecating code
   - 💚 when fixing the CI build
   - ✅ when adding tests
   - 🔒 when dealing with security
