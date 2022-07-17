@@ -1,0 +1,53 @@
+{
+  "name": "@styleless-ui/react",
+  "version": "0.1.0",
+  "repository": "git@github.com:styleless-ui/react-styleless-ui.git",
+  "author": "mimshins <mostafa.sh.coderino@gmail.com>",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "lint": "tsc --project tsconfig.lint.json && eslint \"lib/**/*.{ts,tsx}\" --config .eslintrc --quiet --fix",
+    "clear": "rimraf dist",
+    "prebuild": "npm-run-all clear lint",
+    "build": "npm-run-all build:cjs build:copy-typings:cjs build:esm build:copy-typings:esm build:minify build:packages build:npm-files",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "build:copy-typings:cjs": "cp -r lib/typings dist/typings",
+    "build:copy-typings:esm": "cp -r lib/typings dist/esm/typings",
+    "build:packages": "ts-node-esm -P tsconfig.json scripts/build-packages.ts",
+    "build:npm-files": "ts-node-esm -P tsconfig.json scripts/build-npm-files.ts",
+    "build:minify": "ts-node-esm -P tsconfig.json scripts/minify.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.5",
+    "@types/react": "^18.0.15",
+    "@types/react-dom": "^18.0.6",
+    "@types/react-is": "^17.0.3",
+    "@types/rimraf": "^3.0.2",
+    "@typescript-eslint/eslint-plugin": "^5.30.6",
+    "@typescript-eslint/parser": "^5.30.6",
+    "eslint": "^8.20.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-react": "^7.30.1",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "fast-glob": "^3.2.11",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.7.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "rimraf": "^3.0.2",
+    "terser": "^5.14.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.7.4"
+  },
+  "peerDependencies": {
+    "react": ">=17",
+    "react-dom": ">=17"
+  },
+  "dependencies": {
+    "classnames": "^2.3.1",
+    "prop-types": "^15.8.1",
+    "react-is": "^18.2.0"
+  }
+}

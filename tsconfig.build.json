@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "./dist/esm",
+    "jsx": "react-jsx",
+    "declaration": true
+  },
+  "include": ["lib/**/*.ts", "lib/**/*.tsx"]
+}
