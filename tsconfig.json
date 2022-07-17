@@ -25,5 +25,6 @@
     "noEmit": true,
     "jsx": "preserve"
   },
+  "include": ["**/*.ts", "**/*.tsx", "lib/typings.d.ts"],
   "exclude": ["node_modules", "dist"]
 }

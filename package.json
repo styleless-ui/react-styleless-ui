@@ -12,8 +12,8 @@
     "build": "npm-run-all build:cjs build:copy-typings:cjs build:esm build:copy-typings:esm build:minify build:packages build:npm-files",
     "build:cjs": "tsc -p tsconfig.cjs.json",
     "build:esm": "tsc -p tsconfig.esm.json",
-    "build:copy-typings:cjs": "cp -r lib/typings dist/typings",
-    "build:copy-typings:esm": "cp -r lib/typings dist/esm/typings",
+    "build:copy-typings:cjs": "cp lib/typings.d.ts dist/typings.d.ts",
+    "build:copy-typings:esm": "cp lib/typings.d.ts dist/esm/typings.d.ts",
     "build:packages": "ts-node-esm -P tsconfig.json scripts/build-packages.ts",
     "build:npm-files": "ts-node-esm -P tsconfig.json scripts/build-npm-files.ts",
     "build:minify": "ts-node-esm -P tsconfig.json scripts/minify.ts"
@@ -29,6 +29,7 @@
     "eslint": "^8.20.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.30.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "fast-glob": "^3.2.11",
