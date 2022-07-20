@@ -1,18 +1,9 @@
-import useControlledProp from "@utilityjs/use-controlled-prop";
 import useDeterministicId from "@utilityjs/use-deterministic-id";
 import useEventListener from "@utilityjs/use-event-listener";
-import useForkedRefs from "@utilityjs/use-forked-refs";
-import useIsMounted from "@utilityjs/use-is-mounted";
-import useIsomorphicLayoutEffect from "@utilityjs/use-isomorphic-layout-effect";
 import cls from "classnames";
 import * as React from "react";
 import { type ClassesMap, type MergeElementProps } from "../typings.d";
-import {
-  componentWithForwardedRef,
-  requestFormSubmit,
-  useEventCallback,
-  useIsFocusVisible
-} from "../utils";
+import { componentWithForwardedRef, useCheckBase } from "../utils";
 
 type SwitchClassesMap = ClassesMap<
   "root" | "label" | "controller",
@@ -131,132 +122,24 @@ const SwitchBase = (props: SwitchProps, ref: React.Ref<HTMLDivElement>) => {
     autoFocus = false,
     disabled = false,
     onChange,
+    onBlur,
+    onFocus,
+    onKeyDown,
+    onKeyUp,
     ...otherProps
   } = props;
 
-  const isMounted = useIsMounted();
-
-  const [checked, setChecked] = useControlledProp(
-    checkedProp,
+  const checkBase = useCheckBase({
+    autoFocus,
+    disabled,
+    checked: checkedProp,
     defaultChecked,
-    false
-  );
-
-  const {
-    isFocusVisibleRef,
-    onBlur: handleBlurVisible,
-    onFocus: handleFocusVisible,
-    ref: focusVisibleRef
-  } = useIsFocusVisible<HTMLButtonElement>();
-
-  const controllerRef = React.useRef<HTMLButtonElement>();
-  const handleControllerRef = useForkedRefs(controllerRef, focusVisibleRef);
-
-  const spaceKeyDownRef = React.useRef(false);
-  const enterKeyDownRef = React.useRef(false);
-
-  const [isFocusedVisible, setIsFocusedVisible] = React.useState(() =>
-    disabled ? false : autoFocus
-  );
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  React.useEffect(
-    () => void (disabled && isFocusedVisible && setIsFocusedVisible(false))
-  );
-  React.useEffect(() => void (isFocusVisibleRef.current = isFocusedVisible));
-
-  // Initial focus
-  useIsomorphicLayoutEffect(() => {
-    if (isFocusedVisible) controllerRef.current?.focus();
-  }, []);
-
-  const emitChange = (newChecked: boolean) => {
-    if (disabled || !isMounted()) return;
-
-    setChecked(newChecked);
-    onChange?.(newChecked);
-  };
-
-  const handleClick = useEventCallback<React.MouseEvent<HTMLButtonElement>>(
-    event => {
-      event.preventDefault();
-      if (disabled || !isMounted()) return;
-
-      emitChange(!checked);
-    }
-  );
-
-  const handleFocus = useEventCallback<React.FocusEvent<HTMLButtonElement>>(
-    event => {
-      if (disabled || !isMounted()) return;
-
-      // Fix for https://github.com/facebook/react/issues/7769
-      if (!controllerRef.current) controllerRef.current = event.currentTarget;
-
-      handleFocusVisible(event);
-
-      if (isFocusVisibleRef.current) setIsFocusedVisible(true);
-
-      otherProps.onFocus?.(event);
-    }
-  );
-
-  const handleBlur = useEventCallback<React.FocusEvent<HTMLButtonElement>>(
-    event => {
-      if (disabled || !isMounted()) return;
-
-      handleBlurVisible(event);
-
-      if (isFocusVisibleRef.current === false) setIsFocusedVisible(false);
-
-      otherProps.onBlur?.(event);
-    }
-  );
-
-  const handleKeyDown = useEventCallback<
-    React.KeyboardEvent<HTMLButtonElement>
-  >(event => {
-    if (disabled || !isMounted()) return;
-
-    if (isFocusedVisible) {
-      if (spaceKeyDownRef.current === false && event.key === " ")
-        spaceKeyDownRef.current = true;
-      if (
-        enterKeyDownRef.current === false &&
-        event.key.toLowerCase() === "enter"
-      )
-        enterKeyDownRef.current = true;
-    }
-
-    if (
-      event.target === event.currentTarget &&
-      [" ", "enter"].includes(event.key.toLowerCase())
-    ) {
-      event.preventDefault();
-    }
-
-    otherProps.onKeyDown?.(event);
+    onChange,
+    onBlur,
+    onFocus,
+    onKeyDown,
+    onKeyUp
   });
-
-  const handleKeyUp = useEventCallback<React.KeyboardEvent<HTMLButtonElement>>(
-    event => {
-      if (disabled || !isMounted()) return;
-
-      if (isFocusedVisible) {
-        if (event.key === " ") spaceKeyDownRef.current = false;
-        if (event.key.toLowerCase() === "enter")
-          enterKeyDownRef.current = false;
-      }
-
-      otherProps.onKeyUp?.(event);
-
-      if (event.target === event.currentTarget) {
-        if (event.key === " ") emitChange(!checked);
-        else if (event.key.toLowerCase() === "enter")
-          requestFormSubmit(event.target);
-      }
-    }
-  );
 
   const id = useDeterministicId(idProp, "styleless-ui__switch");
   const visibleLabelId = id ? `${id}__label` : undefined;
@@ -269,9 +152,9 @@ const SwitchBase = (props: SwitchProps, ref: React.Ref<HTMLDivElement>) => {
       : undefined;
 
   const classesCtx: ClassesContext = {
-    checked,
     disabled,
-    focusedVisible: isFocusedVisible
+    checked: checkBase.checked,
+    focusedVisible: checkBase.isFocusedVisible
   };
 
   const classes =
@@ -290,8 +173,8 @@ const SwitchBase = (props: SwitchProps, ref: React.Ref<HTMLDivElement>) => {
       target: labelTarget,
       eventType: "click",
       handler: () => {
-        if (!labelProps.visibleLabel) controllerRef.current?.click();
-        controllerRef.current?.focus();
+        if (!labelProps.visibleLabel) checkBase.controllerRef.current?.click();
+        checkBase.controllerRef.current?.focus();
       }
     });
   }
@@ -315,15 +198,15 @@ const SwitchBase = (props: SwitchProps, ref: React.Ref<HTMLDivElement>) => {
         className={classes.controller}
         type="button"
         tabIndex={disabled ? -1 : 0}
-        ref={handleControllerRef}
+        ref={checkBase.handleControllerRef}
         data-slot="root"
         disabled={disabled}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        onKeyDown={handleKeyDown}
-        onKeyUp={handleKeyUp}
-        onClick={handleClick}
-        aria-checked={checked}
+        onFocus={checkBase.handleFocus}
+        onBlur={checkBase.handleBlur}
+        onKeyDown={checkBase.handleKeyDown}
+        onKeyUp={checkBase.handleKeyUp}
+        onClick={checkBase.handleClick}
+        aria-checked={checkBase.checked}
         aria-label={labelProps.srOnlyLabel}
         aria-labelledby={labelProps.labelledBy}
       >
