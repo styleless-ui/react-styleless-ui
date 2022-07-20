@@ -1,0 +1,45 @@
+.root {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  font-family: Roboto;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.label {
+  font-size: 16px;
+  font-weight: 400;
+  margin-left: auto;
+}
+
+.controller {
+  border: 1px solid #c2c2c2;
+  border-radius: 2px;
+  box-shadow: none;
+  position: relative;
+  appearance: none;
+  padding: 0;
+  outline: 0;
+  cursor: pointer;
+  background-color: transparent;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 240ms ease, background-color 240ms ease;
+}
+
+.controller.focusVisible {
+  outline: 2px solid #1387ec;
+  outline-offset: 1px;
+}
+
+.controller.checked {
+  background-color: #ec135f;
+  border-color: #ec135f;
+}
+
+.check {
+  color: #fff;
+}
