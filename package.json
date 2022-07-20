@@ -1,10 +1,21 @@
 {
   "name": "@styleless-ui/react",
   "version": "0.1.0",
+  "description": "Completely unstyled, headless and accessible React UI components.",
   "repository": "git@github.com:styleless-ui/react-styleless-ui.git",
   "author": "mimshins <mostafa.sh.coderino@gmail.com>",
   "license": "MIT",
   "type": "module",
+  "keywords": [
+    "ui",
+    "styleless-ui",
+    "styleless",
+    "headless",
+    "unstyled",
+    "component library",
+    "react component library",
+    "react"
+  ],
   "scripts": {
     "dev": "next dev",
     "prod": "next build && next start",

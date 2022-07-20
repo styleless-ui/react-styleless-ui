@@ -8,7 +8,7 @@ const buildPath = path.join(packagePath, "./dist");
 void (async () => {
   const moduleDirectories = (
     await glob(path.join(buildPath, "**/*/index.js"), { ignore: ["**/esm/**"] })
-  ).map(path.dirname);
+  ).map(_path => path.dirname(_path));
 
   for (const moduleDirectory of moduleDirectories) {
     const typingsPath = path.join(moduleDirectory, "index.d.ts");

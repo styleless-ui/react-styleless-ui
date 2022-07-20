@@ -10,7 +10,17 @@ const license = path.join(packagePath, "LICENSE");
 
 const rootPackageJsonData = JSON.parse(
   fs.readFileSync(rootPackageJson, { encoding: "utf8" })
-);
+) as {
+  name: string;
+  version: string;
+  description: string;
+  license: string;
+  homepage?: string;
+  repository: string;
+  keywords: string[];
+  peerDependencies: Record<string, string>;
+  dependencies: Record<string, string>;
+};
 
 const npmPackageJson = {
   sideEffects: false,
