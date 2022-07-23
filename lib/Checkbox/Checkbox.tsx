@@ -68,10 +68,14 @@ interface CheckboxBaseProps {
    * The component to be used as the check element.
    */
   checkComponent?: React.ReactElement<{ className?: string }>;
+  onFocus?: React.FocusEventHandler<HTMLButtonElement>;
+  onBlur?: React.FocusEventHandler<HTMLButtonElement>;
+  onKeyDown?: React.KeyboardEventHandler<HTMLButtonElement>;
+  onKeyUp?: React.KeyboardEventHandler<HTMLButtonElement>;
 }
 
 export type CheckboxProps = Omit<
-  MergeElementProps<"button", CheckboxBaseProps>,
+  MergeElementProps<"div", CheckboxBaseProps>,
   "defaultValue" | "className"
 >;
 
@@ -154,6 +158,7 @@ const CheckboxBase = (props: CheckboxProps, ref: React.Ref<HTMLDivElement>) => {
   });
 
   const id = useDeterministicId(idProp, "styleless-ui__checkbox");
+  const controllerId = id ? `${id}__controller` : undefined;
   const visibleLabelId = id ? `${id}__label` : undefined;
 
   const labelProps = getLabelInfo(label);
@@ -192,10 +197,9 @@ const CheckboxBase = (props: CheckboxProps, ref: React.Ref<HTMLDivElement>) => {
   }
 
   return (
-    <div className={classes.root} ref={ref}>
+    <div id={id} className={classes.root} ref={ref} {...otherProps}>
       <button
-        {...otherProps}
-        id={id}
+        id={controllerId}
         role="checkbox"
         className={classes.controller}
         type="button"
@@ -224,7 +228,7 @@ const CheckboxBase = (props: CheckboxProps, ref: React.Ref<HTMLDivElement>) => {
       {visibleLabel && (
         <label
           id={visibleLabelId}
-          htmlFor={id}
+          htmlFor={controllerId}
           data-slot="label"
           className={classes.label}
         >

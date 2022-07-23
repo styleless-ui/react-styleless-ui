@@ -75,10 +75,14 @@ interface SwitchBaseProps {
    * The component to be used as the track element.
    */
   trackComponent: React.ReactElement<{ className?: string }>;
+  onFocus?: React.FocusEventHandler<HTMLButtonElement>;
+  onBlur?: React.FocusEventHandler<HTMLButtonElement>;
+  onKeyDown?: React.KeyboardEventHandler<HTMLButtonElement>;
+  onKeyUp?: React.KeyboardEventHandler<HTMLButtonElement>;
 }
 
 export type SwitchProps = Omit<
-  MergeElementProps<"button", SwitchBaseProps>,
+  MergeElementProps<"div", SwitchBaseProps>,
   "defaultValue" | "className"
 >;
 
@@ -142,6 +146,7 @@ const SwitchBase = (props: SwitchProps, ref: React.Ref<HTMLDivElement>) => {
   });
 
   const id = useDeterministicId(idProp, "styleless-ui__switch");
+  const controllerId = id ? `${id}__controller` : undefined;
   const visibleLabelId = id ? `${id}__label` : undefined;
 
   const labelProps = getLabelInfo(label);
@@ -180,11 +185,11 @@ const SwitchBase = (props: SwitchProps, ref: React.Ref<HTMLDivElement>) => {
   }
 
   return (
-    <div className={classes.root} ref={ref}>
+    <div id={id} className={classes.root} ref={ref} {...otherProps}>
       {visibleLabel && (
         <label
           id={visibleLabelId}
-          htmlFor={id}
+          htmlFor={controllerId}
           data-slot="label"
           className={classes.label}
         >
@@ -192,8 +197,7 @@ const SwitchBase = (props: SwitchProps, ref: React.Ref<HTMLDivElement>) => {
         </label>
       )}
       <button
-        {...otherProps}
-        id={id}
+        id={controllerId}
         role="switch"
         className={classes.controller}
         type="button"
