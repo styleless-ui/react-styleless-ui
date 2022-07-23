@@ -8,10 +8,7 @@ const itSupportsStyle = <T,>(
   requiredProps: T
 ): void => {
   it("supports style prop", () => {
-    const style: React.CSSProperties = {
-      border: "1px solid red",
-      backgroundColor: "black"
-    };
+    const style = { border: "1px solid red", backgroundColor: "black" };
 
     const { container } = render(
       <Component {...requiredProps} style={style} />
