@@ -51,6 +51,13 @@
         "sourceType": "module",
         "project": ["tsconfig.json"]
       }
+    },
+    {
+      "files": [
+        "**/__tests__/**/*.[jt]s?(x)",
+        "**/?(*.)+(spec|test).[jt]s?(x)"
+      ],
+      "extends": ["plugin:testing-library/react", "plugin:jest-dom/recommended"]
     }
   ],
   "settings": { "react": { "version": "detect" } }

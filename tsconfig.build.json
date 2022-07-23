@@ -6,5 +6,6 @@
     "jsx": "react-jsx",
     "declaration": true
   },
-  "include": ["lib/**/*.ts", "lib/**/*.tsx"]
+  "include": ["lib/**/*.ts", "lib/**/*.tsx"],
+  "exclude": ["**/*.test.ts", "**/*.test.tsx"]
 }
