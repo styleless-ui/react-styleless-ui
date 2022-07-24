@@ -8,7 +8,7 @@ import {
   screen,
   userEvent
 } from "../../tests/utils";
-import Checkbox, { CheckboxProps } from "./Checkbox";
+import Checkbox, { type CheckboxProps } from "./Checkbox";
 
 const labelText = "Label";
 

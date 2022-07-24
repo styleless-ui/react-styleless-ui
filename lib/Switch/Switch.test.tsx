@@ -8,7 +8,7 @@ import {
   screen,
   userEvent
 } from "../../tests/utils";
-import Switch, { SwitchProps } from "./Switch";
+import Switch, { type SwitchProps } from "./Switch";
 
 const labelText = "Label";
 
