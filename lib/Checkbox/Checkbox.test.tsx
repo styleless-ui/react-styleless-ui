@@ -15,7 +15,6 @@ const labelText = "Label";
 const REQUIRED_PROPS: CheckboxProps = {
   label: labelText,
   classes: {
-    controller: "controller",
     label: "label",
     root: "root",
     check: "check"
@@ -27,7 +26,7 @@ describe("@styleless-ui/react/Checkbox", () => {
 
   itShouldMount(Checkbox, REQUIRED_PROPS);
   itSupportsStyle(Checkbox, REQUIRED_PROPS);
-  itSupportsRef(Checkbox, REQUIRED_PROPS, HTMLDivElement);
+  itSupportsRef(Checkbox, REQUIRED_PROPS, HTMLButtonElement);
   itSupportsFocusEvents(Checkbox, REQUIRED_PROPS, "button");
   itSupportsDataSetProps(Checkbox, REQUIRED_PROPS);
 
@@ -35,12 +34,10 @@ describe("@styleless-ui/react/Checkbox", () => {
     render(<Checkbox {...REQUIRED_PROPS} checked />);
 
     const checkbox = screen.getByRole("checkbox");
-    const root = checkbox.parentElement;
     const label = checkbox.nextElementSibling;
     const check = checkbox.firstElementChild;
 
-    expect(root).toHaveClass("root");
-    expect(checkbox).toHaveClass("controller");
+    expect(checkbox).toHaveClass("root");
     expect(label).toHaveClass("label");
     expect(check).toHaveClass("check");
   });

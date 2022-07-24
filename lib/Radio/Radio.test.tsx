@@ -15,7 +15,6 @@ const labelText = "Label";
 const REQUIRED_PROPS: RadioProps = {
   label: labelText,
   classes: {
-    controller: "controller",
     label: "label",
     root: "root",
     check: "check"
@@ -27,7 +26,7 @@ describe("@styleless-ui/react/Radio", () => {
 
   itShouldMount(Radio, REQUIRED_PROPS);
   itSupportsStyle(Radio, REQUIRED_PROPS);
-  itSupportsRef(Radio, REQUIRED_PROPS, HTMLDivElement);
+  itSupportsRef(Radio, REQUIRED_PROPS, HTMLButtonElement);
   itSupportsFocusEvents(Radio, REQUIRED_PROPS, "button");
   itSupportsDataSetProps(Radio, REQUIRED_PROPS);
 
@@ -35,12 +34,10 @@ describe("@styleless-ui/react/Radio", () => {
     render(<Radio {...REQUIRED_PROPS} checked />);
 
     const radio = screen.getByRole("radio");
-    const root = radio.parentElement;
     const label = radio.nextElementSibling;
     const check = radio.firstElementChild;
 
-    expect(root).toHaveClass("root");
-    expect(radio).toHaveClass("controller");
+    expect(radio).toHaveClass("root");
     expect(label).toHaveClass("label");
     expect(check).toHaveClass("check");
   });

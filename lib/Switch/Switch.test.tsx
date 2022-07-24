@@ -17,7 +17,6 @@ const REQUIRED_PROPS: SwitchProps = {
   thumbComponent: <div />,
   trackComponent: <div />,
   classes: {
-    controller: "controller",
     label: "label",
     root: "root",
     thumb: "thumb",
@@ -29,22 +28,20 @@ describe("@styleless-ui/react/Switch", () => {
   afterEach(jest.clearAllMocks);
 
   itShouldMount(Switch, REQUIRED_PROPS);
-  itSupportsStyle(Switch, REQUIRED_PROPS);
-  itSupportsRef(Switch, REQUIRED_PROPS, HTMLDivElement);
+  itSupportsStyle(Switch, REQUIRED_PROPS, "[role='switch']");
+  itSupportsRef(Switch, REQUIRED_PROPS, HTMLButtonElement);
   itSupportsFocusEvents(Switch, REQUIRED_PROPS, "button");
-  itSupportsDataSetProps(Switch, REQUIRED_PROPS);
+  itSupportsDataSetProps(Switch, REQUIRED_PROPS, "[role='switch']");
 
   it("should have the required classNames", () => {
     render(<Switch {...REQUIRED_PROPS} checked />);
 
     const sw = screen.getByRole("switch");
-    const root = sw.parentElement;
     const label = sw.previousElementSibling;
     const track = sw.firstElementChild;
     const thumb = sw.lastElementChild;
 
-    expect(root).toHaveClass("root");
-    expect(sw).toHaveClass("controller");
+    expect(sw).toHaveClass("root");
     expect(label).toHaveClass("label");
     expect(track).toHaveClass("track");
     expect(thumb).toHaveClass("thumb");

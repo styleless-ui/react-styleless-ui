@@ -5,16 +5,22 @@ import { render } from ".";
 
 const itSupportsStyle = <T,>(
   Component: React.ComponentType<T>,
-  requiredProps: T
+  requiredProps: T,
+  selector?: string
 ): void => {
   it("supports style prop", () => {
+    const getTarget = (container: HTMLElement): HTMLElement =>
+      selector
+        ? (container.querySelector(selector) as HTMLElement)
+        : (container.firstChild as HTMLElement);
+
     const style = { border: "1px solid red", backgroundColor: "black" };
 
     const { container } = render(
       <Component {...requiredProps} style={style} />
     );
 
-    expect(container.firstChild).toHaveStyle(style);
+    expect(getTarget(container)).toHaveStyle(style);
   });
 };
 
