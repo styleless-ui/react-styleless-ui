@@ -1,4 +1,4 @@
-.root {
+.row {
   display: flex;
   align-items: center;
   height: 40px;
@@ -12,7 +12,7 @@
   margin-right: auto;
 }
 
-.controller {
+.root {
   border: none;
   box-shadow: none;
   position: relative;
@@ -24,17 +24,17 @@
   width: 40px;
 }
 
-.controller.focusVisible {
+.root.focusVisible {
   outline: 2px solid #1387ec;
   outline-offset: 1px;
   border-radius: 12px;
 }
 
-.controller.checked .track {
+.root.checked .track {
   background-color: #ec135f;
 }
 
-.controller.checked .thumb {
+.root.checked .thumb {
   transform: translateX(calc(100% - 4px));
 }
 

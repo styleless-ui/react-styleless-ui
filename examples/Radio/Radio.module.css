@@ -1,4 +1,4 @@
-.root {
+.row {
   display: flex;
   align-items: center;
   height: 40px;
@@ -12,7 +12,7 @@
   margin-left: auto;
 }
 
-.controller {
+.root {
   border: 1px solid #c2c2c2;
   border-radius: 50%;
   box-shadow: none;
@@ -31,12 +31,12 @@
   transition: border-color 240ms ease, color 240ms ease;
 }
 
-.controller.focusVisible {
+.root.focusVisible {
   outline: 2px solid #1387ec;
   outline-offset: 1px;
 }
 
-.controller.checked {
+.root.checked {
   color: #ec135f;
   border-color: #ec135f;
 }
