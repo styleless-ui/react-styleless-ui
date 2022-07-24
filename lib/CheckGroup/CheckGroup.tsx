@@ -20,7 +20,7 @@ interface CheckGroupBaseProps {
   /**
    * Map of sub-components and their correlated classNames.
    */
-  classes:
+  classes?:
     | ((ctx: ClassesContext) => CheckboxGroupClassesMap)
     | CheckboxGroupClassesMap;
   /**
@@ -145,7 +145,7 @@ const CheckGroupBase = (
           id={visibleLabelId}
           htmlFor={id}
           data-slot="label"
-          className={classes.label}
+          className={classes?.label}
         >
           {visibleLabel}
         </label>
@@ -155,7 +155,7 @@ const CheckGroupBase = (
         id={id}
         ref={ref}
         role="group"
-        className={classes.root}
+        className={classes?.root}
         aria-label={labelProps.srOnlyLabel}
         aria-labelledby={labelProps.labelledBy}
       >
