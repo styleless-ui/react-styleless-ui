@@ -1,11 +1,13 @@
 import useDeterministicId from "@utilityjs/use-deterministic-id";
 import useEventListener from "@utilityjs/use-event-listener";
+import useForkedRefs from "@utilityjs/use-forked-refs";
 import cls from "classnames";
 import * as React from "react";
+import CheckGroupContext from "../CheckGroup/context";
 import { type ClassesMap, type MergeElementProps } from "../typings.d";
 import { componentWithForwardedRef, useCheckBase } from "../utils";
 
-type CheckboxClassesMap = ClassesMap<"root" | "label" | "controller", "check">;
+type CheckboxClassesMap = ClassesMap<"root" | "label" | "check", never>;
 
 type ClassesContext = {
   /** The `checked` state of the checkbox. */
@@ -20,7 +22,7 @@ interface CheckboxBaseProps {
   /**
    * Map of sub-components and their correlated classNames.
    */
-  classes: ((ctx: ClassesContext) => CheckboxClassesMap) | CheckboxClassesMap;
+  classes?: ((ctx: ClassesContext) => CheckboxClassesMap) | CheckboxClassesMap;
   /**
    * The label of the checkbox.
    */
@@ -41,7 +43,7 @@ interface CheckboxBaseProps {
         labelledBy: string;
       };
   /**
-   * The value of the checkbox.
+   * The value of the checkbox. Use when it is a CheckGroup's child.
    */
   value?: string;
   /**
@@ -79,7 +81,7 @@ interface CheckboxBaseProps {
 }
 
 export type CheckboxProps = Omit<
-  MergeElementProps<"div", CheckboxBaseProps>,
+  MergeElementProps<"button", CheckboxBaseProps>,
   "defaultValue" | "className"
 >;
 
@@ -132,9 +134,13 @@ const _DefaultCheck = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const CheckboxBase = (props: CheckboxProps, ref: React.Ref<HTMLDivElement>) => {
+const CheckboxBase = (
+  props: CheckboxProps,
+  ref: React.Ref<HTMLButtonElement>
+) => {
   const {
     label,
+    value,
     checkComponent,
     id: idProp,
     classes: classesMap,
@@ -150,10 +156,24 @@ const CheckboxBase = (props: CheckboxProps, ref: React.Ref<HTMLDivElement>) => {
     ...otherProps
   } = props;
 
+  const checkGroupCtx = React.useContext(CheckGroupContext);
+
+  if (checkGroupCtx && typeof value === "undefined") {
+    throw new Error(
+      [
+        "[StylelessUI][Checkbox]: The `value` property is missing.",
+        "It's mandatory to provide a `value` property " +
+          "when <CheckGroup /> is a wrapper for <Checkbox />."
+      ].join("\n")
+    );
+  }
+
   const checkBase = useCheckBase({
+    value,
     autoFocus,
     disabled,
     checked: checkedProp,
+    groupCtx: checkGroupCtx,
     defaultChecked,
     onChange,
     onBlur,
@@ -163,8 +183,9 @@ const CheckboxBase = (props: CheckboxProps, ref: React.Ref<HTMLDivElement>) => {
   });
 
   const id = useDeterministicId(idProp, "styleless-ui__checkbox");
-  const controllerId = id ? `${id}__controller` : undefined;
   const visibleLabelId = id ? `${id}__label` : undefined;
+
+  const handleRef = useForkedRefs(ref, checkBase.handleControllerRef);
 
   const labelProps = getLabelInfo(label);
 
@@ -202,14 +223,15 @@ const CheckboxBase = (props: CheckboxProps, ref: React.Ref<HTMLDivElement>) => {
   }
 
   return (
-    <div id={id} className={classes.root} ref={ref} {...otherProps}>
+    <>
       <button
-        id={controllerId}
+        {...otherProps}
+        id={id}
         role="checkbox"
-        className={classes.controller}
+        className={classes?.root}
         type="button"
         tabIndex={disabled ? -1 : 0}
-        ref={checkBase.handleControllerRef}
+        ref={handleRef}
         data-slot="root"
         disabled={disabled}
         onFocus={checkBase.handleFocus}
@@ -224,28 +246,28 @@ const CheckboxBase = (props: CheckboxProps, ref: React.Ref<HTMLDivElement>) => {
         {checkBase.checked &&
           (checkComponent ? (
             React.cloneElement(checkComponent, {
-              className: cls(checkComponent.props.className, classes.check)
+              className: cls(checkComponent.props.className, classes?.check)
             })
           ) : (
-            <_DefaultCheck className={classes.check} />
+            <_DefaultCheck className={classes?.check} />
           ))}
       </button>
       {visibleLabel && (
         <label
           id={visibleLabelId}
-          htmlFor={controllerId}
+          htmlFor={id}
           data-slot="label"
-          className={classes.label}
+          className={classes?.label}
         >
           {visibleLabel}
         </label>
       )}
-    </div>
+    </>
   );
 };
 
 const Checkbox = componentWithForwardedRef<
-  HTMLDivElement,
+  HTMLButtonElement,
   CheckboxProps,
   typeof CheckboxBase
 >(CheckboxBase);

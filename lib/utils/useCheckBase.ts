@@ -3,6 +3,7 @@ import useForkedRefs from "@utilityjs/use-forked-refs";
 import useIsMounted from "@utilityjs/use-is-mounted";
 import useIsomorphicLayoutEffect from "@utilityjs/use-isomorphic-layout-effect";
 import * as React from "react";
+import { type ICheckGroupContext } from "../CheckGroup/context";
 import {
   requestFormSubmit,
   useEventCallback,
@@ -11,6 +12,8 @@ import {
 
 interface CheckBaseProps {
   strategy?: "check-control" | "radio-control";
+  value?: string;
+  groupCtx?: ICheckGroupContext;
   checked?: boolean;
   defaultChecked?: boolean;
   disabled?: boolean;
@@ -25,6 +28,8 @@ interface CheckBaseProps {
 const useCheckBase = (props: CheckBaseProps) => {
   const {
     checked: checkedProp,
+    value = "",
+    groupCtx,
     defaultChecked,
     onBlur,
     onChange,
@@ -43,6 +48,8 @@ const useCheckBase = (props: CheckBaseProps) => {
     defaultChecked,
     false
   );
+
+  const checkedState = groupCtx ? groupCtx.value.includes(value) : checked;
 
   const {
     isFocusVisibleRef,
@@ -74,9 +81,10 @@ const useCheckBase = (props: CheckBaseProps) => {
 
   const emitChange = (newChecked: boolean) => {
     if (disabled || !isMounted()) return;
-    if (strategy === "radio-control" && checked) return;
+    if (strategy === "radio-control" && checkedState) return;
 
     setChecked(newChecked);
+    groupCtx?.onChange(newChecked, value);
     onChange?.(newChecked);
   };
 
@@ -85,7 +93,7 @@ const useCheckBase = (props: CheckBaseProps) => {
       event.preventDefault();
       if (disabled || !isMounted()) return;
 
-      emitChange(!checked);
+      emitChange(!checkedState);
     }
   );
 
@@ -154,7 +162,7 @@ const useCheckBase = (props: CheckBaseProps) => {
       onKeyUp?.(event);
 
       if (event.target === event.currentTarget) {
-        if (event.key === " ") emitChange(!checked);
+        if (event.key === " ") emitChange(!checkedState);
         else if (event.key.toLowerCase() === "enter")
           requestFormSubmit(event.target);
       }
@@ -162,7 +170,7 @@ const useCheckBase = (props: CheckBaseProps) => {
   );
 
   return {
-    checked,
+    checked: checkedState,
     isFocusedVisible,
     controllerRef,
     emitChange,
