@@ -10,6 +10,7 @@ import {
 } from "../utils";
 
 interface CheckBaseProps {
+  strategy?: "check-control" | "radio-control";
   checked?: boolean;
   defaultChecked?: boolean;
   disabled?: boolean;
@@ -30,6 +31,7 @@ const useCheckBase = (props: CheckBaseProps) => {
     onFocus,
     onKeyDown,
     onKeyUp,
+    strategy = "check-control",
     autoFocus = false,
     disabled = false
   } = props;
@@ -72,6 +74,7 @@ const useCheckBase = (props: CheckBaseProps) => {
 
   const emitChange = (newChecked: boolean) => {
     if (disabled || !isMounted()) return;
+    if (strategy === "radio-control" && checked) return;
 
     setChecked(newChecked);
     onChange?.(newChecked);
