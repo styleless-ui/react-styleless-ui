@@ -89,13 +89,13 @@ describe("@styleless-ui/react/Switch", () => {
 
     await userEvent.click(sw);
 
-    expect(screen.getByRole("switch")).toBeChecked();
+    expect(sw).toBeChecked();
     expect(handleChange.mock.calls.length).toBe(1);
     expect(handleChange.mock.calls[0][0]).toBe(true);
 
     await userEvent.click(sw);
 
-    expect(screen.getByRole("switch")).not.toBeChecked();
+    expect(sw).not.toBeChecked();
     expect(handleChange.mock.calls.length).toBe(2);
     expect(handleChange.mock.calls[1][0]).toBe(false);
 
@@ -106,13 +106,13 @@ describe("@styleless-ui/react/Switch", () => {
 
     await userEvent.keyboard("[Space]");
 
-    expect(screen.getByRole("switch")).toBeChecked();
+    expect(sw).toBeChecked();
     expect(handleChange.mock.calls.length).toBe(1);
     expect(handleChange.mock.calls[0][0]).toBe(true);
 
     await userEvent.keyboard("[Space]");
 
-    expect(screen.getByRole("switch")).not.toBeChecked();
+    expect(sw).not.toBeChecked();
     expect(handleChange.mock.calls.length).toBe(2);
     expect(handleChange.mock.calls[1][0]).toBe(false);
   });

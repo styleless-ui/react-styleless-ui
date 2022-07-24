@@ -89,13 +89,13 @@ describe("@styleless-ui/react/Checkbox", () => {
 
     await userEvent.click(checkbox);
 
-    expect(screen.getByRole("checkbox")).toBeChecked();
+    expect(checkbox).toBeChecked();
     expect(handleChange.mock.calls.length).toBe(1);
     expect(handleChange.mock.calls[0][0]).toBe(true);
 
     await userEvent.click(checkbox);
 
-    expect(screen.getByRole("checkbox")).not.toBeChecked();
+    expect(checkbox).not.toBeChecked();
     expect(handleChange.mock.calls.length).toBe(2);
     expect(handleChange.mock.calls[1][0]).toBe(false);
 
@@ -106,13 +106,13 @@ describe("@styleless-ui/react/Checkbox", () => {
 
     await userEvent.keyboard("[Space]");
 
-    expect(screen.getByRole("checkbox")).toBeChecked();
+    expect(checkbox).toBeChecked();
     expect(handleChange.mock.calls.length).toBe(1);
     expect(handleChange.mock.calls[0][0]).toBe(true);
 
     await userEvent.keyboard("[Space]");
 
-    expect(screen.getByRole("checkbox")).not.toBeChecked();
+    expect(checkbox).not.toBeChecked();
     expect(handleChange.mock.calls.length).toBe(2);
     expect(handleChange.mock.calls[1][0]).toBe(false);
   });
