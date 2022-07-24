@@ -1,11 +1,12 @@
 import useDeterministicId from "@utilityjs/use-deterministic-id";
 import useEventListener from "@utilityjs/use-event-listener";
+import useForkedRefs from "@utilityjs/use-forked-refs";
 import cls from "classnames";
 import * as React from "react";
 import { type ClassesMap, type MergeElementProps } from "../typings.d";
 import { componentWithForwardedRef, useCheckBase } from "../utils";
 
-type RadioClassesMap = ClassesMap<"root" | "label" | "controller", "check">;
+type RadioClassesMap = ClassesMap<"root" | "label" | "check", never>;
 
 type ClassesContext = {
   /** The `checked` state of the radio. */
@@ -20,7 +21,7 @@ interface RadioBaseProps {
   /**
    * Map of sub-components and their correlated classNames.
    */
-  classes: ((ctx: ClassesContext) => RadioClassesMap) | RadioClassesMap;
+  classes?: ((ctx: ClassesContext) => RadioClassesMap) | RadioClassesMap;
   /**
    * The label of the radio.
    */
@@ -79,7 +80,7 @@ interface RadioBaseProps {
 }
 
 export type RadioProps = Omit<
-  MergeElementProps<"div", RadioBaseProps>,
+  MergeElementProps<"button", RadioBaseProps>,
   "defaultValue" | "className"
 >;
 
@@ -124,7 +125,7 @@ const _DefaultCheck = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const RadioBase = (props: RadioProps, ref: React.Ref<HTMLDivElement>) => {
+const RadioBase = (props: RadioProps, ref: React.Ref<HTMLButtonElement>) => {
   const {
     label,
     checkComponent,
@@ -155,9 +156,10 @@ const RadioBase = (props: RadioProps, ref: React.Ref<HTMLDivElement>) => {
     onKeyUp
   });
 
-  const id = useDeterministicId(idProp, "styleless-ui__checkbox");
-  const controllerId = id ? `${id}__controller` : undefined;
+  const id = useDeterministicId(idProp, "styleless-ui__radio");
   const visibleLabelId = id ? `${id}__label` : undefined;
+
+  const handleRef = useForkedRefs(ref, checkBase.handleControllerRef);
 
   const labelProps = getLabelInfo(label);
 
@@ -195,14 +197,15 @@ const RadioBase = (props: RadioProps, ref: React.Ref<HTMLDivElement>) => {
   }
 
   return (
-    <div id={id} className={classes.root} ref={ref} {...otherProps}>
+    <>
       <button
-        id={controllerId}
+        {...otherProps}
+        id={id}
         role="radio"
-        className={classes.controller}
+        className={classes?.root}
         type="button"
         tabIndex={disabled ? -1 : 0}
-        ref={checkBase.handleControllerRef}
+        ref={handleRef}
         data-slot="root"
         disabled={disabled}
         onFocus={checkBase.handleFocus}
@@ -217,28 +220,28 @@ const RadioBase = (props: RadioProps, ref: React.Ref<HTMLDivElement>) => {
         {checkBase.checked &&
           (checkComponent ? (
             React.cloneElement(checkComponent, {
-              className: cls(checkComponent.props.className, classes.check)
+              className: cls(checkComponent.props.className, classes?.check)
             })
           ) : (
-            <_DefaultCheck className={classes.check} />
+            <_DefaultCheck className={classes?.check} />
           ))}
       </button>
       {visibleLabel && (
         <label
           id={visibleLabelId}
-          htmlFor={controllerId}
+          htmlFor={id}
           data-slot="label"
-          className={classes.label}
+          className={classes?.label}
         >
           {visibleLabel}
         </label>
       )}
-    </div>
+    </>
   );
 };
 
 const Radio = componentWithForwardedRef<
-  HTMLDivElement,
+  HTMLButtonElement,
   RadioProps,
   typeof RadioBase
 >(RadioBase);
