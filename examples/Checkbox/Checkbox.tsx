@@ -2,7 +2,7 @@ import cls from "classnames";
 import { Checkbox, type CheckboxProps } from "../../lib";
 import classes from "./Checkbox.module.css";
 
-const MySwitch = (
+const MyCheckbox = (
   props: Pick<CheckboxProps, "checked" | "onChange"> & { className?: string }
 ) => {
   const { checked, onChange, className } = props;
@@ -25,4 +25,4 @@ const MySwitch = (
   );
 };
 
-export default MySwitch;
+export default MyCheckbox;
