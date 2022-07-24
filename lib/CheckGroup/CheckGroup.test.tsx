@@ -1,4 +1,5 @@
 import {
+  act,
   itShouldMount,
   itSupportsDataSetProps,
   itSupportsRef,
@@ -112,7 +113,7 @@ describe("@styleless-ui/react/CheckGroup", () => {
 
     const boxes = screen.getAllByRole("checkbox");
 
-    boxes[0].focus();
+    act(() => void boxes[0].focus());
     expect(boxes[0]).toHaveFocus();
     await userEvent.keyboard("[Space]");
 
@@ -120,7 +121,7 @@ describe("@styleless-ui/react/CheckGroup", () => {
     expect(handleChange.mock.calls.length).toBe(1);
     expect(handleChange.mock.calls[0].join()).toBe("0");
 
-    boxes[3].focus();
+    act(() => void boxes[3].focus());
     expect(boxes[3]).toHaveFocus();
     await userEvent.keyboard("[Space]");
 
@@ -128,7 +129,7 @@ describe("@styleless-ui/react/CheckGroup", () => {
     expect(handleChange.mock.calls.length).toBe(2);
     expect(handleChange.mock.calls[1].join()).toBe("0,3");
 
-    boxes[0].focus();
+    act(() => void boxes[0].focus());
     expect(boxes[0]).toHaveFocus();
     await userEvent.keyboard("[Space]");
 
@@ -136,7 +137,7 @@ describe("@styleless-ui/react/CheckGroup", () => {
     expect(handleChange.mock.calls.length).toBe(3);
     expect(handleChange.mock.calls[2].join()).toBe("3");
 
-    boxes[3].focus();
+    act(() => void boxes[3].focus());
     expect(boxes[3]).toHaveFocus();
     await userEvent.keyboard("[Space]");
 
