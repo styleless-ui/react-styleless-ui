@@ -1,14 +1,12 @@
 import useDeterministicId from "@utilityjs/use-deterministic-id";
 import useEventListener from "@utilityjs/use-event-listener";
+import useForkedRefs from "@utilityjs/use-forked-refs";
 import cls from "classnames";
 import * as React from "react";
 import { type ClassesMap, type MergeElementProps } from "../typings.d";
 import { componentWithForwardedRef, useCheckBase } from "../utils";
 
-type SwitchClassesMap = ClassesMap<
-  "root" | "label" | "controller",
-  "thumb" | "track"
->;
+type SwitchClassesMap = ClassesMap<"root" | "label" | "thumb" | "track", never>;
 
 type ClassesContext = {
   /** The `checked` state of the switch. */
@@ -23,7 +21,7 @@ interface SwitchBaseProps {
   /**
    * Map of sub-components and their correlated classNames.
    */
-  classes: ((ctx: ClassesContext) => SwitchClassesMap) | SwitchClassesMap;
+  classes?: ((ctx: ClassesContext) => SwitchClassesMap) | SwitchClassesMap;
   /**
    * The label of the switch.
    */
@@ -86,7 +84,7 @@ interface SwitchBaseProps {
 }
 
 export type SwitchProps = Omit<
-  MergeElementProps<"div", SwitchBaseProps>,
+  MergeElementProps<"button", SwitchBaseProps>,
   "defaultValue" | "className"
 >;
 
@@ -118,7 +116,7 @@ const getLabelInfo = (labelInput: SwitchProps["label"]) => {
   return props;
 };
 
-const SwitchBase = (props: SwitchProps, ref: React.Ref<HTMLDivElement>) => {
+const SwitchBase = (props: SwitchProps, ref: React.Ref<HTMLButtonElement>) => {
   const {
     label,
     thumbComponent,
@@ -150,8 +148,9 @@ const SwitchBase = (props: SwitchProps, ref: React.Ref<HTMLDivElement>) => {
   });
 
   const id = useDeterministicId(idProp, "styleless-ui__switch");
-  const controllerId = id ? `${id}__controller` : undefined;
   const visibleLabelId = id ? `${id}__label` : undefined;
+
+  const handleRef = useForkedRefs(ref, checkBase.handleControllerRef);
 
   const labelProps = getLabelInfo(label);
 
@@ -189,24 +188,25 @@ const SwitchBase = (props: SwitchProps, ref: React.Ref<HTMLDivElement>) => {
   }
 
   return (
-    <div id={id} className={classes.root} ref={ref} {...otherProps}>
+    <>
       {visibleLabel && (
         <label
           id={visibleLabelId}
-          htmlFor={controllerId}
+          htmlFor={id}
           data-slot="label"
-          className={classes.label}
+          className={classes?.label}
         >
           {visibleLabel}
         </label>
       )}
       <button
-        id={controllerId}
+        {...otherProps}
+        id={id}
         role="switch"
-        className={classes.controller}
+        className={classes?.root}
         type="button"
         tabIndex={disabled ? -1 : 0}
-        ref={checkBase.handleControllerRef}
+        ref={handleRef}
         data-slot="root"
         disabled={disabled}
         onFocus={checkBase.handleFocus}
@@ -219,18 +219,18 @@ const SwitchBase = (props: SwitchProps, ref: React.Ref<HTMLDivElement>) => {
         aria-labelledby={labelProps.labelledBy}
       >
         {React.cloneElement(trackComponent, {
-          className: cls(trackComponent.props.className, classes.track)
+          className: cls(trackComponent.props.className, classes?.track)
         })}
         {React.cloneElement(thumbComponent, {
-          className: cls(thumbComponent.props.className, classes.thumb)
+          className: cls(thumbComponent.props.className, classes?.thumb)
         })}
       </button>
-    </div>
+    </>
   );
 };
 
 const Switch = componentWithForwardedRef<
-  HTMLDivElement,
+  HTMLButtonElement,
   SwitchProps,
   typeof SwitchBase
 >(SwitchBase);
