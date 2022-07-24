@@ -44,6 +44,10 @@ interface SwitchBaseProps {
         labelledBy: string;
       };
   /**
+   * The value of the switch.
+   */
+  value?: string;
+  /**
    * If `true`, the switch will be focused automatically.
    * @default false
    */

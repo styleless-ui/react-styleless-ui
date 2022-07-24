@@ -8,11 +8,11 @@ import { componentWithForwardedRef, useCheckBase } from "../utils";
 type CheckboxClassesMap = ClassesMap<"root" | "label" | "controller", "check">;
 
 type ClassesContext = {
-  /** The `checked` state of the switch. */
+  /** The `checked` state of the checkbox. */
   checked: boolean;
-  /** The `disabled` state of the switch. */
+  /** The `disabled` state of the checkbox. */
   disabled: boolean;
-  /** The `:focus-visible` of the switch. */
+  /** The `:focus-visible` of the checkbox. */
   focusedVisible: boolean;
 };
 
@@ -40,6 +40,10 @@ interface CheckboxBaseProps {
          */
         labelledBy: string;
       };
+  /**
+   * The value of the checkbox.
+   */
+  value?: string;
   /**
    * If `true`, the checkbox will be focused automatically.
    * @default false
@@ -114,6 +118,7 @@ const _DefaultCheck = ({ className }: { className?: string }) => (
     aria-hidden="true"
     focusable="false"
     className={className}
+    viewBox="0 0 12 8"
   >
     <polyline
       fill="none"
