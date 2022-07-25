@@ -1,3 +1,5 @@
+export * from "./Breadcrumb";
+export { default as Breadcrumb } from "./Breadcrumb";
 export * from "./Checkbox";
 export { default as Checkbox } from "./Checkbox";
 export * from "./CheckGroup";
