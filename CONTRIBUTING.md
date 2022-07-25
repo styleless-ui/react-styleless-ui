@@ -18,7 +18,7 @@ Working on your first Pull Request? You can learn how from this free video serie
 
 [How to Contribute to an Open Source Project on GitHub](https://egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github)
 
-To help you get your feet wet and get you familiar with our contribution process, we have a list of [good first issues](https://github.com/stylesless-ui/react-styleless-ui/issues?q=is:open+is:issue+label:"good+first+issue") that contain changes that have a relatively limited scope. This label means that there is already a working solution to the issue in the discussion section. Therefore, it is a great place to get started.
+To help you get your feet wet and get you familiar with our contribution process, we have a list of [good first issues](https://github.com/styleless-ui/react-styleless-ui/issues?q=is:open+is:issue+label:"good+first+issue") that contain changes that have a relatively limited scope. This label means that there is already a working solution to the issue in the discussion section. Therefore, it is a great place to get started.
 
 We also have a list of [good to take issues](https://github.com/styleless-ui/react-styleless-ui/issues?q=is:open+is:issue+label:"good+to+take"). This label is set when there has been already some discussion about the solution and it is clear in which direction to go. These issues are good for developers that want to reduce the chance of going down a rabbit hole.
 
@@ -42,8 +42,8 @@ When in doubt, keep your Pull Requests small. To give a Pull Request the best ch
 2. Clone the fork to your local machine and add upstream remote:
 
 ```sh
-git clone https://github.com/<your username>/sonnat-ui.git
-cd sonnat-ui
+git clone https://github.com/<your username>/react-styleless-ui.git
+cd react-styleless-ui
 git remote add upstream https://github.com/styleless-ui/react-styleless-ui.git
 ```
 
@@ -76,9 +76,43 @@ git push -u origin HEAD
 
 The core team is monitoring for Pull Requests. We will review your Pull Request and either merge it, request changes to it, or close it with an explanation.
 
+### Development server
+
+Start developing server and watch for code changes:
+
+```sh
+yarn dev
+```
+
+The local dev server is a NextJS app.
+You can import codes and make changes to `/pages/index.tsx` page.
+
+### Building
+
+You can build the project, including all type definitions, with:
+
+```sh
+yarn build
+```
+
+### Testing
+
+To run all the tests, run:
+
+```sh
+yarn test
+```
+
+To run a specific test, run:
+
+```sh
+# ie. yarn test Checkbox.test.tsx
+yarn test <filename>
+```
+
 ### Coding style
 
-Please follow the coding style of the project. Sonnat-UI uses prettier and eslint, so if possible, enable linting in your editor to get real-time feedback.
+Please follow the coding style of the project. StylelessUI uses prettier and eslint, so if possible, enable linting in your editor to get real-time feedback.
 
 ### Git Commit Messages
 
