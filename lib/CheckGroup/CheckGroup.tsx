@@ -7,11 +7,6 @@ import CheckGroupContext from "./context";
 
 type CheckboxGroupClassesMap = Record<"root" | "label", string>;
 
-type ClassesContext = {
-  /** The `disabled` state of the checkbox. */
-  disabled: boolean;
-};
-
 interface CheckGroupBaseProps {
   /**
    * The content of the group.
@@ -20,9 +15,7 @@ interface CheckGroupBaseProps {
   /**
    * Map of sub-components and their correlated classNames.
    */
-  classes?:
-    | ((ctx: ClassesContext) => CheckboxGroupClassesMap)
-    | CheckboxGroupClassesMap;
+  classes?: CheckboxGroupClassesMap;
   /**
    * The label of the group.
    */
@@ -44,19 +37,12 @@ interface CheckGroupBaseProps {
       };
   /**
    * The values of the selected checkboxes.
-   * @default false
    */
   value?: string[];
   /**
    * The default value. Use when the component is not controlled.
-   * @default false
    */
   defaultValue?: string[];
-  /**
-   * If `true`, the group will be disabled.
-   * @default false
-   */
-  disabled?: boolean;
   /**
    * The Callback fires when the state has changed.
    */
@@ -104,10 +90,9 @@ const CheckGroupBase = (
     label,
     children,
     id: idProp,
-    classes: classesMap,
+    classes,
     defaultValue,
     value: valueProp,
-    disabled = false,
     onChange,
     ...otherProps
   } = props;
@@ -121,11 +106,6 @@ const CheckGroupBase = (
     typeof labelProps.visibleLabel !== "undefined"
       ? labelProps.visibleLabel
       : undefined;
-
-  const classesCtx: ClassesContext = { disabled };
-
-  const classes =
-    typeof classesMap === "function" ? classesMap(classesCtx) : classesMap;
 
   const [value, setValue] = useControlledProp(valueProp, defaultValue, []);
 
