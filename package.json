@@ -80,6 +80,7 @@
     "@utilityjs/use-is-mounted": "^1.0.2",
     "@utilityjs/use-isomorphic-layout-effect": "^1.0.2",
     "@utilityjs/use-on-change": "^1.0.3",
+    "@utilityjs/use-register-node-ref": "^1.1.0",
     "classnames": "^2.3.1",
     "prop-types": "^15.8.1",
     "react-is": "^18.2.0"

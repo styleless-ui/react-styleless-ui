@@ -1150,6 +1150,11 @@
   resolved "https://registry.yarnpkg.com/@utilityjs/use-previous-value/-/use-previous-value-1.0.1.tgz#baa7ff028a3a8aadf59cac6c74f701eb3bb9e9e8"
   integrity sha512-iO9iqcUigfFNZ2dsOWrWqonwC8WTJic5+pr5/OWIxbwklBpbQuPoPmrGwQ9AZBueU2L86BH4FiJHMMhn15M4hQ==
 
+"@utilityjs/use-register-node-ref@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@utilityjs/use-register-node-ref/-/use-register-node-ref-1.1.0.tgz#e5ad2bf43d61261737f37183561d484ff549d34b"
+  integrity sha512-Zn6Aoxqm96bP3Kf8lErKiUbdZkg3nmnbC8GcdXnqESDOGRbwZ7gIMD7WR7DLjSfx5ZV8TZQpS8lh5MQgdpAbuw==
+
 abab@^2.0.5, abab@^2.0.6:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/abab/-/abab-2.0.6.tgz#41b80f2c871d19686216b82309231cfd3cb3d291"
