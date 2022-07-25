@@ -3,6 +3,7 @@ import useEventListener from "@utilityjs/use-event-listener";
 import useForkedRefs from "@utilityjs/use-forked-refs";
 import cls from "classnames";
 import * as React from "react";
+import RadioGroupContext from "../RadioGroup/context";
 import { type ClassesMap, type MergeElementProps } from "../typings.d";
 import { componentWithForwardedRef, useCheckBase } from "../utils";
 
@@ -128,6 +129,7 @@ const _DefaultCheck = ({ className }: { className?: string }) => (
 const RadioBase = (props: RadioProps, ref: React.Ref<HTMLButtonElement>) => {
   const {
     label,
+    value,
     checkComponent,
     defaultChecked,
     id: idProp,
@@ -143,7 +145,21 @@ const RadioBase = (props: RadioProps, ref: React.Ref<HTMLButtonElement>) => {
     ...otherProps
   } = props;
 
+  const radioGroupCtx = React.useContext(RadioGroupContext);
+
+  if (radioGroupCtx && typeof value === "undefined") {
+    throw new Error(
+      [
+        "[StylelessUI][Radio]: The `value` property is missing.",
+        "It's mandatory to provide a `value` property " +
+          "when <RadioGroup /> is a wrapper for <Radio />."
+      ].join("\n")
+    );
+  }
+
   const checkBase = useCheckBase({
+    value,
+    groupCtx: radioGroupCtx,
     strategy: "radio-control",
     autoFocus,
     disabled,
@@ -159,7 +175,9 @@ const RadioBase = (props: RadioProps, ref: React.Ref<HTMLButtonElement>) => {
   const id = useDeterministicId(idProp, "styleless-ui__radio");
   const visibleLabelId = id ? `${id}__label` : undefined;
 
-  const handleRef = useForkedRefs(ref, checkBase.handleControllerRef);
+  const rootRef = React.useRef<HTMLButtonElement>(null);
+
+  const handleRef = useForkedRefs(ref, rootRef, checkBase.handleControllerRef);
 
   const labelProps = getLabelInfo(label);
 
@@ -196,6 +214,11 @@ const RadioBase = (props: RadioProps, ref: React.Ref<HTMLButtonElement>) => {
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const valueToBeFocused = radioGroupCtx?.registerRadio(value!, rootRef);
+
+  const tabIndex = disabled ? -1 : value === valueToBeFocused ? 0 : -1;
+
   return (
     <>
       <button
@@ -204,7 +227,7 @@ const RadioBase = (props: RadioProps, ref: React.Ref<HTMLButtonElement>) => {
         role="radio"
         className={classes?.root}
         type="button"
-        tabIndex={disabled ? -1 : 0}
+        tabIndex={tabIndex}
         ref={handleRef}
         data-slot="root"
         disabled={disabled}

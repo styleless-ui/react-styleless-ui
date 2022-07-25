@@ -4,6 +4,7 @@ import useIsMounted from "@utilityjs/use-is-mounted";
 import useIsomorphicLayoutEffect from "@utilityjs/use-isomorphic-layout-effect";
 import * as React from "react";
 import { type ICheckGroupContext } from "../CheckGroup/context";
+import { type IRadioGroupContext } from "../RadioGroup/context";
 import {
   requestFormSubmit,
   useEventCallback,
@@ -13,7 +14,7 @@ import {
 interface CheckBaseProps {
   strategy?: "check-control" | "radio-control";
   value?: string;
-  groupCtx?: ICheckGroupContext;
+  groupCtx?: ICheckGroupContext | IRadioGroupContext;
   checked?: boolean;
   defaultChecked?: boolean;
   disabled?: boolean;
@@ -49,7 +50,11 @@ const useCheckBase = (props: CheckBaseProps) => {
     false
   );
 
-  const checkedState = groupCtx ? groupCtx.value.includes(value) : checked;
+  const checkedState = groupCtx
+    ? strategy === "check-control"
+      ? groupCtx.value.includes(value)
+      : groupCtx.value === value
+    : checked;
 
   const {
     isFocusVisibleRef,
@@ -139,11 +144,46 @@ const useCheckBase = (props: CheckBaseProps) => {
         enterKeyDownRef.current = true;
     }
 
-    if (
-      event.target === event.currentTarget &&
-      [" ", "enter"].includes(event.key.toLowerCase())
-    ) {
-      event.preventDefault();
+    if (event.target === event.currentTarget) {
+      if ([" ", "enter"].includes(event.key.toLowerCase())) {
+        event.preventDefault();
+      }
+
+      if (strategy === "radio-control" && groupCtx && isFocusedVisible) {
+        const { radios } = <IRadioGroupContext>groupCtx;
+        const currentRadiosIdx = radios.findIndex(r => r[0] === value);
+
+        const currentRadio = radios[currentRadiosIdx][1].current;
+
+        const dir = currentRadio
+          ? window.getComputedStyle(currentRadio).direction
+          : "ltr";
+
+        if (
+          ["arrowup", dir === "ltr" ? "arrowleft" : "arrowright"].includes(
+            event.key.toLowerCase()
+          )
+        ) {
+          event.preventDefault();
+
+          const nextRadio =
+            radios[(currentRadiosIdx - 1 + radios.length) % radios.length];
+
+          nextRadio[1].current?.click();
+          nextRadio[1].current?.focus();
+        } else if (
+          ["arrowdown", dir === "ltr" ? "arrowright" : "arrowleft"].includes(
+            event.key.toLowerCase()
+          )
+        ) {
+          event.preventDefault();
+
+          const nextRadio = radios[(currentRadiosIdx + 1) % radios.length];
+
+          nextRadio[1].current?.click();
+          nextRadio[1].current?.focus();
+        }
+      }
     }
 
     onKeyDown?.(event);
