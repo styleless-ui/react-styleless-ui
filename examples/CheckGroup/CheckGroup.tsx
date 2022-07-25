@@ -1,5 +1,4 @@
 import cls from "classnames";
-import * as React from "react";
 import { Checkbox, CheckGroup } from "../../lib";
 import classes from "./CheckGroup.module.css";
 
