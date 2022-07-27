@@ -1,6 +1,6 @@
 {
   "name": "@styleless-ui/react",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Completely unstyled, headless and accessible React UI components.",
   "repository": "git@github.com:styleless-ui/react-styleless-ui.git",
   "author": "mimshins <mostafa.sh.coderino@gmail.com>",
@@ -23,7 +23,7 @@
     "test:watch": "jest --watch",
     "lint": "tsc --project tsconfig.lint.json && eslint \"lib/**/*.{ts,tsx}\" --config .eslintrc --quiet --fix",
     "clear": "rimraf dist",
-    "prebuild": "npm-run-all clear lint",
+    "prebuild": "npm-run-all clear lint test",
     "build": "npm-run-all build:cjs build:copy-typings:cjs build:esm build:copy-typings:esm build:minify build:packages build:npm-files",
     "build:cjs": "tsc -p tsconfig.cjs.json",
     "build:esm": "tsc -p tsconfig.esm.json",
