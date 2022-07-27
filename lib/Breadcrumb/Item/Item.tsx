@@ -1,30 +1,31 @@
 import * as React from "react";
 import { type MergeElementProps } from "../../typings.d";
 import { componentWithForwardedRef } from "../../utils";
-import BreadcrumbContext from "../context";
 
 interface BreadcrumbItemBaseProps {
   /**
    * The content of the breadcrumb item.
    */
   children?: React.ReactNode;
+  /**
+   * The className applied to the component.
+   */
+  className?: string;
 }
 
 export type BreadcrumbItemProps = Omit<
   MergeElementProps<"li", BreadcrumbItemBaseProps>,
-  "className" | "defaultChecked" | "defaultValue"
+  "defaultChecked" | "defaultValue"
 >;
 
 const BreadcrumbItemBase = (
   props: BreadcrumbItemProps,
   ref: React.Ref<HTMLLIElement>
 ) => {
-  const { children, ...otherProps } = props;
-
-  const ctx = React.useContext(BreadcrumbContext);
+  const { className, children, ...otherProps } = props;
 
   return (
-    <li {...otherProps} ref={ref} className={ctx?.classes?.item}>
+    <li {...otherProps} ref={ref} className={className}>
       {children}
     </li>
   );

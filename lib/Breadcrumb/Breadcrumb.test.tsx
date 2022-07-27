@@ -16,7 +16,6 @@ const REQUIRED_PROPS: BreadcrumbProps = {
   classes: {
     label: "label",
     root: "root",
-    item: "item",
     list: "list"
   }
 };
@@ -32,7 +31,7 @@ describe("@styleless-ui/react/Breadcrumb", () => {
   it("should have the required classNames", () => {
     render(
       <Breadcrumb {...REQUIRED_PROPS}>
-        <BreadcrumbItem></BreadcrumbItem>
+        <BreadcrumbItem className="item"></BreadcrumbItem>
       </Breadcrumb>
     );
 
