@@ -4,10 +4,9 @@ import * as React from "react";
 import { isFragment } from "react-is";
 import { type MergeElementProps } from "../typings.d";
 import { componentWithForwardedRef } from "../utils";
-import BreadcrumbContext from "./context";
 import BreadcrumbItem, { type BreadcrumbItemProps } from "./Item";
 
-type BreadcrumbClassesMap = Record<"root" | "label" | "list" | "item", string>;
+type BreadcrumbClassesMap = Record<"root" | "label" | "list", string>;
 
 interface BreadcrumbBaseProps {
   /**
@@ -161,9 +160,7 @@ const BreadcrumbBase = (
         aria-labelledby={labelProps.labelledBy}
       >
         <ol ref={registerListRef} className={classes?.list}>
-          <BreadcrumbContext.Provider value={{ classes }}>
-            {children}
-          </BreadcrumbContext.Provider>
+          {children}
         </ol>
       </nav>
     </>
