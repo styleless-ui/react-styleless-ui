@@ -1,3 +1,12 @@
+/**
+ * Returns value wrapped to the inclusive range of `min` and `max`.
+ */
+export const wrap = (number: number, min: number, max: number): number =>
+  min + ((((number - min) % (max - min)) + (max - min)) % (max - min));
+
+/**
+ * Returns value clamped to the inclusive range of `min` and `max`.
+ */
 export const clamp = (number: number, min: number, max: number): number =>
   Math.max(Math.min(number, max), min);
 
