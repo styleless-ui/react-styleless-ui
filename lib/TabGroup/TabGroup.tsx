@@ -3,6 +3,7 @@ import { type MergeElementProps } from "../typings.d";
 import {
   componentWithForwardedRef,
   useControlledProp,
+  useForkedRefs,
   useIsMounted
 } from "../utils";
 import TabGroupContext, { type ITabGroupContext } from "./context";
@@ -61,6 +62,9 @@ const TabGroupBase = (props: TabGroupProps, ref: React.Ref<HTMLDivElement>) => {
 
   const isMounted = useIsMounted();
 
+  const rootRef = React.useRef<HTMLDivElement>();
+  const handleRootRef = useForkedRefs(ref, rootRef);
+
   const [activeTab, setActiveTab] = useControlledProp(
     activeTabProp,
     defaultActiveTab,
@@ -92,8 +96,24 @@ const TabGroupBase = (props: TabGroupProps, ref: React.Ref<HTMLDivElement>) => {
     }
   };
 
+  React.useEffect(() => {
+    const tabs =
+      rootRef.current?.querySelectorAll<HTMLButtonElement>('[role="tab"]');
+    if (!tabs) return;
+
+    const tabElement = tabs[activeTab];
+    if (!tabElement) return;
+
+    if (tabElement.disabled || tabElement.hasAttribute("disabled")) {
+      throw new Error(
+        "[StylelessUI][TabGroup]: The selected tab is `disabled`."
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
-    <div {...otherProps} className={className} ref={ref}>
+    <div {...otherProps} className={className} ref={handleRootRef}>
       <TabGroupContext.Provider
         value={{
           activeTab,

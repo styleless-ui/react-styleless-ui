@@ -1,4 +1,5 @@
 import * as React from "react";
+import { SystemKeys } from "../../internals";
 import { type MergeElementProps } from "../../typings.d";
 import {
   componentWithForwardedRef,
@@ -13,7 +14,16 @@ interface TabBaseProps {
   /**
    * The content of the tab.
    */
-  children?: React.ReactNode | ((selected: boolean) => React.ReactNode);
+  children?:
+    | React.ReactNode
+    | ((ctx: {
+        /** The `selected` state of the tab. */
+        selected: boolean;
+        /** The `disabled` state of the tab. */
+        disabled: boolean;
+        /** The `:focus-visible` state of the tab. */
+        focusedVisible: boolean;
+      }) => React.ReactNode);
   /**
    * The className applied to the component.
    */
@@ -76,37 +86,63 @@ const TabBase = (props: TabProps, ref: React.Ref<HTMLButtonElement>) => {
             : "ltr";
 
           const goNext =
-            event.key.toLowerCase() ===
+            event.key ===
             (orientation === "horizontal"
               ? dir === "ltr"
-                ? "arrowright"
-                : "arrowleft"
-              : "arrowdown");
+                ? SystemKeys.RIGHT
+                : SystemKeys.LEFT
+              : SystemKeys.DOWN);
 
           const goPrev =
-            event.key.toLowerCase() ===
+            event.key ===
             (orientation === "horizontal"
               ? dir === "ltr"
-                ? "arrowleft"
-                : "arrowright"
-              : "arrowup");
+                ? SystemKeys.LEFT
+                : SystemKeys.RIGHT
+              : SystemKeys.UP);
+
+          const goFirst = event.key === SystemKeys.HOME;
+          const goLast = event.key === SystemKeys.END;
+
+          let focusTabRef: React.RefObject<HTMLButtonElement> | null = null;
+
+          const getAvailableTab = (
+            idx: number,
+            forward: boolean,
+            prevIdxs: number[] = []
+          ): typeof focusTabRef => {
+            const tabRef = tabs[idx];
+
+            if (prevIdxs.includes(idx)) return null;
+
+            if (!tabRef.current || tabRef.current.disabled) {
+              const newIdx =
+                (forward ? idx + 1 : idx - 1 + tabs.length) % tabs.length;
+              return getAvailableTab(newIdx, forward, [...prevIdxs, idx]);
+            }
+
+            return tabRef;
+          };
 
           if (goPrev) {
-            event.preventDefault();
-
-            const prevTab = tabs[(index - 1 + tabs.length) % tabs.length];
-            prevTab.current?.focus();
-
-            keyboardActivationBehavior === "automatic" &&
-              prevTab.current?.click();
+            focusTabRef = getAvailableTab(
+              (index - 1 + tabs.length) % tabs.length,
+              false
+            );
           } else if (goNext) {
+            focusTabRef = getAvailableTab((index + 1) % tabs.length, true);
+          } else if (goFirst) {
+            focusTabRef = getAvailableTab(0, true);
+          } else if (goLast) {
+            focusTabRef = getAvailableTab(tabs.length - 1, false);
+          }
+
+          if (focusTabRef) {
             event.preventDefault();
 
-            const nextTab = tabs[(index + 1) % tabs.length];
-            nextTab.current?.focus();
-
+            focusTabRef.current?.focus();
             keyboardActivationBehavior === "automatic" &&
-              nextTab.current?.click();
+              focusTabRef.current?.click();
           }
         }
 
@@ -127,17 +163,17 @@ const TabBase = (props: TabProps, ref: React.Ref<HTMLButtonElement>) => {
 
   const selected = tabGroupCtx ? tabGroupCtx.activeTab === index : false;
 
+  const ctx = {
+    selected,
+    disabled,
+    focusedVisible: buttonBase.isFocusedVisible
+  };
+
   const children =
-    typeof childrenProp === "function" ? childrenProp(selected) : childrenProp;
+    typeof childrenProp === "function" ? childrenProp(ctx) : childrenProp;
 
   const className =
-    typeof classNameProp === "function"
-      ? classNameProp({
-          selected,
-          disabled,
-          focusedVisible: buttonBase.isFocusedVisible
-        })
-      : classNameProp;
+    typeof classNameProp === "function" ? classNameProp(ctx) : classNameProp;
 
   return (
     <button
