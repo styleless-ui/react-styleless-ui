@@ -1,6 +1,6 @@
 import { type CSSProperties } from "react";
 
-export const srOnlyCSSProperties = {
+export const visuallyHiddenCSSProperties = {
   position: "absolute",
   width: 1,
   height: 1,
