@@ -1,4 +1,6 @@
 export { default as componentWithForwardedRef } from "./componentWithForwardedRef";
+export * from "./dom";
+export * from "./is";
 export * from "./math";
 export { default as requestFormSubmit } from "./requestFormSubmit";
 export { default as useButtonBase } from "./useButtonBase";
