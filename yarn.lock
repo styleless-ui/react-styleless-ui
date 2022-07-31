@@ -1110,10 +1110,10 @@
   resolved "https://registry.yarnpkg.com/@utilityjs/use-deterministic-id/-/use-deterministic-id-1.1.0.tgz#60aa777e519ba6484a16523b36d431ce9cedd28a"
   integrity sha512-GAUze5nY1bIi1LvExfsdOmtpDq5YyuKC402PprOStgqed6PhdikM8rI3QFNwA9w2e69+fzoXvbKDmj7tHyyLZw==
 
-"@utilityjs/use-event-listener@^1.0.5":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@utilityjs/use-event-listener/-/use-event-listener-1.0.5.tgz#da2ed537d5fa7db582ccb2c638ad34514dcf370c"
-  integrity sha512-QQSwOdUfEchWApvA0dhXsVXs/vZ+LYU7EPUqQuWQpkJgQjjAQHV+EQKHpwomHVFgmA9uQfEAYnzpvcPLdUxqKQ==
+"@utilityjs/use-event-listener@^1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@utilityjs/use-event-listener/-/use-event-listener-1.0.6.tgz#f1ebcb900067ce42d1549130d3c6eee6f458e42a"
+  integrity sha512-qmJD9Kjtv8ogu7W17isxtcjhj+PlCbJjBAL0RV4/yiY8FsqUfPJZMuhIGfRfrbglUjgW4tCtmMHtovHDHlbK5w==
   dependencies:
     "@utilityjs/use-get-latest" "^1.0.2"
 
@@ -1126,6 +1126,11 @@
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@utilityjs/use-get-latest/-/use-get-latest-1.0.2.tgz#7151efdaad46ab0eff9961464367943545696fa2"
   integrity sha512-GeKhniDJDEjzOQmteGRRFr26x5LNA0FMcWPNIjJEClAC/D6kFXmi3a/sHVynOM3h6rgUqrIVxIIFlf/EFJ9LBQ==
+
+"@utilityjs/use-get-scrollbar-width@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@utilityjs/use-get-scrollbar-width/-/use-get-scrollbar-width-1.0.1.tgz#06a1dfacc07ece5cc04465c8a233ee97a2c11fc6"
+  integrity sha512-ABEhSJVisEeJc8QqHjzC4Wo/FQM9sZxB4ns8bGbT+IE+DkR7dFgBIi1ZoXytgvTKjURcqKGMYUyiqWa+edOVfQ==
 
 "@utilityjs/use-is-mounted@^1.0.2":
   version "1.0.2"
@@ -1145,6 +1150,14 @@
     "@utilityjs/use-get-latest" "^1.0.2"
     "@utilityjs/use-previous-value" "^1.0.1"
 
+"@utilityjs/use-on-outside-click@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@utilityjs/use-on-outside-click/-/use-on-outside-click-1.0.5.tgz#72bda49cca302b8d71e406c972fe2376ddcd92e7"
+  integrity sha512-jF6yCON4Xr5xTvQ7858ruxrWR6GQpndjMWwB6MsPlPtDJKHNxPYy8N+LaRXhV4L5oEs+n4A7yEimzgpIg8qeKQ==
+  dependencies:
+    "@utilityjs/use-event-listener" "^1.0.6"
+    "@utilityjs/use-get-latest" "^1.0.2"
+
 "@utilityjs/use-previous-value@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@utilityjs/use-previous-value/-/use-previous-value-1.0.1.tgz#baa7ff028a3a8aadf59cac6c74f701eb3bb9e9e8"
@@ -1154,6 +1167,13 @@
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@utilityjs/use-register-node-ref/-/use-register-node-ref-1.1.0.tgz#e5ad2bf43d61261737f37183561d484ff549d34b"
   integrity sha512-Zn6Aoxqm96bP3Kf8lErKiUbdZkg3nmnbC8GcdXnqESDOGRbwZ7gIMD7WR7DLjSfx5ZV8TZQpS8lh5MQgdpAbuw==
+
+"@utilityjs/use-scroll-guard@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@utilityjs/use-scroll-guard/-/use-scroll-guard-1.0.0.tgz#24f22b6e2b1750d0d08c154ac6f5f6a5bb95def7"
+  integrity sha512-FYxL6jSflt42AICjpDkHzr3pZVyZ5uYL5bRRbVM99unrbWs4RluNXaS9rg9RNcc7GTfE0K0dnyrr/SPmsBLLsQ==
+  dependencies:
+    "@utilityjs/use-get-scrollbar-width" "^1.0.1"
 
 abab@^2.0.5, abab@^2.0.6:
   version "2.0.6"
