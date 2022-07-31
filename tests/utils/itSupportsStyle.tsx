@@ -6,13 +6,25 @@ import { render } from ".";
 const itSupportsStyle = <T,>(
   Component: React.ComponentType<T>,
   requiredProps: T,
-  selector?: string
+  selector?: string,
+  options?: { withPortal?: boolean }
 ): void => {
   it("supports style prop", () => {
-    const getTarget = (container: HTMLElement): HTMLElement =>
-      selector
-        ? (container.querySelector(selector) as HTMLElement)
+    const { withPortal = false } = options ?? {};
+
+    const getTarget = (container: HTMLElement): HTMLElement => {
+      const portal = withPortal
+        ? document.querySelector<HTMLElement>("[data-slot='portal']")
+        : null;
+
+      return selector
+        ? portal
+          ? (portal.querySelector(selector) as HTMLElement)
+          : (container.querySelector(selector) as HTMLElement)
+        : portal
+        ? (container.firstChild as HTMLElement)
         : (container.firstChild as HTMLElement);
+    };
 
     const style = { border: "1px solid red", backgroundColor: "black" };
 
