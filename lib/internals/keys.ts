@@ -1,9 +1,9 @@
 export const SystemKeys = {
   BACKSPACE: "Backspace",
   TAB: "Tab",
-  Enter: "Enter",
+  ENTER: "Enter",
   SHIFT: "Shift",
-  Escape: "Escape",
+  ESCAPE: "Escape",
   SPACE: " ",
   LEFT: "ArrowLeft",
   RIGHT: "ArrowRight",

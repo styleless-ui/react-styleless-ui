@@ -144,7 +144,7 @@ const DialogBase = (props: DialogProps, ref: React.Ref<HTMLDivElement>) => {
         target: document,
         eventType: "keyup",
         handler: event => {
-          if (event.key === SystemKeys.Escape) onEscapeKeyUp?.(event);
+          if (event.key === SystemKeys.ESCAPE) onEscapeKeyUp?.(event);
         }
       },
       open && onEscapeKeyUp != null
