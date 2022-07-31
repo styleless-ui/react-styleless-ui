@@ -9,5 +9,9 @@ export const SystemKeys = {
   RIGHT: "ArrowRight",
   UP: "ArrowUp",
   DOWN: "ArrowDown",
-  DELETE: "Delete"
+  DELETE: "Delete",
+  HOME: "Home",
+  END: "End",
+  PAGE_UP: "PageUp",
+  PAGE_DOWN: "PageDown"
 };
