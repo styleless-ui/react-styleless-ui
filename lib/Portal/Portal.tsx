@@ -1,6 +1,6 @@
-import useIsomorphicLayoutEffect from "@utilityjs/use-isomorphic-layout-effect";
 import * as React from "react";
 import { createPortal } from "react-dom";
+import { useIsomorphicLayoutEffect } from "../utils";
 
 export interface PortalProps {
   /**

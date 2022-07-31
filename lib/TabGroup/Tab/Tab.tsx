@@ -1,11 +1,11 @@
-import useDeterministicId from "@utilityjs/use-deterministic-id";
-import useForkedRefs from "@utilityjs/use-forked-refs";
 import * as React from "react";
 import { type MergeElementProps } from "../../typings.d";
 import {
   componentWithForwardedRef,
   useButtonBase,
-  useEventCallback
+  useDeterministicId,
+  useEventCallback,
+  useForkedRefs
 } from "../../utils";
 import TabGroupContext from "../context";
 
@@ -22,6 +22,8 @@ interface TabBaseProps {
     | ((ctx: {
         /** The `selected` state of the tab. */
         selected: boolean;
+        /** The `disabled` state of the tab. */
+        disabled: boolean;
         /** The `:focus-visible` state of the tab. */
         focusedVisible: boolean;
       }) => string);
@@ -130,7 +132,11 @@ const TabBase = (props: TabProps, ref: React.Ref<HTMLButtonElement>) => {
 
   const className =
     typeof classNameProp === "function"
-      ? classNameProp({ selected, focusedVisible: buttonBase.isFocusedVisible })
+      ? classNameProp({
+          selected,
+          disabled,
+          focusedVisible: buttonBase.isFocusedVisible
+        })
       : classNameProp;
 
   return (

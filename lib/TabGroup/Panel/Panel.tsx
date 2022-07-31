@@ -1,8 +1,10 @@
-import useDeterministicId from "@utilityjs/use-deterministic-id";
-import useForkedRefs from "@utilityjs/use-forked-refs";
 import * as React from "react";
 import { type MergeElementProps } from "../../typings.d";
-import { componentWithForwardedRef } from "../../utils";
+import {
+  componentWithForwardedRef,
+  useDeterministicId,
+  useForkedRefs
+} from "../../utils";
 import TabGroupContext from "../context";
 
 interface TabPanelBaseProps {

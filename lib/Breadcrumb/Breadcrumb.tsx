@@ -1,9 +1,11 @@
-import useDeterministicId from "@utilityjs/use-deterministic-id";
-import useRegisterNodeRef from "@utilityjs/use-register-node-ref";
 import * as React from "react";
-import { isFragment } from "react-is";
 import { type MergeElementProps } from "../typings.d";
-import { componentWithForwardedRef } from "../utils";
+import {
+  componentWithForwardedRef,
+  isFragment,
+  useDeterministicId,
+  useRegisterNodeRef
+} from "../utils";
 import BreadcrumbItem, { type BreadcrumbItemProps } from "./Item";
 
 type BreadcrumbClassesMap = Record<"root" | "label" | "list", string>;

@@ -1,8 +1,11 @@
-import useEventListener from "@utilityjs/use-event-listener";
-import useForkedRefs from "@utilityjs/use-forked-refs";
 import * as React from "react";
 import { visuallyHiddenCSSProperties } from "../internals";
-import { contains, isFocusable } from "../utils";
+import {
+  contains,
+  isFocusable,
+  useEventListener,
+  useForkedRefs
+} from "../utils";
 
 export interface FocusTrapProps {
   children: JSX.Element;

@@ -1,11 +1,14 @@
-import useDeterministicId from "@utilityjs/use-deterministic-id";
-import useEventListener from "@utilityjs/use-event-listener";
-import useForkedRefs from "@utilityjs/use-forked-refs";
 import cls from "classnames";
 import * as React from "react";
 import RadioGroupContext from "../RadioGroup/context";
 import { type ClassesMap, type MergeElementProps } from "../typings.d";
-import { componentWithForwardedRef, useCheckBase } from "../utils";
+import {
+  componentWithForwardedRef,
+  useCheckBase,
+  useDeterministicId,
+  useEventListener,
+  useForkedRefs
+} from "../utils";
 
 type RadioClassesMap = ClassesMap<"root" | "label" | "check", never>;
 

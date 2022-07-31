@@ -1,8 +1,10 @@
-import useControlledProp from "@utilityjs/use-controlled-prop";
-import useDeterministicId from "@utilityjs/use-deterministic-id";
 import * as React from "react";
 import { type MergeElementProps } from "../typings.d";
-import { componentWithForwardedRef } from "../utils";
+import {
+  componentWithForwardedRef,
+  useControlledProp,
+  useDeterministicId
+} from "../utils";
 import CheckGroupContext from "./context";
 
 type CheckboxGroupClassesMap = Record<"root" | "label", string>;

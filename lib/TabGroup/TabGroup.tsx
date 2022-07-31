@@ -1,8 +1,10 @@
-import useControlledProp from "@utilityjs/use-controlled-prop";
-import useIsMounted from "@utilityjs/use-is-mounted";
 import * as React from "react";
 import { type MergeElementProps } from "../typings.d";
-import { componentWithForwardedRef } from "../utils";
+import {
+  componentWithForwardedRef,
+  useControlledProp,
+  useIsMounted
+} from "../utils";
 import TabGroupContext, { type ITabGroupContext } from "./context";
 
 interface TabGroupBaseProps {

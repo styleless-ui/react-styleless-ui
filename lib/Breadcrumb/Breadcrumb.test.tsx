@@ -20,7 +20,7 @@ const REQUIRED_PROPS: BreadcrumbProps = {
   }
 };
 
-describe("@styleless-ui/react/Breadcrumb", () => {
+describe("Breadcrumb", () => {
   afterEach(jest.clearAllMocks);
 
   itShouldMount(Breadcrumb, REQUIRED_PROPS);

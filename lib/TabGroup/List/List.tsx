@@ -1,7 +1,6 @@
-import useDeterministicId from "@utilityjs/use-deterministic-id";
 import * as React from "react";
 import { type MergeElementProps } from "../../typings.d";
-import { componentWithForwardedRef } from "../../utils";
+import { componentWithForwardedRef, useDeterministicId } from "../../utils";
 import TabGroupContext from "../context";
 import Tab from "../Tab";
 

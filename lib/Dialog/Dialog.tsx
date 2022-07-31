@@ -1,15 +1,17 @@
-import useDeterministicId from "@utilityjs/use-deterministic-id";
-import useEventListener from "@utilityjs/use-event-listener";
-import useIsMounted from "@utilityjs/use-is-mounted";
-import useOnChange from "@utilityjs/use-on-change";
-import usePreviousValue from "@utilityjs/use-previous-value";
-import useScrollGuard from "@utilityjs/use-scroll-guard";
 import * as React from "react";
 import FocusTrap from "../FocusTrap";
 import { SystemKeys } from "../internals";
 import Portal from "../Portal";
 import { type MergeElementProps } from "../typings.d";
-import { componentWithForwardedRef } from "../utils";
+import {
+  componentWithForwardedRef,
+  useDeterministicId,
+  useEventListener,
+  useIsMounted,
+  useOnChange,
+  usePreviousValue,
+  useScrollGuard
+} from "../utils";
 import DialogContext from "./context";
 
 type DialogClassesMap = Record<"root" | "backdrop" | "panel", string>;
