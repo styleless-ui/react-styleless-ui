@@ -21,7 +21,7 @@ const REQUIRED_PROPS: RadioProps = {
   }
 };
 
-describe("@styleless-ui/react/Radio", () => {
+describe("Radio", () => {
   afterEach(jest.clearAllMocks);
 
   itShouldMount(Radio, REQUIRED_PROPS);

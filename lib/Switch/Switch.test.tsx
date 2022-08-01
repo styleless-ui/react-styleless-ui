@@ -24,7 +24,7 @@ const REQUIRED_PROPS: SwitchProps = {
   }
 };
 
-describe("@styleless-ui/react/Switch", () => {
+describe("Switch", () => {
   afterEach(jest.clearAllMocks);
 
   itShouldMount(Switch, REQUIRED_PROPS);

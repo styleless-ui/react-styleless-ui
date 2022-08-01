@@ -21,7 +21,7 @@ const REQUIRED_PROPS: CheckboxProps = {
   }
 };
 
-describe("@styleless-ui/react/Checkbox", () => {
+describe("Checkbox", () => {
   afterEach(jest.clearAllMocks);
 
   itShouldMount(Checkbox, REQUIRED_PROPS);

@@ -18,7 +18,7 @@ const REQUIRED_PROPS: CheckGroupProps = {
   classes: { label: "label", root: "root" }
 };
 
-describe("@styleless-ui/react/CheckGroup", () => {
+describe("CheckGroup", () => {
   afterEach(jest.clearAllMocks);
 
   itShouldMount(CheckGroup, REQUIRED_PROPS);

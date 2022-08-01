@@ -18,7 +18,7 @@ const REQUIRED_PROPS: RadioGroupProps = {
   classes: { label: "label", root: "root" }
 };
 
-describe("@styleless-ui/react/RadioGroup", () => {
+describe("RadioGroup", () => {
   afterEach(jest.clearAllMocks);
 
   itShouldMount(RadioGroup, REQUIRED_PROPS);
