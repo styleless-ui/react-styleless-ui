@@ -151,7 +151,7 @@ const DialogBase = (props: DialogProps, ref: React.Ref<HTMLDivElement>) => {
     );
   }
 
-  return unmountOnClose && open ? (
+  const renderTree = () => (
     <Portal>
       <div
         data-slot="portal"
@@ -194,7 +194,9 @@ const DialogBase = (props: DialogProps, ref: React.Ref<HTMLDivElement>) => {
         </div>
       </div>
     </Portal>
-  ) : null;
+  );
+
+  return !unmountOnClose ? renderTree() : open ? renderTree() : null;
 };
 
 const Dialog = componentWithForwardedRef<
