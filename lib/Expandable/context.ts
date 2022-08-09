@@ -2,8 +2,7 @@ import * as React from "react";
 
 export interface IExpandableContext {
   isExpanded: boolean;
-  handleExpand: () => void;
-  handleCollapse: () => void;
+  setIsExpanded: (value: React.SetStateAction<boolean>) => void;
 }
 
 const ExpandableContext = React.createContext<IExpandableContext | null>(null);
