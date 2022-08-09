@@ -3,7 +3,8 @@ import { type MergeElementProps } from "../typings.d";
 import {
   componentWithForwardedRef,
   useControlledProp,
-  useIsMounted
+  useIsMounted,
+  useOnChange
 } from "../utils";
 import ExpandableContext from "./context";
 
@@ -57,25 +58,25 @@ const ExpandableBase = (
 
   const isMounted = useIsMounted();
 
+  const initialRender = React.useRef(true);
+
   const [isExpanded, setIsExpanded] = useControlledProp(
     expanded,
     defaultExpanded,
     false
   );
 
-  const handleExpand = () => {
+  useOnChange(isExpanded, expandedState => {
     if (!isMounted()) return;
 
-    setIsExpanded(true);
-    onExpand?.();
-  };
+    if (initialRender.current) {
+      initialRender.current = false;
+      return;
+    }
 
-  const handleCollapse = () => {
-    if (!isMounted()) return;
-
-    setIsExpanded(false);
-    onCollapse?.();
-  };
+    if (expandedState) onExpand?.();
+    else onCollapse?.();
+  });
 
   const className =
     typeof classNameProp === "function"
@@ -94,13 +95,7 @@ const ExpandableBase = (
       data-slot="expandableRoot"
       className={className}
     >
-      <ExpandableContext.Provider
-        value={{
-          isExpanded,
-          handleExpand,
-          handleCollapse
-        }}
-      >
+      <ExpandableContext.Provider value={{ isExpanded, setIsExpanded }}>
         {children}
       </ExpandableContext.Provider>
     </div>

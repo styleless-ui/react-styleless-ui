@@ -60,9 +60,7 @@ const ExpandableTriggerBase = (
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (!expandableCtx) return onClick?.(event);
 
-    if (expandableCtx.isExpanded) expandableCtx.handleCollapse();
-    else expandableCtx.handleExpand();
-
+    expandableCtx.setIsExpanded(s => !s);
     onClick?.(event);
   };
 
