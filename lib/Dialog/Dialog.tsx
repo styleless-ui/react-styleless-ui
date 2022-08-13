@@ -55,12 +55,6 @@ interface DialogBaseProps {
    */
   role: "dialog" | "alertdialog";
   /**
-   * If `true`, the dialog will unmount.
-   * Otherwise you have to control the visibility of the component with CSS styles.
-   * @default true
-   */
-  unmountOnClose?: boolean;
-  /**
    * Callback fired when the backdrop is clicked.
    */
   onBackdropClick?: React.MouseEventHandler<HTMLDivElement>;
@@ -83,7 +77,6 @@ const DialogBase = (props: DialogProps, ref: React.Ref<HTMLDivElement>) => {
     role = "dialog",
     focusAfterClosed,
     classes: classesProp,
-    unmountOnClose = true,
     onEscapeKeyUp,
     onBackdropClick,
     onOpen,
@@ -151,20 +144,14 @@ const DialogBase = (props: DialogProps, ref: React.Ref<HTMLDivElement>) => {
     );
   }
 
-  const renderTree = () => (
+  return !open ? null : (
     <Portal>
       <div
         data-slot="portal"
         role="presentation"
         tabIndex={-1}
         aria-hidden={!open}
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%"
-        }}
+        style={{ position: "absolute", top: 0, left: 0, right: 0 }}
       >
         <div
           {...otherProps}
@@ -195,8 +182,6 @@ const DialogBase = (props: DialogProps, ref: React.Ref<HTMLDivElement>) => {
       </div>
     </Portal>
   );
-
-  return !unmountOnClose ? renderTree() : open ? renderTree() : null;
 };
 
 const Dialog = componentWithForwardedRef<
