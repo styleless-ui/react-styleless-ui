@@ -1,5 +1,16 @@
 import { isContainingBlock, isHTMLElement, isShadowRoot, isWindow } from "./is";
 
+export type ClientRect = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
+};
+
 export const getWindow = (node: Node | Window): Window => {
   if (!node) return window;
 
@@ -24,12 +35,9 @@ export const getNodeName = (node: Node | Window): string =>
 export const getParentNode = (node: Node): Node => {
   if (getNodeName(node) === "html") return node;
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return (
     // Step into the shadow DOM of the parent of a slotted node
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    node.assignedSlot ||
+    (<HTMLElement>node).assignedSlot ||
     // DOM Element detected
     node.parentNode ||
     // ShadowRoot detected
@@ -155,10 +163,9 @@ export const getViewportRect = (element: Element) => {
 };
 
 export const contains = (parent: Element, child: Element): boolean => {
-  const rootNode = child.getRootNode?.();
-
   if (parent.contains(child)) return true;
 
+  const rootNode = child.getRootNode?.();
   // Fallback to custom implementation with Shadow DOM support
   if (rootNode && isShadowRoot(rootNode)) {
     let next = child;
