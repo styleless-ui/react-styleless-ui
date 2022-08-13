@@ -1137,6 +1137,11 @@
   resolved "https://registry.yarnpkg.com/@utilityjs/use-is-mounted/-/use-is-mounted-1.0.2.tgz#917f24911e39f00d1d4f5f302e0730a1e938a48d"
   integrity sha512-Tx7jkxyP1xErArYY2gcdh0kyva6KU7l/ZZfN7PvzQ7QlV8EMEegTsvGPnGqg6eLl3f+fKV5QgRIFDCxYtM7IoA==
 
+"@utilityjs/use-is-server-handoff-complete@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@utilityjs/use-is-server-handoff-complete/-/use-is-server-handoff-complete-1.0.0.tgz#77d004298d82860ea5912fab0a32a49fd99b2c24"
+  integrity sha512-HcM6vO381JOnj0b3AnmgouDihGj6/88ZhGiJdT/A/puR/hii94arpTGQplWgR8n5pg1sTKD+K0mBLdv5NafT+g==
+
 "@utilityjs/use-isomorphic-layout-effect@^1.0.2":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@utilityjs/use-isomorphic-layout-effect/-/use-isomorphic-layout-effect-1.0.2.tgz#c354f6d3a1564b9946384f917f33cbb17f0272c1"

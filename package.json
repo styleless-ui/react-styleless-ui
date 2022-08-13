@@ -78,6 +78,7 @@
     "@utilityjs/use-event-listener": "^1.0.6",
     "@utilityjs/use-forked-refs": "^1.0.2",
     "@utilityjs/use-is-mounted": "^1.0.2",
+    "@utilityjs/use-is-server-handoff-complete": "^1.0.0",
     "@utilityjs/use-isomorphic-layout-effect": "^1.0.2",
     "@utilityjs/use-on-change": "^1.0.3",
     "@utilityjs/use-on-outside-click": "^1.0.5",
