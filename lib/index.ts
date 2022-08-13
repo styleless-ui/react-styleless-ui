@@ -8,6 +8,8 @@ export * from "./Dialog";
 export { default as Dialog } from "./Dialog";
 export * from "./FocusTrap";
 export { default as FocusTrap } from "./FocusTrap";
+export * from "./Popper";
+export { default as Popper } from "./Popper";
 export * from "./Portal";
 export { default as Portal } from "./Portal";
 export * from "./Radio";
