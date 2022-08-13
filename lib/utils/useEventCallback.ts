@@ -7,7 +7,7 @@ import * as React from "react";
  * https://github.com/facebook/react/issues/14099#issuecomment-440013892
  */
 const useEventCallback = <
-  E extends React.BaseSyntheticEvent,
+  E extends React.BaseSyntheticEvent | Event,
   T extends (event: E) => void = (event: E) => void
 >(
   fn: T
