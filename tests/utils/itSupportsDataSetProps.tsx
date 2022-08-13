@@ -9,7 +9,7 @@ const itSupportsDataSetProps = <T,>(
   selector?: string,
   options?: { withPortal?: boolean }
 ): void => {
-  it("supports dataset props", () => {
+  it("supports `data-*` props", () => {
     const { withPortal = false } = options ?? {};
 
     const getTarget = (container: HTMLElement): HTMLElement => {

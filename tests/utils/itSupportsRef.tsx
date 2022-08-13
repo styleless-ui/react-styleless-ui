@@ -6,19 +6,14 @@ import { render } from ".";
 const itSupportsRef = <T,>(
   Component: React.ComponentType<T>,
   requiredProps: T,
-  refType: unknown,
-  refProp = "ref"
+  refType: unknown
 ): void => {
-  it(
-    refProp ? `supports getting ref with ${refProp} prop` : "supports ref",
-    () => {
-      const ref = React.createRef<typeof refType>();
+  it(`supports forwarding ref`, () => {
+    const ref = React.createRef<typeof refType>();
 
-      render(<Component {...requiredProps} {...{ [refProp]: ref }} />);
-
-      expect(ref.current).toBeInstanceOf(refType);
-    }
-  );
+    render(<Component {...requiredProps} {...{ ref }} />);
+    expect(ref.current).toBeInstanceOf(refType);
+  });
 };
 
 export default itSupportsRef;
