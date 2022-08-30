@@ -115,6 +115,12 @@ interface PopperBaseProps {
     | HTMLElement
     | VirtualElement
     | string;
+  /**
+   * Used to keep mounting when more control is needed.\
+   * Useful when controlling animation with React animation libraries.
+   * @default false
+   */
+  keepMounted?: boolean;
 }
 
 export type PopperProps = Omit<
@@ -145,6 +151,15 @@ const translate = ({ x, y }: Coordinates) => {
   };
 };
 
+const getAnchor = (anchorElement: PopperProps["anchorElement"]) =>
+  typeof anchorElement === "string"
+    ? typeof document !== "undefined"
+      ? document.querySelector<HTMLElement>(anchorElement)
+      : null
+    : "current" in anchorElement
+    ? anchorElement.current
+    : anchorElement;
+
 const PopperBase = (props: PopperProps, ref: React.Ref<HTMLDivElement>) => {
   const {
     open,
@@ -157,6 +172,7 @@ const PopperBase = (props: PopperProps, ref: React.Ref<HTMLDivElement>) => {
     anchorElement,
     offset = 8,
     side = "top",
+    keepMounted = false,
     autoPlacement = false,
     alignment = "middle",
     positioningStrategy: strategy = "absolute",
@@ -186,15 +202,6 @@ const PopperBase = (props: PopperProps, ref: React.Ref<HTMLDivElement>) => {
     y: 0
   });
 
-  const anchor =
-    typeof anchorElement === "string"
-      ? typeof document !== "undefined"
-        ? document.querySelector<HTMLElement>(anchorElement)
-        : null
-      : "current" in anchorElement
-      ? anchorElement.current
-      : anchorElement;
-
   const { current: initialPlacement } = React.useRef<Placement>(
     alignment === "middle" ? side : `${side}-${alignment}`
   );
@@ -212,6 +219,8 @@ const PopperBase = (props: PopperProps, ref: React.Ref<HTMLDivElement>) => {
   };
 
   const updatePosition = () => {
+    const anchor = getAnchor(anchorElement);
+
     if (anchor && popperRef.current) {
       const position = computePosition(anchor, popperRef.current, config);
 
@@ -229,6 +238,8 @@ const PopperBase = (props: PopperProps, ref: React.Ref<HTMLDivElement>) => {
   }));
 
   useIsomorphicLayoutEffect(() => {
+    const anchor = getAnchor(anchorElement);
+
     if (!anchor) return;
     if (id && anchor instanceof HTMLElement)
       anchor.setAttribute("aria-describedby", id);
@@ -252,7 +263,7 @@ const PopperBase = (props: PopperProps, ref: React.Ref<HTMLDivElement>) => {
     updatePosition();
   });
 
-  return !open ? null : (
+  return keepMounted || (!keepMounted && open) ? (
     <Portal>
       <div
         data-slot="portal"
@@ -280,7 +291,7 @@ const PopperBase = (props: PopperProps, ref: React.Ref<HTMLDivElement>) => {
         </div>
       </div>
     </Portal>
-  );
+  ) : null;
 };
 
 const Popper = componentWithForwardedRef<
