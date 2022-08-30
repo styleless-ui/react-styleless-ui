@@ -11,3 +11,15 @@ export const visuallyHiddenCSSProperties = {
   clip: "rect(0, 0, 0, 0)",
   whiteSpace: "nowrap"
 } as CSSProperties;
+
+export const disableUserSelectCSSProperties = {
+  WebkitUserSelect: "none",
+  MozUserSelect: "none",
+  MsUserSelect: "none",
+  KhtmlUserSelect: "none",
+  userSelect: "none",
+  WebkitTouchCallout: "none",
+  MsTouchAction: "pan-y",
+  touchAction: "pan-y",
+  WebkitTapHighlightColor: "transparent"
+} as CSSProperties;

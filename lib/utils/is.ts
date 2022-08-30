@@ -49,6 +49,9 @@ export const isContainingBlock = (element: Element): boolean => {
     .includes("firefox");
 
   return (
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    css.backdropFilter !== "none" ||
     css.transform !== "none" ||
     css.perspective !== "none" ||
     css.contain === "paint" ||

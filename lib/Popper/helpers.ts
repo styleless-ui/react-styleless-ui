@@ -61,6 +61,8 @@ export type ComputationMiddlewareArgs = {
   elements: Elements;
   coordinates: Coordinates;
   placement: Placement;
+  strategy: Strategy;
+  overflow: Record<Side, number>;
 };
 export type ComputationMiddlewareResult = MiddlewareResult;
 export type ComputationMiddlewareOrder =
@@ -582,14 +584,13 @@ const suppressViewportOverflow = (
   excludeSides: Side[],
   args: {
     placement: Placement;
-    coordinates: Coordinates;
-    elements: Elements;
     elementRects: ElementRects;
-    strategy: Strategy;
     isRtl: boolean;
+    overflow: ComputationMiddlewareArgs["overflow"];
   }
 ) => {
-  const alignment = getAlignmentFromPlacement(args.placement);
+  const { overflow, placement, elementRects, isRtl } = args;
+  const alignment = getAlignmentFromPlacement(placement);
 
   const _getOppositeAlignment = (placement: Placement) =>
     placement.replace(
@@ -623,8 +624,6 @@ const suppressViewportOverflow = (
       )
     : placements.filter(_onlySides);
 
-  const overflow = detectBoundaryOverflow(args);
-
   const _findBestPlacement = (recursionData: {
     placementIndex: number;
     overflows: { placement: Placement; overflows: number[] }[];
@@ -634,8 +633,8 @@ const suppressViewportOverflow = (
 
     const { mainSide, crossSide } = getAlignmentSidesFromPlacement(
       currentPlacement,
-      args.elementRects,
-      args.isRtl
+      elementRects,
+      isRtl
     );
 
     const currentOverflows = [
@@ -723,12 +722,15 @@ export const computePosition = (
   middlewares.forEach(middleware => {
     let result: MiddlewareResult | undefined;
 
-    const middlewareArg: ComputationMiddlewareArgs = {
+    const args = {
       coordinates: { x, y },
-      placement: placement,
+      placement,
       elements,
-      elementRects
+      elementRects,
+      strategy
     };
+
+    const overflow = detectBoundaryOverflow(args);
 
     switch (middleware) {
       case "auto_placement": {
@@ -737,15 +739,16 @@ export const computePosition = (
             typeof autoPlacement === "object" ? autoPlacement.excludeSides : [];
 
           result = suppressViewportOverflow(excludeSides, {
-            ...middlewareArg,
-            strategy,
+            elementRects,
+            placement,
+            overflow,
             isRtl
           });
         }
         break;
       }
       case "custom_middleware": {
-        result = computationMiddleware?.(middlewareArg);
+        result = computationMiddleware?.({ ...args, overflow });
         break;
       }
       default:
@@ -755,15 +758,22 @@ export const computePosition = (
 
     if (result.placement) {
       placement = result.placement ?? placement;
-      ({ x, y } = calcCoordinatesFromPlacement({
+
+      const coords = calcCoordinatesFromPlacement({
         isRtl,
         offset,
         strategy,
         elements,
         placement,
         elementRects
-      }));
-    } else ({ x = x, y = y } = result.coordinates);
+      });
+
+      x = coords.x;
+      y = coords.y;
+    } else {
+      x = result.coordinates.x ?? x;
+      y = result.coordinates.y ?? y;
+    }
   });
 
   return { x, y, placement };
