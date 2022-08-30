@@ -42,13 +42,13 @@ interface MenuBaseProps {
    */
   open?: boolean;
   /**
-   * The Callback fires when user has clicked outside of the menu.
+   * Callback fired when a click interaction happens outside the component.
    */
   onOutsideClick?: (event: MouseEvent) => void;
   /**
-   * The Callback fires when escape key has pressed.
+   * Callback fired when the `Escape` key is released.
    */
-  onEscKeyPressed?: (event: KeyboardEvent) => void;
+  onEscapeKeyUp?: (event: KeyboardEvent) => void;
   /**
    * Used to prevent/allow keyboard navigation when more control is needed.
    * @default true
@@ -95,7 +95,7 @@ const MenuBase = (props: MenuProps, ref: React.Ref<HTMLDivElement>) => {
     disabledKeySearch = false,
     open = false,
     onOutsideClick,
-    onEscKeyPressed,
+    onEscapeKeyUp,
     shouldActivateKeyboardNavigation,
     ...otherProps
   } = props;
@@ -194,7 +194,7 @@ const MenuBase = (props: MenuProps, ref: React.Ref<HTMLDivElement>) => {
         target: document,
         eventType: "keyup",
         handler: useEventCallback<KeyboardEvent>(event =>
-          onEscKeyPressed?.(event)
+          onEscapeKeyUp?.(event)
         )
       },
       open && isMenuActive
