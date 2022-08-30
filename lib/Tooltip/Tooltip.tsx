@@ -147,11 +147,11 @@ const TooltipBase = (props: TooltipProps, ref: React.Ref<HTMLDivElement>) => {
     if (!event.target) return;
     if (!anchor) return;
     if (anchor === event.target) return;
-    if (!(anchor instanceof HTMLElement)) return;
-    if (!contains(anchor, event.target as HTMLElement)) return;
     if (!tooltipRef.current) return;
     if (tooltipRef.current === event.target) return;
-    if (!contains(tooltipRef.current, event.target as HTMLElement)) return;
+    if (!(anchor instanceof HTMLElement)) return;
+    if (contains(anchor, event.target as HTMLElement)) return;
+    if (contains(tooltipRef.current, event.target as HTMLElement)) return;
 
     onOutsideClick?.(event);
   });
