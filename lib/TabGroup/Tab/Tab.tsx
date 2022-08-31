@@ -66,6 +66,10 @@ const TabBase = (props: TabProps, ref: React.Ref<HTMLButtonElement>) => {
 
   const id = useDeterministicId(idProp, "styleless-ui__tab");
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const index = Number(otherProps["data-index"] as string);
+
   const buttonBase = useButtonBase({
     disabled,
     onBlur,
@@ -75,8 +79,7 @@ const TabBase = (props: TabProps, ref: React.Ref<HTMLButtonElement>) => {
       event => {
         if (tabGroupCtx) {
           const { tabs, keyboardActivationBehavior, orientation } = tabGroupCtx;
-
-          const currentTab = tabs[index].current;
+          const currentTab = tabs[index]?.current;
 
           if (!currentTab || document.activeElement !== currentTab)
             return onKeyDown?.(event);
@@ -156,10 +159,6 @@ const TabBase = (props: TabProps, ref: React.Ref<HTMLButtonElement>) => {
   const handleRef = useForkedRefs(ref, rootRef, buttonBase.handleButtonRef);
 
   tabGroupCtx?.register(rootRef);
-
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  const index = Number(otherProps["data-index"] as string);
 
   const selected = tabGroupCtx ? tabGroupCtx.activeTab === index : false;
 

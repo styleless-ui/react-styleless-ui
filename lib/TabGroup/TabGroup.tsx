@@ -89,10 +89,11 @@ const TabGroupBase = (props: TabGroupProps, ref: React.Ref<HTMLDivElement>) => {
     if (!ref.current) return;
 
     if (ref.current instanceof HTMLDivElement) {
-      if (!panels.some(r => r.current === ref.current))
-        panels.push(ref as typeof panels[number]);
-    } else if (!tabs.some(r => r.current === ref.current)) {
-      tabs.push(ref as typeof tabs[number]);
+      const idx = panels.findIndex(r => r.current === ref.current);
+      if (idx < 0) panels.push(ref as typeof panels[number]);
+    } else {
+      const idx = tabs.findIndex(r => r.current === ref.current);
+      if (idx < 0) tabs.push(ref as typeof tabs[number]);
     }
   };
 
