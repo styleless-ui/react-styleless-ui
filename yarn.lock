@@ -1100,15 +1100,15 @@
     "@typescript-eslint/types" "5.30.7"
     eslint-visitor-keys "^3.3.0"
 
-"@utilityjs/use-controlled-prop@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@utilityjs/use-controlled-prop/-/use-controlled-prop-1.1.1.tgz#b8b2deba372be1810212483fe132a1498bd53ab4"
-  integrity sha512-3qCjQgSd2JgmHdnYxKezh0V/XTUqXpDdV3RmbsQCZnmYpxNII3jWHob5+AjR+UPq0DROZ6D2QVGDPon8hrpDrQ==
+"@utilityjs/use-controlled-prop@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@utilityjs/use-controlled-prop/-/use-controlled-prop-1.1.2.tgz#67bf5695a35102d72153e252bf4d64c7dca3cfda"
+  integrity sha512-6G/Nfcg/yPEDD052mFoZgSTGD79eR4018XeW9GXROST+F1b1GyGI62XQnSZj5+d7iYRTYq09eF6vFzRIrhpQpg==
 
-"@utilityjs/use-deterministic-id@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@utilityjs/use-deterministic-id/-/use-deterministic-id-1.1.0.tgz#60aa777e519ba6484a16523b36d431ce9cedd28a"
-  integrity sha512-GAUze5nY1bIi1LvExfsdOmtpDq5YyuKC402PprOStgqed6PhdikM8rI3QFNwA9w2e69+fzoXvbKDmj7tHyyLZw==
+"@utilityjs/use-deterministic-id@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@utilityjs/use-deterministic-id/-/use-deterministic-id-1.2.0.tgz#166a19d1b7a1ce0e9d8f6943177a782186959951"
+  integrity sha512-roRcxSXygzfzBqjAMvwUO1FUlXgHbSXC4gV0L0fpxg5rO7xb+CwCkT+ycRLr+lhcXnHA6mzYBVG3QFrc5Otcqw==
 
 "@utilityjs/use-event-listener@^1.0.6":
   version "1.0.6"

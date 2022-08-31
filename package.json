@@ -74,8 +74,8 @@
     "react-dom": ">=17"
   },
   "dependencies": {
-    "@utilityjs/use-controlled-prop": "^1.1.1",
-    "@utilityjs/use-deterministic-id": "^1.1.0",
+    "@utilityjs/use-controlled-prop": "^1.1.2",
+    "@utilityjs/use-deterministic-id": "^1.2.0",
     "@utilityjs/use-event-listener": "^1.0.6",
     "@utilityjs/use-forked-refs": "^1.0.2",
     "@utilityjs/use-is-mounted": "^1.0.2",
