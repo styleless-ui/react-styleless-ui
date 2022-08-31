@@ -1,4 +1,3 @@
-import cls from "classnames";
 import * as React from "react";
 import { type ClassesMap, type MergeElementProps } from "../typings.d";
 import {
@@ -119,6 +118,18 @@ const getLabelInfo = (labelInput: SwitchProps["label"]) => {
   return props;
 };
 
+const mergeClasses = (
+  ...classNames: Array<string | undefined>
+): string | undefined =>
+  classNames.reduce((result, className) => {
+    if (typeof result === "undefined")
+      return typeof className !== "undefined" ? className : undefined;
+    else if (typeof className !== "undefined")
+      return result + " " + className.trim();
+
+    return result;
+  }, undefined);
+
 const SwitchBase = (props: SwitchProps, ref: React.Ref<HTMLButtonElement>) => {
   const {
     label,
@@ -222,10 +233,16 @@ const SwitchBase = (props: SwitchProps, ref: React.Ref<HTMLButtonElement>) => {
         aria-labelledby={labelProps.labelledBy}
       >
         {React.cloneElement(trackComponent, {
-          className: cls(trackComponent.props.className, classes?.track)
+          className: mergeClasses(
+            trackComponent.props.className,
+            classes?.track
+          )
         })}
         {React.cloneElement(thumbComponent, {
-          className: cls(thumbComponent.props.className, classes?.thumb)
+          className: mergeClasses(
+            thumbComponent.props.className,
+            classes?.thumb
+          )
         })}
       </button>
     </>

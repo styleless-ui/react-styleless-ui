@@ -47,6 +47,7 @@
     "@types/rimraf": "^3.0.2",
     "@typescript-eslint/eslint-plugin": "^5.30.6",
     "@typescript-eslint/parser": "^5.30.6",
+    "classnames": "^2.3.1",
     "eslint": "^8.20.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.26.0",
@@ -85,8 +86,6 @@
     "@utilityjs/use-previous-value": "^1.0.1",
     "@utilityjs/use-register-node-ref": "^1.1.0",
     "@utilityjs/use-scroll-guard": "^1.0.0",
-    "classnames": "^2.3.1",
-    "prop-types": "^15.8.1",
     "react-is": "^18.2.0"
   }
 }

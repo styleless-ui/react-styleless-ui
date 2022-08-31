@@ -1,4 +1,3 @@
-import cls from "classnames";
 import * as React from "react";
 import RadioGroupContext from "../RadioGroup/context";
 import { type ClassesMap, type MergeElementProps } from "../typings.d";
@@ -129,6 +128,18 @@ const _DefaultCheck = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const mergeClasses = (
+  ...classNames: Array<string | undefined>
+): string | undefined =>
+  classNames.reduce((result, className) => {
+    if (typeof result === "undefined")
+      return typeof className !== "undefined" ? className : undefined;
+    else if (typeof className !== "undefined")
+      return result + " " + className.trim();
+
+    return result;
+  }, undefined);
+
 const RadioBase = (props: RadioProps, ref: React.Ref<HTMLButtonElement>) => {
   const {
     label,
@@ -246,7 +257,10 @@ const RadioBase = (props: RadioProps, ref: React.Ref<HTMLButtonElement>) => {
         {checkBase.checked &&
           (checkComponent ? (
             React.cloneElement(checkComponent, {
-              className: cls(checkComponent.props.className, classes?.check)
+              className: mergeClasses(
+                checkComponent.props.className,
+                classes?.check
+              )
             })
           ) : (
             <_DefaultCheck className={classes?.check} />
