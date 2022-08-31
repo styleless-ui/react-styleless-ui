@@ -392,15 +392,17 @@ describe("Menu", () => {
     render(
       <Menu open>
         <MenuItems label={{ screenReaderLabel: "Menu 0" }}>
-          <MenuRadioItem disabled value="0" onSelect={handleOnSelect}>
-            Item 0
-          </MenuRadioItem>
-          <MenuRadioItem value="1" onSelect={handleOnSelect}>
-            Item 1
-          </MenuRadioItem>
-          <MenuRadioItem value="2" onSelect={handleOnSelect}>
-            Item 2
-          </MenuRadioItem>
+          <MenuRadioGroup label="Group 0">
+            <MenuRadioItem disabled value="0" onSelect={handleOnSelect}>
+              Item 0
+            </MenuRadioItem>
+            <MenuRadioItem value="1" onSelect={handleOnSelect}>
+              Item 1
+            </MenuRadioItem>
+            <MenuRadioItem value="2" onSelect={handleOnSelect}>
+              Item 2
+            </MenuRadioItem>
+          </MenuRadioGroup>
         </MenuItems>
       </Menu>
     );
