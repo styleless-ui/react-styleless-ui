@@ -114,7 +114,7 @@ const TooltipBase = (props: TooltipProps, ref: React.Ref<HTMLDivElement>) => {
     );
   }
 
-  const anchor =
+  const getAnchor = (anchorElement: TooltipProps["anchorElement"]) =>
     typeof anchorElement === "string"
       ? typeof document !== "undefined"
         ? document.querySelector<HTMLElement>(anchorElement)
@@ -151,6 +151,8 @@ const TooltipBase = (props: TooltipProps, ref: React.Ref<HTMLDivElement>) => {
   });
 
   const outsideClickHandler = useEventCallback<MouseEvent>(event => {
+    const anchor = getAnchor(anchorElement);
+
     if (!event.target) return;
     if (!anchor) return;
     if (anchor === event.target) return;
@@ -164,6 +166,8 @@ const TooltipBase = (props: TooltipProps, ref: React.Ref<HTMLDivElement>) => {
   });
 
   if (typeof document !== "undefined") {
+    const anchor = getAnchor(anchorElement);
+
     /* eslint-disable react-hooks/rules-of-hooks */
     useEventListener(
       {
@@ -245,9 +249,7 @@ const TooltipBase = (props: TooltipProps, ref: React.Ref<HTMLDivElement>) => {
       autoPlacement={behavior === "follow-mouse" ? false : autoPlacement}
       offset={behavior === "follow-mouse" ? 32 : undefined}
       anchorElement={
-        behavior === "follow-mouse"
-          ? createVirtualElement()
-          : anchor ?? "anchor"
+        behavior === "follow-mouse" ? createVirtualElement() : anchorElement
       }
     >
       {children}
