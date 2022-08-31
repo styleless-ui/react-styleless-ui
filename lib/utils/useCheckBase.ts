@@ -151,7 +151,7 @@ const useCheckBase = (props: CheckBaseProps) => {
         const { radios } = <IRadioGroupContext>groupCtx;
         const currentRadiosIdx = radios.findIndex(r => r[0] === value);
 
-        const currentRadio = radios[currentRadiosIdx][1].current;
+        const currentRadio = radios[currentRadiosIdx]?.[1].current;
 
         const dir = currentRadio
           ? window.getComputedStyle(currentRadio).direction

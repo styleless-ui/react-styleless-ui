@@ -322,7 +322,7 @@ describe("Menu", () => {
       await userEvent.click(item);
       if (!isDisabled) {
         calls++;
-        expect(handleOnSelect.mock.calls[0][0]).not.toBeFalsy();
+        expect(handleOnSelect.mock.calls[0]?.[0]).not.toBeFalsy();
       }
 
       expect(handleOnSelect.mock.calls.length).toBe(calls);
@@ -373,8 +373,8 @@ describe("Menu", () => {
       await userEvent.click(item);
       if (!isDisabled) {
         calls++;
-        expect(handleOnSelect.mock.calls[0][0]).not.toBeFalsy();
-        expect(handleOnCheckChange.mock.calls[0][0]).toBe(true);
+        expect(handleOnSelect.mock.calls[0]?.[0]).not.toBeFalsy();
+        expect(handleOnCheckChange.mock.calls[0]?.[0]).toBe(true);
       }
 
       expect(handleOnSelect.mock.calls.length).toBe(calls);
@@ -416,7 +416,7 @@ describe("Menu", () => {
       await userEvent.click(item);
       if (!isDisabled) {
         calls++;
-        expect(handleOnSelect.mock.calls[0][0]).not.toBeFalsy();
+        expect(handleOnSelect.mock.calls[0]?.[0]).not.toBeFalsy();
       }
 
       expect(handleOnSelect.mock.calls.length).toBe(calls);
@@ -443,15 +443,19 @@ describe("Menu", () => {
 
     const items = screen.getAllByRole("menuitemradio");
 
-    await userEvent.click(items[1]);
-    expect(items[1]).toBeChecked();
-    expect(handleOnValueChange.mock.calls.length).toBe(1);
-    expect(handleOnValueChange.mock.calls[0][0]).toBe("1");
+    if (items[1]) {
+      await userEvent.click(items[1]);
+      expect(items[1]).toBeChecked();
+      expect(handleOnValueChange.mock.calls.length).toBe(1);
+      expect(handleOnValueChange.mock.calls[0]?.[0]).toBe("1");
+    }
 
-    await userEvent.click(items[2]);
-    expect(items[2]).toBeChecked();
-    expect(handleOnValueChange.mock.calls.length).toBe(2);
-    expect(handleOnValueChange.mock.calls[1][0]).toBe("2");
+    if (items[2]) {
+      await userEvent.click(items[2]);
+      expect(items[2]).toBeChecked();
+      expect(handleOnValueChange.mock.calls.length).toBe(2);
+      expect(handleOnValueChange.mock.calls[1]?.[0]).toBe("2");
+    }
   });
 
   it("clicks outside of the component and calls `onOutsideClick` callback", async () => {
@@ -468,7 +472,7 @@ describe("Menu", () => {
     await userEvent.click(screen.getByTestId("btn"));
 
     expect(handleOutsideClick.mock.calls.length).toBe(1);
-    expect(handleOutsideClick.mock.calls[0][0]).not.toBeFalsy();
+    expect(handleOutsideClick.mock.calls[0]?.[0]).not.toBeFalsy();
   });
 
   it("presses the Escape key and calls `onEscapeKeyUp` callback", async () => {
@@ -480,6 +484,6 @@ describe("Menu", () => {
     await userEvent.keyboard("[Escape]");
 
     expect(handleEscapeKeyUp.mock.calls.length).toBe(1);
-    expect(handleEscapeKeyUp.mock.calls[0][0]).not.toBeFalsy();
+    expect(handleEscapeKeyUp.mock.calls[0]?.[0]).not.toBeFalsy();
   });
 });

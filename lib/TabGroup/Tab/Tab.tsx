@@ -118,7 +118,7 @@ const TabBase = (props: TabProps, ref: React.Ref<HTMLButtonElement>) => {
 
             if (prevIdxs.includes(idx)) return null;
 
-            if (!tabRef.current || tabRef.current.disabled) {
+            if (!tabRef?.current || tabRef.current.disabled) {
               const newIdx =
                 (forward ? idx + 1 : idx - 1 + tabs.length) % tabs.length;
               return getAvailableTab(newIdx, forward, [...prevIdxs, idx]);

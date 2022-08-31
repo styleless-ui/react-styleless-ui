@@ -128,7 +128,7 @@ const RadioGroupBase = (
       radios.push([inputValue, radioRef]);
 
     return value.length === 0
-      ? radios[0][0]
+      ? radios[0]?.[0]
       : radios.find(r => r[0] === value)?.[0];
   };
 

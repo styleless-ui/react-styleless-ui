@@ -45,19 +45,23 @@ describe("TabGroup", () => {
 
     const tabs = screen.getAllByRole("tab");
 
-    await userEvent.click(tabs[0]);
+    if (tabs[0]) {
+      await userEvent.click(tabs[0]);
 
-    expect(handleChange.mock.calls.length).toBe(1);
-    expect(handleChange.mock.calls[0][0]).toBe(0);
-    expect(screen.getAllByRole("tabpanel").length).toBe(1);
-    expect(screen.getByRole("tabpanel")).toHaveTextContent(/panel 1/i);
+      expect(handleChange.mock.calls.length).toBe(1);
+      expect(handleChange.mock.calls[0]?.[0]).toBe(0);
+      expect(screen.getAllByRole("tabpanel").length).toBe(1);
+      expect(screen.getByRole("tabpanel")).toHaveTextContent(/panel 1/i);
+    }
 
-    await userEvent.click(tabs[2]);
+    if (tabs[2]) {
+      await userEvent.click(tabs[2]);
 
-    expect(handleChange.mock.calls.length).toBe(2);
-    expect(handleChange.mock.calls[1][0]).toBe(2);
-    expect(screen.getAllByRole("tabpanel").length).toBe(1);
-    expect(screen.getByRole("tabpanel")).toHaveTextContent(/panel 3/i);
+      expect(handleChange.mock.calls.length).toBe(2);
+      expect(handleChange.mock.calls[1]?.[0]).toBe(2);
+      expect(screen.getAllByRole("tabpanel").length).toBe(1);
+      expect(screen.getByRole("tabpanel")).toHaveTextContent(/panel 3/i);
+    }
   });
 
   it("selects tabs with keyboard interactions and calls `onChange` callback", async () => {
@@ -81,21 +85,21 @@ describe("TabGroup", () => {
 
     const tabs = screen.getAllByRole("tab");
 
-    act(() => void tabs[0].focus());
+    act(() => void tabs[0]?.focus());
     expect(tabs[0]).toHaveFocus();
     await userEvent.keyboard("[Space]");
 
     expect(handleChange.mock.calls.length).toBe(1);
-    expect(handleChange.mock.calls[0][0]).toBe(0);
+    expect(handleChange.mock.calls[0]?.[0]).toBe(0);
     expect(screen.getAllByRole("tabpanel").length).toBe(1);
     expect(screen.getByRole("tabpanel")).toHaveTextContent(/panel 1/i);
 
-    act(() => void tabs[2].focus());
+    act(() => void tabs[2]?.focus());
     expect(tabs[2]).toHaveFocus();
     await userEvent.keyboard("[Space]");
 
     expect(handleChange.mock.calls.length).toBe(2);
-    expect(handleChange.mock.calls[1][0]).toBe(2);
+    expect(handleChange.mock.calls[1]?.[0]).toBe(2);
     expect(screen.getAllByRole("tabpanel").length).toBe(1);
     expect(screen.getByRole("tabpanel")).toHaveTextContent(/panel 3/i);
   });

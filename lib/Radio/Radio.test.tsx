@@ -85,7 +85,7 @@ describe("Radio", () => {
 
     expect(radio).toBeChecked();
     expect(handleChange.mock.calls.length).toBe(1);
-    expect(handleChange.mock.calls[0][0]).toBe(true);
+    expect(handleChange.mock.calls[0]?.[0]).toBe(true);
 
     handleChange.mockClear();
     unmount();
@@ -100,7 +100,7 @@ describe("Radio", () => {
 
     expect(radio).toBeChecked();
     expect(handleChange.mock.calls.length).toBe(1);
-    expect(handleChange.mock.calls[0][0]).toBe(true);
+    expect(handleChange.mock.calls[0]?.[0]).toBe(true);
   });
 
   it("supports custom check component", () => {

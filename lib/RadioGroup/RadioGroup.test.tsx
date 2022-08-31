@@ -76,17 +76,21 @@ describe("RadioGroup", () => {
 
     const radios = screen.getAllByRole("radio");
 
-    await userEvent.click(radios[0]);
+    if (radios[0]) {
+      await userEvent.click(radios[0]);
 
-    expect(radios[0]).toBeChecked();
-    expect(handleChange.mock.calls.length).toBe(1);
-    expect(handleChange.mock.calls[0][0]).toBe("0");
+      expect(radios[0]).toBeChecked();
+      expect(handleChange.mock.calls.length).toBe(1);
+      expect(handleChange.mock.calls[0]?.[0]).toBe("0");
+    }
 
-    await userEvent.click(radios[3]);
+    if (radios[3]) {
+      await userEvent.click(radios[3]);
 
-    expect(radios[3]).toBeChecked();
-    expect(handleChange.mock.calls.length).toBe(2);
-    expect(handleChange.mock.calls[1][0]).toBe("3");
+      expect(radios[3]).toBeChecked();
+      expect(handleChange.mock.calls.length).toBe(2);
+      expect(handleChange.mock.calls[1]?.[0]).toBe("3");
+    }
   });
 
   it("selects radios with keyboard interactions and calls `onChange` callback", async () => {
@@ -104,20 +108,20 @@ describe("RadioGroup", () => {
 
     const radios = screen.getAllByRole("radio");
 
-    act(() => void radios[0].focus());
+    act(() => void radios[0]?.focus());
     expect(radios[0]).toHaveFocus();
     await userEvent.keyboard("[Space]");
 
     expect(radios[0]).toBeChecked();
     expect(handleChange.mock.calls.length).toBe(1);
-    expect(handleChange.mock.calls[0][0]).toBe("0");
+    expect(handleChange.mock.calls[0]?.[0]).toBe("0");
 
-    act(() => void radios[3].focus());
+    act(() => void radios[3]?.focus());
     expect(radios[3]).toHaveFocus();
     await userEvent.keyboard("[Space]");
 
     expect(radios[3]).toBeChecked();
     expect(handleChange.mock.calls.length).toBe(2);
-    expect(handleChange.mock.calls[1][0]).toBe("3");
+    expect(handleChange.mock.calls[1]?.[0]).toBe("3");
   });
 });

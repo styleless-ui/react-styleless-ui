@@ -88,13 +88,13 @@ describe("Switch", () => {
 
     expect(sw).toBeChecked();
     expect(handleChange.mock.calls.length).toBe(1);
-    expect(handleChange.mock.calls[0][0]).toBe(true);
+    expect(handleChange.mock.calls[0]?.[0]).toBe(true);
 
     await userEvent.click(sw);
 
     expect(sw).not.toBeChecked();
     expect(handleChange.mock.calls.length).toBe(2);
-    expect(handleChange.mock.calls[1][0]).toBe(false);
+    expect(handleChange.mock.calls[1]?.[0]).toBe(false);
 
     handleChange.mockClear();
 
@@ -105,13 +105,13 @@ describe("Switch", () => {
 
     expect(sw).toBeChecked();
     expect(handleChange.mock.calls.length).toBe(1);
-    expect(handleChange.mock.calls[0][0]).toBe(true);
+    expect(handleChange.mock.calls[0]?.[0]).toBe(true);
 
     await userEvent.keyboard("[Space]");
 
     expect(sw).not.toBeChecked();
     expect(handleChange.mock.calls.length).toBe(2);
-    expect(handleChange.mock.calls[1][0]).toBe(false);
+    expect(handleChange.mock.calls[1]?.[0]).toBe(false);
   });
 
   it("supports custom thumb component", () => {

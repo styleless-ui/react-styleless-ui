@@ -73,29 +73,37 @@ describe("CheckGroup", () => {
 
     const boxes = screen.getAllByRole("checkbox");
 
-    await userEvent.click(boxes[0]);
+    if (boxes[0]) {
+      await userEvent.click(boxes[0]);
 
-    expect(boxes[0]).toBeChecked();
-    expect(handleChange.mock.calls.length).toBe(1);
-    expect(handleChange.mock.calls[0].join()).toBe("0");
+      expect(boxes[0]).toBeChecked();
+      expect(handleChange.mock.calls.length).toBe(1);
+      expect(handleChange.mock.calls[0]?.join()).toBe("0");
+    }
 
-    await userEvent.click(boxes[3]);
+    if (boxes[3]) {
+      await userEvent.click(boxes[3]);
 
-    expect(boxes[3]).toBeChecked();
-    expect(handleChange.mock.calls.length).toBe(2);
-    expect(handleChange.mock.calls[1].join()).toBe("0,3");
+      expect(boxes[3]).toBeChecked();
+      expect(handleChange.mock.calls.length).toBe(2);
+      expect(handleChange.mock.calls[1]?.join()).toBe("0,3");
+    }
 
-    await userEvent.click(boxes[0]);
+    if (boxes[0]) {
+      await userEvent.click(boxes[0]);
 
-    expect(boxes[0]).not.toBeChecked();
-    expect(handleChange.mock.calls.length).toBe(3);
-    expect(handleChange.mock.calls[2].join()).toBe("3");
+      expect(boxes[0]).not.toBeChecked();
+      expect(handleChange.mock.calls.length).toBe(3);
+      expect(handleChange.mock.calls[2]?.join()).toBe("3");
+    }
 
-    await userEvent.click(boxes[3]);
+    if (boxes[3]) {
+      await userEvent.click(boxes[3]);
 
-    expect(boxes[3]).not.toBeChecked();
-    expect(handleChange.mock.calls.length).toBe(4);
-    expect(handleChange.mock.calls[3].join()).toBe("");
+      expect(boxes[3]).not.toBeChecked();
+      expect(handleChange.mock.calls.length).toBe(4);
+      expect(handleChange.mock.calls[3]?.join()).toBe("");
+    }
   });
 
   it("toggles `checked` state with keyboard interactions and calls `onChange` callback", async () => {
@@ -113,36 +121,36 @@ describe("CheckGroup", () => {
 
     const boxes = screen.getAllByRole("checkbox");
 
-    act(() => void boxes[0].focus());
+    act(() => void boxes[0]?.focus());
     expect(boxes[0]).toHaveFocus();
     await userEvent.keyboard("[Space]");
 
     expect(boxes[0]).toBeChecked();
     expect(handleChange.mock.calls.length).toBe(1);
-    expect(handleChange.mock.calls[0].join()).toBe("0");
+    expect(handleChange.mock.calls[0]?.join()).toBe("0");
 
-    act(() => void boxes[3].focus());
+    act(() => void boxes[3]?.focus());
     expect(boxes[3]).toHaveFocus();
     await userEvent.keyboard("[Space]");
 
     expect(boxes[3]).toBeChecked();
     expect(handleChange.mock.calls.length).toBe(2);
-    expect(handleChange.mock.calls[1].join()).toBe("0,3");
+    expect(handleChange.mock.calls[1]?.join()).toBe("0,3");
 
-    act(() => void boxes[0].focus());
+    act(() => void boxes[0]?.focus());
     expect(boxes[0]).toHaveFocus();
     await userEvent.keyboard("[Space]");
 
     expect(boxes[0]).not.toBeChecked();
     expect(handleChange.mock.calls.length).toBe(3);
-    expect(handleChange.mock.calls[2].join()).toBe("3");
+    expect(handleChange.mock.calls[2]?.join()).toBe("3");
 
-    act(() => void boxes[3].focus());
+    act(() => void boxes[3]?.focus());
     expect(boxes[3]).toHaveFocus();
     await userEvent.keyboard("[Space]");
 
     expect(boxes[3]).not.toBeChecked();
     expect(handleChange.mock.calls.length).toBe(4);
-    expect(handleChange.mock.calls[3].join()).toBe("");
+    expect(handleChange.mock.calls[3]?.join()).toBe("");
   });
 });

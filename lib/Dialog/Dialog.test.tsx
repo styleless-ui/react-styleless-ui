@@ -92,7 +92,7 @@ describe("Dialog", () => {
     rerender(<Dialog {...props} open={true}></Dialog>);
 
     expect(handleOnOpen.mock.calls.length).toBe(1);
-    expect(handleOnOpen.mock.calls[0].length).toBe(0);
+    expect(handleOnOpen.mock.calls[0]?.length).toBe(0);
 
     expect(handleOnClose.mock.calls.length).toBe(0);
   });
@@ -113,7 +113,7 @@ describe("Dialog", () => {
     rerender(<Dialog {...props} open={false}></Dialog>);
 
     expect(handleOnClose.mock.calls.length).toBe(1);
-    expect(handleOnClose.mock.calls[0].length).toBe(0);
+    expect(handleOnClose.mock.calls[0]?.length).toBe(0);
 
     expect(handleOnOpen.mock.calls.length).toBe(0);
   });
@@ -165,7 +165,7 @@ describe("Dialog", () => {
     await userEvent.click(backdrop!);
 
     expect(handleBackdropClick.mock.calls.length).toBe(1);
-    expect(handleBackdropClick.mock.calls[0][0]).not.toBeFalsy();
+    expect(handleBackdropClick.mock.calls[0]?.[0]).not.toBeFalsy();
   });
 
   it("presses the Escape key and calls `onEscapeKeyUp` callback", async () => {
@@ -179,6 +179,6 @@ describe("Dialog", () => {
     await userEvent.keyboard("[Escape]");
 
     expect(handleEscapeKeyUp.mock.calls.length).toBe(1);
-    expect(handleEscapeKeyUp.mock.calls[0][0]).not.toBeFalsy();
+    expect(handleEscapeKeyUp.mock.calls[0]?.[0]).not.toBeFalsy();
   });
 });

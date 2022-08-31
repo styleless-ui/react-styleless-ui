@@ -228,9 +228,10 @@ const MenuBase = (props: MenuProps, ref: React.Ref<HTMLDivElement>) => {
           ): React.RefObject<HTMLDivElement> | null => {
             const itemRef = items[idx];
 
+            if (!itemRef) return null;
             if (prevIdxs.includes(idx)) return null;
 
-            if (itemRef?.current?.getAttribute("aria-disabled") === "true") {
+            if (itemRef.current?.getAttribute("aria-disabled") === "true") {
               const newIdx =
                 (forward ? idx + 1 : idx - 1 + items.length) % items.length;
 
@@ -302,12 +303,13 @@ const MenuBase = (props: MenuProps, ref: React.Ref<HTMLDivElement>) => {
                   const nextIdx =
                     searchOccurrences.current[
                       (occIdx + 1) % searchOccurrences.current.length
-                    ][1];
-                  setActiveElement(items[nextIdx].current);
-                } else {
+                    ]?.[1];
                   setActiveElement(
-                    items[searchOccurrences?.current[0]?.[1]].current
+                    nextIdx ? items[nextIdx]?.current ?? null : null
                   );
+                } else {
+                  const idx = searchOccurrences?.current[0]?.[1];
+                  setActiveElement(idx ? items[idx]?.current ?? null : null);
                 }
               }
             } else {
@@ -324,9 +326,8 @@ const MenuBase = (props: MenuProps, ref: React.Ref<HTMLDivElement>) => {
               }, [] as Array<[React.RefObject<HTMLDivElement>, number]>);
 
               if (searchOccurrences.current.length) {
-                setActiveElement(
-                  items[searchOccurrences.current[0][1]].current
-                );
+                const idx = searchOccurrences.current[0]?.[1];
+                setActiveElement(idx ? items[idx]?.current ?? null : null);
               }
             }
 

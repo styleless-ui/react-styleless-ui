@@ -105,7 +105,7 @@ describe("Expandable", () => {
     rerender(<Expandable {...props} expanded={true} />);
 
     expect(handleOnExpand.mock.calls.length).toBe(1);
-    expect(handleOnExpand.mock.calls[0].length).toBe(0);
+    expect(handleOnExpand.mock.calls[0]?.length).toBe(0);
 
     expect(handleOnCollapse.mock.calls.length).toBe(0);
   });
@@ -125,7 +125,7 @@ describe("Expandable", () => {
     rerender(<Expandable {...props} expanded={false} />);
 
     expect(handleOnCollapse.mock.calls.length).toBe(1);
-    expect(handleOnCollapse.mock.calls[0].length).toBe(0);
+    expect(handleOnCollapse.mock.calls[0]?.length).toBe(0);
 
     expect(handleOnExpand.mock.calls.length).toBe(0);
   });
@@ -156,14 +156,14 @@ describe("Expandable", () => {
     await userEvent.click(trigger);
 
     expect(handleOnExpand.mock.calls.length).toBe(1);
-    expect(handleOnExpand.mock.calls[0].length).toBe(0);
+    expect(handleOnExpand.mock.calls[0]?.length).toBe(0);
 
     expect(handleOnCollapse.mock.calls.length).toBe(0);
 
     await userEvent.click(trigger);
 
     expect(handleOnCollapse.mock.calls.length).toBe(1);
-    expect(handleOnCollapse.mock.calls[0].length).toBe(0);
+    expect(handleOnCollapse.mock.calls[0]?.length).toBe(0);
 
     expect(handleOnExpand.mock.calls.length).toBe(1);
   });
@@ -196,7 +196,7 @@ describe("Expandable", () => {
     await userEvent.keyboard("[Space]");
 
     expect(handleOnExpand.mock.calls.length).toBe(1);
-    expect(handleOnExpand.mock.calls[0].length).toBe(0);
+    expect(handleOnExpand.mock.calls[0]?.length).toBe(0);
 
     expect(handleOnCollapse.mock.calls.length).toBe(0);
 
@@ -205,7 +205,7 @@ describe("Expandable", () => {
     await userEvent.keyboard("[Space]");
 
     expect(handleOnCollapse.mock.calls.length).toBe(1);
-    expect(handleOnCollapse.mock.calls[0].length).toBe(0);
+    expect(handleOnCollapse.mock.calls[0]?.length).toBe(0);
 
     expect(handleOnExpand.mock.calls.length).toBe(1);
   });

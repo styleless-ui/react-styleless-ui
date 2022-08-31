@@ -267,7 +267,8 @@ const getClippingRect = (element: Element): Rect => {
     "viewport" as const
   ];
 
-  const firstClippingAncestor = clippingAncestors[0];
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const firstClippingAncestor = clippingAncestors[0]!;
 
   const clippingRect = clippingAncestors.reduce((result, clippingAncestor) => {
     const rect = _getClientRectFromClippingAncestor(element, clippingAncestor);
@@ -629,7 +630,9 @@ const suppressViewportOverflow = (
     overflows: { placement: Placement; overflows: number[] }[];
   }): MiddlewareResult => {
     const { placementIndex, overflows } = recursionData;
-    const currentPlacement = placementsSortedByAlignment[placementIndex];
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const currentPlacement = placementsSortedByAlignment[placementIndex]!;
 
     const { mainSide, crossSide } = getAlignmentSidesFromPlacement(
       currentPlacement,
@@ -661,7 +664,7 @@ const suppressViewportOverflow = (
 
     const placementsSortedByLeastOverflow = allOverflows
       .slice()
-      .sort((a, b) => a.overflows[0] - b.overflows[0]);
+      .sort((a, b) => (a.overflows[0] ?? 0) - (b.overflows[0] ?? 0));
 
     const placementThatFitsOnAllSides = placementsSortedByLeastOverflow.find(
       ({ overflows }) => overflows.every(overflow => overflow <= 0)
@@ -670,7 +673,8 @@ const suppressViewportOverflow = (
     return {
       placement:
         placementThatFitsOnAllSides ??
-        placementsSortedByLeastOverflow[0].placement
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        placementsSortedByLeastOverflow[0]!.placement
     };
   };
 
