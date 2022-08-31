@@ -62,6 +62,12 @@ interface DialogBaseProps {
    * Callback fired when the `Escape` key is released.
    */
   onEscapeKeyUp?: (event: KeyboardEvent) => void;
+  /**
+   * Used to keep mounting when more control is needed.\
+   * Useful when controlling animation with React animation libraries.
+   * @default false
+   */
+  keepMounted?: boolean;
 }
 
 export type DialogProps = Omit<
@@ -75,6 +81,7 @@ const DialogBase = (props: DialogProps, ref: React.Ref<HTMLDivElement>) => {
     children,
     id: idProp,
     role = "dialog",
+    keepMounted = false,
     focusAfterClosed,
     classes: classesProp,
     onEscapeKeyUp,
@@ -144,7 +151,7 @@ const DialogBase = (props: DialogProps, ref: React.Ref<HTMLDivElement>) => {
     );
   }
 
-  return !open ? null : (
+  return keepMounted || (!keepMounted && open) ? (
     <Portal>
       <div
         data-slot="portal"
@@ -181,7 +188,7 @@ const DialogBase = (props: DialogProps, ref: React.Ref<HTMLDivElement>) => {
         </div>
       </div>
     </Portal>
-  );
+  ) : null;
 };
 
 const Dialog = componentWithForwardedRef<

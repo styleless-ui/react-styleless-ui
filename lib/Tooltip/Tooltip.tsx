@@ -67,6 +67,12 @@ interface TooltipBaseProps {
    * The Callback fires when user has clicked outside of the tooltip.
    */
   onOutsideClick?: (event: MouseEvent) => void;
+  /**
+   * Used to keep mounting when more control is needed.\
+   * Useful when controlling animation with React animation libraries.
+   * @default false
+   */
+  keepMounted?: boolean;
 }
 
 export type TooltipProps = Omit<
@@ -83,6 +89,7 @@ const TooltipBase = (props: TooltipProps, ref: React.Ref<HTMLDivElement>) => {
     onOutsideClick,
     id: idProp,
     open: openProp,
+    keepMounted = false,
     autoPlacement = false,
     placement = "top",
     behavior = "full-controlled",
@@ -234,6 +241,7 @@ const TooltipBase = (props: TooltipProps, ref: React.Ref<HTMLDivElement>) => {
       side={placement}
       actions={popperActions}
       className={className}
+      keepMounted={keepMounted}
       autoPlacement={behavior === "follow-mouse" ? false : autoPlacement}
       offset={behavior === "follow-mouse" ? 32 : undefined}
       anchorElement={
