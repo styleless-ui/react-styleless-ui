@@ -56,8 +56,6 @@ const MenuRadioItemBase = (
     value,
     onSelect,
     onClick,
-    onKeyDown,
-    onKeyUp,
     onMouseEnter,
     onMouseLeave,
     ...otherProps
@@ -103,8 +101,6 @@ const MenuRadioItemBase = (
     disabled,
     isActive,
     onClick,
-    onKeyDown,
-    onKeyUp,
     onMouseEnter: useEventCallback<React.MouseEvent<HTMLDivElement>>(event => {
       menuCtx?.setActiveElement(rootRef.current);
       onMouseEnter?.(event);
@@ -137,8 +133,6 @@ const MenuRadioItemBase = (
       className={className}
       tabIndex={-1}
       onClick={menuItem.handleClick}
-      onKeyDown={menuItem.handleKeyDown}
-      onKeyUp={menuItem.handleKeyUp}
       onMouseEnter={menuItem.handleMouseEnter}
       onMouseLeave={menuItem.handleMouseLeave}
       aria-checked={isSelected}

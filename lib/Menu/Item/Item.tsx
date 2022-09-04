@@ -63,8 +63,6 @@ const MenuItemBase = (props: MenuItemProps, ref: React.Ref<HTMLDivElement>) => {
     className: classNameProp,
     disabled = false,
     onClick,
-    onKeyDown,
-    onKeyUp,
     onMouseEnter,
     onMouseLeave,
     onSelect,
@@ -113,10 +111,8 @@ const MenuItemBase = (props: MenuItemProps, ref: React.Ref<HTMLDivElement>) => {
     disabled,
     isActive,
     onClick,
-    onKeyDown,
-    onKeyUp,
     onMouseEnter: useEventCallback<React.MouseEvent<HTMLDivElement>>(event => {
-      if (event.target !== rootRef.current || !menuCtx)
+      if (event.currentTarget !== rootRef.current || !menuCtx)
         return onMouseEnter?.(event);
 
       menuCtx.setActiveElement(rootRef.current);
@@ -131,8 +127,6 @@ const MenuItemBase = (props: MenuItemProps, ref: React.Ref<HTMLDivElement>) => {
       onMouseEnter?.(event);
     }),
     onMouseLeave: useEventCallback<React.MouseEvent<HTMLDivElement>>(event => {
-      // if (event.target !== rootRef.current) return onMouseLeave?.(event);
-
       menuCtx?.setActiveElement(null);
 
       if (subMenuRef.current) {
@@ -178,8 +172,6 @@ const MenuItemBase = (props: MenuItemProps, ref: React.Ref<HTMLDivElement>) => {
       className={className}
       tabIndex={-1}
       onClick={menuItem.handleClick}
-      onKeyDown={menuItem.handleKeyDown}
-      onKeyUp={menuItem.handleKeyUp}
       onMouseEnter={menuItem.handleMouseEnter}
       onMouseLeave={menuItem.handleMouseLeave}
       aria-disabled={disabled}
