@@ -1,6 +1,6 @@
 {
   "name": "@styleless-ui/react",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "description": "Completely unstyled, headless and accessible React UI components.",
   "repository": "git@github.com:styleless-ui/react-styleless-ui.git",
   "author": "mimshins <mostafa.sh.coderino@gmail.com>",
