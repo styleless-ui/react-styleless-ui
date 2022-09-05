@@ -130,8 +130,14 @@ const MenuBase = (props: MenuProps, ref: React.Ref<HTMLDivElement>) => {
   const dir = useDirection(rootRef) ?? "ltr";
 
   const shouldActivateFirstSubItem = React.useRef(false);
-
   const initialFocus = React.useRef(false);
+
+  const isQueryingAllowed = React.useRef(true);
+  const queryCacheTimeoutRef = React.useRef(-1);
+  const query = React.useRef<string>();
+  const queryResults = React.useRef<
+    Array<[React.RefObject<HTMLDivElement>, number]>
+  >([]);
 
   const items: React.RefObject<HTMLDivElement>[] = [];
   const registerItem = makeRegisterItem(items);
@@ -199,6 +205,7 @@ const MenuBase = (props: MenuProps, ref: React.Ref<HTMLDivElement>) => {
             event.key
           );
 
+          if (event.key === query.current) isQueryingAllowed.current = true;
           if (select && activeElement) {
             activeElement.click();
 
@@ -287,24 +294,29 @@ const MenuBase = (props: MenuProps, ref: React.Ref<HTMLDivElement>) => {
             menuCtx.setActiveSubTrigger(null);
           }
 
-          if (doSearch && !disabledKeySearch) {
-            const occurrences = items.reduce((result, item, idx) => {
-              if (item.current?.getAttribute("aria-disabled") === "true")
-                return result;
+          if (doSearch && !disabledKeySearch && isQueryingAllowed.current) {
+            const occurrences =
+              query.current === event.key
+                ? queryResults.current
+                : items.reduce((result, item, idx) => {
+                    if (item.current?.getAttribute("aria-disabled") === "true")
+                      return result;
 
-              const text = item.current?.textContent;
+                    const text = item.current?.textContent;
 
-              if (text?.toLowerCase().trim()[0] === event.key.toLowerCase()) {
-                const newRecord: [React.RefObject<HTMLDivElement>, number] = [
-                  item,
-                  idx
-                ];
+                    if (
+                      text?.toLowerCase().trim()[0] === event.key.toLowerCase()
+                    ) {
+                      const newRecord: [
+                        React.RefObject<HTMLDivElement>,
+                        number
+                      ] = [item, idx];
 
-                return [...result, newRecord];
-              }
+                      return [...result, newRecord];
+                    }
 
-              return result;
-            }, [] as Array<[React.RefObject<HTMLDivElement>, number]>);
+                    return result;
+                  }, [] as Array<[React.RefObject<HTMLDivElement>, number]>);
 
             if (occurrences.length) {
               const idx = occurrences.findIndex(
@@ -323,6 +335,17 @@ const MenuBase = (props: MenuProps, ref: React.Ref<HTMLDivElement>) => {
                   : null
               );
             }
+
+            isQueryingAllowed.current = false;
+
+            query.current = event.key;
+            queryResults.current = occurrences;
+
+            window.clearTimeout(queryCacheTimeoutRef.current);
+            queryCacheTimeoutRef.current = window.setTimeout(() => {
+              query.current = undefined;
+              queryResults.current = [];
+            }, 2000);
           }
         })
       },
