@@ -151,14 +151,10 @@ const MenuItemBase = (props: MenuItemProps, ref: React.Ref<HTMLDivElement>) => {
 
     if (!subMenuRef.current) return;
 
-    const subMenuInfo = subMenuRef.current;
-    const { ref, id } = subMenuInfo;
+    const { id } = subMenuRef.current;
 
     node.setAttribute("aria-haspopup", "menu");
-    node.setAttribute(
-      "aria-expanded",
-      ref.current?.hasAttribute("data-open") ? "true" : "false"
-    );
+    node.setAttribute("aria-expanded", String(isSubMenuOpen()));
 
     id && node.setAttribute("aria-controls", id);
   };
