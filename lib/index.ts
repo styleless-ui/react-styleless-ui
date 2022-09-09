@@ -14,6 +14,8 @@ export * from "./Popper";
 export { default as Popper } from "./Popper";
 export * from "./Portal";
 export { default as Portal } from "./Portal";
+export * from "./PreserveAspectRatio";
+export { default as PreserveAspectRatio } from "./PreserveAspectRatio";
 export * from "./Radio";
 export { default as Radio } from "./Radio";
 export * from "./RadioGroup";
