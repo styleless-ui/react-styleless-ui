@@ -1,7 +1,13 @@
 import * as React from "react";
 
 export interface PreserveAspectRatioProps {
+  /**
+   * The content of the component.
+   */
   children?: React.ReactNode;
+  /**
+   * The ratio which needs to be preserved.
+   */
   ratio: number;
 }
 
