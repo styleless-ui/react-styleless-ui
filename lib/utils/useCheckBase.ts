@@ -1,7 +1,5 @@
 import * as React from "react";
-import { type ICheckGroupContext } from "../CheckGroup/context";
 import { SystemKeys } from "../internals";
-import { type IRadioGroupContext } from "../RadioGroup/context";
 import {
   requestFormSubmit,
   useControlledProp,
@@ -12,10 +10,18 @@ import {
   useIsomorphicLayoutEffect
 } from ".";
 
+interface GenericGroupContext {
+  value: string | string[];
+  onChange: (newState: boolean, itemValue: string) => void;
+  items?: [string, React.RefObject<HTMLButtonElement>][];
+}
+
 interface CheckBaseProps {
   strategy?: "check-control" | "radio-control";
+  enterKeyFunctionality?: "request-form-submit" | "check";
+  keyboardActivationBehavior?: "manual" | "automatic";
   value?: string;
-  groupCtx?: ICheckGroupContext | IRadioGroupContext;
+  groupCtx?: GenericGroupContext;
   checked?: boolean;
   defaultChecked?: boolean;
   disabled?: boolean;
@@ -38,6 +44,8 @@ const useCheckBase = (props: CheckBaseProps) => {
     onFocus,
     onKeyDown,
     onKeyUp,
+    keyboardActivationBehavior = "automatic",
+    enterKeyFunctionality = "request-form-submit",
     strategy = "check-control",
     autoFocus = false,
     disabled = false
@@ -147,14 +155,15 @@ const useCheckBase = (props: CheckBaseProps) => {
         event.preventDefault();
       }
 
-      if (strategy === "radio-control" && groupCtx && isFocusedVisible) {
-        const { radios } = <IRadioGroupContext>groupCtx;
-        const currentRadiosIdx = radios.findIndex(r => r[0] === value);
+      if (groupCtx && isFocusedVisible) {
+        const { items } = groupCtx;
+        if (!items) return;
 
-        const currentRadio = radios[currentRadiosIdx]?.[1].current;
+        const currentItemIdx = items.findIndex(r => r[0] === value);
+        const currentItem = items[currentItemIdx]?.[1].current;
 
-        const dir = currentRadio
-          ? window.getComputedStyle(currentRadio).direction
+        const dir = currentItem
+          ? window.getComputedStyle(currentItem).direction
           : "ltr";
 
         const goPrev = [
@@ -167,43 +176,44 @@ const useCheckBase = (props: CheckBaseProps) => {
           dir === "ltr" ? SystemKeys.RIGHT : SystemKeys.LEFT
         ].includes(event.key);
 
-        let activeRadio: typeof radios[number] | null = null;
+        let activeItem: typeof items[number] | null = null;
 
-        const getAvailableRadio = (
+        const getAvailableItem = (
           idx: number,
           forward: boolean,
           prevIdxs: number[] = []
-        ): typeof activeRadio => {
-          const radio = radios[idx];
+        ): typeof activeItem => {
+          const item = items[idx];
 
           if (prevIdxs.includes(idx)) return null;
 
-          if (!radio || !radio[1].current || radio[1].current.disabled) {
+          if (!item || !item[1].current || item[1].current.disabled) {
             const newIdx =
-              (forward ? idx + 1 : idx - 1 + radios.length) % radios.length;
-            return getAvailableRadio(newIdx, forward, [...prevIdxs, idx]);
+              (forward ? idx + 1 : idx - 1 + items.length) % items.length;
+            return getAvailableItem(newIdx, forward, [...prevIdxs, idx]);
           }
 
-          return radio;
+          return item;
         };
 
         if (goPrev) {
-          activeRadio = getAvailableRadio(
-            (currentRadiosIdx - 1 + radios.length) % radios.length,
+          activeItem = getAvailableItem(
+            (currentItemIdx - 1 + items.length) % items.length,
             false
           );
         } else if (goNext) {
-          activeRadio = getAvailableRadio(
-            (currentRadiosIdx + 1) % radios.length,
+          activeItem = getAvailableItem(
+            (currentItemIdx + 1) % items.length,
             true
           );
         }
 
-        if (activeRadio) {
+        if (activeItem) {
           event.preventDefault();
 
-          activeRadio[1].current?.click();
-          activeRadio[1].current?.focus();
+          activeItem[1].current?.focus();
+          if (keyboardActivationBehavior === "automatic")
+            activeItem[1].current?.click();
         }
       }
     }
@@ -224,8 +234,11 @@ const useCheckBase = (props: CheckBaseProps) => {
 
       if (event.target === event.currentTarget) {
         if (event.key === SystemKeys.SPACE) emitChange(!checkedState);
-        else if (event.key === SystemKeys.ENTER)
-          requestFormSubmit(event.target);
+        else if (event.key === SystemKeys.ENTER) {
+          enterKeyFunctionality === "request-form-submit"
+            ? requestFormSubmit(event.target)
+            : emitChange(!checkedState);
+        }
       }
     }
   );
