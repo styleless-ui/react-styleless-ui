@@ -23,6 +23,7 @@ interface CheckBaseProps {
   value?: string;
   groupCtx?: GenericGroupContext;
   checked?: boolean;
+  toggle?: boolean;
   defaultChecked?: boolean;
   disabled?: boolean;
   autoFocus?: boolean;
@@ -48,6 +49,7 @@ const useCheckBase = (props: CheckBaseProps) => {
     enterKeyFunctionality = "request-form-submit",
     strategy = "check-control",
     autoFocus = false,
+    toggle = false,
     disabled = false
   } = props;
 
@@ -95,7 +97,7 @@ const useCheckBase = (props: CheckBaseProps) => {
 
   const emitChange = (newChecked: boolean) => {
     if (disabled || !isMounted()) return;
-    if (strategy === "radio-control" && checkedState) return;
+    if (strategy === "radio-control" && checkedState && !toggle) return;
 
     setChecked(newChecked);
     groupCtx?.onChange(newChecked, value);
