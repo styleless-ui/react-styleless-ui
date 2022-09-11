@@ -173,7 +173,13 @@ const RadioBase = (props: RadioProps, ref: React.Ref<HTMLButtonElement>) => {
 
   const checkBase = useCheckBase({
     value,
-    groupCtx: radioGroupCtx,
+    groupCtx: radioGroupCtx
+      ? {
+          value: radioGroupCtx.value,
+          onChange: radioGroupCtx.onChange,
+          items: radioGroupCtx.radios
+        }
+      : undefined,
     strategy: "radio-control",
     autoFocus,
     disabled,
