@@ -141,7 +141,7 @@ const ToggleBase = (props: ToggleProps, ref: React.Ref<HTMLButtonElement>) => {
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     toggleGroupCtx?.registerToggle(value!, rootRef);
-    node.tabIndex = disabled ? -1 : node.tabIndex;
+    if (!toggleGroupCtx) node.tabIndex = disabled ? -1 : 0;
 
     const accessibleName = computeAccessibleName(node);
 
