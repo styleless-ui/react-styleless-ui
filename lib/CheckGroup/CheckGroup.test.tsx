@@ -15,24 +15,26 @@ const labelText = "Label";
 
 const REQUIRED_PROPS: CheckGroupProps = {
   label: labelText,
-  classes: { label: "label", root: "root" }
+  classes: { label: "label", root: "root", group: "group" }
 };
 
 describe("CheckGroup", () => {
   afterEach(jest.clearAllMocks);
 
   itShouldMount(CheckGroup, REQUIRED_PROPS);
-  itSupportsStyle(CheckGroup, REQUIRED_PROPS, "[role='group']");
+  itSupportsStyle(CheckGroup, REQUIRED_PROPS);
   itSupportsRef(CheckGroup, REQUIRED_PROPS, HTMLDivElement);
-  itSupportsDataSetProps(CheckGroup, REQUIRED_PROPS, "[role='group']");
+  itSupportsDataSetProps(CheckGroup, REQUIRED_PROPS);
 
   it("should have the required classNames", () => {
     render(<CheckGroup {...REQUIRED_PROPS} />);
 
     const group = screen.getByRole("group");
-    const label = group.previousElementSibling;
+    const root = group.parentElement;
+    const label = root?.querySelector("[data-slot='checkGroupLabel']");
 
-    expect(group).toHaveClass("root");
+    expect(root).toHaveClass("root");
+    expect(group).toHaveClass("group");
     expect(label).toHaveClass("label");
   });
 
@@ -64,7 +66,7 @@ describe("CheckGroup", () => {
     userEvent.setup();
     render(
       <CheckGroup {...REQUIRED_PROPS} onChange={handleChange}>
-        <Checkbox label="item 0" value="0" />
+        <Checkbox label="item 0" value="0" disabled />
         <Checkbox label="item 1" value="1" />
         <Checkbox label="item 2" value="2" />
         <Checkbox label="item 3" value="3" />
@@ -76,33 +78,36 @@ describe("CheckGroup", () => {
     if (boxes[0]) {
       await userEvent.click(boxes[0]);
 
-      expect(boxes[0]).toBeChecked();
-      expect(handleChange.mock.calls.length).toBe(1);
-      expect(handleChange.mock.calls[0]?.join()).toBe("0");
-    }
-
-    if (boxes[3]) {
-      await userEvent.click(boxes[3]);
-
-      expect(boxes[3]).toBeChecked();
-      expect(handleChange.mock.calls.length).toBe(2);
-      expect(handleChange.mock.calls[1]?.join()).toBe("0,3");
-    }
-
-    if (boxes[0]) {
-      await userEvent.click(boxes[0]);
-
       expect(boxes[0]).not.toBeChecked();
-      expect(handleChange.mock.calls.length).toBe(3);
-      expect(handleChange.mock.calls[2]?.join()).toBe("3");
+      expect(handleChange.mock.calls.length).toBe(0);
     }
 
-    if (boxes[3]) {
-      await userEvent.click(boxes[3]);
+    if (boxes[1]) {
+      await userEvent.click(boxes[1]);
 
-      expect(boxes[3]).not.toBeChecked();
+      expect(boxes[1]).toBeChecked();
+      expect(handleChange.mock.calls.length).toBe(1);
+      expect(handleChange.mock.calls[0]?.join()).toBe("1");
+
+      await userEvent.click(boxes[1]);
+
+      expect(boxes[1]).not.toBeChecked();
+      expect(handleChange.mock.calls.length).toBe(2);
+      expect(handleChange.mock.calls[1]?.join()).toBe("");
+
+      await userEvent.click(boxes[1]);
+
+      expect(boxes[1]).toBeChecked();
+      expect(handleChange.mock.calls.length).toBe(3);
+      expect(handleChange.mock.calls[2]?.join()).toBe("1");
+    }
+
+    if (boxes[2]) {
+      await userEvent.click(boxes[2]);
+
+      expect(boxes[2]).toBeChecked();
       expect(handleChange.mock.calls.length).toBe(4);
-      expect(handleChange.mock.calls[3]?.join()).toBe("");
+      expect(handleChange.mock.calls[3]?.join()).toBe("1,2");
     }
   });
 
@@ -112,7 +117,7 @@ describe("CheckGroup", () => {
     userEvent.setup();
     render(
       <CheckGroup {...REQUIRED_PROPS} onChange={handleChange}>
-        <Checkbox label="item 0" value="0" />
+        <Checkbox label="item 0" value="0" disabled />
         <Checkbox label="item 1" value="1" />
         <Checkbox label="item 2" value="2" />
         <Checkbox label="item 3" value="3" />
@@ -122,35 +127,39 @@ describe("CheckGroup", () => {
     const boxes = screen.getAllByRole("checkbox");
 
     act(() => void boxes[0]?.focus());
-    expect(boxes[0]).toHaveFocus();
-    await userEvent.keyboard("[Space]");
-
-    expect(boxes[0]).toBeChecked();
-    expect(handleChange.mock.calls.length).toBe(1);
-    expect(handleChange.mock.calls[0]?.join()).toBe("0");
-
-    act(() => void boxes[3]?.focus());
-    expect(boxes[3]).toHaveFocus();
-    await userEvent.keyboard("[Space]");
-
-    expect(boxes[3]).toBeChecked();
-    expect(handleChange.mock.calls.length).toBe(2);
-    expect(handleChange.mock.calls[1]?.join()).toBe("0,3");
-
-    act(() => void boxes[0]?.focus());
-    expect(boxes[0]).toHaveFocus();
     await userEvent.keyboard("[Space]");
 
     expect(boxes[0]).not.toBeChecked();
-    expect(handleChange.mock.calls.length).toBe(3);
-    expect(handleChange.mock.calls[2]?.join()).toBe("3");
+    expect(handleChange.mock.calls.length).toBe(0);
 
-    act(() => void boxes[3]?.focus());
-    expect(boxes[3]).toHaveFocus();
+    await userEvent.tab();
+    expect(boxes[1]).toHaveFocus();
+
     await userEvent.keyboard("[Space]");
 
-    expect(boxes[3]).not.toBeChecked();
+    expect(boxes[1]).toBeChecked();
+    expect(handleChange.mock.calls.length).toBe(1);
+    expect(handleChange.mock.calls[0]?.join()).toBe("1");
+
+    await userEvent.keyboard("[Space]");
+
+    expect(boxes[1]).not.toBeChecked();
+    expect(handleChange.mock.calls.length).toBe(2);
+    expect(handleChange.mock.calls[1]?.join()).toBe("");
+
+    await userEvent.keyboard("[Space]");
+
+    expect(boxes[1]).toBeChecked();
+    expect(handleChange.mock.calls.length).toBe(3);
+    expect(handleChange.mock.calls[2]?.join()).toBe("1");
+
+    await userEvent.tab();
+    expect(boxes[2]).toHaveFocus();
+
+    await userEvent.keyboard("[Space]");
+
+    expect(boxes[2]).toBeChecked();
     expect(handleChange.mock.calls.length).toBe(4);
-    expect(handleChange.mock.calls[3]?.join()).toBe("");
+    expect(handleChange.mock.calls[3]?.join()).toBe("1,2");
   });
 });

@@ -255,7 +255,7 @@ const CheckboxBase = (
         onClick={checkBase.handleClick}
         aria-checked={checkBase.checked}
         aria-label={labelProps.srOnlyLabel}
-        aria-labelledby={labelProps.labelledBy}
+        aria-labelledby={visibleLabel ? visibleLabelId : labelProps.labelledBy}
       >
         {checkBase.checked &&
           (checkComponent ? (
@@ -270,14 +270,9 @@ const CheckboxBase = (
           ))}
       </button>
       {visibleLabel && (
-        <label
-          id={visibleLabelId}
-          htmlFor={id}
-          data-slot="label"
-          className={classes?.label}
-        >
+        <span id={visibleLabelId} data-slot="label" className={classes?.label}>
           {visibleLabel}
-        </label>
+        </span>
       )}
     </>
   );

@@ -15,24 +15,26 @@ const labelText = "Label";
 
 const REQUIRED_PROPS: RadioGroupProps = {
   label: labelText,
-  classes: { label: "label", root: "root" }
+  classes: { label: "label", root: "root", group: "group" }
 };
 
 describe("RadioGroup", () => {
   afterEach(jest.clearAllMocks);
 
   itShouldMount(RadioGroup, REQUIRED_PROPS);
-  itSupportsStyle(RadioGroup, REQUIRED_PROPS, "[role='radiogroup']");
+  itSupportsStyle(RadioGroup, REQUIRED_PROPS);
   itSupportsRef(RadioGroup, REQUIRED_PROPS, HTMLDivElement);
-  itSupportsDataSetProps(RadioGroup, REQUIRED_PROPS, "[role='radiogroup']");
+  itSupportsDataSetProps(RadioGroup, REQUIRED_PROPS);
 
   it("should have the required classNames", () => {
     render(<RadioGroup {...REQUIRED_PROPS} />);
 
     const group = screen.getByRole("radiogroup");
-    const label = group.previousElementSibling;
+    const root = group.parentElement;
+    const label = root?.querySelector("[data-slot='radioGroupLabel']");
 
-    expect(group).toHaveClass("root");
+    expect(root).toHaveClass("root");
+    expect(group).toHaveClass("group");
     expect(label).toHaveClass("label");
   });
 
@@ -67,7 +69,7 @@ describe("RadioGroup", () => {
     userEvent.setup();
     render(
       <RadioGroup {...REQUIRED_PROPS} onChange={handleChange}>
-        <Radio label="item 0" value="0" />
+        <Radio label="item 0" value="0" disabled />
         <Radio label="item 1" value="1" />
         <Radio label="item 2" value="2" />
         <Radio label="item 3" value="3" />
@@ -79,17 +81,24 @@ describe("RadioGroup", () => {
     if (radios[0]) {
       await userEvent.click(radios[0]);
 
-      expect(radios[0]).toBeChecked();
-      expect(handleChange.mock.calls.length).toBe(1);
-      expect(handleChange.mock.calls[0]?.[0]).toBe("0");
+      expect(radios[0]).not.toBeChecked();
+      expect(handleChange.mock.calls.length).toBe(0);
     }
 
-    if (radios[3]) {
-      await userEvent.click(radios[3]);
+    if (radios[1]) {
+      await userEvent.click(radios[1]);
 
-      expect(radios[3]).toBeChecked();
+      expect(radios[1]).toBeChecked();
+      expect(handleChange.mock.calls.length).toBe(1);
+      expect(handleChange.mock.calls[0]?.join()).toBe("1");
+    }
+
+    if (radios[2]) {
+      await userEvent.click(radios[2]);
+
+      expect(radios[2]).toBeChecked();
       expect(handleChange.mock.calls.length).toBe(2);
-      expect(handleChange.mock.calls[1]?.[0]).toBe("3");
+      expect(handleChange.mock.calls[1]?.join()).toBe("2");
     }
   });
 
@@ -99,7 +108,7 @@ describe("RadioGroup", () => {
     userEvent.setup();
     render(
       <RadioGroup {...REQUIRED_PROPS} onChange={handleChange}>
-        <Radio label="item 0" value="0" />
+        <Radio label="item 0" value="0" disabled />
         <Radio label="item 1" value="1" />
         <Radio label="item 2" value="2" />
         <Radio label="item 3" value="3" />
@@ -109,19 +118,27 @@ describe("RadioGroup", () => {
     const radios = screen.getAllByRole("radio");
 
     act(() => void radios[0]?.focus());
-    expect(radios[0]).toHaveFocus();
     await userEvent.keyboard("[Space]");
 
-    expect(radios[0]).toBeChecked();
+    expect(radios[0]).not.toBeChecked();
+    expect(handleChange.mock.calls.length).toBe(0);
+
+    await userEvent.tab();
+    expect(radios[1]).toHaveFocus();
+
+    await userEvent.keyboard("[Space]");
+
+    expect(radios[1]).toBeChecked();
     expect(handleChange.mock.calls.length).toBe(1);
-    expect(handleChange.mock.calls[0]?.[0]).toBe("0");
+    expect(handleChange.mock.calls[0]?.join()).toBe("1");
 
-    act(() => void radios[3]?.focus());
-    expect(radios[3]).toHaveFocus();
+    await userEvent.keyboard("[ArrowDown]");
+    expect(radios[2]).toHaveFocus();
+
     await userEvent.keyboard("[Space]");
 
-    expect(radios[3]).toBeChecked();
+    expect(radios[2]).toBeChecked();
     expect(handleChange.mock.calls.length).toBe(2);
-    expect(handleChange.mock.calls[1]?.[0]).toBe("3");
+    expect(handleChange.mock.calls[1]?.join()).toBe("2");
   });
 });

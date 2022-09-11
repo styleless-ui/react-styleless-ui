@@ -234,10 +234,15 @@ const RadioBase = (props: RadioProps, ref: React.Ref<HTMLButtonElement>) => {
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const valueToBeFocused = radioGroupCtx?.registerRadio(value!, rootRef);
+  const refCallback = (node: HTMLButtonElement | null) => {
+    handleRef(node);
 
-  const tabIndex = disabled ? -1 : value === valueToBeFocused ? 0 : -1;
+    if (!node) return;
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    radioGroupCtx?.registerRadio(value!, rootRef);
+    if (!radioGroupCtx) node.tabIndex = disabled ? -1 : 0;
+  };
 
   return (
     <>
@@ -247,9 +252,8 @@ const RadioBase = (props: RadioProps, ref: React.Ref<HTMLButtonElement>) => {
         role="radio"
         className={classes?.root}
         type="button"
-        tabIndex={tabIndex}
-        ref={handleRef}
-        data-slot="root"
+        ref={refCallback}
+        data-slot="radioRoot"
         disabled={disabled}
         onFocus={checkBase.handleFocus}
         onBlur={checkBase.handleBlur}
@@ -258,7 +262,7 @@ const RadioBase = (props: RadioProps, ref: React.Ref<HTMLButtonElement>) => {
         onClick={checkBase.handleClick}
         aria-checked={checkBase.checked}
         aria-label={labelProps.srOnlyLabel}
-        aria-labelledby={labelProps.labelledBy}
+        aria-labelledby={visibleLabel ? visibleLabelId : labelProps.labelledBy}
       >
         {checkBase.checked &&
           (checkComponent ? (
@@ -273,14 +277,13 @@ const RadioBase = (props: RadioProps, ref: React.Ref<HTMLButtonElement>) => {
           ))}
       </button>
       {visibleLabel && (
-        <label
+        <span
           id={visibleLabelId}
-          htmlFor={id}
-          data-slot="label"
+          data-slot="radioLabel"
           className={classes?.label}
         >
           {visibleLabel}
-        </label>
+        </span>
       )}
     </>
   );

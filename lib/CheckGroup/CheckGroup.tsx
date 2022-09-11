@@ -7,7 +7,7 @@ import {
 } from "../utils";
 import CheckGroupContext from "./context";
 
-type CheckboxGroupClassesMap = Record<"root" | "label", string>;
+type CheckboxGroupClassesMap = Record<"root" | "label" | "group", string>;
 
 interface CheckGroupBaseProps {
   /**
@@ -121,29 +121,36 @@ const CheckGroupBase = (
   };
 
   return (
-    <CheckGroupContext.Provider value={{ value, onChange: handleChange }}>
-      {visibleLabel && (
-        <label
-          id={visibleLabelId}
-          htmlFor={id}
-          data-slot="label"
-          className={classes?.label}
+    <div
+      {...otherProps}
+      id={id}
+      ref={ref}
+      data-slot="checkGroupRoot"
+      className={classes?.root}
+    >
+      <CheckGroupContext.Provider value={{ value, onChange: handleChange }}>
+        {visibleLabel && (
+          <span
+            id={visibleLabelId}
+            data-slot="checkGroupLabel"
+            className={classes?.label}
+          >
+            {visibleLabel}
+          </span>
+        )}
+        <div
+          role="group"
+          data-slot="checkGroupGroup"
+          className={classes?.group}
+          aria-label={labelProps.srOnlyLabel}
+          aria-labelledby={
+            visibleLabel ? visibleLabelId : labelProps.labelledBy
+          }
         >
-          {visibleLabel}
-        </label>
-      )}
-      <div
-        {...otherProps}
-        id={id}
-        ref={ref}
-        role="group"
-        className={classes?.root}
-        aria-label={labelProps.srOnlyLabel}
-        aria-labelledby={labelProps.labelledBy}
-      >
-        {children}
-      </div>
-    </CheckGroupContext.Provider>
+          {children}
+        </div>
+      </CheckGroupContext.Provider>
+    </div>
   );
 };
 

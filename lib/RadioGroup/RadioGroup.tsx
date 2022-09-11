@@ -3,11 +3,12 @@ import { type MergeElementProps } from "../typings.d";
 import {
   componentWithForwardedRef,
   useControlledProp,
-  useDeterministicId
+  useDeterministicId,
+  useForkedRefs
 } from "../utils";
 import RadioGroupContext from "./context";
 
-type RadioGroupClassesMap = Record<"root" | "label", string>;
+type RadioGroupClassesMap = Record<"root" | "label" | "group", string>;
 
 interface RadioGroupBaseProps {
   /**
@@ -99,6 +100,9 @@ const RadioGroupBase = (
     ...otherProps
   } = props;
 
+  const rootRef = React.useRef<HTMLDivElement>(null);
+  const handleRootRef = useForkedRefs(ref, rootRef);
+
   const id = useDeterministicId(idProp, "styleless-ui__radio-group");
   const visibleLabelId = id ? `${id}__label` : undefined;
 
@@ -126,38 +130,69 @@ const RadioGroupBase = (
   ) => {
     if (!radios.some(r => r[0] === inputValue))
       radios.push([inputValue, radioRef]);
-
-    return value.length === 0
-      ? radios[0]?.[0]
-      : radios.find(r => r[0] === value)?.[0];
   };
 
+  React.useEffect(() => {
+    if (!rootRef.current) return;
+
+    radios.forEach(([v, rRef]) => {
+      if (!rRef.current) return;
+
+      const isSelected = Array.isArray(value) ? value.includes(v) : value === v;
+      const isDisabled = rRef.current.hasAttribute("disabled");
+
+      rRef.current.tabIndex = isDisabled ? -1 : isSelected ? 0 : -1;
+    });
+
+    const notTabable = radios.filter(
+      ([_, rRef]) => rRef.current?.getAttribute("tabindex") !== "0"
+    );
+
+    if (notTabable.length !== radios.length) return;
+
+    const radio =
+      radios.find(([_, rRef]) => !rRef.current?.hasAttribute("disabled")) ??
+      null;
+
+    if (!radio) return;
+    const [_, rRef] = radio;
+
+    rRef.current?.setAttribute("tabindex", "0");
+  });
+
   return (
-    <RadioGroupContext.Provider
-      value={{ value, onChange: handleChange, registerRadio, radios }}
+    <div
+      {...otherProps}
+      id={id}
+      ref={handleRootRef}
+      className={classes?.root}
+      data-slot="radioGroupRoot"
     >
-      {visibleLabel && (
-        <label
-          id={visibleLabelId}
-          htmlFor={id}
-          data-slot="label"
-          className={classes?.label}
-        >
-          {visibleLabel}
-        </label>
-      )}
-      <div
-        {...otherProps}
-        id={id}
-        ref={ref}
-        role="radiogroup"
-        className={classes?.root}
-        aria-label={labelProps.srOnlyLabel}
-        aria-labelledby={labelProps.labelledBy}
+      <RadioGroupContext.Provider
+        value={{ value, onChange: handleChange, registerRadio, radios }}
       >
-        {children}
-      </div>
-    </RadioGroupContext.Provider>
+        {visibleLabel && (
+          <span
+            id={visibleLabelId}
+            data-slot="radioGroupLabel"
+            className={classes?.label}
+          >
+            {visibleLabel}
+          </span>
+        )}
+        <div
+          role="radiogroup"
+          data-slot="radioGroupGroup"
+          className={classes?.group}
+          aria-label={labelProps.srOnlyLabel}
+          aria-labelledby={
+            visibleLabel ? visibleLabelId : labelProps.labelledBy
+          }
+        >
+          {children}
+        </div>
+      </RadioGroupContext.Provider>
+    </div>
   );
 };
 

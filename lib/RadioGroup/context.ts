@@ -8,7 +8,7 @@ interface IRadioGroupContext {
   registerRadio: (
     value: string,
     ref: React.RefObject<HTMLButtonElement>
-  ) => string | undefined;
+  ) => void;
 }
 
 const RadioGroupContext = React.createContext<IRadioGroupContext | undefined>(
