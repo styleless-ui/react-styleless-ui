@@ -95,7 +95,8 @@ const TabListBase = (props: TabListProps, ref: React.Ref<HTMLDivElement>) => {
     if (!React.isValidElement(child)) return null;
 
     if ((child as React.ReactElement).type === Tab) {
-      return React.cloneElement(child, { "data-index": tabIdx++ });
+      const props = { "data-index": tabIdx++ };
+      return React.cloneElement(child, props);
     }
 
     return child;
@@ -104,23 +105,23 @@ const TabListBase = (props: TabListProps, ref: React.Ref<HTMLDivElement>) => {
   return (
     <>
       {visibleLabel && (
-        <label
+        <span
           id={visibleLabelId}
-          htmlFor={id}
-          data-slot="label"
+          data-slot="tabListLabel"
           className={classes?.label}
         >
           {visibleLabel}
-        </label>
+        </span>
       )}
       <div
         {...otherProps}
         id={id}
         ref={ref}
         role="tablist"
+        data-slot="tabListRoot"
         className={classes?.root}
         aria-label={labelProps.srOnlyLabel}
-        aria-labelledby={labelProps.labelledBy}
+        aria-labelledby={visibleLabel ? visibleLabelId : labelProps.labelledBy}
         aria-orientation={tabGroupCtx?.orientation}
       >
         {children}

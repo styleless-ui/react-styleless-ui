@@ -30,14 +30,20 @@ const TabPanelsBase = (
     if (!React.isValidElement(child)) return null;
 
     if ((child as React.ReactElement).type === Panel) {
-      return React.cloneElement(child, { "data-index": panelIdx++ });
+      const props = { "data-index": panelIdx++ };
+      return React.cloneElement(child, props);
     }
 
     return child;
   });
 
   return (
-    <div {...otherProps} ref={ref} className={className}>
+    <div
+      {...otherProps}
+      ref={ref}
+      className={className}
+      data-slot="tabPanelsRoot"
+    >
       {children}
     </div>
   );

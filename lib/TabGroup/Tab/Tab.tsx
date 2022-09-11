@@ -179,6 +179,7 @@ const TabBase = (props: TabProps, ref: React.Ref<HTMLButtonElement>) => {
       {...otherProps}
       id={id}
       role="tab"
+      data-slot="tabRoot"
       type="button"
       ref={node => {
         handleRef(node);

@@ -25,7 +25,12 @@ const BreadcrumbItemBase = (
   const { className, children, ...otherProps } = props;
 
   return (
-    <li {...otherProps} ref={ref} className={className}>
+    <li
+      {...otherProps}
+      ref={ref}
+      className={className}
+      data-slot="breadcrumbItemRoot"
+    >
       {children}
     </li>
   );

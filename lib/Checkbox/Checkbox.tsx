@@ -246,7 +246,7 @@ const CheckboxBase = (
         type="button"
         tabIndex={disabled ? -1 : 0}
         ref={handleRef}
-        data-slot="root"
+        data-slot="checkboxRoot"
         disabled={disabled}
         onFocus={checkBase.handleFocus}
         onBlur={checkBase.handleBlur}
@@ -270,7 +270,11 @@ const CheckboxBase = (
           ))}
       </button>
       {visibleLabel && (
-        <span id={visibleLabelId} data-slot="label" className={classes?.label}>
+        <span
+          id={visibleLabelId}
+          data-slot="checkboxRootLabel"
+          className={classes?.label}
+        >
           {visibleLabel}
         </span>
       )}

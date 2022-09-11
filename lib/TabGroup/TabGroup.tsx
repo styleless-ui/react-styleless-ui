@@ -114,7 +114,12 @@ const TabGroupBase = (props: TabGroupProps, ref: React.Ref<HTMLDivElement>) => {
   }, []);
 
   return (
-    <div {...otherProps} className={className} ref={handleRootRef}>
+    <div
+      {...otherProps}
+      className={className}
+      ref={handleRootRef}
+      data-slot="tabGroupRoot"
+    >
       <TabGroupContext.Provider
         value={{
           activeTab,

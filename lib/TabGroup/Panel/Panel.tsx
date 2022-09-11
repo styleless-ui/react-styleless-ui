@@ -54,6 +54,7 @@ const TabPanelBase = (props: TabPanelProps, ref: React.Ref<HTMLDivElement>) => {
       }}
       className={className}
       role="tabpanel"
+      data-slot="tabPanelRoot"
     >
       {children}
     </div>

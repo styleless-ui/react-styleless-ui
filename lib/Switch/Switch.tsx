@@ -204,14 +204,13 @@ const SwitchBase = (props: SwitchProps, ref: React.Ref<HTMLButtonElement>) => {
   return (
     <>
       {visibleLabel && (
-        <label
+        <span
           id={visibleLabelId}
-          htmlFor={id}
-          data-slot="label"
+          data-slot="switchLabel"
           className={classes?.label}
         >
           {visibleLabel}
-        </label>
+        </span>
       )}
       <button
         {...otherProps}
@@ -221,7 +220,7 @@ const SwitchBase = (props: SwitchProps, ref: React.Ref<HTMLButtonElement>) => {
         type="button"
         tabIndex={disabled ? -1 : 0}
         ref={handleRef}
-        data-slot="root"
+        data-slot="switchRoot"
         disabled={disabled}
         onFocus={checkBase.handleFocus}
         onBlur={checkBase.handleBlur}
@@ -230,7 +229,7 @@ const SwitchBase = (props: SwitchProps, ref: React.Ref<HTMLButtonElement>) => {
         onClick={checkBase.handleClick}
         aria-checked={checkBase.checked}
         aria-label={labelProps.srOnlyLabel}
-        aria-labelledby={labelProps.labelledBy}
+        aria-labelledby={visibleLabel ? visibleLabelId : labelProps.labelledBy}
       >
         {React.cloneElement(trackComponent, {
           className: mergeClasses(

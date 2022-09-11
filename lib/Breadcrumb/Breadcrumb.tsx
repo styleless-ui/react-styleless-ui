@@ -144,24 +144,28 @@ const BreadcrumbBase = (
   return (
     <>
       {visibleLabel && (
-        <label
+        <span
           id={visibleLabelId}
-          htmlFor={id}
-          data-slot="label"
+          data-slot="breadcrumbLabel"
           className={classes?.label}
         >
           {visibleLabel}
-        </label>
+        </span>
       )}
       <nav
         {...otherProps}
         id={id}
         ref={ref}
+        data-slot="breadcrumbRoot"
         className={classes?.root}
         aria-label={labelProps.srOnlyLabel}
-        aria-labelledby={labelProps.labelledBy}
+        aria-labelledby={visibleLabel ? visibleLabelId : labelProps.labelledBy}
       >
-        <ol ref={registerListRef} className={classes?.list}>
+        <ol
+          ref={registerListRef}
+          className={classes?.list}
+          data-slot="breadcrumbList"
+        >
           {children}
         </ol>
       </nav>
