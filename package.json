@@ -86,6 +86,7 @@
     "@utilityjs/use-previous-value": "^1.0.1",
     "@utilityjs/use-register-node-ref": "^1.1.0",
     "@utilityjs/use-scroll-guard": "^1.0.0",
+    "dom-accessibility-api": "^0.5.14",
     "react-is": "^18.2.0"
   }
 }
