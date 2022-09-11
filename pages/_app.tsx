@@ -1,5 +1,6 @@
 import { type AppProps } from "next/app";
 import Head from "next/head";
+import "../.dev/styles.css";
 
 const _App = (props: AppProps) => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
