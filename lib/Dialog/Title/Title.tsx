@@ -74,10 +74,6 @@ const DialogTitleBase = <
   );
 };
 
-const DialogTitle = componentWithForwardedRef<
-  HTMLLIElement,
-  DialogTitleProps,
-  typeof DialogTitleBase
->(DialogTitleBase);
+const DialogTitle = componentWithForwardedRef(DialogTitleBase);
 
 export default DialogTitle;

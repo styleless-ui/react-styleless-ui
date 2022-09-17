@@ -196,10 +196,6 @@ const RadioGroupBase = (
   );
 };
 
-const RadioGroup = componentWithForwardedRef<
-  HTMLDivElement,
-  RadioGroupProps,
-  typeof RadioGroupBase
->(RadioGroupBase);
+const RadioGroup = componentWithForwardedRef(RadioGroupBase);
 
 export default RadioGroup;

@@ -74,10 +74,6 @@ const DialogDescriptionBase = <
   );
 };
 
-const DialogDescription = componentWithForwardedRef<
-  HTMLLIElement,
-  DialogDescriptionProps,
-  typeof DialogDescriptionBase
->(DialogDescriptionBase);
+const DialogDescription = componentWithForwardedRef(DialogDescriptionBase);
 
 export default DialogDescription;

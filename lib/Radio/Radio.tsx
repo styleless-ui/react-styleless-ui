@@ -289,10 +289,6 @@ const RadioBase = (props: RadioProps, ref: React.Ref<HTMLButtonElement>) => {
   );
 };
 
-const Radio = componentWithForwardedRef<
-  HTMLButtonElement,
-  RadioProps,
-  typeof RadioBase
->(RadioBase);
+const Radio = componentWithForwardedRef(RadioBase);
 
 export default Radio;

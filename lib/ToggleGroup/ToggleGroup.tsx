@@ -238,10 +238,6 @@ const ToggleGroupBase = (
   );
 };
 
-const ToggleGroup = componentWithForwardedRef<
-  HTMLDivElement,
-  ToggleGroupProps,
-  typeof ToggleGroupBase
->(ToggleGroupBase);
+const ToggleGroup = componentWithForwardedRef(ToggleGroupBase);
 
 export default ToggleGroup;

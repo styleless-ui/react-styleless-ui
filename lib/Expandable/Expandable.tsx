@@ -102,10 +102,6 @@ const ExpandableBase = (
   );
 };
 
-const Expandable = componentWithForwardedRef<
-  HTMLDivElement,
-  ExpandableProps,
-  typeof ExpandableBase
->(ExpandableBase);
+const Expandable = componentWithForwardedRef(ExpandableBase);
 
 export default Expandable;

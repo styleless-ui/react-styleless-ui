@@ -80,10 +80,6 @@ const MenuItemsBase = (
   );
 };
 
-const MenuItems = componentWithForwardedRef<
-  HTMLDivElement,
-  MenuItemsProps,
-  typeof MenuItemsBase
->(MenuItemsBase);
+const MenuItems = componentWithForwardedRef(MenuItemsBase);
 
 export default MenuItems;

@@ -248,10 +248,6 @@ const SwitchBase = (props: SwitchProps, ref: React.Ref<HTMLButtonElement>) => {
   );
 };
 
-const Switch = componentWithForwardedRef<
-  HTMLButtonElement,
-  SwitchProps,
-  typeof SwitchBase
->(SwitchBase);
+const Switch = componentWithForwardedRef(SwitchBase);
 
 export default Switch;

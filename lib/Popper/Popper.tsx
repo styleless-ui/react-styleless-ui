@@ -294,10 +294,6 @@ const PopperBase = (props: PopperProps, ref: React.Ref<HTMLDivElement>) => {
   ) : null;
 };
 
-const Popper = componentWithForwardedRef<
-  HTMLDivElement,
-  PopperProps,
-  typeof PopperBase
->(PopperBase);
+const Popper = componentWithForwardedRef(PopperBase);
 
 export default Popper;

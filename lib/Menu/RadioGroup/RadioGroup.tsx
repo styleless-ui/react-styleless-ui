@@ -134,10 +134,6 @@ const MenuRadioGroupBase = (
   );
 };
 
-const MenuRadioGroup = componentWithForwardedRef<
-  HTMLDivElement,
-  MenuRadioGroupProps,
-  typeof MenuRadioGroupBase
->(MenuRadioGroupBase);
+const MenuRadioGroup = componentWithForwardedRef(MenuRadioGroupBase);
 
 export default MenuRadioGroup;

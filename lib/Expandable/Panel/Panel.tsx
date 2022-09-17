@@ -65,10 +65,6 @@ const ExpandablePanelBase = (
   );
 };
 
-const ExpandablePanel = componentWithForwardedRef<
-  HTMLDivElement,
-  ExpandablePanelProps,
-  typeof ExpandablePanelBase
->(ExpandablePanelBase);
+const ExpandablePanel = componentWithForwardedRef(ExpandablePanelBase);
 
 export default ExpandablePanel;

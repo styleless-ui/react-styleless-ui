@@ -148,10 +148,6 @@ const MenuCheckItemBase = (
   );
 };
 
-const MenuCheckItem = componentWithForwardedRef<
-  HTMLDivElement,
-  MenuCheckItemProps,
-  typeof MenuCheckItemBase
->(MenuCheckItemBase);
+const MenuCheckItem = componentWithForwardedRef(MenuCheckItemBase);
 
 export default MenuCheckItem;

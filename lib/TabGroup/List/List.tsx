@@ -130,10 +130,6 @@ const TabListBase = (props: TabListProps, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const TabList = componentWithForwardedRef<
-  HTMLDivElement,
-  TabListProps,
-  typeof TabListBase
->(TabListBase);
+const TabList = componentWithForwardedRef(TabListBase);
 
 export default TabList;

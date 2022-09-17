@@ -282,10 +282,6 @@ const CheckboxBase = (
   );
 };
 
-const Checkbox = componentWithForwardedRef<
-  HTMLButtonElement,
-  CheckboxProps,
-  typeof CheckboxBase
->(CheckboxBase);
+const Checkbox = componentWithForwardedRef(CheckboxBase);
 
 export default Checkbox;

@@ -123,10 +123,6 @@ const ExpandableTriggerBase = (
   );
 };
 
-const ExpandableTrigger = componentWithForwardedRef<
-  HTMLDivElement,
-  ExpandableTriggerProps,
-  typeof ExpandableTriggerBase
->(ExpandableTriggerBase);
+const ExpandableTrigger = componentWithForwardedRef(ExpandableTriggerBase);
 
 export default ExpandableTrigger;

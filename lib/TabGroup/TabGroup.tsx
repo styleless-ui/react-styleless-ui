@@ -137,10 +137,6 @@ const TabGroupBase = (props: TabGroupProps, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const TabGroup = componentWithForwardedRef<
-  HTMLDivElement,
-  TabGroupProps,
-  typeof TabGroupBase
->(TabGroupBase);
+const TabGroup = componentWithForwardedRef(TabGroupBase);
 
 export default TabGroup;

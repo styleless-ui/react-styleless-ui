@@ -25,10 +25,6 @@ const MenuSeparatorItemBase = (
   );
 };
 
-const MenuSeparatorItem = componentWithForwardedRef<
-  HTMLDivElement,
-  MenuSeparatorItemProps,
-  typeof MenuSeparatorItemBase
->(MenuSeparatorItemBase);
+const MenuSeparatorItem = componentWithForwardedRef(MenuSeparatorItemBase);
 
 export default MenuSeparatorItem;
