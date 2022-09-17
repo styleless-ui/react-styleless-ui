@@ -1,9 +1,8 @@
 import * as React from "react";
 
 const componentWithForwardedRef = <
-  RefType,
-  Props,
-  C extends React.ForwardRefRenderFunction<RefType, Props>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  C extends React.ForwardRefRenderFunction<any, any>
 >(
   component: C
 ): C => {
