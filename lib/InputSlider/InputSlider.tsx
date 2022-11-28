@@ -75,22 +75,76 @@ interface InputSliderBaseProps {
         leadingThumbState: { active: boolean; focusedVisible: boolean };
         trailingThumbState: { active: boolean; focusedVisible: boolean };
       }) => InputSliderClassesMap);
+  /**
+   * The label of the slider(s).
+   */
   label: Label | [Label, Label];
+  /**
+   * The value of the slider. For ranged sliders, provide an array with two values.
+   */
   value?: number | [number, number];
+  /**
+   * The default value of the slider. Use when the component is not controlled.
+   */
   defaultValue?: number | [number, number];
+  /**
+   * If `true`, the slider will be disabled.
+   * @default false
+   */
   disabled?: boolean;
+  /**
+   * The orientation of the slider.
+   * @default "horizontal"
+   */
   orientation?: "horizontal" | "vertical";
+  /**
+   * The minimum allowed value of the slider. Should not be greater than or equal to `max`.
+   */
   min: number;
+  /**
+   * The maximum allowed value of the slider. Should not be less than or equal to `min`.
+   */
   max: number;
+  /**
+   * If `true`, the slider will be a ranged slider.
+   * @default false
+   */
   multiThumb?: boolean;
+  /**
+   * The granularity with which the slider can step through values.
+   * We recommend (max - min) to be evenly divisible by the step.
+   *
+   * When step is `snap`, the thumb can only be slid onto (snap on)
+   * stops provided with the `stops` prop.
+   */
   step?: number | "snap";
+  /**
+   * Stops indicate predetermined values to which the user can move the slider.
+   *
+   * When stops is a number, evenly-spaced stops will be created
+   * (the number indicates the amount of stops to create).
+   *
+   * When an array is provided, it should contain objects with value and an optional label keys.
+   */
   stops?: number | { value: number; label?: string | React.ReactNode }[];
+  /**
+   * Accepts a render function which returns a ReactNode to display the value text of the slider.
+   *
+   * The third parameter (`valueText`) is going to be the result of the `setThumbValueText` function.
+   */
   renderThumbValueText?: (
     thumbValue: number,
     isOpen: boolean,
     valueText?: string
   ) => React.ReactNode;
+  /**
+   * Accepts a function which returns a string value that provides a user-friendly name
+   * for the current value of the slider. This is important for screen reader users.
+   */
   setThumbValueText?: (thumbValue: number) => string;
+  /**
+   * Callback function that is fired when the slider's value changed.
+   */
   onChange?: (
     value: number | [number, number],
     activeThumb: ActiveThumb | null
