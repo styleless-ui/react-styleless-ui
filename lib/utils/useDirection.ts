@@ -24,9 +24,10 @@ const useDirection = <T extends HTMLElement = HTMLElement>(
   );
 
   React.useEffect(() => {
-    if (direction) return;
+    const newDirection = getDirection(targetRef);
 
-    setDirection(getDirection(targetRef));
+    if (direction === newDirection) return;
+    setDirection(newDirection);
   }, [direction, targetRef]);
 
   return direction;
