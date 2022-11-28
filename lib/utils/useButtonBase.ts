@@ -49,10 +49,8 @@ const useButtonBase = <T extends HTMLElement = HTMLButtonElement>(
     disabled ? false : autoFocus
   );
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  React.useEffect(
-    () => void (disabled && isFocusedVisible && setIsFocusedVisible(false))
-  );
+  if (disabled && isFocusedVisible) setIsFocusedVisible(false);
+
   React.useEffect(() => void (isFocusVisibleRef.current = isFocusedVisible));
 
   // Initial focus
