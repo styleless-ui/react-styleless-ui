@@ -210,6 +210,7 @@ const InputSliderBase = (
     defaultValue,
     label: labels,
     classes: classesProp,
+    style: inlineStyle,
     orientation = "horizontal",
     multiThumb = false,
     disabled = false,
@@ -895,7 +896,7 @@ const InputSliderBase = (
     <div
       {...otherProps}
       ref={handleRootRef}
-      style={{ position: "relative" }}
+      style={{ ...inlineStyle, position: "relative" }}
       data-slot="inputSliderRoot"
       className={classes?.root}
       aria-orientation={orientation}
