@@ -173,10 +173,7 @@ const BreadcrumbBase = (
   );
 };
 
-const Breadcrumb = componentWithForwardedRef<
-  HTMLElement,
-  BreadcrumbProps,
-  typeof BreadcrumbBase
->(BreadcrumbBase);
+const Breadcrumb =
+  componentWithForwardedRef<typeof BreadcrumbBase>(BreadcrumbBase);
 
 export default Breadcrumb;

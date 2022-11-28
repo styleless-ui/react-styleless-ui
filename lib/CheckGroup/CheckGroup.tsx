@@ -154,10 +154,6 @@ const CheckGroupBase = (
   );
 };
 
-const CheckGroup = componentWithForwardedRef<
-  HTMLDivElement,
-  CheckGroupProps,
-  typeof CheckGroupBase
->(CheckGroupBase);
+const CheckGroup = componentWithForwardedRef(CheckGroupBase);
 
 export default CheckGroup;

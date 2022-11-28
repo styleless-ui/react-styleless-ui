@@ -49,10 +49,6 @@ const TabPanelsBase = (
   );
 };
 
-const TabPanels = componentWithForwardedRef<
-  HTMLDivElement,
-  TabPanelsProps,
-  typeof TabPanelsBase
->(TabPanelsBase);
+const TabPanels = componentWithForwardedRef(TabPanelsBase);
 
 export default TabPanels;

@@ -149,10 +149,6 @@ const MenuRadioItemBase = (
   );
 };
 
-const MenuRadioItem = componentWithForwardedRef<
-  HTMLDivElement,
-  MenuRadioItemProps,
-  typeof MenuRadioItemBase
->(MenuRadioItemBase);
+const MenuRadioItem = componentWithForwardedRef(MenuRadioItemBase);
 
 export default MenuRadioItem;

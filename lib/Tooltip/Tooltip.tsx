@@ -257,10 +257,6 @@ const TooltipBase = (props: TooltipProps, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const Tooltip = componentWithForwardedRef<
-  HTMLDivElement,
-  TooltipProps,
-  typeof TooltipBase
->(TooltipBase);
+const Tooltip = componentWithForwardedRef(TooltipBase);
 
 export default Tooltip;

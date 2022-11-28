@@ -183,10 +183,6 @@ const ToggleBase = (props: ToggleProps, ref: React.Ref<HTMLButtonElement>) => {
   );
 };
 
-const Toggle = componentWithForwardedRef<
-  HTMLButtonElement,
-  ToggleProps,
-  typeof ToggleBase
->(ToggleBase);
+const Toggle = componentWithForwardedRef(ToggleBase);
 
 export default Toggle;

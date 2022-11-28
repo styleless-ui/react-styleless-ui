@@ -191,10 +191,6 @@ const MenuItemBase = (props: MenuItemProps, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const MenuItem = componentWithForwardedRef<
-  HTMLDivElement,
-  MenuItemProps,
-  typeof MenuItemBase
->(MenuItemBase);
+const MenuItem = componentWithForwardedRef(MenuItemBase);
 
 export default MenuItem;

@@ -42,10 +42,6 @@ const SubMenuBase = (props: SubMenuProps, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const SubMenu = componentWithForwardedRef<
-  HTMLDivElement,
-  SubMenuProps,
-  typeof SubMenuBase
->(SubMenuBase);
+const SubMenu = componentWithForwardedRef(SubMenuBase);
 
 export default SubMenu;

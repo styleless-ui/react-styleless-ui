@@ -203,10 +203,6 @@ const TabBase = (props: TabProps, ref: React.Ref<HTMLButtonElement>) => {
   );
 };
 
-const Tab = componentWithForwardedRef<
-  HTMLButtonElement,
-  TabProps,
-  typeof TabBase
->(TabBase);
+const Tab = componentWithForwardedRef(TabBase);
 
 export default Tab;

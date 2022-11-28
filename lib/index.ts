@@ -8,6 +8,8 @@ export * from "./Dialog";
 export { default as Dialog } from "./Dialog";
 export * from "./FocusTrap";
 export { default as FocusTrap } from "./FocusTrap";
+export * from "./InputSlider";
+export { default as InputSlider } from "./InputSlider";
 export * from "./Menu";
 export { default as Menu } from "./Menu";
 export * from "./Popper";

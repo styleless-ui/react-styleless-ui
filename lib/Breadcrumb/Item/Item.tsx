@@ -36,10 +36,6 @@ const BreadcrumbItemBase = (
   );
 };
 
-const BreadcrumbItem = componentWithForwardedRef<
-  HTMLLIElement,
-  BreadcrumbItemProps,
-  typeof BreadcrumbItemBase
->(BreadcrumbItemBase);
+const BreadcrumbItem = componentWithForwardedRef(BreadcrumbItemBase);
 
 export default BreadcrumbItem;

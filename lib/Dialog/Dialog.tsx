@@ -191,10 +191,6 @@ const DialogBase = (props: DialogProps, ref: React.Ref<HTMLDivElement>) => {
   ) : null;
 };
 
-const Dialog = componentWithForwardedRef<
-  HTMLDivElement,
-  DialogProps,
-  typeof DialogBase
->(DialogBase);
+const Dialog = componentWithForwardedRef(DialogBase);
 
 export default Dialog;

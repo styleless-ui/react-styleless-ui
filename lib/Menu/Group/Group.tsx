@@ -107,10 +107,6 @@ const MenuGroupBase = (
   );
 };
 
-const MenuGroup = componentWithForwardedRef<
-  HTMLDivElement,
-  MenuGroupProps,
-  typeof MenuGroupBase
->(MenuGroupBase);
+const MenuGroup = componentWithForwardedRef(MenuGroupBase);
 
 export default MenuGroup;

@@ -61,10 +61,6 @@ const TabPanelBase = (props: TabPanelProps, ref: React.Ref<HTMLDivElement>) => {
   ) : null;
 };
 
-const TabPanel = componentWithForwardedRef<
-  HTMLDivElement,
-  TabPanelProps,
-  typeof TabPanelBase
->(TabPanelBase);
+const TabPanel = componentWithForwardedRef(TabPanelBase);
 
 export default TabPanel;
