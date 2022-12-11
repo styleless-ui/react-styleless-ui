@@ -1,5 +1,8 @@
 <div align="center">
-  <img src="https://avatars.githubusercontent.com/u/109390460?s=200&v=4" height="128">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/styleless-ui/react-styleless-ui/4c10f2480719ef23e7af118b54f6861164603888/readme-light-icon.svg">
+    <img src="https://raw.githubusercontent.com/styleless-ui/react-styleless-ui/4c10f2480719ef23e7af118b54f6861164603888/readme-dark-icon.svg" height="128">
+  </picture>
   <h1 align="center"><samp>[ ui | styleless/react ]</samp></h1>
 </div>
 
