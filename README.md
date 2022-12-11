@@ -1,5 +1,6 @@
 <div align="center">
-  <h1 align="center">React Styleless Ui</h1>
+  <img src="https://avatars.githubusercontent.com/u/109390460?s=200&v=4" height="128">
+  <h1 align="center"><samp>[ ui | styleless/react ]</samp></h1>
 </div>
 
 <div align="center">
