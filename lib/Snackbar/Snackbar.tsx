@@ -11,12 +11,9 @@ import {
   usePreviousValue
 } from "../utils";
 import SnackbarContext from "./context";
-import {
-  Portal as SnackbarPortalSlot,
-  Root as SnackbarRootSlot
-} from "./slots";
+import { Root as SnackbarRootSlot } from "./slots";
 
-interface SnackbarBaseProps {
+interface RootBaseProps {
   /**
    * The content of the snackbar.
    */
@@ -51,31 +48,21 @@ interface SnackbarBaseProps {
    */
   onDurationEnd?: () => void;
   /**
-   * The Callback fires when the snackbar opens.
-   */
-  onOpen?: () => void;
-  /**
-   * The Callback fires when the snackbar closes.
-   */
-  onClose?: () => void;
-  /**
    * Callback fired when the `Escape` key is released.
    */
   onEscapeKeyUp?: (event: KeyboardEvent) => void;
 }
 
-export type SnackbarProps = Omit<
-  MergeElementProps<"div", SnackbarBaseProps>,
+export type RootProps = Omit<
+  MergeElementProps<"div", RootBaseProps>,
   "defaultChecked" | "defaultValue"
 >;
 
-const SnackbarBase = (props: SnackbarProps, ref: React.Ref<HTMLDivElement>) => {
+const SnackbarBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
   const {
     open,
     duration,
     style,
-    onOpen,
-    onClose,
     onEscapeKeyUp,
     onDurationEnd,
     id: idProp,
@@ -113,19 +100,13 @@ const SnackbarBase = (props: SnackbarProps, ref: React.Ref<HTMLDivElement>) => {
 
   useOnChange(open, openState => {
     if (!isMounted()) return;
+
     previouslyFocusedElement.current =
       document.activeElement as HTMLElement | null;
 
-    if (typeof prevOpen !== "boolean") return;
-
-    if (openState) {
-      onOpen?.();
-      if (duration && onDurationEnd)
-        timeoutRef.current = window.setTimeout(onDurationEnd, duration);
-    } else {
-      onClose?.();
-      window.clearTimeout(timeoutRef.current);
-    }
+    if (openState && duration && onDurationEnd) {
+      timeoutRef.current = window.setTimeout(onDurationEnd, duration);
+    } else window.clearTimeout(timeoutRef.current);
   });
 
   const className =
@@ -157,7 +138,7 @@ const SnackbarBase = (props: SnackbarProps, ref: React.Ref<HTMLDivElement>) => {
   return keepMounted || (!keepMounted && open) ? (
     <Portal>
       <div
-        data-slot={SnackbarPortalSlot}
+        data-slot="portal"
         role="presentation"
         tabIndex={-1}
         aria-hidden={!open}
