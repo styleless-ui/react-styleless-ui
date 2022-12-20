@@ -22,6 +22,7 @@ export * from "./Radio";
 export { default as Radio } from "./Radio";
 export * from "./RadioGroup";
 export { default as RadioGroup } from "./RadioGroup";
+export * as Snackbar from "./Snackbar";
 export * from "./Switch";
 export { default as Switch } from "./Switch";
 export * from "./TabGroup";
