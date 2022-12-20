@@ -7,3 +7,4 @@ export { default as itSupportsDataSetProps } from "./itSupportsDataSetProps";
 export { default as itSupportsFocusEvents } from "./itSupportsFocusEvents";
 export { default as itSupportsRef } from "./itSupportsRef";
 export { default as itSupportsStyle } from "./itSupportsStyle";
+export { default as wait } from "./wait";
