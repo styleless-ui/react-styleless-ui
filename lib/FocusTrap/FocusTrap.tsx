@@ -112,13 +112,13 @@ const FocusTrap = (props: FocusTrapProps) => {
     <>
       <div
         aria-hidden="true"
-        tabIndex={0}
+        tabIndex={enabled ? 0 : -1}
         style={visuallyHiddenCSSProperties}
       ></div>
       {React.cloneElement(child, childProps)}
       <div
         aria-hidden="true"
-        tabIndex={0}
+        tabIndex={enabled ? 0 : -1}
         style={visuallyHiddenCSSProperties}
       ></div>
     </>
