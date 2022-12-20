@@ -32,7 +32,13 @@ interface RootBaseProps {
    * If not provided, the previously focused element will be focused.
    */
   focusAfterClosed?: React.RefObject<HTMLElement> | string;
-  role?: "alert" | "status" | "alertdialog";
+  /**
+   * The `status` role defines a live region containing advisory information for the user that is not important enough to be an `alert`.
+   *
+   * The `alert` role is for important, and usually time-sensitive, information.
+   * @default "alert"
+   */
+  role: "alert" | "status";
   /**
    * Used to keep mounting when more control is needed.\
    * Useful when controlling animation with React animation libraries.
@@ -67,7 +73,7 @@ const SnackbarBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
     onDurationEnd,
     id: idProp,
     focusAfterClosed,
-    role = "alert",
+    role,
     keepMounted = false,
     children: childrenProp,
     className: classNameProp,
@@ -119,8 +125,6 @@ const SnackbarBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
       ? childrenProp({ openState: open })
       : childrenProp;
 
-  const context = React.useMemo(() => ({ id, role, open }), [id, role, open]);
-
   if (typeof document !== "undefined") {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEventListener(
@@ -134,6 +138,8 @@ const SnackbarBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
       open && onEscapeKeyUp != null
     );
   }
+
+  const context = React.useMemo(() => ({ id, role, open }), [id, role, open]);
 
   return keepMounted || (!keepMounted && open) ? (
     <Portal>

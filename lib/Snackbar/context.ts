@@ -2,7 +2,7 @@ import * as React from "react";
 
 export interface ISnackbarContext {
   id?: string;
-  role: "alertdialog" | "alert" | "status";
+  role: "alert" | "status";
   open: boolean;
 }
 

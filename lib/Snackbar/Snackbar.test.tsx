@@ -15,17 +15,17 @@ import * as Slots from "./slots";
 describe("Snackbar", () => {
   afterEach(jest.clearAllMocks);
 
-  itShouldMount(Snackbar.Root, { open: true });
-  itSupportsRef(Snackbar.Root, { open: true }, HTMLDivElement);
+  itShouldMount(Snackbar.Root, { open: true, role: "status" });
+  itSupportsRef(Snackbar.Root, { open: true, role: "status" }, HTMLDivElement);
   itSupportsStyle(
     Snackbar.Root,
-    { open: true },
+    { open: true, role: "status" },
     `[data-slot='${Slots.Root}']`,
     { withPortal: true }
   );
   itSupportsDataSetProps(
     Snackbar.Root,
-    { open: true },
+    { open: true, role: "status" },
     `[data-slot='${Slots.Root}']`,
     { withPortal: true }
   );
@@ -34,7 +34,7 @@ describe("Snackbar", () => {
     render(
       <Snackbar.Root
         open
-        role="alertdialog"
+        role="status"
         data-testid="snackbar-root"
         className={({ openState }) => cls("root", { "root--open": openState })}
       >
@@ -81,7 +81,7 @@ describe("Snackbar", () => {
 
   it("should have `aria-labelledby` and `aria-describedby` attributes", () => {
     render(
-      <Snackbar.Root open data-testid="snackbar-root">
+      <Snackbar.Root open role="status" data-testid="snackbar-root">
         <Snackbar.Content data-testid="snackbar-content">
           <Snackbar.Title data-testid="snackbar-title">Title</Snackbar.Title>
           <Snackbar.Description data-testid="snackbar-description">
@@ -108,6 +108,7 @@ describe("Snackbar", () => {
       <>
         <button id="focus-btn">Button</button>
         <Snackbar.Root
+          role="status"
           open={true}
           focusAfterClosed="#focus-btn"
         ></Snackbar.Root>
@@ -117,6 +118,7 @@ describe("Snackbar", () => {
       <>
         <button id="focus-btn">Button</button>
         <Snackbar.Root
+          role="status"
           open={false}
           focusAfterClosed="#focus-btn"
         ></Snackbar.Root>
@@ -132,7 +134,11 @@ describe("Snackbar", () => {
 
     userEvent.setup();
     render(
-      <Snackbar.Root open onEscapeKeyUp={handleEscapeKeyUp}></Snackbar.Root>
+      <Snackbar.Root
+        open
+        role="status"
+        onEscapeKeyUp={handleEscapeKeyUp}
+      ></Snackbar.Root>
     );
 
     await userEvent.keyboard("[Escape]");
@@ -148,6 +154,7 @@ describe("Snackbar", () => {
 
     const props: Snackbar.RootProps = {
       duration,
+      role: "status",
       open: true,
       onDurationEnd: handleDurationEnd
     };

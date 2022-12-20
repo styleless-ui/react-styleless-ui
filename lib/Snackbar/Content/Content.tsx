@@ -1,9 +1,16 @@
 import * as React from "react";
 import FocusTrap from "../../FocusTrap";
 import { type MergeElementProps } from "../../typings.d";
-import { componentWithForwardedRef, useDeterministicId } from "../../utils";
+import {
+  componentWithForwardedRef,
+  setRef,
+  useDeterministicId
+} from "../../utils";
 import SnackbarContext from "../context";
-import { Content as SnackbarContentSlot } from "../slots";
+import {
+  Content as SnackbarContentSlot,
+  Action as SnackbarActionSlot
+} from "../slots";
 
 interface ContentBaseProps {
   /**
@@ -31,31 +38,40 @@ const SnackbarContentBase = (
 
   const id = useDeterministicId(idProp, "styleless-ui__snackbar-content");
 
-  const renderContent = () => (
-    <div
-      {...otherProps}
-      id={id}
-      ref={ref}
-      className={className}
-      role={snackbarCtx?.role}
-      data-slot={SnackbarContentSlot}
-      aria-atomic="true"
-      aria-live={
-        snackbarCtx
-          ? ["alert", "alertdialog"].includes(snackbarCtx.role)
-            ? "assertive"
-            : "polite"
-          : "off"
-      }
-    >
-      {children}
-    </div>
-  );
+  const [isTrappable, setIsTrappable] = React.useState(false);
 
-  return snackbarCtx?.role === "alertdialog" ? (
-    <FocusTrap enabled={snackbarCtx?.open}>{renderContent()}</FocusTrap>
-  ) : (
-    renderContent()
+  const refCallback = (node: HTMLDivElement | null) => {
+    setRef(ref, node);
+
+    if (!node) return;
+
+    const actionEl = node.querySelector(`[data-slot="${SnackbarActionSlot}"]`);
+    if (!actionEl) return setIsTrappable(false);
+
+    setIsTrappable(true);
+  };
+
+  return (
+    <FocusTrap enabled={snackbarCtx?.open && isTrappable}>
+      <div
+        {...otherProps}
+        id={id}
+        ref={refCallback}
+        className={className}
+        role={snackbarCtx?.role}
+        data-slot={SnackbarContentSlot}
+        aria-atomic="true"
+        aria-live={
+          snackbarCtx
+            ? snackbarCtx.role === "alert"
+              ? "assertive"
+              : "polite"
+            : "off"
+        }
+      >
+        {children}
+      </div>
+    </FocusTrap>
   );
 };
 

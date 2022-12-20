@@ -7,7 +7,6 @@ import {
   useDeterministicId,
   useForkedRefs
 } from "../../utils";
-import SnackbarContext from "../context";
 import { Action as SnackbarActionSlot } from "../slots";
 
 interface ActionBaseProps {
@@ -51,8 +50,6 @@ const SnackbarActionBase = (
     ...otherProps
   } = props;
 
-  const snackbarCtx = React.useContext(SnackbarContext);
-
   const id = useDeterministicId(idProp, "styleless-ui__snackbar-action");
 
   const buttonBase = useButtonBase({
@@ -95,19 +92,6 @@ const SnackbarActionBase = (
         ].join("\n")
       );
     }
-
-    const rootRole = snackbarCtx?.role;
-
-    if (!rootRole) return;
-    if (rootRole === "alertdialog") return;
-
-    // eslint-disable-next-line no-console
-    console.error(
-      [
-        "[StylelessUI][Snackbar/Action]: If your snackbar has interactive controls/actions associated with it, you should only use the `alertdialog` role.",
-        'To fix the issue set `role="alerdialog".`'
-      ].join("\n")
-    );
   };
 
   const className =
