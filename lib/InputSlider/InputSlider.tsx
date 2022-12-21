@@ -15,6 +15,7 @@ import {
   useForkedRefs,
   useIsMounted
 } from "../utils";
+import * as Slots from "./slots";
 
 type InputSliderClassesMap = Record<
   | "root"
@@ -63,7 +64,7 @@ type Label =
       labelledBy: string;
     };
 
-interface InputSliderBaseProps {
+interface RootBaseProps {
   /**
    * Map of sub-components and their correlated classNames.
    */
@@ -143,7 +144,7 @@ interface InputSliderBaseProps {
    */
   setThumbValueText?: (thumbValue: number) => string;
   /**
-   * Callback function that is fired when the slider's value changed.
+   * Callback fired when the slider's value changes.
    */
   onChange?: (
     value: number | [number, number],
@@ -151,8 +152,8 @@ interface InputSliderBaseProps {
   ) => void;
 }
 
-export type InputSliderProps = Omit<
-  MergeElementProps<"div", InputSliderBaseProps>,
+export type RootProps = Omit<
+  MergeElementProps<"div", RootBaseProps>,
   "className" | "defaultChecked"
 >;
 
@@ -209,8 +210,8 @@ const getRelativeValue = (
   thumbInfo: ThumbInfo,
   segments: Segment[],
   requiredProps: {
-    max: InputSliderProps["max"];
-    step: InputSliderProps["step"];
+    max: RootProps["max"];
+    step: RootProps["step"];
   }
 ) => {
   const { max, step } = requiredProps;
@@ -247,10 +248,7 @@ const getNearestThumb = (
   return leftDiff <= rightDiff ? { ...left, index: 0 } : { ...right, index: 1 };
 };
 
-const InputSliderBase = (
-  props: InputSliderProps,
-  ref: React.Ref<HTMLDivElement>
-) => {
+const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
   const {
     max,
     min,
@@ -951,7 +949,7 @@ const InputSliderBase = (
       {...otherProps}
       ref={handleRootRef}
       style={{ ...inlineStyle, position: "relative" }}
-      data-slot="inputSliderRoot"
+      data-slot={Slots.Root}
       className={classes?.root}
       aria-orientation={orientation}
       aria-disabled={disabled}
@@ -960,26 +958,26 @@ const InputSliderBase = (
       <div
         aria-hidden="true"
         className={classes?.track}
-        data-slot="inputSliderTrack"
+        data-slot={Slots.Track}
         style={trackStyles}
       >
         <div
           aria-hidden="true"
           className={classes?.range}
-          data-slot="inputSliderRange"
+          data-slot={Slots.Range}
           style={rangeStyles}
         ></div>
         {!!segments.length && (
           <div
             aria-hidden="true"
             className={classes?.segments}
-            data-slot="inputSliderSegments"
+            data-slot={Slots.Segments}
           >
             {segments.map(({ length, label }, idx) => (
               <div
                 key={String(length) + String(idx) + String(label)}
                 className={classes?.segment}
-                data-slot="inputSliderSegment"
+                data-slot={Slots.Segment}
                 data-segment-index={idx}
                 style={{
                   position: "absolute",
@@ -1008,11 +1006,11 @@ const InputSliderBase = (
                     }[orientation]
                   }}
                   className={classes?.segmentMark}
-                  data-slot="inputSliderSegmentMark"
+                  data-slot={Slots.SegmentMark}
                 ></div>
                 <div
                   className={classes?.segmentLabel}
-                  data-slot="inputSliderSegmentLabel"
+                  data-slot={Slots.SegmentLabel}
                   onClick={handleSegmentLabelClick}
                 >
                   {label}
@@ -1029,11 +1027,11 @@ const InputSliderBase = (
           .filter(Boolean)
           .join(" ")}
         data-thumb-index="0"
-        data-slot="inputSliderThumb"
+        data-slot={Slots.Thumb}
         data-active={activeThumbRef.current?.index === 0 ? "" : undefined}
         data-focus-visible={isLeftFocusedVisible ? "" : undefined}
       >
-        <div aria-hidden="true" data-slot="inputSliderThumbText">
+        <div aria-hidden="true" data-slot={Slots.ThumbText}>
           {renderThumbValueText?.(
             thumbs.left.value,
             valueDisplayState.left,
@@ -1050,11 +1048,11 @@ const InputSliderBase = (
             .filter(Boolean)
             .join(" ")}
           data-thumb-index="1"
-          data-slot="inputSliderThumb"
+          data-slot={Slots.Thumb}
           data-active={activeThumbRef.current?.index === 1 ? "" : undefined}
           data-focus-visible={isRightFocusedVisible ? "" : undefined}
         >
-          <div aria-hidden="true" data-slot="inputSliderThumbText">
+          <div aria-hidden="true" data-slot={Slots.ThumbText}>
             {
               renderThumbValueText?.(
                 thumbs.right.value,

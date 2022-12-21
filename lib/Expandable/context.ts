@@ -3,6 +3,7 @@ import * as React from "react";
 export interface IExpandableContext {
   isExpanded: boolean;
   setIsExpanded: (value: React.SetStateAction<boolean>) => void;
+  handleExpandChange: (expandState: boolean) => void;
 }
 
 const ExpandableContext = React.createContext<IExpandableContext | null>(null);

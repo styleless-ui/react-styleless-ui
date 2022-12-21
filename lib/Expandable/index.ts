@@ -1,6 +1,3 @@
-export { default, type ExpandableProps } from "./Expandable";
-export { default as ExpandablePanel, type ExpandablePanelProps } from "./Panel";
-export {
-  default as ExpandableTrigger,
-  type ExpandableTriggerProps
-} from "./Trigger";
+export { default as Content, type ContentProps } from "./Content";
+export { default as Root, type RootProps } from "./Expandable";
+export { default as Trigger, type TriggerProps } from "./Trigger";

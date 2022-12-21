@@ -1,7 +1,7 @@
 import * as React from "react";
 import FocusTrap from "../FocusTrap";
 import { SystemKeys } from "../internals";
-import Popper, { type PopperProps } from "../Popper";
+import Popper, { type RootProps as PopperProps } from "../Popper";
 import type { VirtualElement } from "../Popper/helpers";
 import type { MergeElementProps } from "../typings";
 import {
@@ -14,8 +14,9 @@ import {
   useForkedRefs
 } from "../utils";
 import MenuContext, { type IMenuContext } from "./context";
+import { Root as RootSlot } from "./slots";
 
-interface MenuBaseProps {
+interface RootBaseProps {
   /**
    * The content of the component.
    */
@@ -68,8 +69,8 @@ interface MenuBaseProps {
   disabledKeySearch?: boolean;
 }
 
-export type MenuProps = Omit<
-  MergeElementProps<"div", MenuBaseProps>,
+export type RootProps = Omit<
+  MergeElementProps<"div", RootBaseProps>,
   "defaultValue" | "defaultChecked"
 >;
 
@@ -84,7 +85,7 @@ const makeRegisterItem =
     items.push(itemRef);
   };
 
-const MenuBase = (props: MenuProps, ref: React.Ref<HTMLDivElement>) => {
+const MenuBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
   const {
     id: idProp,
     className: classNameProp,
@@ -412,10 +413,10 @@ const MenuBase = (props: MenuProps, ref: React.Ref<HTMLDivElement>) => {
         {...otherProps}
         ref={refCallback}
         id={id}
-        data-slot="menuRoot"
+        data-slot={RootSlot}
         className={className}
         tabIndex={-1}
-        {...(open ? { "data-open": "" } : {})}
+        data-open={open ? "" : undefined}
       >
         <MenuContext.Provider value={context}>{children}</MenuContext.Provider>
       </div>

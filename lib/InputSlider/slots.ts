@@ -1,0 +1,9 @@
+export const Root = "InputSlider:Root";
+export const Track = "InputSlider:Track";
+export const Range = "InputSlider:Range";
+export const Thumb = "InputSlider:Thumb";
+export const ThumbText = "InputSlider:ThumbText";
+export const Segments = "InputSlider:Segments";
+export const Segment = "InputSlider:Segment";
+export const SegmentMark = "InputSlider:SegmentMark";
+export const SegmentLabel = "InputSlider:SegmentLabel";

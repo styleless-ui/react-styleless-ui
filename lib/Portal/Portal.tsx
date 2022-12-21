@@ -2,7 +2,7 @@ import * as React from "react";
 import { createPortal } from "react-dom";
 import { useIsomorphicLayoutEffect } from "../utils";
 
-export interface PortalProps {
+export interface RootProps {
   /**
    * A string containing one selector to match.
    * This string must be a valid CSS selector string;
@@ -27,7 +27,7 @@ const getContainer = (querySelector?: string) =>
     ? document.querySelector<HTMLElement>(querySelector)
     : document.body;
 
-const Portal = (props: PortalProps) => {
+const Portal = (props: RootProps) => {
   const { containerQuerySelector, children, disabled = false } = props;
 
   const [container, setContainer] = React.useState<HTMLElement | null>(null);

@@ -1,3 +1,4 @@
+import * as TabGroup from ".";
 import {
   act,
   itShouldMount,
@@ -8,39 +9,34 @@ import {
   screen,
   userEvent
 } from "../../tests/utils";
-import TabGroup from "./TabGroup";
-import TabList, { type TabListProps } from "./List";
-import TabPanels from "./Panels";
-import TabPanel from "./Panel";
-import Tab from "./Tab";
 
 const tabListLabel = "Label";
 
 describe("TabGroup", () => {
   afterEach(jest.clearAllMocks);
 
-  itShouldMount(TabGroup, {});
-  itSupportsStyle(TabGroup, {});
-  itSupportsRef(TabGroup, {}, HTMLDivElement);
-  itSupportsDataSetProps(TabGroup, {});
+  itShouldMount(TabGroup.Root, {});
+  itSupportsStyle(TabGroup.Root, {});
+  itSupportsRef(TabGroup.Root, {}, HTMLDivElement);
+  itSupportsDataSetProps(TabGroup.Root, {});
 
   it("selects tabs with mouse interactions and calls `onChange` callback", async () => {
     const handleChange = jest.fn<void, [tabIndex: number]>();
 
     userEvent.setup();
     render(
-      <TabGroup onChange={handleChange}>
-        <TabList label={tabListLabel}>
-          <Tab>Tab 1</Tab>
-          <Tab>Tab 2</Tab>
-          <Tab>Tab 3</Tab>
-        </TabList>
-        <TabPanels>
-          <TabPanel>Panel 1</TabPanel>
-          <TabPanel>Panel 2</TabPanel>
-          <TabPanel>Panel 3</TabPanel>
-        </TabPanels>
-      </TabGroup>
+      <TabGroup.Root onChange={handleChange}>
+        <TabGroup.List label={tabListLabel}>
+          <TabGroup.Tab>Tab 1</TabGroup.Tab>
+          <TabGroup.Tab>Tab 2</TabGroup.Tab>
+          <TabGroup.Tab>Tab 3</TabGroup.Tab>
+        </TabGroup.List>
+        <TabGroup.Panels>
+          <TabGroup.Panel>Panel 1</TabGroup.Panel>
+          <TabGroup.Panel>Panel 2</TabGroup.Panel>
+          <TabGroup.Panel>Panel 3</TabGroup.Panel>
+        </TabGroup.Panels>
+      </TabGroup.Root>
     );
 
     const tabs = screen.getAllByRole("tab");
@@ -69,18 +65,18 @@ describe("TabGroup", () => {
 
     userEvent.setup();
     render(
-      <TabGroup onChange={handleChange}>
-        <TabList label={tabListLabel}>
-          <Tab>Tab 1</Tab>
-          <Tab>Tab 2</Tab>
-          <Tab>Tab 3</Tab>
-        </TabList>
-        <TabPanels>
-          <TabPanel>Panel 1</TabPanel>
-          <TabPanel>Panel 2</TabPanel>
-          <TabPanel>Panel 3</TabPanel>
-        </TabPanels>
-      </TabGroup>
+      <TabGroup.Root onChange={handleChange}>
+        <TabGroup.List label={tabListLabel}>
+          <TabGroup.Tab>Tab 1</TabGroup.Tab>
+          <TabGroup.Tab>Tab 2</TabGroup.Tab>
+          <TabGroup.Tab>Tab 3</TabGroup.Tab>
+        </TabGroup.List>
+        <TabGroup.Panels>
+          <TabGroup.Panel>Panel 1</TabGroup.Panel>
+          <TabGroup.Panel>Panel 2</TabGroup.Panel>
+          <TabGroup.Panel>Panel 3</TabGroup.Panel>
+        </TabGroup.Panels>
+      </TabGroup.Root>
     );
 
     const tabs = screen.getAllByRole("tab");
@@ -108,19 +104,19 @@ describe("TabGroup", () => {
 describe("TabList", () => {
   afterEach(jest.clearAllMocks);
 
-  const REQUIRED_PROPS: TabListProps = {
+  const REQUIRED_PROPS: TabGroup.ListProps = {
     label: tabListLabel,
     classes: { label: "label", root: "root" }
   };
 
-  itShouldMount(TabList, REQUIRED_PROPS);
-  itSupportsRef(TabList, REQUIRED_PROPS, HTMLDivElement);
-  itSupportsStyle(TabList, REQUIRED_PROPS, "[role='tablist']");
-  itSupportsDataSetProps(TabList, REQUIRED_PROPS, "[role='tablist']");
+  itShouldMount(TabGroup.List, REQUIRED_PROPS);
+  itSupportsRef(TabGroup.List, REQUIRED_PROPS, HTMLDivElement);
+  itSupportsStyle(TabGroup.List, REQUIRED_PROPS, "[role='tablist']");
+  itSupportsDataSetProps(TabGroup.List, REQUIRED_PROPS, "[role='tablist']");
 
   it("should have `aria-label='label'` property when `label={{ screenReaderLabel: 'label' }}`", () => {
     render(
-      <TabList
+      <TabGroup.List
         {...REQUIRED_PROPS}
         label={{ screenReaderLabel: tabListLabel }}
       />
@@ -134,7 +130,7 @@ describe("TabList", () => {
 
   it("should have `aria-labelledby='identifier'` property when `label={{ labelledBy: 'identifier' }}`", () => {
     render(
-      <TabList {...REQUIRED_PROPS} label={{ labelledBy: "identifier" }} />
+      <TabGroup.List {...REQUIRED_PROPS} label={{ labelledBy: "identifier" }} />
     );
 
     expect(screen.getByRole("tablist")).toHaveAttribute(

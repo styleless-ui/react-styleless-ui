@@ -7,8 +7,9 @@ import {
   useCheckBase,
   useForkedRefs
 } from "../utils";
+import * as Slots from "./slots";
 
-interface SwitchBaseProps {
+interface RootBaseProps {
   /**
    * The content of the component.
    */
@@ -54,17 +55,17 @@ interface SwitchBaseProps {
    */
   disabled?: boolean;
   /**
-   * The Callback fires when the state of `active` has changed.
+   * The Callback is fired when the state of `active` changes.
    */
   onActiveChange?: (activeState: boolean) => void;
 }
 
-export type ToggleProps = Omit<
-  MergeElementProps<"button", SwitchBaseProps>,
+export type RootProps = Omit<
+  MergeElementProps<"button", RootBaseProps>,
   "defaultValue" | "defaultChecked"
 >;
 
-const ToggleBase = (props: ToggleProps, ref: React.Ref<HTMLButtonElement>) => {
+const ToggleBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
   const {
     value,
     children: childrenProp,
@@ -168,7 +169,7 @@ const ToggleBase = (props: ToggleProps, ref: React.Ref<HTMLButtonElement>) => {
       className={className}
       type="button"
       ref={refCallback}
-      data-slot="toggleRoot"
+      data-slot={Slots.Root}
       disabled={disabled}
       onFocus={checkBase.handleFocus}
       onBlur={checkBase.handleBlur}

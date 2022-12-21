@@ -1,1 +1,1 @@
-export { default, type PopperProps } from "./Popper";
+export { default, type RootProps } from "./Popper";

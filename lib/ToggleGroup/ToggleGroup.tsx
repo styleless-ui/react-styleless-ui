@@ -7,10 +7,11 @@ import {
   useForkedRefs
 } from "../utils";
 import ToggleGroupContext from "./context";
+import * as Slots from "./slots";
 
 type ToggleGroupClassesMap = Record<"root" | "label" | "group", string>;
 
-interface ToggleGroupBaseProps {
+interface RootBaseProps {
   /**
    * The content of the group.
    */
@@ -47,7 +48,7 @@ interface ToggleGroupBaseProps {
    */
   defaultValue?: string | string[];
   /**
-   * The Callback fires when the state has changed.
+   * The Callback is fired when the state changes.
    */
   onChange?: (activeItems: string | string[]) => void;
   /**
@@ -61,12 +62,12 @@ interface ToggleGroupBaseProps {
   keyboardActivationBehavior?: "manual" | "automatic";
 }
 
-export type ToggleGroupProps = Omit<
-  MergeElementProps<"div", ToggleGroupBaseProps>,
+export type RootProps = Omit<
+  MergeElementProps<"div", RootBaseProps>,
   "className" | "defaultChecked"
 >;
 
-const getLabelInfo = (labelInput: ToggleGroupProps["label"]) => {
+const getLabelInfo = (labelInput: RootProps["label"]) => {
   const props: {
     visibleLabel?: string;
     srOnlyLabel?: string;
@@ -94,10 +95,7 @@ const getLabelInfo = (labelInput: ToggleGroupProps["label"]) => {
   return props;
 };
 
-const ToggleGroupBase = (
-  props: ToggleGroupProps,
-  ref: React.Ref<HTMLDivElement>
-) => {
+const ToggleGroupBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
   const {
     label,
     children,
@@ -201,7 +199,7 @@ const ToggleGroupBase = (
       id={id}
       ref={handleRootRef}
       className={classes?.root}
-      data-slot="toggleGroupRoot"
+      data-slot={Slots.Root}
     >
       <ToggleGroupContext.Provider
         value={{
@@ -216,7 +214,7 @@ const ToggleGroupBase = (
         {visibleLabel && (
           <span
             id={visibleLabelId}
-            data-slot="toggleGroupLabel"
+            data-slot={Slots.Label}
             className={classes?.label}
           >
             {visibleLabel}
@@ -224,7 +222,7 @@ const ToggleGroupBase = (
         )}
         <div
           role="group"
-          data-slot="toggleGroupGroup"
+          data-slot={Slots.Group}
           className={classes?.group}
           aria-label={labelProps.srOnlyLabel}
           aria-labelledby={

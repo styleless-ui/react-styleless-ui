@@ -8,6 +8,7 @@ import {
   useEventListener,
   useForkedRefs
 } from "../utils";
+import * as Slots from "./slots";
 
 type RadioClassesMap = ClassesMap<"root" | "label" | "check", never>;
 
@@ -20,7 +21,7 @@ type ClassesContext = {
   focusedVisible: boolean;
 };
 
-interface RadioBaseProps {
+interface RootBaseProps {
   /**
    * Map of sub-components and their correlated classNames.
    */
@@ -69,7 +70,7 @@ interface RadioBaseProps {
    */
   disabled?: boolean;
   /**
-   * The Callback fires when the state has changed.
+   * The Callback is fired when the state changes.
    */
   onChange?: (checkedState: boolean) => void;
   /**
@@ -82,12 +83,12 @@ interface RadioBaseProps {
   onKeyUp?: React.KeyboardEventHandler<HTMLButtonElement>;
 }
 
-export type RadioProps = Omit<
-  MergeElementProps<"button", RadioBaseProps>,
+export type RootProps = Omit<
+  MergeElementProps<"button", RootBaseProps>,
   "defaultValue" | "className"
 >;
 
-const getLabelInfo = (labelInput: RadioProps["label"]) => {
+const getLabelInfo = (labelInput: RootProps["label"]) => {
   const props: {
     visibleLabel?: string;
     srOnlyLabel?: string;
@@ -122,6 +123,7 @@ const _DefaultCheck = ({ className }: { className?: string }) => (
     aria-hidden="true"
     focusable="false"
     className={className}
+    data-slot={Slots.Check}
     viewBox="0 0 8 8"
   >
     <circle cx={4} cy={4} r={4} fill="currentColor" stroke="none" />
@@ -140,7 +142,7 @@ const mergeClasses = (
     return result;
   }, undefined);
 
-const RadioBase = (props: RadioProps, ref: React.Ref<HTMLButtonElement>) => {
+const RadioBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
   const {
     label,
     value,
@@ -253,7 +255,7 @@ const RadioBase = (props: RadioProps, ref: React.Ref<HTMLButtonElement>) => {
         className={classes?.root}
         type="button"
         ref={refCallback}
-        data-slot="radioRoot"
+        data-slot={Slots.Root}
         disabled={disabled}
         onFocus={checkBase.handleFocus}
         onBlur={checkBase.handleBlur}
@@ -279,7 +281,7 @@ const RadioBase = (props: RadioProps, ref: React.Ref<HTMLButtonElement>) => {
       {visibleLabel && (
         <span
           id={visibleLabelId}
-          data-slot="radioLabel"
+          data-slot={Slots.Label}
           className={classes?.label}
         >
           {visibleLabel}

@@ -2,6 +2,7 @@ import cls from "classnames";
 import * as React from "react";
 import { render, screen } from "../../tests/utils";
 import Tooltip from "./Tooltip";
+import * as PopperSlots from "../Popper/slots";
 
 describe("Tooltip", () => {
   afterEach(jest.clearAllMocks);
@@ -44,9 +45,11 @@ describe("Tooltip", () => {
       );
 
       return portal
-        ? (portal.querySelector('[data-slot="popperRoot"]') as HTMLElement)
+        ? (portal.querySelector(
+            `[data-slot="${PopperSlots.Root}"]`
+          ) as HTMLElement)
         : (containerEl.querySelector(
-            '[data-slot="popperRoot"]'
+            `[data-slot="${PopperSlots.Root}"]`
           ) as HTMLElement);
     };
 
@@ -72,9 +75,11 @@ describe("Tooltip", () => {
       );
 
       return portal
-        ? (portal.querySelector('[data-slot="popperRoot"]') as HTMLElement)
+        ? (portal.querySelector(
+            `[data-slot="${PopperSlots.Root}"]`
+          ) as HTMLElement)
         : (containerEl.querySelector(
-            '[data-slot="popperRoot"]'
+            `[data-slot="${PopperSlots.Root}"]`
           ) as HTMLElement);
     };
 

@@ -5,11 +5,14 @@ import {
   useDeterministicId,
   useForkedRefs
 } from "../../utils";
-import DialogContext from "../context";
+import {
+  ContentRoot as ContentRootSlot,
+  DescriptionRoot as DescriptionRootSlot
+} from "../slots";
 
-interface DialogDescriptionBaseProps {
+interface DescriptionBaseProps {
   /**
-   * The content of the dialog title.
+   * The content of the component.
    */
   children?: React.ReactNode;
   /**
@@ -18,10 +21,10 @@ interface DialogDescriptionBaseProps {
   className?: string;
 }
 
-export type DialogDescriptionProps<T extends React.ElementType = "span"> =
+export type DescriptionProps<T extends React.ElementType = "span"> =
   MergeElementProps<
     T,
-    DialogDescriptionBaseProps & {
+    DescriptionBaseProps & {
       /**
        * The component used for the root node.
        * Either a string to use a HTML element or a component.
@@ -31,10 +34,10 @@ export type DialogDescriptionProps<T extends React.ElementType = "span"> =
   >;
 
 const DialogDescriptionBase = <
-  T extends React.ElementType = "strong",
+  T extends React.ElementType = React.ElementType,
   E extends HTMLElement = HTMLElement
 >(
-  props: DialogDescriptionProps<T>,
+  props: DescriptionProps<T>,
   ref: React.Ref<E>
 ) => {
   const {
@@ -45,28 +48,35 @@ const DialogDescriptionBase = <
     ...otherProps
   } = props;
 
-  const dialogCtx = React.useContext(DialogContext);
-
   const id = useDeterministicId(idProp, "styleless-ui__dialog-description");
 
   const rootRef = React.useRef<E>(null);
   const handleRef = useForkedRefs(ref, rootRef);
 
-  React.useEffect(() => {
-    const rootId = dialogCtx?.id;
+  const refCallback = (node: E | null) => {
+    handleRef(node);
 
-    if (!rootId) return;
+    if (!node) return;
     if (!id) return;
 
-    document.getElementById(rootId)?.setAttribute("aria-describedby", id);
-  }, [dialogCtx, id]);
+    const content = node.closest(`[data-slot='${ContentRootSlot}']`);
+
+    if (content) {
+      content.setAttribute("aria-describedby", id);
+    } else {
+      // eslint-disable-next-line no-console
+      console.error(
+        "[StylelessUI][Dialog]: You should always wrap your content with `<Snackbar.Content>` to provide accessibility features."
+      );
+    }
+  };
 
   return (
     <RootNode
       {...otherProps}
       id={id}
-      ref={handleRef}
-      data-slot="dialogDescription"
+      ref={refCallback}
+      data-slot={DescriptionRootSlot}
       className={className}
     >
       {children}

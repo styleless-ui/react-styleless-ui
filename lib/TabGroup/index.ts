@@ -1,5 +1,5 @@
-export { default as TabList, type TabListProps } from "./List";
-export { default as TabPanel, type TabPanelProps } from "./Panel";
-export { default as TabPanels, type TabPanelsProps } from "./Panels";
+export { default as List, type ListProps } from "./List";
+export { default as Panel, type PanelProps } from "./Panel";
+export { default as Panels, type PanelsProps } from "./Panels";
 export { default as Tab, type TabProps } from "./Tab";
-export { default, type TabGroupProps } from "./TabGroup";
+export { default as Root, type RootProps } from "./TabGroup";

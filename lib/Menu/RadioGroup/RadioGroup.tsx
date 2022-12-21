@@ -5,11 +5,15 @@ import {
   useControlledProp,
   useDeterministicId
 } from "../../utils";
+import {
+  RadioGroupLabel as RadioGroupLabelSlot,
+  RadioGroupRoot as RadioGroupRootSlot
+} from "../slots";
 import MenuRadioGroupContext from "./context";
 
 type ClassesMap = Record<"root" | "label", string>;
 
-interface MenuRadioGroupBaseProps {
+interface RadioGroupBaseProps {
   /**
    * The content of the component.
    */
@@ -34,17 +38,26 @@ interface MenuRadioGroupBaseProps {
          */
         labelledBy: string;
       };
+  /**
+   * The value of the selected radio.
+   */
   value?: string;
+  /**
+   * The default value. Use when the component is not controlled.
+   */
   defaultValue?: string;
+  /**
+   * The Callback is fired when the state changes.
+   */
   onValueChange?: (value: string) => void;
 }
 
-export type MenuRadioGroupProps = Omit<
-  MergeElementProps<"div", MenuRadioGroupBaseProps>,
+export type RadioGroupProps = Omit<
+  MergeElementProps<"div", RadioGroupBaseProps>,
   "className" | "defaultChecked"
 >;
 
-const getLabelInfo = (labelInput: MenuRadioGroupProps["label"]) => {
+const getLabelInfo = (labelInput: RadioGroupProps["label"]) => {
   const props: {
     visibleLabel?: string;
     srOnlyLabel?: string;
@@ -61,7 +74,7 @@ const getLabelInfo = (labelInput: MenuRadioGroupProps["label"]) => {
     } else {
       throw new Error(
         [
-          "[StylelessUI][MenuRadioGroup]: Invalid `label` property.",
+          "[StylelessUI][Menu.RadioGroup]: Invalid `label` property.",
           "The `label` property must be either a `string` or in shape of " +
             "`{ screenReaderLabel: string; } | { labelledBy: string; }`"
         ].join("\n")
@@ -73,7 +86,7 @@ const getLabelInfo = (labelInput: MenuRadioGroupProps["label"]) => {
 };
 
 const MenuRadioGroupBase = (
-  props: MenuRadioGroupProps,
+  props: RadioGroupProps,
   ref: React.Ref<HTMLDivElement>
 ) => {
   const {
@@ -110,7 +123,7 @@ const MenuRadioGroupBase = (
       role="group"
       id={id}
       ref={ref}
-      data-slot="menuRadioGroupRoot"
+      data-slot={RadioGroupRootSlot}
       className={classes?.root}
       tabIndex={-1}
       aria-label={labelProps.srOnlyLabel}
@@ -119,7 +132,7 @@ const MenuRadioGroupBase = (
       {visibleLabel && (
         <span
           id={visibleLabelId}
-          data-slot="menuRadioGroupLabel"
+          data-slot={RadioGroupLabelSlot}
           className={classes?.label}
         >
           {visibleLabel}

@@ -1,10 +1,11 @@
 import * as React from "react";
 import { type MergeElementProps } from "../../typings.d";
 import { componentWithForwardedRef } from "../../utils";
+import { ItemRoot as ItemRootSlot } from "../slots";
 
-interface BreadcrumbItemBaseProps {
+interface ItemBaseProps {
   /**
-   * The content of the breadcrumb item.
+   * The content of the component.
    */
   children?: React.ReactNode;
   /**
@@ -13,13 +14,13 @@ interface BreadcrumbItemBaseProps {
   className?: string;
 }
 
-export type BreadcrumbItemProps = Omit<
-  MergeElementProps<"li", BreadcrumbItemBaseProps>,
+export type ItemProps = Omit<
+  MergeElementProps<"li", ItemBaseProps>,
   "defaultChecked" | "defaultValue"
 >;
 
 const BreadcrumbItemBase = (
-  props: BreadcrumbItemProps,
+  props: ItemProps,
   ref: React.Ref<HTMLLIElement>
 ) => {
   const { className, children, ...otherProps } = props;
@@ -29,7 +30,7 @@ const BreadcrumbItemBase = (
       {...otherProps}
       ref={ref}
       className={className}
-      data-slot="breadcrumbItemRoot"
+      data-slot={ItemRootSlot}
     >
       {children}
     </li>

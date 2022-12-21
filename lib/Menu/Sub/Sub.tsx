@@ -6,16 +6,17 @@ import {
   useForkedRefs
 } from "../../utils";
 import MenuItemContext from "../Item/context";
-import Menu, { type MenuProps } from "../Menu";
+import Menu, { type RootProps as MenuProps } from "../Menu";
+import { SubRoot as SubRootSlot } from "../slots";
 
-type SubMenuBaseProps = Omit<MenuProps, "anchorElement" | "open">;
+type SubBaseProps = Omit<MenuProps, "anchorElement" | "open">;
 
-export type SubMenuProps = Omit<
-  MergeElementProps<"div", SubMenuBaseProps>,
+export type SubProps = Omit<
+  MergeElementProps<"div", SubBaseProps>,
   "defaultValue" | "defaultChecked"
 >;
 
-const SubMenuBase = (props: SubMenuProps, ref: React.Ref<HTMLDivElement>) => {
+const SubMenuBase = (props: SubProps, ref: React.Ref<HTMLDivElement>) => {
   const { children, className, id: idProp, ...otherProps } = props;
 
   const id = useDeterministicId(idProp, "styleless-ui__sub-menu");
@@ -34,6 +35,7 @@ const SubMenuBase = (props: SubMenuProps, ref: React.Ref<HTMLDivElement>) => {
       ref={handleRootRef}
       className={className}
       anchorElement={menuItemCtx?.ref}
+      data-slot={SubRootSlot}
       data-submenu
       {...otherProps}
     >

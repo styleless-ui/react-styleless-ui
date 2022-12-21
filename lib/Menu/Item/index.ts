@@ -1,1 +1,1 @@
-export { default, type MenuItemProps } from "./Item";
+export { default, type ItemProps } from "./Item";

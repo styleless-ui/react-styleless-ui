@@ -1,1 +1,1 @@
-export { default, type SubMenuProps } from "./Sub";
+export { default, type SubProps } from "./Sub";

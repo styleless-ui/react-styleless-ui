@@ -1,1 +1,1 @@
-export { default, type DialogDescriptionProps } from "./Description";
+export { default, type DescriptionProps } from "./Description";

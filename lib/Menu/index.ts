@@ -1,15 +1,12 @@
-export { default as MenuCheckItem, type MenuCheckItemProps } from "./CheckItem";
-export { default as MenuGroup, type MenuGroupProps } from "./Group";
-export { default as MenuItem, type MenuItemProps } from "./Item";
-export { default as MenuItems, type MenuItemsProps } from "./Items";
-export { default as SubMenu, type SubMenuProps } from "./Sub";
-export { default, type MenuProps } from "./Menu";
+export { default as CheckItem, type CheckItemProps } from "./CheckItem";
+export { default as Group, type GroupProps } from "./Group";
+export { default as Item, type ItemProps } from "./Item";
+export { default as Items, type ItemsProps } from "./Items";
+export { default as Sub, type SubProps } from "./Sub";
+export { default as Root, type RootProps } from "./Menu";
+export { default as RadioGroup, type RadioGroupProps } from "./RadioGroup";
+export { default as RadioItem, type RadioItemProps } from "./RadioItem";
 export {
-  default as MenuRadioGroup,
-  type MenuRadioGroupProps
-} from "./RadioGroup";
-export { default as MenuRadioItem, type MenuRadioItemProps } from "./RadioItem";
-export {
-  default as MenuSeparatorItem,
-  type MenuSeparatorItemProps
+  default as SeparatorItem,
+  type SeparatorItemProps
 } from "./SeparatorItem";

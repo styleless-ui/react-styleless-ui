@@ -1,3 +1,4 @@
+import * as Breadcrumb from ".";
 import {
   itShouldMount,
   itSupportsDataSetProps,
@@ -6,12 +7,10 @@ import {
   render,
   screen
 } from "../../tests/utils";
-import Breadcrumb, { type BreadcrumbProps } from "./Breadcrumb";
-import BreadcrumbItem from "./Item";
 
 const labelText = "Breadcrumb";
 
-const REQUIRED_PROPS: BreadcrumbProps = {
+const REQUIRED_PROPS: Breadcrumb.RootProps = {
   label: labelText,
   classes: {
     label: "label",
@@ -23,16 +22,16 @@ const REQUIRED_PROPS: BreadcrumbProps = {
 describe("Breadcrumb", () => {
   afterEach(jest.clearAllMocks);
 
-  itShouldMount(Breadcrumb, REQUIRED_PROPS);
-  itSupportsStyle(Breadcrumb, REQUIRED_PROPS, "nav");
-  itSupportsRef(Breadcrumb, REQUIRED_PROPS, HTMLElement);
-  itSupportsDataSetProps(Breadcrumb, REQUIRED_PROPS, "nav");
+  itShouldMount(Breadcrumb.Root, REQUIRED_PROPS);
+  itSupportsStyle(Breadcrumb.Root, REQUIRED_PROPS, "nav");
+  itSupportsRef(Breadcrumb.Root, REQUIRED_PROPS, HTMLElement);
+  itSupportsDataSetProps(Breadcrumb.Root, REQUIRED_PROPS, "nav");
 
   it("should have the required classNames", () => {
     render(
-      <Breadcrumb {...REQUIRED_PROPS}>
-        <BreadcrumbItem className="item"></BreadcrumbItem>
-      </Breadcrumb>
+      <Breadcrumb.Root {...REQUIRED_PROPS}>
+        <Breadcrumb.Item className="item"></Breadcrumb.Item>
+      </Breadcrumb.Root>
     );
 
     const nav = screen.getByRole("navigation");
@@ -48,7 +47,7 @@ describe("Breadcrumb", () => {
 
   it("should have `aria-label='label'` property when `label={{ screenReaderLabel: 'label' }}`", () => {
     render(
-      <Breadcrumb
+      <Breadcrumb.Root
         {...REQUIRED_PROPS}
         label={{ screenReaderLabel: labelText }}
       />
@@ -62,7 +61,10 @@ describe("Breadcrumb", () => {
 
   it("should have `aria-labelledby='identifier'` property when `label={{ labelledBy: 'identifier' }}`", () => {
     render(
-      <Breadcrumb {...REQUIRED_PROPS} label={{ labelledBy: "identifier" }} />
+      <Breadcrumb.Root
+        {...REQUIRED_PROPS}
+        label={{ labelledBy: "identifier" }}
+      />
     );
 
     expect(screen.getByRole("navigation")).toHaveAttribute(

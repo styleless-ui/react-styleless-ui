@@ -7,10 +7,11 @@ import {
   useForkedRefs
 } from "../../utils";
 import MenuContext, { type IMenuContext } from "../context";
+import { ItemRoot as ItemRootSlot } from "../slots";
 import useMenuItem from "../useMenuItem";
 import MenuItemContext from "./context";
 
-interface MenuItemBaseProps {
+interface ItemBaseProps {
   /**
    * The content of the component.
    */
@@ -31,7 +32,14 @@ interface MenuItemBaseProps {
         disabled: boolean;
         isSubMenuOpen: boolean;
       }) => string);
+  /**
+   * If `true`, the item will be disabled.
+   * @default false
+   */
   disabled?: boolean;
+  /**
+   * The Callback is fired when the item is selected.
+   */
   onSelect?: (
     event:
       | React.MouseEvent<HTMLDivElement>
@@ -39,8 +47,8 @@ interface MenuItemBaseProps {
   ) => void;
 }
 
-export type MenuItemProps = Omit<
-  MergeElementProps<"div", MenuItemBaseProps>,
+export type ItemProps = Omit<
+  MergeElementProps<"div", ItemBaseProps>,
   "defaultValue" | "defaultChecked"
 >;
 
@@ -57,7 +65,7 @@ const makeRegisterSubMenu =
   (subMenuRef: React.RefObject<HTMLDivElement>, id: string | undefined) =>
     void (storeRef.current = { ref: subMenuRef, id });
 
-const MenuItemBase = (props: MenuItemProps, ref: React.Ref<HTMLDivElement>) => {
+const MenuItemBase = (props: ItemProps, ref: React.Ref<HTMLDivElement>) => {
   const {
     children: childrenProp,
     className: classNameProp,
@@ -164,7 +172,7 @@ const MenuItemBase = (props: MenuItemProps, ref: React.Ref<HTMLDivElement>) => {
       {...otherProps}
       role="menuitem"
       ref={refCallback}
-      data-slot="menuItemRoot"
+      data-slot={ItemRootSlot}
       className={className}
       tabIndex={-1}
       onClick={menuItem.handleClick}

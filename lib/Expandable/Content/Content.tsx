@@ -1,13 +1,18 @@
 import * as React from "react";
-import { type MergeElementProps } from "../../typings.d";
+import type { MergeElementProps } from "../../typings";
 import {
   componentWithForwardedRef,
   setRef,
   useDeterministicId
 } from "../../utils";
 import ExpandableContext from "../context";
+import {
+  ContentRoot as ContentRootSlot,
+  Root as RootSlot,
+  TriggerRoot as TriggerRootSlot
+} from "../slots";
 
-interface ExpandablePanelBaseProps {
+interface ContentBaseProps {
   /**
    * The content of the component.
    */
@@ -18,13 +23,13 @@ interface ExpandablePanelBaseProps {
   className?: string;
 }
 
-export type ExpandablePanelProps = Omit<
-  MergeElementProps<"div", ExpandablePanelBaseProps>,
+export type ContentProps = Omit<
+  MergeElementProps<"div", ContentBaseProps>,
   "defaultChecked" | "defaultValue"
 >;
 
-const ExpandablePanelBase = (
-  props: ExpandablePanelProps,
+const ExpandableContentBase = (
+  props: ContentProps,
   ref: React.Ref<HTMLDivElement>
 ) => {
   const { children, className, id: idProp, ...otherProps } = props;
@@ -38,11 +43,11 @@ const ExpandablePanelBase = (
 
     if (!node) return;
 
-    const parent = node.closest('[data-slot="expandableRoot"]');
+    const parent = node.closest(`[data-slot="${RootSlot}"]`);
     if (!parent) return;
 
     const trigger = parent.querySelector<HTMLDivElement>(
-      '[data-slot="expandableTrigger"]'
+      `[data-slot="${TriggerRootSlot}"]`
     );
     if (!trigger) return;
 
@@ -57,7 +62,7 @@ const ExpandablePanelBase = (
       ref={refCallback}
       role="region"
       aria-hidden={!expandableCtx?.isExpanded}
-      data-slot="expandablePanel"
+      data-slot={ContentRootSlot}
       className={className}
     >
       {children}
@@ -65,6 +70,6 @@ const ExpandablePanelBase = (
   );
 };
 
-const ExpandablePanel = componentWithForwardedRef(ExpandablePanelBase);
+const ExpandableContent = componentWithForwardedRef(ExpandableContentBase);
 
-export default ExpandablePanel;
+export default ExpandableContent;

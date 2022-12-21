@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 type GenerateStringUnion<T> = Extract<
   {
     [Key in keyof T]: true extends T[Key] ? Key : never;
@@ -33,11 +35,13 @@ export type OverridableStringUnion<
   U = EmptyIntersectionObject
 > = GenerateStringUnion<Overwrite<T, U>>;
 
-// eslint-disable-next-line @typescript-eslint/ban-types
+export type KeyofBase = keyof any;
+
 export type EmptyIntersectionObject = {};
 
-export type AnyObject = Record<string | number | symbol, unknown>;
-export type EmptyObject = Record<string | number | symbol, never>;
+export type AnyObject = Record<KeyofBase, any>;
+export type UnknownObject = Record<KeyofBase, unknown>;
+export type EmptyObject = Record<KeyofBase, never>;
 
 export type MergeElementProps<
   T extends React.ElementType,

@@ -13,6 +13,7 @@ export { default as useScrollGuard } from "@utilityjs/use-scroll-guard";
 export { computeAccessibleName } from "dom-accessibility-api";
 export { default as componentWithForwardedRef } from "./componentWithForwardedRef";
 export * from "./dom";
+export { default as forkRefs } from "./forkRefs";
 export * from "./is";
 export * from "./math";
 export { default as requestFormSubmit } from "./requestFormSubmit";

@@ -17,7 +17,7 @@ interface RootBaseProps {
   /**
    * The content of the snackbar.
    */
-  children?: React.ReactNode | ((ctx: { openState: boolean }) => string);
+  children?: React.ReactNode;
   /**
    * The className applied to the snackbar.
    */
@@ -50,7 +50,7 @@ interface RootBaseProps {
    */
   duration?: number;
   /**
-   * The Callback fires when the duration ends.
+   * The Callback is fired when the duration ends.
    */
   onDurationEnd?: () => void;
   /**
@@ -75,7 +75,7 @@ const SnackbarBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
     focusAfterClosed,
     role,
     keepMounted = false,
-    children: childrenProp,
+    children,
     className: classNameProp,
     ...otherProps
   } = props;
@@ -120,11 +120,6 @@ const SnackbarBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
       ? classNameProp({ openState: open })
       : classNameProp;
 
-  const children =
-    typeof childrenProp === "function"
-      ? childrenProp({ openState: open })
-      : childrenProp;
-
   if (typeof document !== "undefined") {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEventListener(
@@ -139,7 +134,7 @@ const SnackbarBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
     );
   }
 
-  const context = React.useMemo(() => ({ id, role, open }), [id, role, open]);
+  const context = React.useMemo(() => ({ role, open }), [role, open]);
 
   return keepMounted || (!keepMounted && open) ? (
     <Portal>

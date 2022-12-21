@@ -1,7 +1,8 @@
 import * as React from "react";
 
 export interface IDialogContext {
-  id?: string;
+  role: "dialog" | "alertdialog";
+  open: boolean;
 }
 
 const DialogContext = React.createContext<IDialogContext | null>(null);

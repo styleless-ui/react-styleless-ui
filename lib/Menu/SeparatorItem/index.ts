@@ -1,1 +1,1 @@
-export { default, type MenuSeparatorItemProps } from "./SeparatorItem";
+export { default, type SeparatorItemProps } from "./SeparatorItem";

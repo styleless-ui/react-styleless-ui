@@ -1,1 +1,1 @@
-export { default, type ExpandableTriggerProps } from "./Trigger";
+export { default, type TriggerProps } from "./Trigger";

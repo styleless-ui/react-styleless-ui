@@ -8,6 +8,7 @@ import {
   useEventListener,
   useForkedRefs
 } from "../utils";
+import * as Slots from "./slots";
 
 type CheckboxClassesMap = ClassesMap<"root" | "label" | "check", never>;
 
@@ -20,7 +21,7 @@ type ClassesContext = {
   focusedVisible: boolean;
 };
 
-interface CheckboxBaseProps {
+interface RootBaseProps {
   /**
    * Map of sub-components and their correlated classNames.
    */
@@ -69,7 +70,7 @@ interface CheckboxBaseProps {
    */
   disabled?: boolean;
   /**
-   * The Callback fires when the state has changed.
+   * The Callback is fired when the state changes.
    */
   onChange?: (checkedState: boolean) => void;
   /**
@@ -82,12 +83,12 @@ interface CheckboxBaseProps {
   onKeyUp?: React.KeyboardEventHandler<HTMLButtonElement>;
 }
 
-export type CheckboxProps = Omit<
-  MergeElementProps<"button", CheckboxBaseProps>,
+export type RootProps = Omit<
+  MergeElementProps<"button", RootBaseProps>,
   "defaultValue" | "className"
 >;
 
-const getLabelInfo = (labelInput: CheckboxProps["label"]) => {
+const getLabelInfo = (labelInput: RootProps["label"]) => {
   const props: {
     visibleLabel?: string;
     srOnlyLabel?: string;
@@ -117,6 +118,7 @@ const getLabelInfo = (labelInput: CheckboxProps["label"]) => {
 
 const _DefaultCheck = ({ className }: { className?: string }) => (
   <svg
+    data-slot={Slots.Check}
     width={12}
     height={8}
     aria-hidden="true"
@@ -148,10 +150,7 @@ const mergeClasses = (
     return result;
   }, undefined);
 
-const CheckboxBase = (
-  props: CheckboxProps,
-  ref: React.Ref<HTMLButtonElement>
-) => {
+const CheckboxBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
   const {
     label,
     value,
@@ -246,7 +245,7 @@ const CheckboxBase = (
         type="button"
         tabIndex={disabled ? -1 : 0}
         ref={handleRef}
-        data-slot="checkboxRoot"
+        data-slot={Slots.Root}
         disabled={disabled}
         onFocus={checkBase.handleFocus}
         onBlur={checkBase.handleBlur}
@@ -260,6 +259,9 @@ const CheckboxBase = (
         {checkBase.checked &&
           (checkComponent ? (
             React.cloneElement(checkComponent, {
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              "data-slot": Slots.Check,
               className: mergeClasses(
                 checkComponent.props.className,
                 classes?.check
@@ -272,7 +274,7 @@ const CheckboxBase = (
       {visibleLabel && (
         <span
           id={visibleLabelId}
-          data-slot="checkboxRootLabel"
+          data-slot={Slots.Label}
           className={classes?.label}
         >
           {visibleLabel}

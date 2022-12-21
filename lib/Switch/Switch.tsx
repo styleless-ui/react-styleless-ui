@@ -7,6 +7,7 @@ import {
   useEventListener,
   useForkedRefs
 } from "../utils";
+import * as Slots from "./slots";
 
 type SwitchClassesMap = ClassesMap<"root" | "label" | "thumb" | "track", never>;
 
@@ -19,7 +20,7 @@ type ClassesContext = {
   focusedVisible: boolean;
 };
 
-interface SwitchBaseProps {
+interface RootBaseProps {
   /**
    * Map of sub-components and their correlated classNames.
    */
@@ -68,7 +69,7 @@ interface SwitchBaseProps {
    */
   disabled?: boolean;
   /**
-   * The Callback fires when the state has changed.
+   * The Callback is fired when the state changes.
    */
   onChange?: (checkedState: boolean) => void;
   /**
@@ -85,12 +86,12 @@ interface SwitchBaseProps {
   onKeyUp?: React.KeyboardEventHandler<HTMLButtonElement>;
 }
 
-export type SwitchProps = Omit<
-  MergeElementProps<"button", SwitchBaseProps>,
+export type RootProps = Omit<
+  MergeElementProps<"button", RootBaseProps>,
   "defaultValue" | "className"
 >;
 
-const getLabelInfo = (labelInput: SwitchProps["label"]) => {
+const getLabelInfo = (labelInput: RootProps["label"]) => {
   const props: {
     visibleLabel?: string;
     srOnlyLabel?: string;
@@ -130,7 +131,7 @@ const mergeClasses = (
     return result;
   }, undefined);
 
-const SwitchBase = (props: SwitchProps, ref: React.Ref<HTMLButtonElement>) => {
+const SwitchBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
   const {
     label,
     thumbComponent,
@@ -206,7 +207,7 @@ const SwitchBase = (props: SwitchProps, ref: React.Ref<HTMLButtonElement>) => {
       {visibleLabel && (
         <span
           id={visibleLabelId}
-          data-slot="switchLabel"
+          data-slot={Slots.Label}
           className={classes?.label}
         >
           {visibleLabel}
@@ -220,7 +221,7 @@ const SwitchBase = (props: SwitchProps, ref: React.Ref<HTMLButtonElement>) => {
         type="button"
         tabIndex={disabled ? -1 : 0}
         ref={handleRef}
-        data-slot="switchRoot"
+        data-slot={Slots.Root}
         disabled={disabled}
         onFocus={checkBase.handleFocus}
         onBlur={checkBase.handleBlur}
@@ -232,12 +233,18 @@ const SwitchBase = (props: SwitchProps, ref: React.Ref<HTMLButtonElement>) => {
         aria-labelledby={visibleLabel ? visibleLabelId : labelProps.labelledBy}
       >
         {React.cloneElement(trackComponent, {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          "data-slot": Slots.Track,
           className: mergeClasses(
             trackComponent.props.className,
             classes?.track
           )
         })}
         {React.cloneElement(thumbComponent, {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          "data-slot": Slots.Thumb,
           className: mergeClasses(
             thumbComponent.props.className,
             classes?.thumb

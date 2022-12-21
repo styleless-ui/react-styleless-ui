@@ -1,8 +1,8 @@
 import * as React from "react";
-import { type RadioGroupProps } from "./RadioGroup";
+import { type RootProps } from "./RadioGroup";
 
 interface IRadioGroupContext {
-  value: Exclude<RadioGroupProps["value"], undefined>;
+  value: Exclude<RootProps["value"], undefined>;
   radios: [string, React.RefObject<HTMLButtonElement>][];
   onChange: (newCheckedState: boolean, inputValue: string) => void;
   registerRadio: (

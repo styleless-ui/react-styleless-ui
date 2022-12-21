@@ -7,8 +7,9 @@ import {
   useIsMounted
 } from "../utils";
 import TabGroupContext, { type ITabGroupContext } from "./context";
+import { Root as RootSlot } from "./slots";
 
-interface TabGroupBaseProps {
+interface RootBaseProps {
   /**
    * The content of the tab group.
    */
@@ -26,7 +27,7 @@ interface TabGroupBaseProps {
    */
   defaultActiveTab?: number;
   /**
-   * The Callback fires when the state has changed.
+   * The Callback is fired when the state changes.
    */
   onChange?: (tabIndex: number) => void;
   /**
@@ -43,12 +44,12 @@ interface TabGroupBaseProps {
   keyboardActivationBehavior?: "manual" | "automatic";
 }
 
-export type TabGroupProps = Omit<
-  MergeElementProps<"div", TabGroupBaseProps>,
+export type RootProps = Omit<
+  MergeElementProps<"div", RootBaseProps>,
   "defaultChecked" | "defaultValue"
 >;
 
-const TabGroupBase = (props: TabGroupProps, ref: React.Ref<HTMLDivElement>) => {
+const TabGroupBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
   const {
     children: childrenProp,
     className,
@@ -107,7 +108,7 @@ const TabGroupBase = (props: TabGroupProps, ref: React.Ref<HTMLDivElement>) => {
 
     if (tabElement.disabled || tabElement.hasAttribute("disabled")) {
       throw new Error(
-        "[StylelessUI][TabGroup]: The selected tab is `disabled`."
+        "[StylelessUI][TabGroup.Root]: The selected tab is `disabled`."
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -118,7 +119,7 @@ const TabGroupBase = (props: TabGroupProps, ref: React.Ref<HTMLDivElement>) => {
       {...otherProps}
       className={className}
       ref={handleRootRef}
-      data-slot="tabGroupRoot"
+      data-slot={RootSlot}
     >
       <TabGroupContext.Provider
         value={{

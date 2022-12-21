@@ -2,13 +2,19 @@ import * as React from "react";
 import { type MergeElementProps } from "../../typings.d";
 import {
   componentWithForwardedRef,
+  computeAccessibleName,
   useButtonBase,
   useDeterministicId,
   useForkedRefs
 } from "../../utils";
 import ExpandableContext from "../context";
+import {
+  ContentRoot as ContentRootSlot,
+  Root as RootSlot,
+  TriggerRoot as TriggerRootSlot
+} from "../slots";
 
-interface ExpandableTriggerBaseProps {
+interface TriggerBaseProps {
   /**
    * The content of the component.
    */
@@ -31,13 +37,13 @@ interface ExpandableTriggerBaseProps {
   disabled?: boolean;
 }
 
-export type ExpandableTriggerProps = Omit<
-  MergeElementProps<"div", ExpandableTriggerBaseProps>,
+export type TriggerProps = Omit<
+  MergeElementProps<"div", TriggerBaseProps>,
   "defaultChecked" | "defaultValue"
 >;
 
 const ExpandableTriggerBase = (
-  props: ExpandableTriggerProps,
+  props: TriggerProps,
   ref: React.Ref<HTMLDivElement>
 ) => {
   const {
@@ -58,9 +64,7 @@ const ExpandableTriggerBase = (
   const id = useDeterministicId(idProp, "styleless-ui__expandable-trigger");
 
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (!expandableCtx) return onClick?.(event);
-
-    expandableCtx.setIsExpanded(s => !s);
+    expandableCtx?.handleExpandChange(!expandableCtx.isExpanded);
     onClick?.(event);
   };
 
@@ -89,23 +93,41 @@ const ExpandableTriggerBase = (
     handleRef(node);
     if (!node) return;
 
-    const parent = node.closest('[data-slot="expandableRoot"]');
+    const parent = node.closest(`[data-slot="${RootSlot}"]`);
     if (!parent) return;
 
-    const panel = parent.querySelector<HTMLDivElement>(
-      '[data-slot="expandablePanel"]'
+    const content = parent.querySelector<HTMLDivElement>(
+      `[data-slot="${ContentRootSlot}"]`
     );
-    if (!panel) return;
+    if (!content) return;
 
-    const panelId = panel.id;
+    const panelId = content.id;
     panelId && node.setAttribute("aria-controls", panelId);
+
+    const accessibleName = computeAccessibleName(node);
+
+    if (!accessibleName) {
+      // eslint-disable-next-line no-console
+      console.error(
+        [
+          "[StylelessUI][Expandable.Trigger]: Can't determine an accessible name.",
+          "It's mandatory to provide an accessible name for the component. " +
+            "Possible accessible names:",
+          ". Set `aria-label` attribute.",
+          ". Set `aria-labelledby` attribute.",
+          ". Set `title` attribute.",
+          ". Use an informative content.",
+          ". Use a <label> with `for` attribute referencing to this component."
+        ].join("\n")
+      );
+    }
   };
 
   return (
     <div
       {...otherProps}
       id={id}
-      data-slot="expandableTrigger"
+      data-slot={TriggerRootSlot}
       aria-disabled={disabled}
       aria-expanded={expandableCtx?.isExpanded}
       ref={refCallback}

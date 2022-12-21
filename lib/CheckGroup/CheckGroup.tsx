@@ -6,10 +6,11 @@ import {
   useDeterministicId
 } from "../utils";
 import CheckGroupContext from "./context";
+import * as Slots from "./slots";
 
 type CheckboxGroupClassesMap = Record<"root" | "label" | "group", string>;
 
-interface CheckGroupBaseProps {
+interface RootBaseProps {
   /**
    * The content of the group.
    */
@@ -46,17 +47,17 @@ interface CheckGroupBaseProps {
    */
   defaultValue?: string[];
   /**
-   * The Callback fires when the state has changed.
+   * The Callback is fired when the state changes.
    */
   onChange?: (selectedValues: string[]) => void;
 }
 
-export type CheckGroupProps = Omit<
-  MergeElementProps<"div", CheckGroupBaseProps>,
+export type RootProps = Omit<
+  MergeElementProps<"div", RootBaseProps>,
   "className" | "defaultChecked"
 >;
 
-const getLabelInfo = (labelInput: CheckGroupProps["label"]) => {
+const getLabelInfo = (labelInput: RootProps["label"]) => {
   const props: {
     visibleLabel?: string;
     srOnlyLabel?: string;
@@ -84,10 +85,7 @@ const getLabelInfo = (labelInput: CheckGroupProps["label"]) => {
   return props;
 };
 
-const CheckGroupBase = (
-  props: CheckGroupProps,
-  ref: React.Ref<HTMLDivElement>
-) => {
+const CheckGroupBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
   const {
     label,
     children,
@@ -125,14 +123,14 @@ const CheckGroupBase = (
       {...otherProps}
       id={id}
       ref={ref}
-      data-slot="checkGroupRoot"
+      data-slot={Slots.Root}
       className={classes?.root}
     >
       <CheckGroupContext.Provider value={{ value, onChange: handleChange }}>
         {visibleLabel && (
           <span
             id={visibleLabelId}
-            data-slot="checkGroupLabel"
+            data-slot={Slots.Label}
             className={classes?.label}
           >
             {visibleLabel}
@@ -140,7 +138,7 @@ const CheckGroupBase = (
         )}
         <div
           role="group"
-          data-slot="checkGroupGroup"
+          data-slot={Slots.Group}
           className={classes?.group}
           aria-label={labelProps.srOnlyLabel}
           aria-labelledby={

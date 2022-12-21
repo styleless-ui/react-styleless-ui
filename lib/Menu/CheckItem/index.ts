@@ -1,1 +1,1 @@
-export { default, type MenuCheckItemProps } from "./CheckItem";
+export { default, type CheckItemProps } from "./CheckItem";

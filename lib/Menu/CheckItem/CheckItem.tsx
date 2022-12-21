@@ -8,9 +8,10 @@ import {
   useForkedRefs
 } from "../../utils";
 import MenuContext from "../context";
+import { CheckItemRoot as CheckItemRootSlot } from "../slots";
 import useMenuItem from "../useMenuItem";
 
-interface MenuCheckItemBaseProps {
+interface CheckItemBaseProps {
   /**
    * The content of the component.
    */
@@ -31,10 +32,28 @@ interface MenuCheckItemBaseProps {
         disabled: boolean;
         selected: boolean;
       }) => string);
+  /**
+   * If `true`, the item will be checked.
+   * @default false
+   */
   checked?: boolean;
+  /**
+   * The default state of `checked`. Use when the component is not controlled.
+   * @default false
+   */
   defaultChecked?: boolean;
+  /**
+   * If `true`, the item will be disabled.
+   * @default false
+   */
   disabled?: boolean;
+  /**
+   * The Callback is fired when the state changes.
+   */
   onCheckChange?: (checked: boolean) => void;
+  /**
+   * The Callback is fired when the item is selected.
+   */
   onSelect?: (
     event:
       | React.MouseEvent<HTMLDivElement>
@@ -42,13 +61,13 @@ interface MenuCheckItemBaseProps {
   ) => void;
 }
 
-export type MenuCheckItemProps = Omit<
-  MergeElementProps<"div", MenuCheckItemBaseProps>,
+export type CheckItemProps = Omit<
+  MergeElementProps<"div", CheckItemBaseProps>,
   "defaultValue"
 >;
 
 const MenuCheckItemBase = (
-  props: MenuCheckItemProps,
+  props: CheckItemProps,
   ref: React.Ref<HTMLDivElement>
 ) => {
   const {
@@ -128,7 +147,7 @@ const MenuCheckItemBase = (
       {...otherProps}
       role="menuitemcheckbox"
       ref={refCallback}
-      data-slot="menuCheckItemRoot"
+      data-slot={CheckItemRootSlot}
       className={className}
       tabIndex={-1}
       onClick={menuItem.handleClick}

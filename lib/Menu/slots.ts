@@ -1,0 +1,11 @@
+export const Root = "Menu:Root";
+export const SubRoot = "MenuSub:Root";
+export const SeparatorItemRoot = "SeparatorItem:Root";
+export const RadioItemRoot = "RadioItem:Root";
+export const RadioGroupRoot = "RadioGroup:Root";
+export const RadioGroupLabel = "RadioGroup:Label";
+export const ItemsRoot = "Items:Root";
+export const ItemRoot = "Item:Root";
+export const GroupRoot = "Group:Root";
+export const GroupLabel = "Group:Label";
+export const CheckItemRoot = "CheckItem:Root";

@@ -1,1 +1,1 @@
-export { default, type TabPanelsProps } from "./Panels";
+export { default, type PanelsProps } from "./Panels";

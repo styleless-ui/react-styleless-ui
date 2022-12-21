@@ -8,9 +8,10 @@ import {
 } from "../../utils";
 import MenuContext from "../context";
 import MenuRadioGroupContext from "../RadioGroup/context";
+import { RadioItemRoot as RadioItemRootSlot } from "../slots";
 import useMenuItem from "../useMenuItem";
 
-interface MenuRadioItemBaseProps {
+interface RadioItemBaseProps {
   /**
    * The content of the component.
    */
@@ -31,8 +32,18 @@ interface MenuRadioItemBaseProps {
         disabled: boolean;
         selected: boolean;
       }) => string);
+  /**
+   * The value of the radio.
+   */
   value: string;
+  /**
+   * If `true`, the radio will be disabled.
+   * @default false
+   */
   disabled?: boolean;
+  /**
+   * The Callback is fired when the item is selected.
+   */
   onSelect?: (
     event:
       | React.MouseEvent<HTMLDivElement>
@@ -40,13 +51,13 @@ interface MenuRadioItemBaseProps {
   ) => void;
 }
 
-export type MenuRadioItemProps = Omit<
-  MergeElementProps<"div", MenuRadioItemBaseProps>,
+export type RadioItemProps = Omit<
+  MergeElementProps<"div", RadioItemBaseProps>,
   "defaultValue" | "defaultChecked"
 >;
 
 const MenuRadioItemBase = (
-  props: MenuRadioItemProps,
+  props: RadioItemProps,
   ref: React.Ref<HTMLDivElement>
 ) => {
   const {
@@ -68,7 +79,7 @@ const MenuRadioItemBase = (
     if (!radioGroupCtx) {
       // eslint-disable-next-line no-console
       console.error(
-        "[StylelessUI][MenuRadioItem]: You can't use <MenuRadioItem> outside of the <MenuRadioGroup>."
+        "[StylelessUI][Menu.RadioItem]: You can't use `<Menu.RadioItem>` outside of the `<Menu.RadioGroup>`."
       );
     }
   }
@@ -129,7 +140,7 @@ const MenuRadioItemBase = (
       {...otherProps}
       role="menuitemradio"
       ref={refCallback}
-      data-slot="menuRadioItemRoot"
+      data-slot={RadioItemRootSlot}
       className={className}
       tabIndex={-1}
       onClick={menuItem.handleClick}
@@ -137,12 +148,12 @@ const MenuRadioItemBase = (
       onMouseLeave={menuItem.handleMouseLeave}
       aria-checked={isSelected}
       aria-disabled={disabled}
+      data-active={isActive ? "" : undefined}
       style={
         otherProps.style
           ? { ...otherProps.style, ...disableUserSelectCSSProperties }
           : disableUserSelectCSSProperties
       }
-      {...(isActive ? { "data-active": "" } : {})}
     >
       {children}
     </div>

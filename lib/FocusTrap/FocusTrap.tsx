@@ -7,12 +7,19 @@ import {
   useForkedRefs
 } from "../utils";
 
-export interface FocusTrapProps {
+export interface RootProps {
+  /**
+   * The content of the component.
+   */
   children: JSX.Element;
+  /**
+   * If `true`, the focus will be trapped.
+   * @default false
+   */
   enabled?: boolean;
 }
 
-const FocusTrap = (props: FocusTrapProps) => {
+const FocusTrap = (props: RootProps) => {
   const { children, enabled = false } = props;
 
   const child = (() => {

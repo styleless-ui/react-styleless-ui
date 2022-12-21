@@ -1,1 +1,1 @@
-export { default, type MenuGroupProps } from "./Group";
+export { default, type GroupProps } from "./Group";

@@ -1,1 +1,1 @@
-export { default, type MenuRadioItemProps } from "./RadioItem";
+export { default, type RadioItemProps } from "./RadioItem";

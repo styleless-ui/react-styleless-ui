@@ -1,4 +1,6 @@
+import cls from "classnames";
 import * as React from "react";
+import * as Dialog from ".";
 import {
   itShouldMount,
   itSupportsDataSetProps,
@@ -8,118 +10,90 @@ import {
   screen,
   userEvent
 } from "../../tests/utils";
-import DialogDescription from "./Description";
-import Dialog, { type DialogProps } from "./Dialog";
-import DialogTitle from "./Title";
+import * as Slots from "./slots";
 
 describe("Dialog", () => {
   afterEach(jest.clearAllMocks);
 
-  itShouldMount(Dialog, { role: "dialog", open: true });
-  itSupportsRef(Dialog, { role: "dialog", open: true }, HTMLDivElement);
+  itShouldMount(Dialog.Root, { role: "dialog", open: true });
+  itSupportsRef(Dialog.Root, { role: "dialog", open: true }, HTMLDivElement);
   itSupportsStyle(
-    Dialog,
+    Dialog.Root,
     { role: "dialog", open: true },
-    "[data-slot='dialogRoot']",
+    `[data-slot='${Slots.Root}']`,
     { withPortal: true }
   );
   itSupportsDataSetProps(
-    Dialog,
+    Dialog.Root,
     { role: "dialog", open: true },
-    "[data-slot='dialogRoot']",
+    `[data-slot='${Slots.Root}']`,
     { withPortal: true }
   );
 
   it("should have the required classNames", () => {
     render(
-      <Dialog
+      <Dialog.Root
         open
         role="dialog"
-        classes={{ backdrop: "backdrop", panel: "panel", root: "root" }}
-      />
+        data-testid="dialog-root"
+        classes={({ openState }) => ({
+          root: cls("root", { "root--open": openState }),
+          backdrop: "backdrop"
+        })}
+      >
+        <Dialog.Content className="content" data-testid="dialog-content">
+          <Dialog.Title className="title" data-testid="dialog-title">
+            Title
+          </Dialog.Title>
+          <Dialog.Description
+            className="description"
+            data-testid="dialog-description"
+          >
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nostrum
+            dolorum quod voluptas! Necessitatibus, velit perspiciatis odit
+            laudantium impedit quos, non vitae id magnam sed dolore, aliquid
+            aliquam dolor corporis assumenda.
+          </Dialog.Description>
+        </Dialog.Content>
+      </Dialog.Root>
     );
 
-    const dialog = screen.getByRole("dialog");
-    const root = dialog.parentElement;
-    const backdrop = root?.firstElementChild;
+    const root = screen.getByTestId("dialog-root");
+    const content = screen.getByTestId("dialog-content");
+    const title = screen.getByTestId("dialog-title");
+    const description = screen.getByTestId("dialog-description");
 
-    expect(dialog).toHaveClass("panel");
-    expect(root).toHaveClass("root");
-    expect(backdrop).toHaveClass("backdrop");
+    expect(root).toHaveClass("root", "root--open");
+    expect(content).toHaveClass("content");
+    expect(title).toHaveClass("title");
+    expect(description).toHaveClass("description");
   });
 
-  it("uses <DialogTitle> and checks for `aria-labelledby` attribute", () => {
+  it("should have `aria-labelledby` and `aria-describedby` attributes", () => {
     render(
-      <Dialog open role="dialog">
-        <DialogTitle data-testid="title">Dialog Title</DialogTitle>
-      </Dialog>
+      <Dialog.Root open role="dialog" data-testid="dialog-root">
+        <Dialog.Content data-testid="dialog-content">
+          <Dialog.Title data-testid="dialog-title">Title</Dialog.Title>
+          <Dialog.Description data-testid="dialog-description">
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nostrum
+            dolorum quod voluptas! Necessitatibus, velit perspiciatis odit
+            laudantium impedit quos, non vitae id magnam sed dolore, aliquid
+            aliquam dolor corporis assumenda.
+          </Dialog.Description>
+        </Dialog.Content>
+      </Dialog.Root>
     );
 
-    const dialog = screen.getByRole("dialog");
-    const title = screen.getByTestId("title");
+    const content = screen.getByTestId("dialog-content");
+    const title = screen.getByTestId("dialog-title");
+    const description = screen.getByTestId("dialog-description");
 
-    expect(dialog).toHaveAttribute("aria-labelledby", title.id);
-  });
-
-  it("uses <DialogDescription> and checks for `aria-describedby` attribute", () => {
-    render(
-      <Dialog open role="dialog">
-        <DialogDescription data-testid="description">
-          Dialog Description
-        </DialogDescription>
-      </Dialog>
-    );
-
-    const dialog = screen.getByRole("dialog");
-    const description = screen.getByTestId("description");
-
-    expect(dialog).toHaveAttribute("aria-describedby", description.id);
-  });
-
-  it("opens the dialog and calls `onOpen` callback", () => {
-    const handleOnOpen = jest.fn<void, []>();
-    const handleOnClose = jest.fn<void, []>();
-
-    const props: DialogProps = {
-      role: "dialog",
-      open: false,
-      onOpen: handleOnOpen,
-      onClose: handleOnClose
-    };
-
-    userEvent.setup();
-    const { rerender } = render(<Dialog {...props}></Dialog>);
-    rerender(<Dialog {...props} open={true}></Dialog>);
-
-    expect(handleOnOpen.mock.calls.length).toBe(1);
-    expect(handleOnOpen.mock.calls[0]?.length).toBe(0);
-
-    expect(handleOnClose.mock.calls.length).toBe(0);
-  });
-
-  it("closes the dialog and calls `onClose` callback", () => {
-    const handleOnOpen = jest.fn<void, []>();
-    const handleOnClose = jest.fn<void, []>();
-
-    const props: DialogProps = {
-      role: "dialog",
-      open: true,
-      onOpen: handleOnOpen,
-      onClose: handleOnClose
-    };
-
-    userEvent.setup();
-    const { rerender } = render(<Dialog {...props}></Dialog>);
-    rerender(<Dialog {...props} open={false}></Dialog>);
-
-    expect(handleOnClose.mock.calls.length).toBe(1);
-    expect(handleOnClose.mock.calls[0]?.length).toBe(0);
-
-    expect(handleOnOpen.mock.calls.length).toBe(0);
+    expect(content).toHaveAttribute("aria-labelledby", title.id);
+    expect(content).toHaveAttribute("aria-describedby", description.id);
   });
 
   it("closes the dialog and focuses the specified `focusAfterClosed` element", () => {
-    const props: DialogProps = {
+    const props: Dialog.RootProps = {
       role: "dialog",
       open: false,
       focusAfterClosed: "#focus-btn"
@@ -129,13 +103,13 @@ describe("Dialog", () => {
     const { rerender } = render(
       <>
         <button id="focus-btn">Button</button>
-        <Dialog {...props} open={true}></Dialog>
+        <Dialog.Root {...props} open={true}></Dialog.Root>
       </>
     );
     rerender(
       <>
         <button id="focus-btn">Button</button>
-        <Dialog {...props} open={false}></Dialog>
+        <Dialog.Root {...props} open={false}></Dialog.Root>
       </>
     );
 
@@ -151,12 +125,12 @@ describe("Dialog", () => {
 
     userEvent.setup();
     render(
-      <Dialog open role="dialog" onBackdropClick={handleBackdropClick}></Dialog>
+      <Dialog.Root open role="dialog" onBackdropClick={handleBackdropClick} />
     );
 
     const portal = screen.getByRole("presentation");
     const backdrop = portal.querySelector<HTMLElement>(
-      '[data-slot="dialogBackdrop"]'
+      `[data-slot="${Slots.Backdrop}"]`
     );
 
     expect(backdrop).toBeInTheDocument();
@@ -173,7 +147,7 @@ describe("Dialog", () => {
 
     userEvent.setup();
     render(
-      <Dialog open role="dialog" onEscapeKeyUp={handleEscapeKeyUp}></Dialog>
+      <Dialog.Root open role="dialog" onEscapeKeyUp={handleEscapeKeyUp} />
     );
 
     await userEvent.keyboard("[Escape]");

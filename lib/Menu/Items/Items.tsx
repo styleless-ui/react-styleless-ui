@@ -1,8 +1,9 @@
 import * as React from "react";
 import type { MergeElementProps } from "../../typings";
 import { componentWithForwardedRef } from "../../utils";
+import { ItemsRoot as ItemsRootSlot } from "../slots";
 
-interface MenuItemsBaseProps {
+interface ItemsBaseProps {
   /**
    * The content of the component.
    */
@@ -31,12 +32,12 @@ interface MenuItemsBaseProps {
       };
 }
 
-export type MenuItemsProps = Omit<
-  MergeElementProps<"div", MenuItemsBaseProps>,
+export type ItemsProps = Omit<
+  MergeElementProps<"div", ItemsBaseProps>,
   "defaultValue" | "defaultChecked"
 >;
 
-const getLabelInfo = (labelInput: MenuItemsProps["label"]) => {
+const getLabelInfo = (labelInput: ItemsProps["label"]) => {
   const props: { srOnlyLabel?: string; labelledBy?: string } = {};
 
   if ("screenReaderLabel" in labelInput) {
@@ -46,7 +47,7 @@ const getLabelInfo = (labelInput: MenuItemsProps["label"]) => {
   } else {
     throw new Error(
       [
-        "[StylelessUI][MenuItems]: Invalid `label` property.",
+        "[StylelessUI][Menu.Items]: Invalid `label` property.",
         "The `label` property must be in shape of " +
           "`{ screenReaderLabel: string; } | { labelledBy: string; }`"
       ].join("\n")
@@ -56,10 +57,7 @@ const getLabelInfo = (labelInput: MenuItemsProps["label"]) => {
   return props;
 };
 
-const MenuItemsBase = (
-  props: MenuItemsProps,
-  ref: React.Ref<HTMLDivElement>
-) => {
+const MenuItemsBase = (props: ItemsProps, ref: React.Ref<HTMLDivElement>) => {
   const { children, className, label, ...otherProps } = props;
 
   const labelProps = getLabelInfo(label);
@@ -68,7 +66,7 @@ const MenuItemsBase = (
     <div
       {...otherProps}
       ref={ref}
-      data-slot="menuItemsRoot"
+      data-slot={ItemsRootSlot}
       role="menu"
       tabIndex={-1}
       className={className}

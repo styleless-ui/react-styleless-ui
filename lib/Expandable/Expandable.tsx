@@ -1,14 +1,10 @@
 import * as React from "react";
 import { type MergeElementProps } from "../typings.d";
-import {
-  componentWithForwardedRef,
-  useControlledProp,
-  useIsMounted,
-  useOnChange
-} from "../utils";
+import { componentWithForwardedRef, useControlledProp } from "../utils";
 import ExpandableContext from "./context";
+import { Root as RootSlot } from "./slots";
 
-interface ExpandableBaseProps {
+interface RootBaseProps {
   /**
    * The content of the component.
    */
@@ -28,27 +24,21 @@ interface ExpandableBaseProps {
    */
   defaultExpanded?: boolean;
   /**
-   * The Callback fires when the panel has expanded.
+   * The Callback is fired when the `expand` state changes.
+   *
+   * Only updates from `<Expandable.Trigger>` component trigger the callback.
    */
-  onExpand?: () => void;
-  /**
-   * The Callback fires when the panel has collapsed.
-   */
-  onCollapse?: () => void;
+  onExpandChange?: (isExpanded: boolean) => void;
 }
 
-export type ExpandableProps = Omit<
-  MergeElementProps<"div", ExpandableBaseProps>,
+export type RootProps = Omit<
+  MergeElementProps<"div", RootBaseProps>,
   "defaultChecked" | "defaultValue"
 >;
 
-const ExpandableBase = (
-  props: ExpandableProps,
-  ref: React.Ref<HTMLDivElement>
-) => {
+const ExpandableBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
   const {
-    onCollapse,
-    onExpand,
+    onExpandChange,
     expanded,
     defaultExpanded,
     children: childrenProp,
@@ -56,27 +46,11 @@ const ExpandableBase = (
     ...otherProps
   } = props;
 
-  const isMounted = useIsMounted();
-
-  const initialRender = React.useRef(true);
-
   const [isExpanded, setIsExpanded] = useControlledProp(
     expanded,
     defaultExpanded,
     false
   );
-
-  useOnChange(isExpanded, expandedState => {
-    if (!isMounted()) return;
-
-    if (initialRender.current) {
-      initialRender.current = false;
-      return;
-    }
-
-    if (expandedState) onExpand?.();
-    else onCollapse?.();
-  });
 
   const className =
     typeof classNameProp === "function"
@@ -88,14 +62,16 @@ const ExpandableBase = (
       ? childrenProp({ expanded: isExpanded })
       : childrenProp;
 
+  const handleExpandChange = (expandState: boolean) => {
+    setIsExpanded(expandState);
+    onExpandChange?.(expandState);
+  };
+
   return (
-    <div
-      {...otherProps}
-      ref={ref}
-      data-slot="expandableRoot"
-      className={className}
-    >
-      <ExpandableContext.Provider value={{ isExpanded, setIsExpanded }}>
+    <div {...otherProps} ref={ref} data-slot={RootSlot} className={className}>
+      <ExpandableContext.Provider
+        value={{ isExpanded, setIsExpanded, handleExpandChange }}
+      >
         {children}
       </ExpandableContext.Provider>
     </div>

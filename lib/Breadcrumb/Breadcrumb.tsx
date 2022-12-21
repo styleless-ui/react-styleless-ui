@@ -6,11 +6,16 @@ import {
   useDeterministicId,
   useRegisterNodeRef
 } from "../utils";
-import BreadcrumbItem, { type BreadcrumbItemProps } from "./Item";
+import BreadcrumbItem, { type ItemProps } from "./Item";
+import {
+  Label as LabelSlot,
+  List as ListSlot,
+  Root as RootSlot
+} from "./slots";
 
 type BreadcrumbClassesMap = Record<"root" | "label" | "list", string>;
 
-interface BreadcrumbBaseProps {
+interface RootBaseProps {
   /**
    * The content of the breadcrumb.
    */
@@ -40,12 +45,12 @@ interface BreadcrumbBaseProps {
       };
 }
 
-export type BreadcrumbProps = Omit<
-  MergeElementProps<"nav", BreadcrumbBaseProps>,
+export type RootProps = Omit<
+  MergeElementProps<"nav", RootBaseProps>,
   "className" | "defaultChecked" | "defaultValue"
 >;
 
-const getLabelInfo = (labelInput: BreadcrumbProps["label"]) => {
+const getLabelInfo = (labelInput: RootProps["label"]) => {
   const props: {
     visibleLabel?: string;
     srOnlyLabel?: string;
@@ -73,10 +78,7 @@ const getLabelInfo = (labelInput: BreadcrumbProps["label"]) => {
   return props;
 };
 
-const BreadcrumbBase = (
-  props: BreadcrumbProps,
-  ref: React.Ref<HTMLElement>
-) => {
+const BreadcrumbBase = (props: RootProps, ref: React.Ref<HTMLElement>) => {
   const {
     label,
     children: childrenProp,
@@ -138,7 +140,7 @@ const BreadcrumbBase = (
       return null;
     }
 
-    return child as React.ReactElement<BreadcrumbItemProps>;
+    return child as React.ReactElement<ItemProps>;
   });
 
   return (
@@ -146,7 +148,7 @@ const BreadcrumbBase = (
       {visibleLabel && (
         <span
           id={visibleLabelId}
-          data-slot="breadcrumbLabel"
+          data-slot={LabelSlot}
           className={classes?.label}
         >
           {visibleLabel}
@@ -156,7 +158,7 @@ const BreadcrumbBase = (
         {...otherProps}
         id={id}
         ref={ref}
-        data-slot="breadcrumbRoot"
+        data-slot={RootSlot}
         className={classes?.root}
         aria-label={labelProps.srOnlyLabel}
         aria-labelledby={visibleLabel ? visibleLabelId : labelProps.labelledBy}
@@ -164,7 +166,7 @@ const BreadcrumbBase = (
         <ol
           ref={registerListRef}
           className={classes?.list}
-          data-slot="breadcrumbList"
+          data-slot={ListSlot}
         >
           {children}
         </ol>

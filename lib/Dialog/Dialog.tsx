@@ -1,5 +1,4 @@
 import * as React from "react";
-import FocusTrap from "../FocusTrap";
 import { SystemKeys } from "../internals";
 import Portal from "../Portal";
 import { type MergeElementProps } from "../typings.d";
@@ -13,10 +12,11 @@ import {
   useScrollGuard
 } from "../utils";
 import DialogContext from "./context";
+import { Backdrop as BackdropSlot, Root as RootSlot } from "./slots";
 
-type DialogClassesMap = Record<"root" | "backdrop" | "panel", string>;
+type DialogClassesMap = Record<"root" | "backdrop", string>;
 
-interface DialogBaseProps {
+interface RootBaseProps {
   /**
    * The content of the tab dialog.
    */
@@ -31,14 +31,6 @@ interface DialogBaseProps {
    * If `true`, the dialog will be opened.
    */
   open: boolean;
-  /**
-   * The Callback fires when the dialog has opened.
-   */
-  onOpen?: () => void;
-  /**
-   * The Callback fires when the dialog has closed.
-   */
-  onClose?: () => void;
   /**
    * The DOM node reference or selector to focus when the dialog closes.
    *
@@ -70,24 +62,22 @@ interface DialogBaseProps {
   keepMounted?: boolean;
 }
 
-export type DialogProps = Omit<
-  MergeElementProps<"div", DialogBaseProps>,
+export type RootProps = Omit<
+  MergeElementProps<"div", RootBaseProps>,
   "className" | "defaultChecked" | "defaultValue"
 >;
 
-const DialogBase = (props: DialogProps, ref: React.Ref<HTMLDivElement>) => {
+const DialogBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
   const {
     open,
     children,
     id: idProp,
-    role = "dialog",
+    role,
     keepMounted = false,
     focusAfterClosed,
     classes: classesProp,
     onEscapeKeyUp,
     onBackdropClick,
-    onOpen,
-    onClose,
     ...otherProps
   } = props;
 
@@ -114,28 +104,25 @@ const DialogBase = (props: DialogProps, ref: React.Ref<HTMLDivElement>) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, prevOpen]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  React.useEffect(() => () => enablePageScroll(), []);
+
   useOnChange(open, openState => {
     if (!isMounted()) return;
+
     previouslyFocusedElement.current =
       document.activeElement as HTMLElement | null;
 
     if (typeof prevOpen !== "boolean") return;
 
-    if (openState) {
-      onOpen?.();
-      disablePageScroll();
-    } else {
-      onClose?.();
-      enablePageScroll();
-    }
+    if (openState) disablePageScroll();
+    else enablePageScroll();
   });
 
   const classes =
     typeof classesProp === "function"
       ? classesProp({ openState: open })
       : classesProp;
-
-  const context = React.useMemo(() => ({ id }), [id]);
 
   if (typeof document !== "undefined") {
     // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -151,6 +138,8 @@ const DialogBase = (props: DialogProps, ref: React.Ref<HTMLDivElement>) => {
     );
   }
 
+  const context = React.useMemo(() => ({ open, role }), [role, open]);
+
   return keepMounted || (!keepMounted && open) ? (
     <Portal>
       <div
@@ -162,29 +151,20 @@ const DialogBase = (props: DialogProps, ref: React.Ref<HTMLDivElement>) => {
       >
         <div
           {...otherProps}
-          data-slot="dialogRoot"
+          id={id}
+          data-slot={RootSlot}
           ref={ref}
           className={classes?.root}
         >
           <div
             aria-hidden="true"
-            data-slot="dialogBackdrop"
+            data-slot={BackdropSlot}
             className={classes?.backdrop}
             onClick={onBackdropClick}
-          ></div>
-          <FocusTrap enabled={open}>
-            <div
-              id={id}
-              role={role}
-              className={classes?.panel}
-              aria-modal="true"
-              data-slot="dialogPanel"
-            >
-              <DialogContext.Provider value={context}>
-                {children}
-              </DialogContext.Provider>
-            </div>
-          </FocusTrap>
+          />
+          <DialogContext.Provider value={context}>
+            {children}
+          </DialogContext.Provider>
         </div>
       </div>
     </Portal>

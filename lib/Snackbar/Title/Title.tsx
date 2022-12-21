@@ -5,15 +5,14 @@ import {
   useDeterministicId,
   useForkedRefs
 } from "../../utils";
-import SnackbarContext from "../context";
 import {
-  Content as SnackbarContentSlot,
-  Title as SnackbarTitleSlot
+  ContentRoot as ContentRootSlot,
+  TitleRoot as TitleRootSlot
 } from "../slots";
 
 interface TitleBaseProps {
   /**
-   * The content of the snackbar title.
+   * The content of the component.
    */
   children?: React.ReactNode;
   /**
@@ -49,8 +48,6 @@ const SnackbarTitleBase = <
     ...otherProps
   } = props;
 
-  const snackbarCtx = React.useContext(SnackbarContext);
-
   const id = useDeterministicId(idProp, "styleless-ui__snackbar-title");
 
   const rootRef = React.useRef<E>(null);
@@ -59,13 +56,10 @@ const SnackbarTitleBase = <
   const refCallback = (node: E | null) => {
     handleRef(node);
 
-    const rootId = snackbarCtx?.id;
-    if (!rootId) return;
-
     if (!node) return;
     if (!id) return;
 
-    const content = node.closest(`[data-slot='${SnackbarContentSlot}']`);
+    const content = node.closest(`[data-slot='${ContentRootSlot}']`);
 
     if (content) {
       content.setAttribute("aria-labelledby", id);
@@ -82,7 +76,7 @@ const SnackbarTitleBase = <
       {...otherProps}
       id={id}
       ref={refCallback}
-      data-slot={SnackbarTitleSlot}
+      data-slot={TitleRootSlot}
       className={className}
     >
       {children}

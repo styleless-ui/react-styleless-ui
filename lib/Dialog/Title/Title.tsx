@@ -5,11 +5,14 @@ import {
   useDeterministicId,
   useForkedRefs
 } from "../../utils";
-import DialogContext from "../context";
+import {
+  ContentRoot as ContentRootSlot,
+  TitleRoot as TitleRootSlot
+} from "../slots";
 
-interface DialogTitleBaseProps {
+interface TitleBaseProps {
   /**
-   * The content of the dialog title.
+   * The content of the component.
    */
   children?: React.ReactNode;
   /**
@@ -18,10 +21,10 @@ interface DialogTitleBaseProps {
   className?: string;
 }
 
-export type DialogTitleProps<T extends React.ElementType = "strong"> =
+export type TitleProps<T extends React.ElementType = "strong"> =
   MergeElementProps<
     T,
-    DialogTitleBaseProps & {
+    TitleBaseProps & {
       /**
        * The component used for the root node.
        * Either a string to use a HTML element or a component.
@@ -31,10 +34,10 @@ export type DialogTitleProps<T extends React.ElementType = "strong"> =
   >;
 
 const DialogTitleBase = <
-  T extends React.ElementType = "strong",
+  T extends React.ElementType = React.ElementType,
   E extends HTMLElement = HTMLElement
 >(
-  props: DialogTitleProps<T>,
+  props: TitleProps<T>,
   ref: React.Ref<E>
 ) => {
   const {
@@ -45,28 +48,35 @@ const DialogTitleBase = <
     ...otherProps
   } = props;
 
-  const dialogCtx = React.useContext(DialogContext);
-
   const id = useDeterministicId(idProp, "styleless-ui__dialog-title");
 
   const rootRef = React.useRef<E>(null);
   const handleRef = useForkedRefs(ref, rootRef);
 
-  React.useEffect(() => {
-    const rootId = dialogCtx?.id;
+  const refCallback = (node: E | null) => {
+    handleRef(node);
 
-    if (!rootId) return;
+    if (!node) return;
     if (!id) return;
 
-    document.getElementById(rootId)?.setAttribute("aria-labelledby", id);
-  }, [dialogCtx, id]);
+    const content = node.closest(`[data-slot='${ContentRootSlot}']`);
+
+    if (content) {
+      content.setAttribute("aria-labelledby", id);
+    } else {
+      // eslint-disable-next-line no-console
+      console.error(
+        "[StylelessUI][Dialog]: You should always wrap your content with `<Dialog.Content>` to provide accessibility features."
+      );
+    }
+  };
 
   return (
     <RootNode
       {...otherProps}
       id={id}
-      ref={handleRef}
-      data-slot="dialogTitle"
+      ref={refCallback}
+      data-slot={TitleRootSlot}
       className={className}
     >
       {children}

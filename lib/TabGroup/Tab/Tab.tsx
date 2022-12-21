@@ -9,10 +9,11 @@ import {
   useForkedRefs
 } from "../../utils";
 import TabGroupContext from "../context";
+import { TabRoot as TabRootSlot } from "../slots";
 
 interface TabBaseProps {
   /**
-   * The content of the tab.
+   * The content of the component.
    */
   children?:
     | React.ReactNode
@@ -174,20 +175,22 @@ const TabBase = (props: TabProps, ref: React.Ref<HTMLButtonElement>) => {
   const className =
     typeof classNameProp === "function" ? classNameProp(ctx) : classNameProp;
 
+  const refCallback = (node: HTMLButtonElement | null) => {
+    handleRef(node);
+    if (!node) return;
+
+    const panelId = tabGroupCtx?.panels[index]?.current?.id;
+    panelId && node.setAttribute("aria-controls", panelId);
+  };
+
   return (
     <button
       {...otherProps}
       id={id}
       role="tab"
-      data-slot="tabRoot"
+      data-slot={TabRootSlot}
       type="button"
-      ref={node => {
-        handleRef(node);
-        if (!node) return;
-
-        const panelId = tabGroupCtx?.panels[index]?.current?.id;
-        panelId && node.setAttribute("aria-controls", panelId);
-      }}
+      ref={refCallback}
       onClick={buttonBase.handleClick}
       onBlur={buttonBase.handleBlur}
       onFocus={buttonBase.handleFocus}

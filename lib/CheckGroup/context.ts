@@ -1,8 +1,8 @@
 import * as React from "react";
-import { type CheckGroupProps } from "./CheckGroup";
+import { type RootProps } from "./CheckGroup";
 
 interface ICheckGroupContext {
-  value: Exclude<CheckGroupProps["value"], undefined>;
+  value: Exclude<RootProps["value"], undefined>;
   onChange: (newCheckedState: boolean, inputValue: string) => void;
 }
 

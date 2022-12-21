@@ -1,1 +1,1 @@
-export { default, type TabListProps } from "./List";
+export { default, type ListProps } from "./List";

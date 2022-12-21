@@ -8,11 +8,11 @@ import {
   screen,
   userEvent
 } from "../../tests/utils";
-import Checkbox, { type CheckboxProps } from "./Checkbox";
+import Checkbox, { type RootProps } from "./Checkbox";
 
 const labelText = "Label";
 
-const REQUIRED_PROPS: CheckboxProps = {
+const REQUIRED_PROPS: RootProps = {
   label: labelText,
   classes: {
     label: "label",

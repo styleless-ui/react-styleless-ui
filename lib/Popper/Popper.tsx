@@ -23,8 +23,9 @@ import {
   type Strategy,
   type VirtualElement
 } from "./helpers";
+import * as Slots from "./slots";
 
-interface PopperBaseProps {
+interface RootBaseProps {
   /**
    * The className applied to the component.
    */
@@ -123,8 +124,8 @@ interface PopperBaseProps {
   keepMounted?: boolean;
 }
 
-export type PopperProps = Omit<
-  MergeElementProps<"div", PopperBaseProps>,
+export type RootProps = Omit<
+  MergeElementProps<"div", RootBaseProps>,
   | "defaultChecked"
   | "defaultValue"
   | "autoSave"
@@ -151,7 +152,7 @@ const translate = ({ x, y }: Coordinates) => {
   };
 };
 
-const getAnchor = (anchorElement: PopperProps["anchorElement"]) =>
+const getAnchor = (anchorElement: RootProps["anchorElement"]) =>
   typeof anchorElement === "string"
     ? typeof document !== "undefined"
       ? document.querySelector<HTMLElement>(anchorElement)
@@ -160,7 +161,7 @@ const getAnchor = (anchorElement: PopperProps["anchorElement"]) =>
     ? anchorElement.current
     : anchorElement;
 
-const PopperBase = (props: PopperProps, ref: React.Ref<HTMLDivElement>) => {
+const PopperBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
   const {
     open,
     actions,
@@ -275,7 +276,7 @@ const PopperBase = (props: PopperProps, ref: React.Ref<HTMLDivElement>) => {
         <div
           {...otherProps}
           tabIndex={-1}
-          data-slot="popperRoot"
+          data-slot={Slots.Root}
           id={id}
           className={className}
           ref={registerRef}

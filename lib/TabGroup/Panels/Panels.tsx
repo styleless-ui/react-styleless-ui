@@ -2,10 +2,11 @@ import * as React from "react";
 import { type MergeElementProps } from "../../typings.d";
 import { componentWithForwardedRef } from "../../utils";
 import Panel from "../Panel";
+import { PanelsRoot as PanelsRootSlot } from "../slots";
 
-interface TabPanelsBaseProps {
+interface PanelsBaseProps {
   /**
-   * The content of the tabpanels.
+   * The content of the component.
    */
   children?: React.ReactNode;
   /**
@@ -14,15 +15,12 @@ interface TabPanelsBaseProps {
   className?: string;
 }
 
-export type TabPanelsProps = Omit<
-  MergeElementProps<"div", TabPanelsBaseProps>,
+export type PanelsProps = Omit<
+  MergeElementProps<"div", PanelsBaseProps>,
   "defaultChecked" | "defaultValue"
 >;
 
-const TabPanelsBase = (
-  props: TabPanelsProps,
-  ref: React.Ref<HTMLDivElement>
-) => {
+const TabPanelsBase = (props: PanelsProps, ref: React.Ref<HTMLDivElement>) => {
   const { children: childrenProp, className, ...otherProps } = props;
 
   let panelIdx = 0;
@@ -42,7 +40,7 @@ const TabPanelsBase = (
       {...otherProps}
       ref={ref}
       className={className}
-      data-slot="tabPanelsRoot"
+      data-slot={PanelsRootSlot}
     >
       {children}
     </div>

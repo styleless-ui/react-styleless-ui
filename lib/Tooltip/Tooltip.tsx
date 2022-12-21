@@ -1,6 +1,6 @@
 import * as React from "react";
 import { SystemKeys } from "../internals";
-import Popper, { type PopperProps } from "../Popper";
+import Popper, { type RootProps as PopperProps } from "../Popper";
 import type { Coordinates, VirtualElement } from "../Popper/helpers";
 import type { MergeElementProps } from "../typings";
 import {
@@ -14,7 +14,7 @@ import {
   useForkedRefs
 } from "../utils";
 
-interface TooltipBaseProps {
+interface RootBaseProps {
   /**
    * The content of the component.
    */
@@ -64,7 +64,7 @@ interface TooltipBaseProps {
    */
   defaultOpen?: boolean;
   /**
-   * The Callback fires when user has clicked outside of the tooltip.
+   * The Callback is fired when outside of the tooltip is clicked.
    */
   onOutsideClick?: (event: MouseEvent) => void;
   /**
@@ -75,12 +75,12 @@ interface TooltipBaseProps {
   keepMounted?: boolean;
 }
 
-export type TooltipProps = Omit<
-  MergeElementProps<"div", TooltipBaseProps>,
+export type RootProps = Omit<
+  MergeElementProps<"div", RootBaseProps>,
   "defaultValue" | "defaultChecked"
 >;
 
-const TooltipBase = (props: TooltipProps, ref: React.Ref<HTMLDivElement>) => {
+const TooltipBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
   const {
     children,
     className,
@@ -114,7 +114,7 @@ const TooltipBase = (props: TooltipProps, ref: React.Ref<HTMLDivElement>) => {
     );
   }
 
-  const getAnchor = (anchorElement: TooltipProps["anchorElement"]) =>
+  const getAnchor = (anchorElement: RootProps["anchorElement"]) =>
     typeof anchorElement === "string"
       ? typeof document !== "undefined"
         ? document.querySelector<HTMLElement>(anchorElement)

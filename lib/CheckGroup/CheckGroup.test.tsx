@@ -9,11 +9,12 @@ import {
   userEvent
 } from "../../tests/utils";
 import Checkbox from "../Checkbox";
-import CheckGroup, { type CheckGroupProps } from "./CheckGroup";
+import CheckGroup, { type RootProps } from "./CheckGroup";
+import * as Slots from "./slots";
 
 const labelText = "Label";
 
-const REQUIRED_PROPS: CheckGroupProps = {
+const REQUIRED_PROPS: RootProps = {
   label: labelText,
   classes: { label: "label", root: "root", group: "group" }
 };
@@ -31,7 +32,7 @@ describe("CheckGroup", () => {
 
     const group = screen.getByRole("group");
     const root = group.parentElement;
-    const label = root?.querySelector("[data-slot='checkGroupLabel']");
+    const label = root?.querySelector(`[data-slot='${Slots.Label}']`);
 
     expect(root).toHaveClass("root");
     expect(group).toHaveClass("group");

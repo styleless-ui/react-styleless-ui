@@ -2,13 +2,14 @@ import * as React from "react";
 import { type MergeElementProps } from "../../typings.d";
 import { componentWithForwardedRef, useDeterministicId } from "../../utils";
 import TabGroupContext from "../context";
+import { ListLabel as ListLabelSlot, ListRoot as ListRootSlot } from "../slots";
 import Tab from "../Tab";
 
 type TabListClassesMap = Record<"root" | "label", string>;
 
-interface TabListBaseProps {
+interface ListBaseProps {
   /**
-   * The content of the tablist.
+   * The content of the component.
    */
   children?: React.ReactNode;
   /**
@@ -36,12 +37,12 @@ interface TabListBaseProps {
       };
 }
 
-export type TabListProps = Omit<
-  MergeElementProps<"nav", TabListBaseProps>,
+export type ListProps = Omit<
+  MergeElementProps<"div", ListBaseProps>,
   "className" | "defaultChecked" | "defaultValue"
 >;
 
-const getLabelInfo = (labelInput: TabListProps["label"]) => {
+const getLabelInfo = (labelInput: ListProps["label"]) => {
   const props: {
     visibleLabel?: string;
     srOnlyLabel?: string;
@@ -58,7 +59,7 @@ const getLabelInfo = (labelInput: TabListProps["label"]) => {
     } else {
       throw new Error(
         [
-          "[StylelessUI][TabList]: Invalid `label` property.",
+          "[StylelessUI][TabGroup.List]: Invalid `label` property.",
           "The `label` property must be either a `string` or in shape of " +
             "`{ screenReaderLabel: string; } | { labelledBy: string; }`"
         ].join("\n")
@@ -69,7 +70,7 @@ const getLabelInfo = (labelInput: TabListProps["label"]) => {
   return props;
 };
 
-const TabListBase = (props: TabListProps, ref: React.Ref<HTMLDivElement>) => {
+const TabListBase = (props: ListProps, ref: React.Ref<HTMLDivElement>) => {
   const {
     label,
     children: childrenProp,
@@ -107,7 +108,7 @@ const TabListBase = (props: TabListProps, ref: React.Ref<HTMLDivElement>) => {
       {visibleLabel && (
         <span
           id={visibleLabelId}
-          data-slot="tabListLabel"
+          data-slot={ListLabelSlot}
           className={classes?.label}
         >
           {visibleLabel}
@@ -118,7 +119,7 @@ const TabListBase = (props: TabListProps, ref: React.Ref<HTMLDivElement>) => {
         id={id}
         ref={ref}
         role="tablist"
-        data-slot="tabListRoot"
+        data-slot={ListRootSlot}
         className={classes?.root}
         aria-label={labelProps.srOnlyLabel}
         aria-labelledby={visibleLabel ? visibleLabelId : labelProps.labelledBy}

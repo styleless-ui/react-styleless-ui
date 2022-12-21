@@ -7,11 +7,11 @@ import {
   useDeterministicId,
   useForkedRefs
 } from "../../utils";
-import { Action as SnackbarActionSlot } from "../slots";
+import { ActionRoot as ActionRootSlot } from "../slots";
 
 interface ActionBaseProps {
   /**
-   * The content of the snackbar action.
+   * The content of the component.
    */
   children?:
     | React.ReactNode
@@ -81,7 +81,7 @@ const SnackbarActionBase = (
       // eslint-disable-next-line no-console
       console.error(
         [
-          "[StylelessUI][Snackbar/Action]: Can't determine an accessible name.",
+          "[StylelessUI][Snackbar.Action]: Can't determine an accessible name.",
           "It's mandatory to provide an accessible name for the component. " +
             "Possible accessible names:",
           ". Set `aria-label` attribute.",
@@ -117,7 +117,7 @@ const SnackbarActionBase = (
       onFocus={buttonBase.handleFocus}
       onKeyDown={buttonBase.handleKeyDown}
       onKeyUp={buttonBase.handleKeyUp}
-      data-slot={SnackbarActionSlot}
+      data-slot={ActionRootSlot}
       data-focus-visible={renderCtx.focusedVisible ? "" : undefined}
     >
       {children}

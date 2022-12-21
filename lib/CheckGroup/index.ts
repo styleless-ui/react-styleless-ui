@@ -1,1 +1,1 @@
-export { default, type CheckGroupProps } from "./CheckGroup";
+export { default, type RootProps } from "./CheckGroup";

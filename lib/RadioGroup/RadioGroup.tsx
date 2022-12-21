@@ -7,10 +7,11 @@ import {
   useForkedRefs
 } from "../utils";
 import RadioGroupContext from "./context";
+import * as Slots from "./slots";
 
 type RadioGroupClassesMap = Record<"root" | "label" | "group", string>;
 
-interface RadioGroupBaseProps {
+interface RootBaseProps {
   /**
    * The content of the group.
    */
@@ -47,17 +48,17 @@ interface RadioGroupBaseProps {
    */
   defaultValue?: string;
   /**
-   * The Callback fires when the state has changed.
+   * The Callback is fired when the state changes.
    */
   onChange?: (selectedValue: string) => void;
 }
 
-export type RadioGroupProps = Omit<
-  MergeElementProps<"div", RadioGroupBaseProps>,
+export type RootProps = Omit<
+  MergeElementProps<"div", RootBaseProps>,
   "className" | "defaultChecked"
 >;
 
-const getLabelInfo = (labelInput: RadioGroupProps["label"]) => {
+const getLabelInfo = (labelInput: RootProps["label"]) => {
   const props: {
     visibleLabel?: string;
     srOnlyLabel?: string;
@@ -85,10 +86,7 @@ const getLabelInfo = (labelInput: RadioGroupProps["label"]) => {
   return props;
 };
 
-const RadioGroupBase = (
-  props: RadioGroupProps,
-  ref: React.Ref<HTMLDivElement>
-) => {
+const RadioGroupBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
   const {
     label,
     children,
@@ -166,7 +164,7 @@ const RadioGroupBase = (
       id={id}
       ref={handleRootRef}
       className={classes?.root}
-      data-slot="radioGroupRoot"
+      data-slot={Slots.Root}
     >
       <RadioGroupContext.Provider
         value={{ value, onChange: handleChange, registerRadio, radios }}
@@ -174,7 +172,7 @@ const RadioGroupBase = (
         {visibleLabel && (
           <span
             id={visibleLabelId}
-            data-slot="radioGroupLabel"
+            data-slot={Slots.Label}
             className={classes?.label}
           >
             {visibleLabel}
@@ -182,7 +180,7 @@ const RadioGroupBase = (
         )}
         <div
           role="radiogroup"
-          data-slot="radioGroupGroup"
+          data-slot={Slots.Group}
           className={classes?.group}
           aria-label={labelProps.srOnlyLabel}
           aria-labelledby={

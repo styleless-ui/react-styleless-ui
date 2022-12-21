@@ -6,10 +6,11 @@ import {
   useForkedRefs
 } from "../../utils";
 import TabGroupContext from "../context";
+import { PanelRoot as PanelRootSlot } from "../slots";
 
-interface TabPanelBaseProps {
+interface PanelBaseProps {
   /**
-   * The content of the tabpanel.
+   * The content of the component.
    */
   children?: React.ReactNode;
   /**
@@ -18,12 +19,12 @@ interface TabPanelBaseProps {
   className?: string;
 }
 
-export type TabPanelProps = Omit<
-  MergeElementProps<"div", TabPanelBaseProps>,
+export type PanelProps = Omit<
+  MergeElementProps<"div", PanelBaseProps>,
   "defaultChecked" | "defaultValue"
 >;
 
-const TabPanelBase = (props: TabPanelProps, ref: React.Ref<HTMLDivElement>) => {
+const TabPanelBase = (props: PanelProps, ref: React.Ref<HTMLDivElement>) => {
   const { children, id: idProp, className, ...otherProps } = props;
 
   const tabGroupCtx = React.useContext(TabGroupContext);
@@ -41,20 +42,22 @@ const TabPanelBase = (props: TabPanelProps, ref: React.Ref<HTMLDivElement>) => {
 
   const visible = tabGroupCtx ? tabGroupCtx.activeTab === index : false;
 
+  const refCallback = (node: HTMLDivElement | null) => {
+    handleRef(node);
+    if (!node) return;
+
+    const tabId = tabGroupCtx?.tabs[index]?.current?.id;
+    tabId && node.setAttribute("aria-labelledby", tabId);
+  };
+
   return visible ? (
     <div
       {...otherProps}
       id={id}
-      ref={node => {
-        handleRef(node);
-        if (!node) return;
-
-        const tabId = tabGroupCtx?.tabs[index]?.current?.id;
-        tabId && node.setAttribute("aria-labelledby", tabId);
-      }}
+      ref={refCallback}
       className={className}
       role="tabpanel"
-      data-slot="tabPanelRoot"
+      data-slot={PanelRootSlot}
     >
       {children}
     </div>

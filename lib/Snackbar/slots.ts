@@ -1,5 +1,5 @@
-export const Root = "SnackbarRoot";
-export const Title = "SnackbarTitleRoot";
-export const Description = "SnackbarDescriptionRoot";
-export const Content = "SnackbarContentRoot";
-export const Action = "SnackbarActionRoot";
+export const Root = "Snackbar:Root";
+export const TitleRoot = "SnackbarTitle:Root";
+export const DescriptionRoot = "SnackbarDescription:Root";
+export const ContentRoot = "SnackbarContent:Root";
+export const ActionRoot = "SnackbarAction:Root";

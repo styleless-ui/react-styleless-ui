@@ -1,15 +1,6 @@
 import cls from "classnames";
 import * as React from "react";
-import Menu, {
-  MenuCheckItem,
-  MenuGroup,
-  MenuItem,
-  MenuItems,
-  MenuRadioGroup,
-  MenuRadioItem,
-  MenuSeparatorItem,
-  SubMenu
-} from ".";
+import * as Menu from ".";
 import {
   itShouldMount,
   itSupportsDataSetProps,
@@ -19,59 +10,67 @@ import {
   screen,
   userEvent
 } from "../../tests/utils";
+import * as Slots from "./slots";
 
 describe("Menu", () => {
   afterEach(jest.clearAllMocks);
 
-  itShouldMount(Menu, { open: true });
-  itSupportsRef(Menu, { open: true }, HTMLDivElement);
-  itSupportsStyle(Menu, { open: true }, "[data-slot='menuRoot']");
-  itSupportsDataSetProps(Menu, { open: true }, "[data-slot='menuRoot']");
+  itShouldMount(Menu.Root, { open: true });
+  itSupportsRef(Menu.Root, { open: true }, HTMLDivElement);
+  itSupportsStyle(Menu.Root, { open: true }, `[data-slot='${Slots.Root}']`);
+  itSupportsDataSetProps(
+    Menu.Root,
+    { open: true },
+    `[data-slot='${Slots.Root}']`
+  );
 
   it("should have the required classNames", () => {
     render(
-      <Menu className={({ open }) => (open ? "menu menu--open" : "menu")} open>
-        <MenuItems
+      <Menu.Root
+        open
+        className={({ open }) => (open ? "menu menu--open" : "menu")}
+      >
+        <Menu.Items
           className="menu__items"
           label={{ screenReaderLabel: "Menu 0" }}
         >
-          <MenuGroup
+          <Menu.Group
             classes={{ label: "menu__group__label", root: "menu__group" }}
             label="Group 0"
           >
-            <MenuItem
+            <Menu.Item
               disabled
               className={({ disabled }) =>
                 disabled ? "menu__item menu__item--disabled" : "menu__item"
               }
             >
               Item 0
-            </MenuItem>
-            <MenuItem
+            </Menu.Item>
+            <Menu.Item
               className={({ disabled }) =>
                 disabled ? "menu__item menu__item--disabled" : "menu__item"
               }
             >
               Item 1
-            </MenuItem>
-            <MenuItem
+            </Menu.Item>
+            <Menu.Item
               className={({ disabled }) =>
                 disabled ? "menu__item menu__item--disabled" : "menu__item"
               }
             >
               <span>Item 2</span>
-              <SubMenu
+              <Menu.Sub
                 className={({ open }) =>
                   open
                     ? "menu menu--sub-menu menu--open"
                     : "menu menu--sub-menu"
                 }
               >
-                <MenuItems
+                <Menu.Items
                   className="menu__items"
                   label={{ screenReaderLabel: "Item 2" }}
                 >
-                  <MenuItem
+                  <Menu.Item
                     className={({ disabled }) =>
                       disabled
                         ? "menu__item menu__item--disabled"
@@ -79,8 +78,8 @@ describe("Menu", () => {
                     }
                   >
                     Item 2.0
-                  </MenuItem>
-                  <MenuItem
+                  </Menu.Item>
+                  <Menu.Item
                     disabled
                     className={({ disabled }) =>
                       disabled
@@ -89,8 +88,8 @@ describe("Menu", () => {
                     }
                   >
                     Item 2.1
-                  </MenuItem>
-                  <MenuItem
+                  </Menu.Item>
+                  <Menu.Item
                     className={({ disabled }) =>
                       disabled
                         ? "menu__item menu__item--disabled"
@@ -98,17 +97,17 @@ describe("Menu", () => {
                     }
                   >
                     Item 2.3
-                  </MenuItem>
-                </MenuItems>
-              </SubMenu>
-            </MenuItem>
-          </MenuGroup>
-          <MenuSeparatorItem className="menu__separator" />
-          <MenuGroup
+                  </Menu.Item>
+                </Menu.Items>
+              </Menu.Sub>
+            </Menu.Item>
+          </Menu.Group>
+          <Menu.SeparatorItem className="menu__separator" />
+          <Menu.Group
             classes={{ label: "menu__group__label", root: "menu__group" }}
             label="Group 1"
           >
-            <MenuCheckItem
+            <Menu.CheckItem
               defaultChecked
               className={({ disabled, selected }) =>
                 cls("menu__check-item", {
@@ -118,8 +117,8 @@ describe("Menu", () => {
               }
             >
               Item 3
-            </MenuCheckItem>
-            <MenuCheckItem
+            </Menu.CheckItem>
+            <Menu.CheckItem
               disabled
               className={({ disabled, selected }) =>
                 cls("menu__check-item", {
@@ -129,8 +128,8 @@ describe("Menu", () => {
               }
             >
               Item 4
-            </MenuCheckItem>
-            <MenuCheckItem
+            </Menu.CheckItem>
+            <Menu.CheckItem
               className={({ disabled, selected }) =>
                 cls("menu__check-item", {
                   "menu__check-item--disabled": disabled,
@@ -139,9 +138,9 @@ describe("Menu", () => {
               }
             >
               Item 5
-            </MenuCheckItem>
-          </MenuGroup>
-          <MenuRadioGroup
+            </Menu.CheckItem>
+          </Menu.Group>
+          <Menu.RadioGroup
             classes={{
               label: "menu__group__label",
               root: "menu__group"
@@ -149,7 +148,7 @@ describe("Menu", () => {
             label="Group 2"
             defaultValue="6"
           >
-            <MenuRadioItem
+            <Menu.RadioItem
               value="6"
               className={({ disabled, selected }) =>
                 cls("menu__radio-item", {
@@ -159,8 +158,8 @@ describe("Menu", () => {
               }
             >
               Item 6
-            </MenuRadioItem>
-            <MenuRadioItem
+            </Menu.RadioItem>
+            <Menu.RadioItem
               value="7"
               disabled
               className={({ disabled, selected }) =>
@@ -171,8 +170,8 @@ describe("Menu", () => {
               }
             >
               Item 7
-            </MenuRadioItem>
-            <MenuRadioItem
+            </Menu.RadioItem>
+            <Menu.RadioItem
               value="8"
               className={({ disabled, selected }) =>
                 cls("menu__radio-item", {
@@ -182,10 +181,10 @@ describe("Menu", () => {
               }
             >
               Item 8
-            </MenuRadioItem>
-          </MenuRadioGroup>
-        </MenuItems>
-      </Menu>
+            </Menu.RadioItem>
+          </Menu.RadioGroup>
+        </Menu.Items>
+      </Menu.Root>
     );
 
     const menuItemWrappers = screen.getAllByRole("menu");
@@ -267,24 +266,24 @@ describe("Menu", () => {
 
   it("the anchor of the submenu should have the required aria attributes", () => {
     render(
-      <Menu open>
-        <MenuItems label={{ screenReaderLabel: "Menu 0" }}>
-          <MenuGroup label="Group 0">
-            <MenuItem disabled>Item 0</MenuItem>
-            <MenuItem>Item 1</MenuItem>
-            <MenuItem data-testid="item:2">
+      <Menu.Root open>
+        <Menu.Items label={{ screenReaderLabel: "Menu 0" }}>
+          <Menu.Group label="Group 0">
+            <Menu.Item disabled>Item 0</Menu.Item>
+            <Menu.Item>Item 1</Menu.Item>
+            <Menu.Item data-testid="item:2">
               <span>Item 2</span>
-              <SubMenu id="submenu:0">
-                <MenuItems label={{ screenReaderLabel: "Item 2" }}>
-                  <MenuItem>Item 2.0</MenuItem>
-                  <MenuItem disabled>Item 2.1</MenuItem>
-                  <MenuItem>Item 2.3</MenuItem>
-                </MenuItems>
-              </SubMenu>
-            </MenuItem>
-          </MenuGroup>
-        </MenuItems>
-      </Menu>
+              <Menu.Sub id="submenu:0">
+                <Menu.Items label={{ screenReaderLabel: "Item 2" }}>
+                  <Menu.Item>Item 2.0</Menu.Item>
+                  <Menu.Item disabled>Item 2.1</Menu.Item>
+                  <Menu.Item>Item 2.3</Menu.Item>
+                </Menu.Items>
+              </Menu.Sub>
+            </Menu.Item>
+          </Menu.Group>
+        </Menu.Items>
+      </Menu.Root>
     );
 
     const triggerItem = screen.getByTestId("item:2");
@@ -302,15 +301,15 @@ describe("Menu", () => {
 
     userEvent.setup();
     render(
-      <Menu open>
-        <MenuItems label={{ screenReaderLabel: "Menu 0" }}>
-          <MenuItem disabled onSelect={handleOnSelect}>
+      <Menu.Root open>
+        <Menu.Items label={{ screenReaderLabel: "Menu 0" }}>
+          <Menu.Item disabled onSelect={handleOnSelect}>
             Item 0
-          </MenuItem>
-          <MenuItem onSelect={handleOnSelect}>Item 1</MenuItem>
-          <MenuItem onSelect={handleOnSelect}>Item 2</MenuItem>
-        </MenuItems>
-      </Menu>
+          </Menu.Item>
+          <Menu.Item onSelect={handleOnSelect}>Item 1</Menu.Item>
+          <Menu.Item onSelect={handleOnSelect}>Item 2</Menu.Item>
+        </Menu.Items>
+      </Menu.Root>
     );
 
     const items = screen.getAllByRole("menuitem");
@@ -339,29 +338,29 @@ describe("Menu", () => {
 
     userEvent.setup();
     render(
-      <Menu open>
-        <MenuItems label={{ screenReaderLabel: "Menu 0" }}>
-          <MenuCheckItem
+      <Menu.Root open>
+        <Menu.Items label={{ screenReaderLabel: "Menu 0" }}>
+          <Menu.CheckItem
             disabled
             onSelect={handleOnSelect}
             onCheckChange={handleOnCheckChange}
           >
             Item 0
-          </MenuCheckItem>
-          <MenuCheckItem
+          </Menu.CheckItem>
+          <Menu.CheckItem
             onSelect={handleOnSelect}
             onCheckChange={handleOnCheckChange}
           >
             Item 1
-          </MenuCheckItem>
-          <MenuCheckItem
+          </Menu.CheckItem>
+          <Menu.CheckItem
             onSelect={handleOnSelect}
             onCheckChange={handleOnCheckChange}
           >
             Item 2
-          </MenuCheckItem>
-        </MenuItems>
-      </Menu>
+          </Menu.CheckItem>
+        </Menu.Items>
+      </Menu.Root>
     );
 
     const items = screen.getAllByRole("menuitemcheckbox");
@@ -390,21 +389,21 @@ describe("Menu", () => {
 
     userEvent.setup();
     render(
-      <Menu open>
-        <MenuItems label={{ screenReaderLabel: "Menu 0" }}>
-          <MenuRadioGroup label="Group 0">
-            <MenuRadioItem disabled value="0" onSelect={handleOnSelect}>
+      <Menu.Root open>
+        <Menu.Items label={{ screenReaderLabel: "Menu 0" }}>
+          <Menu.RadioGroup label="Group 0">
+            <Menu.RadioItem disabled value="0" onSelect={handleOnSelect}>
               Item 0
-            </MenuRadioItem>
-            <MenuRadioItem value="1" onSelect={handleOnSelect}>
+            </Menu.RadioItem>
+            <Menu.RadioItem value="1" onSelect={handleOnSelect}>
               Item 1
-            </MenuRadioItem>
-            <MenuRadioItem value="2" onSelect={handleOnSelect}>
+            </Menu.RadioItem>
+            <Menu.RadioItem value="2" onSelect={handleOnSelect}>
               Item 2
-            </MenuRadioItem>
-          </MenuRadioGroup>
-        </MenuItems>
-      </Menu>
+            </Menu.RadioItem>
+          </Menu.RadioGroup>
+        </Menu.Items>
+      </Menu.Root>
     );
 
     const items = screen.getAllByRole("menuitemradio");
@@ -428,17 +427,17 @@ describe("Menu", () => {
 
     userEvent.setup();
     render(
-      <Menu open>
-        <MenuItems label={{ screenReaderLabel: "Menu 0" }}>
-          <MenuRadioGroup label="Group 0" onValueChange={handleOnValueChange}>
-            <MenuRadioItem disabled value="0">
+      <Menu.Root open>
+        <Menu.Items label={{ screenReaderLabel: "Menu 0" }}>
+          <Menu.RadioGroup label="Group 0" onValueChange={handleOnValueChange}>
+            <Menu.RadioItem disabled value="0">
               Item 0
-            </MenuRadioItem>
-            <MenuRadioItem value="1">Item 1</MenuRadioItem>
-            <MenuRadioItem value="2">Item 2</MenuRadioItem>
-          </MenuRadioGroup>
-        </MenuItems>
-      </Menu>
+            </Menu.RadioItem>
+            <Menu.RadioItem value="1">Item 1</Menu.RadioItem>
+            <Menu.RadioItem value="2">Item 2</Menu.RadioItem>
+          </Menu.RadioGroup>
+        </Menu.Items>
+      </Menu.Root>
     );
 
     const items = screen.getAllByRole("menuitemradio");
@@ -465,7 +464,7 @@ describe("Menu", () => {
     render(
       <>
         <button data-testid="btn">Button</button>
-        <Menu open onOutsideClick={handleOutsideClick} />
+        <Menu.Root open onOutsideClick={handleOutsideClick} />
       </>
     );
 
@@ -479,7 +478,7 @@ describe("Menu", () => {
     const handleEscapeKeyUp = jest.fn<void, [event: KeyboardEvent]>();
 
     userEvent.setup();
-    render(<Menu open onEscapeKeyUp={handleEscapeKeyUp} />);
+    render(<Menu.Root open onEscapeKeyUp={handleEscapeKeyUp} />);
 
     await userEvent.keyboard("[Escape]");
 

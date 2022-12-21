@@ -1,1 +1,1 @@
-export { default, type ToggleGroupProps } from "./ToggleGroup";
+export { default, type RootProps } from "./ToggleGroup";

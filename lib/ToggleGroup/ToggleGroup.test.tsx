@@ -9,6 +9,7 @@ import {
   userEvent
 } from "../../tests/utils";
 import Toggle from "../Toggle";
+import * as Slots from "./slots";
 import ToggleGroup from "./ToggleGroup";
 
 const labelText = "Label";
@@ -41,7 +42,7 @@ describe("CheckGroup", () => {
 
     const group = screen.getByRole("group");
     const root = group.parentElement;
-    const label = root?.querySelector("[data-slot='toggleGroupLabel']");
+    const label = root?.querySelector(`[data-slot='${Slots.Label}']`);
 
     expect(root).toHaveClass("toggle-group");
     expect(group).toHaveClass("toggle-group__group");

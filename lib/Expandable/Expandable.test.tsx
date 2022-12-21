@@ -1,3 +1,4 @@
+import * as Expandable from ".";
 import {
   act,
   itShouldMount,
@@ -8,185 +9,134 @@ import {
   screen,
   userEvent
 } from "../../tests/utils";
-import Expandable, { type ExpandableProps } from "./Expandable";
-import ExpandablePanel from "./Panel";
-import ExpandableTrigger from "./Trigger";
 
 describe("Expandable", () => {
   afterEach(jest.clearAllMocks);
 
-  itShouldMount(Expandable, {});
-  itSupportsRef(Expandable, {}, HTMLDivElement);
-  itSupportsStyle(Expandable, {});
-  itSupportsDataSetProps(Expandable, {});
+  itShouldMount(Expandable.Root, {});
+  itSupportsRef(Expandable.Root, {}, HTMLDivElement);
+  itSupportsStyle(Expandable.Root, {});
+  itSupportsDataSetProps(Expandable.Root, {});
 
   it("should have the required classNames", () => {
     render(
-      <Expandable
+      <Expandable.Root
         expanded
         className={({ expanded }) => (expanded ? "root expanded" : "root")}
       >
-        <ExpandableTrigger
+        <Expandable.Trigger
           disabled
           className={({ disabled }) =>
             disabled ? "trigger disabled" : "trigger"
           }
         >
           Trigger
-        </ExpandableTrigger>
-        <ExpandablePanel className="panel">
+        </Expandable.Trigger>
+        <Expandable.Content className="content">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima libero
           voluptatibus sint illo totam autem eligendi animi inventore distinctio
           nulla consequatur voluptates facere, reprehenderit nisi placeat
           cupiditate vero repellendus rerum?
-        </ExpandablePanel>
-      </Expandable>
+        </Expandable.Content>
+      </Expandable.Root>
     );
 
     const trigger = screen.getByRole("button");
     const root = trigger.parentElement;
-    const panel = screen.getByRole("region");
+    const content = screen.getByRole("region");
 
     expect(trigger).toHaveClass("trigger", "disabled");
     expect(root).toHaveClass("root", "expanded");
-    expect(panel).toHaveClass("panel");
+    expect(content).toHaveClass("content");
   });
 
-  it("checks for `aria-labelledby` attribute on <ExpandablePanel>", () => {
+  it("checks for `aria-labelledby` attribute on <Expandable.Panel>", () => {
     render(
-      <Expandable>
-        <ExpandableTrigger>Trigger</ExpandableTrigger>
-        <ExpandablePanel data-testid="panel">
+      <Expandable.Root>
+        <Expandable.Trigger>Trigger</Expandable.Trigger>
+        <Expandable.Content data-testid="content">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima libero
           voluptatibus sint illo totam autem eligendi animi inventore distinctio
           nulla consequatur voluptates facere, reprehenderit nisi placeat
           cupiditate vero repellendus rerum?
-        </ExpandablePanel>
-      </Expandable>
+        </Expandable.Content>
+      </Expandable.Root>
     );
 
     const trigger = screen.getByRole("button");
-    const panel = screen.getByTestId("panel");
+    const content = screen.getByTestId("content");
 
-    expect(panel).toHaveAttribute("aria-labelledby", trigger.id);
+    expect(content).toHaveAttribute("aria-labelledby", trigger.id);
   });
 
-  it("checks for `aria-controls` attribute on <ExpandableTrigger>", () => {
+  it("checks for `aria-controls` attribute on <Expandable.Trigger>", () => {
     render(
-      <Expandable>
-        <ExpandableTrigger>Trigger</ExpandableTrigger>
-        <ExpandablePanel data-testid="panel">
+      <Expandable.Root>
+        <Expandable.Trigger>Trigger</Expandable.Trigger>
+        <Expandable.Content data-testid="content">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima libero
           voluptatibus sint illo totam autem eligendi animi inventore distinctio
           nulla consequatur voluptates facere, reprehenderit nisi placeat
           cupiditate vero repellendus rerum?
-        </ExpandablePanel>
-      </Expandable>
+        </Expandable.Content>
+      </Expandable.Root>
     );
 
     const trigger = screen.getByRole("button");
-    const panel = screen.getByTestId("panel");
+    const content = screen.getByTestId("content");
 
-    expect(trigger).toHaveAttribute("aria-controls", panel.id);
+    expect(trigger).toHaveAttribute("aria-controls", content.id);
   });
 
-  it("expands the panel and calls `onExpand` callback", () => {
-    const handleOnExpand = jest.fn<void, []>();
-    const handleOnCollapse = jest.fn<void, []>();
-
-    const props: ExpandableProps = {
-      expanded: false,
-      onExpand: handleOnExpand,
-      onCollapse: handleOnCollapse
-    };
-
-    userEvent.setup();
-    const { rerender } = render(<Expandable {...props} />);
-    rerender(<Expandable {...props} expanded={true} />);
-
-    expect(handleOnExpand.mock.calls.length).toBe(1);
-    expect(handleOnExpand.mock.calls[0]?.length).toBe(0);
-
-    expect(handleOnCollapse.mock.calls.length).toBe(0);
-  });
-
-  it("collapses the panel and calls `onCollapse` callback", () => {
-    const handleOnExpand = jest.fn<void, []>();
-    const handleOnCollapse = jest.fn<void, []>();
-
-    const props: ExpandableProps = {
-      expanded: true,
-      onExpand: handleOnExpand,
-      onCollapse: handleOnCollapse
-    };
-
-    userEvent.setup();
-    const { rerender } = render(<Expandable {...props} />);
-    rerender(<Expandable {...props} expanded={false} />);
-
-    expect(handleOnCollapse.mock.calls.length).toBe(1);
-    expect(handleOnCollapse.mock.calls[0]?.length).toBe(0);
-
-    expect(handleOnExpand.mock.calls.length).toBe(0);
-  });
-
-  it("toggles the <ExpandableTrigger> with MouseEvent and calls `onExpand` and `onCollapse` callbacks", async () => {
-    const handleOnExpand = jest.fn<void, []>();
-    const handleOnCollapse = jest.fn<void, []>();
+  it("toggles the <Expandable.Trigger> with MouseEvent and calls `onExpandChange` callback", async () => {
+    const handleOnExpandChange = jest.fn<void, [expandState: boolean]>();
 
     userEvent.setup();
     render(
-      <Expandable
+      <Expandable.Root
         defaultExpanded={false}
-        onExpand={handleOnExpand}
-        onCollapse={handleOnCollapse}
+        onExpandChange={handleOnExpandChange}
       >
-        <ExpandableTrigger>Trigger</ExpandableTrigger>
-        <ExpandablePanel data-testid="panel">
+        <Expandable.Trigger>Trigger</Expandable.Trigger>
+        <Expandable.Content data-testid="content">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima libero
           voluptatibus sint illo totam autem eligendi animi inventore distinctio
           nulla consequatur voluptates facere, reprehenderit nisi placeat
           cupiditate vero repellendus rerum?
-        </ExpandablePanel>
-      </Expandable>
+        </Expandable.Content>
+      </Expandable.Root>
     );
 
     const trigger = screen.getByRole("button");
 
     await userEvent.click(trigger);
 
-    expect(handleOnExpand.mock.calls.length).toBe(1);
-    expect(handleOnExpand.mock.calls[0]?.length).toBe(0);
-
-    expect(handleOnCollapse.mock.calls.length).toBe(0);
+    expect(handleOnExpandChange.mock.calls.length).toBe(1);
+    expect(handleOnExpandChange.mock.calls[0]?.[0]).toBe(true);
 
     await userEvent.click(trigger);
 
-    expect(handleOnCollapse.mock.calls.length).toBe(1);
-    expect(handleOnCollapse.mock.calls[0]?.length).toBe(0);
-
-    expect(handleOnExpand.mock.calls.length).toBe(1);
+    expect(handleOnExpandChange.mock.calls.length).toBe(2);
+    expect(handleOnExpandChange.mock.calls[1]?.[0]).toBe(false);
   });
 
-  it("toggles the <ExpandableTrigger> with KeyboardEvent and calls `onExpand` and `onCollapse` callbacks", async () => {
-    const handleOnExpand = jest.fn<void, []>();
-    const handleOnCollapse = jest.fn<void, []>();
+  it("toggles the <Expandable.Trigger> with KeyboardEvent and calls `onExpandChange` callback", async () => {
+    const handleOnExpandChange = jest.fn<void, [expandState: boolean]>();
 
     userEvent.setup();
     render(
-      <Expandable
+      <Expandable.Root
         defaultExpanded={false}
-        onExpand={handleOnExpand}
-        onCollapse={handleOnCollapse}
+        onExpandChange={handleOnExpandChange}
       >
-        <ExpandableTrigger>Trigger</ExpandableTrigger>
-        <ExpandablePanel data-testid="panel">
+        <Expandable.Trigger>Trigger</Expandable.Trigger>
+        <Expandable.Content data-testid="content">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima libero
           voluptatibus sint illo totam autem eligendi animi inventore distinctio
           nulla consequatur voluptates facere, reprehenderit nisi placeat
           cupiditate vero repellendus rerum?
-        </ExpandablePanel>
-      </Expandable>
+        </Expandable.Content>
+      </Expandable.Root>
     );
 
     const trigger = screen.getByRole("button");
@@ -195,18 +145,14 @@ describe("Expandable", () => {
     expect(trigger).toHaveFocus();
     await userEvent.keyboard("[Space]");
 
-    expect(handleOnExpand.mock.calls.length).toBe(1);
-    expect(handleOnExpand.mock.calls[0]?.length).toBe(0);
-
-    expect(handleOnCollapse.mock.calls.length).toBe(0);
+    expect(handleOnExpandChange.mock.calls.length).toBe(1);
+    expect(handleOnExpandChange.mock.calls[0]?.[0]).toBe(true);
 
     act(() => void trigger.focus());
     expect(trigger).toHaveFocus();
     await userEvent.keyboard("[Space]");
 
-    expect(handleOnCollapse.mock.calls.length).toBe(1);
-    expect(handleOnCollapse.mock.calls[0]?.length).toBe(0);
-
-    expect(handleOnExpand.mock.calls.length).toBe(1);
+    expect(handleOnExpandChange.mock.calls.length).toBe(2);
+    expect(handleOnExpandChange.mock.calls[1]?.[0]).toBe(false);
   });
 });

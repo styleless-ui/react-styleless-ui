@@ -1,10 +1,14 @@
 import * as React from "react";
 import type { MergeElementProps } from "../../typings";
 import { componentWithForwardedRef, useDeterministicId } from "../../utils";
+import {
+  GroupLabel as GroupLabelSlot,
+  GroupRoot as GroupRootSlot
+} from "../slots";
 
 type ClassesMap = Record<"root" | "label", string>;
 
-interface MenuGroupBaseProps {
+interface GroupBaseProps {
   /**
    * The content of the component.
    */
@@ -31,12 +35,12 @@ interface MenuGroupBaseProps {
       };
 }
 
-export type MenuGroupProps = Omit<
-  MergeElementProps<"div", MenuGroupBaseProps>,
+export type GroupProps = Omit<
+  MergeElementProps<"div", GroupBaseProps>,
   "className" | "defaultChecked"
 >;
 
-const getLabelInfo = (labelInput: MenuGroupProps["label"]) => {
+const getLabelInfo = (labelInput: GroupProps["label"]) => {
   const props: {
     visibleLabel?: string;
     srOnlyLabel?: string;
@@ -53,7 +57,7 @@ const getLabelInfo = (labelInput: MenuGroupProps["label"]) => {
     } else {
       throw new Error(
         [
-          "[StylelessUI][MenuGroup]: Invalid `label` property.",
+          "[StylelessUI][Menu.Group]: Invalid `label` property.",
           "The `label` property must be either a `string` or in shape of " +
             "`{ screenReaderLabel: string; } | { labelledBy: string; }`"
         ].join("\n")
@@ -64,10 +68,7 @@ const getLabelInfo = (labelInput: MenuGroupProps["label"]) => {
   return props;
 };
 
-const MenuGroupBase = (
-  props: MenuGroupProps,
-  ref: React.Ref<HTMLDivElement>
-) => {
+const MenuGroupBase = (props: GroupProps, ref: React.Ref<HTMLDivElement>) => {
   const { children, classes, label, id: idProp, ...otherProps } = props;
 
   const id = useDeterministicId(idProp, "styleless-ui__menu-group");
@@ -86,7 +87,7 @@ const MenuGroupBase = (
       role="group"
       id={id}
       ref={ref}
-      data-slot="menuGroupRoot"
+      data-slot={GroupRootSlot}
       className={classes?.root}
       tabIndex={-1}
       aria-label={labelProps.srOnlyLabel}
@@ -95,7 +96,7 @@ const MenuGroupBase = (
       {visibleLabel && (
         <span
           id={visibleLabelId}
-          data-slot="menuGroupLabel"
+          data-slot={GroupLabelSlot}
           className={classes?.label}
         >
           {visibleLabel}

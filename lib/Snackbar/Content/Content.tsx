@@ -8,8 +8,8 @@ import {
 } from "../../utils";
 import SnackbarContext from "../context";
 import {
-  Content as SnackbarContentSlot,
-  Action as SnackbarActionSlot
+  ContentRoot as ContentRootSlot,
+  ActionRoot as ActionRootSlot
 } from "../slots";
 
 interface ContentBaseProps {
@@ -45,7 +45,7 @@ const SnackbarContentBase = (
 
     if (!node) return;
 
-    const actionEl = node.querySelector(`[data-slot="${SnackbarActionSlot}"]`);
+    const actionEl = node.querySelector(`[data-slot="${ActionRootSlot}"]`);
     if (!actionEl) return setIsTrappable(false);
 
     setIsTrappable(true);
@@ -59,7 +59,7 @@ const SnackbarContentBase = (
         ref={refCallback}
         className={className}
         role={snackbarCtx?.role}
-        data-slot={SnackbarContentSlot}
+        data-slot={ContentRootSlot}
         aria-atomic="true"
         aria-live={
           snackbarCtx
