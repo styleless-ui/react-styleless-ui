@@ -1,5 +1,5 @@
 import * as React from "react";
-import type { UnknownObject } from "../typings";
+import type { AnyObject, UnknownObject } from "../typings";
 import { componentWithForwardedRef, forkRefs, isFragment } from "../utils";
 
 interface RootBaseProps {
@@ -11,11 +11,11 @@ interface RootBaseProps {
 
 export type RootProps = React.HTMLAttributes<HTMLElement> & RootBaseProps;
 
-const mergeProps = (slotProps: UnknownObject, childProps: UnknownObject) => {
+const mergeProps = (slotProps: AnyObject, childProps: AnyObject) => {
   const overrideProps = Object.keys(childProps).reduce(
     (result, key) => {
-      const slotPropValue = slotProps[key];
-      const childPropValue = childProps[key];
+      const slotPropValue = slotProps[key] as unknown;
+      const childPropValue = childProps[key] as unknown;
 
       const isEventHandler = /^on[A-Z]/.test(key);
       const isStyle = key === "style";
