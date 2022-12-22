@@ -1,12 +1,7 @@
 import * as React from "react";
+import Button from "../../Button";
 import { type MergeElementProps } from "../../typings.d";
-import {
-  componentWithForwardedRef,
-  computeAccessibleName,
-  useButtonBase,
-  useDeterministicId,
-  useForkedRefs
-} from "../../utils";
+import { componentWithForwardedRef, useDeterministicId } from "../../utils";
 import { ActionRoot as ActionRootSlot } from "../slots";
 
 interface ActionBaseProps {
@@ -27,101 +22,46 @@ interface ActionBaseProps {
     | ((ctx: { disabled: boolean; focusedVisible: boolean }) => string);
 }
 
-export type ActionProps = Omit<
-  MergeElementProps<"button", ActionBaseProps>,
-  "defaultChecked" | "defaultValue"
->;
+export type ActionProps<T extends React.ElementType = typeof Button> =
+  MergeElementProps<
+    T,
+    ActionBaseProps & {
+      /**
+       * The component used for the root node.
+       * Either a string to use a HTML element or a component.
+       */
+      as?: T;
+    }
+  >;
 
-const SnackbarActionBase = (
-  props: ActionProps,
-  ref: React.Ref<HTMLButtonElement>
+const SnackbarActionBase = <
+  T extends React.ElementType = React.ElementType,
+  E extends HTMLElement = HTMLElement
+>(
+  props: ActionProps<T>,
+  ref: React.Ref<E>
 ) => {
   const {
-    className: classNameProp,
-    children: childrenProp,
+    className,
+    children,
     id: idProp,
-    onBlur,
-    onFocus,
-    onClick,
-    onKeyDown,
-    onKeyUp,
-    autoFocus,
-    disabled = false,
+    as: RootNode = Button,
     ...otherProps
   } = props;
 
   const id = useDeterministicId(idProp, "styleless-ui__snackbar-action");
 
-  const buttonBase = useButtonBase({
-    onBlur,
-    onClick,
-    onFocus,
-    onKeyDown,
-    onKeyUp,
-    autoFocus,
-    disabled
-  });
-
-  const rootRef = React.useRef<HTMLButtonElement>(null);
-  const handleRef = useForkedRefs(ref, rootRef, buttonBase.handleButtonRef);
-
-  const renderCtx = {
-    disabled,
-    focusedVisible: buttonBase.isFocusedVisible
-  };
-
-  const refCallback = (node: HTMLButtonElement | null) => {
-    handleRef(node);
-
-    if (!node) return;
-
-    const accessibleName = computeAccessibleName(node);
-
-    if (!accessibleName) {
-      // eslint-disable-next-line no-console
-      console.error(
-        [
-          "[StylelessUI][Snackbar.Action]: Can't determine an accessible name.",
-          "It's mandatory to provide an accessible name for the component. " +
-            "Possible accessible names:",
-          ". Set `aria-label` attribute.",
-          ". Set `aria-labelledby` attribute.",
-          ". Set `title` attribute.",
-          ". Use an informative content.",
-          ". Use a <label> with `for` attribute referencing to this component."
-        ].join("\n")
-      );
-    }
-  };
-
-  const className =
-    typeof classNameProp === "function"
-      ? classNameProp(renderCtx)
-      : classNameProp;
-
-  const children =
-    typeof childrenProp === "function" ? childrenProp(renderCtx) : childrenProp;
-
   return (
-    <button
+    <RootNode
       {...otherProps}
       id={id}
-      type="button"
-      ref={refCallback}
-      tabIndex={disabled ? -1 : 0}
-      autoFocus={autoFocus}
+      ref={ref}
       className={className}
-      disabled={disabled}
-      onClick={buttonBase.handleClick}
-      onBlur={buttonBase.handleBlur}
-      onFocus={buttonBase.handleFocus}
-      onKeyDown={buttonBase.handleKeyDown}
-      onKeyUp={buttonBase.handleKeyUp}
+      type="button"
       data-slot={ActionRootSlot}
-      data-focus-visible={renderCtx.focusedVisible ? "" : undefined}
     >
       {children}
-    </button>
+    </RootNode>
   );
 };
 

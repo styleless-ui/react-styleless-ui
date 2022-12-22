@@ -1,11 +1,10 @@
 import * as React from "react";
+import Button from "../../Button";
 import { type MergeElementProps } from "../../typings.d";
 import {
   componentWithForwardedRef,
-  computeAccessibleName,
-  useButtonBase,
-  useDeterministicId,
-  useForkedRefs
+  setRef,
+  useDeterministicId
 } from "../../utils";
 import ExpandableContext from "../context";
 import {
@@ -46,18 +45,7 @@ const ExpandableTriggerBase = (
   props: TriggerProps,
   ref: React.Ref<HTMLDivElement>
 ) => {
-  const {
-    children: childrenProp,
-    className: classNameProp,
-    disabled = false,
-    id: idProp,
-    onFocus,
-    onBlur,
-    onKeyDown,
-    onKeyUp,
-    onClick,
-    ...otherProps
-  } = props;
+  const { children, className, id: idProp, onClick, ...otherProps } = props;
 
   const expandableCtx = React.useContext(ExpandableContext);
 
@@ -68,29 +56,8 @@ const ExpandableTriggerBase = (
     onClick?.(event);
   };
 
-  const buttonBase = useButtonBase({
-    disabled,
-    onFocus,
-    onBlur,
-    onKeyDown,
-    onKeyUp,
-    onClick: handleClick
-  });
-
-  const handleRef = useForkedRefs(ref, buttonBase.handleButtonRef);
-
-  const renderCtx = { disabled, focusedVisible: buttonBase.isFocusedVisible };
-
-  const className =
-    typeof classNameProp === "function"
-      ? classNameProp(renderCtx)
-      : classNameProp;
-
-  const children =
-    typeof childrenProp === "function" ? childrenProp(renderCtx) : childrenProp;
-
   const refCallback = (node: HTMLDivElement | null) => {
-    handleRef(node);
+    setRef(ref, node);
     if (!node) return;
 
     const parent = node.closest(`[data-slot="${RootSlot}"]`);
@@ -103,45 +70,21 @@ const ExpandableTriggerBase = (
 
     const panelId = content.id;
     panelId && node.setAttribute("aria-controls", panelId);
-
-    const accessibleName = computeAccessibleName(node);
-
-    if (!accessibleName) {
-      // eslint-disable-next-line no-console
-      console.error(
-        [
-          "[StylelessUI][Expandable.Trigger]: Can't determine an accessible name.",
-          "It's mandatory to provide an accessible name for the component. " +
-            "Possible accessible names:",
-          ". Set `aria-label` attribute.",
-          ". Set `aria-labelledby` attribute.",
-          ". Set `title` attribute.",
-          ". Use an informative content.",
-          ". Use a <label> with `for` attribute referencing to this component."
-        ].join("\n")
-      );
-    }
   };
 
   return (
-    <div
+    <Button
       {...otherProps}
+      as="div"
       id={id}
-      data-slot={TriggerRootSlot}
-      aria-disabled={disabled}
-      aria-expanded={expandableCtx?.isExpanded}
+      onClick={handleClick}
       ref={refCallback}
-      role="button"
-      tabIndex={disabled ? -1 : 0}
       className={className}
-      onClick={buttonBase.handleClick}
-      onBlur={buttonBase.handleBlur}
-      onFocus={buttonBase.handleFocus}
-      onKeyDown={buttonBase.handleKeyDown}
-      onKeyUp={buttonBase.handleKeyUp}
+      data-slot={TriggerRootSlot}
+      aria-expanded={expandableCtx?.isExpanded}
     >
       {children}
-    </div>
+    </Button>
   );
 };
 
