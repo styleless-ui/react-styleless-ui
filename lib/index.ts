@@ -6,6 +6,8 @@ export type {
   RootProps as BreadcrumbProps
 } from "./Breadcrumb";
 
+export { default as Button, type RootProps as ButtonProps } from "./Button";
+
 export {
   default as Checkbox,
   type RootProps as CheckboxProps
