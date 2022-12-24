@@ -1,6 +1,6 @@
 import * as React from "react";
 import CheckGroupContext from "../CheckGroup/context";
-import { type ClassesMap, type MergeElementProps } from "../typings.d";
+import type { Classes, MergeElementProps } from "../typings";
 import {
   componentWithForwardedRef,
   useCheckBase,
@@ -10,7 +10,7 @@ import {
 } from "../utils";
 import * as Slots from "./slots";
 
-type CheckboxClassesMap = ClassesMap<"root" | "label" | "check", never>;
+type CheckboxClassesMap = Classes<"root" | "label" | "check">;
 
 type ClassesContext = {
   /** The `checked` state of the checkbox. */
@@ -21,7 +21,7 @@ type ClassesContext = {
   focusedVisible: boolean;
 };
 
-interface RootBaseProps {
+interface RootOwnProps {
   /**
    * Map of sub-components and their correlated classNames.
    */
@@ -76,7 +76,7 @@ interface RootBaseProps {
   /**
    * The component to be used as the check element.
    */
-  checkComponent?: React.ReactElement<{ className?: string }>;
+  checkComponent?: React.ReactElement;
   onFocus?: React.FocusEventHandler<HTMLButtonElement>;
   onBlur?: React.FocusEventHandler<HTMLButtonElement>;
   onKeyDown?: React.KeyboardEventHandler<HTMLButtonElement>;
@@ -84,7 +84,7 @@ interface RootBaseProps {
 }
 
 export type RootProps = Omit<
-  MergeElementProps<"button", RootBaseProps>,
+  MergeElementProps<"button", RootOwnProps>,
   "defaultValue" | "className"
 >;
 
@@ -116,16 +116,8 @@ const getLabelInfo = (labelInput: RootProps["label"]) => {
   return props;
 };
 
-const _DefaultCheck = ({ className }: { className?: string }) => (
-  <svg
-    data-slot={Slots.Check}
-    width={12}
-    height={8}
-    aria-hidden="true"
-    focusable="false"
-    className={className}
-    viewBox="0 0 12 8"
-  >
+const _DefaultCheck = () => (
+  <svg aria-hidden="true" focusable="false" viewBox="0 0 12 8">
     <polyline
       fill="none"
       stroke="currentcolor"
@@ -137,18 +129,6 @@ const _DefaultCheck = ({ className }: { className?: string }) => (
     ></polyline>
   </svg>
 );
-
-const mergeClasses = (
-  ...classNames: Array<string | undefined>
-): string | undefined =>
-  classNames.reduce((result, className) => {
-    if (typeof result === "undefined")
-      return typeof className !== "undefined" ? className : undefined;
-    else if (typeof className !== "undefined")
-      return result + " " + className.trim();
-
-    return result;
-  }, undefined);
 
 const CheckboxBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
   const {
@@ -240,36 +220,31 @@ const CheckboxBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
       <button
         {...otherProps}
         id={id}
-        role="checkbox"
         className={classes?.root}
-        type="button"
-        tabIndex={disabled ? -1 : 0}
         ref={handleRef}
-        data-slot={Slots.Root}
         disabled={disabled}
         onFocus={checkBase.handleFocus}
         onBlur={checkBase.handleBlur}
         onKeyDown={checkBase.handleKeyDown}
         onKeyUp={checkBase.handleKeyUp}
         onClick={checkBase.handleClick}
+        tabIndex={disabled ? -1 : 0}
+        type="button"
+        role="checkbox"
+        data-slot={Slots.Root}
         aria-checked={checkBase.checked}
         aria-label={labelProps.srOnlyLabel}
         aria-labelledby={visibleLabel ? visibleLabelId : labelProps.labelledBy}
       >
-        {checkBase.checked &&
-          (checkComponent ? (
-            React.cloneElement(checkComponent, {
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-              "data-slot": Slots.Check,
-              className: mergeClasses(
-                checkComponent.props.className,
-                classes?.check
-              )
-            })
-          ) : (
-            <_DefaultCheck className={classes?.check} />
-          ))}
+        {checkBase.checked && (
+          <div
+            className={classes?.check}
+            data-slot={Slots.Check}
+            aria-hidden="true"
+          >
+            {checkComponent ?? <_DefaultCheck />}
+          </div>
+        )}
       </button>
       {visibleLabel && (
         <span

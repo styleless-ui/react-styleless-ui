@@ -1,6 +1,6 @@
 import * as React from "react";
 import ToggleGroupContext from "../ToggleGroup/context";
-import { type MergeElementProps } from "../typings.d";
+import type { MergeElementProps } from "../typings";
 import {
   componentWithForwardedRef,
   computeAccessibleName,
@@ -9,7 +9,7 @@ import {
 } from "../utils";
 import * as Slots from "./slots";
 
-interface RootBaseProps {
+interface RootOwnProps {
   /**
    * The content of the component.
    */
@@ -61,7 +61,7 @@ interface RootBaseProps {
 }
 
 export type RootProps = Omit<
-  MergeElementProps<"button", RootBaseProps>,
+  MergeElementProps<"button", RootOwnProps>,
   "defaultValue" | "defaultChecked"
 >;
 
@@ -177,7 +177,7 @@ const ToggleBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
       onKeyUp={checkBase.handleKeyUp}
       onClick={checkBase.handleClick}
       aria-pressed={checkBase.checked}
-      {...(checkBase.checked ? { "data-active": "" } : {})}
+      data-active={checkBase.checked ? "" : undefined}
     >
       {children}
     </button>

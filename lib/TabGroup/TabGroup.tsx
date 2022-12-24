@@ -1,5 +1,5 @@
 import * as React from "react";
-import { type MergeElementProps } from "../typings.d";
+import type { MergeElementProps } from "../typings";
 import {
   componentWithForwardedRef,
   useControlledProp,
@@ -9,7 +9,7 @@ import {
 import TabGroupContext, { type ITabGroupContext } from "./context";
 import { Root as RootSlot } from "./slots";
 
-interface RootBaseProps {
+interface RootOwnProps {
   /**
    * The content of the tab group.
    */
@@ -45,7 +45,7 @@ interface RootBaseProps {
 }
 
 export type RootProps = Omit<
-  MergeElementProps<"div", RootBaseProps>,
+  MergeElementProps<"div", RootOwnProps>,
   "defaultChecked" | "defaultValue"
 >;
 

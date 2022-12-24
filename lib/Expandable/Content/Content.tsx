@@ -12,7 +12,7 @@ import {
   TriggerRoot as TriggerRootSlot
 } from "../slots";
 
-interface ContentBaseProps {
+interface ContentOwnProps {
   /**
    * The content of the component.
    */
@@ -24,7 +24,7 @@ interface ContentBaseProps {
 }
 
 export type ContentProps = Omit<
-  MergeElementProps<"div", ContentBaseProps>,
+  MergeElementProps<"div", ContentOwnProps>,
   "defaultChecked" | "defaultValue"
 >;
 
@@ -60,10 +60,10 @@ const ExpandableContentBase = (
       {...otherProps}
       id={id}
       ref={refCallback}
+      className={className}
       role="region"
       aria-hidden={!expandableCtx?.isExpanded}
       data-slot={ContentRootSlot}
-      className={className}
     >
       {children}
     </div>

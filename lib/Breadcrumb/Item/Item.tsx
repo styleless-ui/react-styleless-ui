@@ -1,9 +1,9 @@
 import * as React from "react";
-import { type MergeElementProps } from "../../typings.d";
+import type { MergeElementProps } from "../../typings";
 import { componentWithForwardedRef } from "../../utils";
 import { ItemRoot as ItemRootSlot } from "../slots";
 
-interface ItemBaseProps {
+interface ItemOwnProps {
   /**
    * The content of the component.
    */
@@ -15,7 +15,7 @@ interface ItemBaseProps {
 }
 
 export type ItemProps = Omit<
-  MergeElementProps<"li", ItemBaseProps>,
+  MergeElementProps<"li", ItemOwnProps>,
   "defaultChecked" | "defaultValue"
 >;
 

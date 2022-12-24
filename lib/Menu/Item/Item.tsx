@@ -11,7 +11,7 @@ import { ItemRoot as ItemRootSlot } from "../slots";
 import useMenuItem from "../useMenuItem";
 import MenuItemContext from "./context";
 
-interface ItemBaseProps {
+interface ItemOwnProps {
   /**
    * The content of the component.
    */
@@ -48,7 +48,7 @@ interface ItemBaseProps {
 }
 
 export type ItemProps = Omit<
-  MergeElementProps<"div", ItemBaseProps>,
+  MergeElementProps<"div", ItemOwnProps>,
   "defaultValue" | "defaultChecked"
 >;
 
@@ -74,6 +74,7 @@ const MenuItemBase = (props: ItemProps, ref: React.Ref<HTMLDivElement>) => {
     onMouseEnter,
     onMouseLeave,
     onSelect,
+    style,
     ...otherProps
   } = props;
 
@@ -170,21 +171,21 @@ const MenuItemBase = (props: ItemProps, ref: React.Ref<HTMLDivElement>) => {
   return (
     <div
       {...otherProps}
-      role="menuitem"
       ref={refCallback}
-      data-slot={ItemRootSlot}
       className={className}
-      tabIndex={-1}
       onClick={menuItem.handleClick}
       onMouseEnter={menuItem.handleMouseEnter}
       onMouseLeave={menuItem.handleMouseLeave}
-      aria-disabled={disabled}
       style={
-        otherProps.style
-          ? { ...otherProps.style, ...disableUserSelectCSSProperties }
+        style
+          ? { ...style, ...disableUserSelectCSSProperties }
           : disableUserSelectCSSProperties
       }
-      {...(isActive ? { "data-active": "" } : {})}
+      tabIndex={-1}
+      role="menuitem"
+      data-slot={ItemRootSlot}
+      data-active={isActive ? "" : undefined}
+      aria-disabled={disabled}
     >
       <MenuItemContext.Provider
         value={{

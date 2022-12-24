@@ -1,5 +1,5 @@
 import * as React from "react";
-import { type MergeElementProps } from "../typings.d";
+import type { Classes, MergeElementProps } from "../typings";
 import {
   componentWithForwardedRef,
   useControlledProp,
@@ -8,9 +8,7 @@ import {
 import CheckGroupContext from "./context";
 import * as Slots from "./slots";
 
-type CheckboxGroupClassesMap = Record<"root" | "label" | "group", string>;
-
-interface RootBaseProps {
+interface RootOwnProps {
   /**
    * The content of the group.
    */
@@ -18,7 +16,7 @@ interface RootBaseProps {
   /**
    * Map of sub-components and their correlated classNames.
    */
-  classes?: CheckboxGroupClassesMap;
+  classes?: Classes<"root" | "label" | "group">;
   /**
    * The label of the group.
    */
@@ -53,7 +51,7 @@ interface RootBaseProps {
 }
 
 export type RootProps = Omit<
-  MergeElementProps<"div", RootBaseProps>,
+  MergeElementProps<"div", RootOwnProps>,
   "className" | "defaultChecked"
 >;
 
@@ -123,8 +121,8 @@ const CheckGroupBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
       {...otherProps}
       id={id}
       ref={ref}
-      data-slot={Slots.Root}
       className={classes?.root}
+      data-slot={Slots.Root}
     >
       <CheckGroupContext.Provider value={{ value, onChange: handleChange }}>
         {visibleLabel && (

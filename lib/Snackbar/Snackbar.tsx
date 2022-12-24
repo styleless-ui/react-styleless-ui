@@ -1,7 +1,7 @@
 import * as React from "react";
 import { SystemKeys } from "../internals";
 import Portal from "../Portal";
-import { type MergeElementProps } from "../typings.d";
+import type { MergeElementProps } from "../typings";
 import {
   componentWithForwardedRef,
   useDeterministicId,
@@ -13,7 +13,7 @@ import {
 import SnackbarContext from "./context";
 import { Root as SnackbarRootSlot } from "./slots";
 
-interface RootBaseProps {
+interface RootOwnProps {
   /**
    * The content of the snackbar.
    */
@@ -60,7 +60,7 @@ interface RootBaseProps {
 }
 
 export type RootProps = Omit<
-  MergeElementProps<"div", RootBaseProps>,
+  MergeElementProps<"div", RootOwnProps>,
   "defaultChecked" | "defaultValue"
 >;
 

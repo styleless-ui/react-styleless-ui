@@ -1,10 +1,10 @@
 import * as React from "react";
-import { type MergeElementProps } from "../typings.d";
+import type { MergeElementProps } from "../typings";
 import { componentWithForwardedRef, useControlledProp } from "../utils";
 import ExpandableContext from "./context";
 import { Root as RootSlot } from "./slots";
 
-interface RootBaseProps {
+interface RootOwnProps {
   /**
    * The content of the component.
    */
@@ -32,7 +32,7 @@ interface RootBaseProps {
 }
 
 export type RootProps = Omit<
-  MergeElementProps<"div", RootBaseProps>,
+  MergeElementProps<"div", RootOwnProps>,
   "defaultChecked" | "defaultValue"
 >;
 
@@ -68,7 +68,7 @@ const ExpandableBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
   };
 
   return (
-    <div {...otherProps} ref={ref} data-slot={RootSlot} className={className}>
+    <div {...otherProps} ref={ref} className={className} data-slot={RootSlot}>
       <ExpandableContext.Provider
         value={{ isExpanded, setIsExpanded, handleExpandChange }}
       >

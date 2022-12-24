@@ -1,10 +1,10 @@
 import * as React from "react";
-import { type MergeElementProps } from "../../typings.d";
+import type { MergeElementProps } from "../../typings";
 import { componentWithForwardedRef } from "../../utils";
 import Panel from "../Panel";
 import { PanelsRoot as PanelsRootSlot } from "../slots";
 
-interface PanelsBaseProps {
+interface PanelsOwnProps {
   /**
    * The content of the component.
    */
@@ -16,7 +16,7 @@ interface PanelsBaseProps {
 }
 
 export type PanelsProps = Omit<
-  MergeElementProps<"div", PanelsBaseProps>,
+  MergeElementProps<"div", PanelsOwnProps>,
   "defaultChecked" | "defaultValue"
 >;
 

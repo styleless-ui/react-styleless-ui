@@ -1,10 +1,10 @@
 import * as React from "react";
 import Button from "../../Button";
-import { type MergeElementProps } from "../../typings.d";
+import type { MergeElementProps } from "../../typings";
 import { componentWithForwardedRef, useDeterministicId } from "../../utils";
 import { ActionRoot as ActionRootSlot } from "../slots";
 
-interface ActionBaseProps {
+interface ActionOwnProps {
   /**
    * The content of the component.
    */
@@ -25,7 +25,7 @@ interface ActionBaseProps {
 export type ActionProps<T extends React.ElementType = typeof Button> =
   MergeElementProps<
     T,
-    ActionBaseProps & {
+    ActionOwnProps & {
       /**
        * The component used for the root node.
        * Either a string to use a HTML element or a component.

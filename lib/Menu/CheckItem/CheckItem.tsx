@@ -11,7 +11,7 @@ import MenuContext from "../context";
 import { CheckItemRoot as CheckItemRootSlot } from "../slots";
 import useMenuItem from "../useMenuItem";
 
-interface CheckItemBaseProps {
+interface CheckItemOwnProps {
   /**
    * The content of the component.
    */
@@ -62,7 +62,7 @@ interface CheckItemBaseProps {
 }
 
 export type CheckItemProps = Omit<
-  MergeElementProps<"div", CheckItemBaseProps>,
+  MergeElementProps<"div", CheckItemOwnProps>,
   "defaultValue"
 >;
 
@@ -81,6 +81,7 @@ const MenuCheckItemBase = (
     onClick,
     onMouseEnter,
     onMouseLeave,
+    style,
     ...otherProps
   } = props;
 
@@ -145,22 +146,22 @@ const MenuCheckItemBase = (
   return (
     <div
       {...otherProps}
-      role="menuitemcheckbox"
       ref={refCallback}
-      data-slot={CheckItemRootSlot}
       className={className}
-      tabIndex={-1}
       onClick={menuItem.handleClick}
       onMouseEnter={menuItem.handleMouseEnter}
       onMouseLeave={menuItem.handleMouseLeave}
-      aria-checked={isSelected}
-      aria-disabled={disabled}
       style={
-        otherProps.style
-          ? { ...otherProps.style, ...disableUserSelectCSSProperties }
+        style
+          ? { ...style, ...disableUserSelectCSSProperties }
           : disableUserSelectCSSProperties
       }
-      {...(isActive ? { "data-active": "" } : {})}
+      tabIndex={-1}
+      role="menuitemcheckbox"
+      data-slot={CheckItemRootSlot}
+      data-active={isActive ? "data-active" : undefined}
+      aria-checked={isSelected}
+      aria-disabled={disabled}
     >
       {children}
     </div>

@@ -2,14 +2,14 @@ import * as React from "react";
 import type { AnyObject, UnknownObject } from "../typings";
 import { componentWithForwardedRef, forkRefs, isFragment } from "../utils";
 
-interface RootBaseProps {
+interface RootOwnProps {
   /**
    * The content of the component. It should be a single non-fragment React element.
    */
   children: React.ReactElement;
 }
 
-export type RootProps = React.HTMLAttributes<HTMLElement> & RootBaseProps;
+export type RootProps = React.HTMLAttributes<HTMLElement> & RootOwnProps;
 
 const mergeProps = (slotProps: AnyObject, childProps: AnyObject) => {
   const overrideProps = Object.keys(childProps).reduce(
@@ -98,7 +98,7 @@ const AsBase = (props: RootProps, ref: React.Ref<HTMLElement>) => {
   const { children, ...otherProps } = props;
 
   return (
-    <AsClone {...otherProps} ref={ref}>
+    <AsClone ref={ref} {...otherProps}>
       {children}
     </AsClone>
   );

@@ -1,5 +1,5 @@
 import * as React from "react";
-import type { MergeElementProps } from "../typings";
+import type { PolymorphicProps } from "../typings";
 import {
   componentWithForwardedRef,
   computeAccessibleName,
@@ -10,7 +10,7 @@ import {
 } from "../utils";
 import * as Slots from "./slots";
 
-interface RootBaseProps {
+interface RootOwnProps {
   /**
    * The content of the component.
    */
@@ -33,23 +33,14 @@ interface RootBaseProps {
   disabled?: boolean;
 }
 
-export type RootProps<T extends React.ElementType> = MergeElementProps<
-  T,
-  RootBaseProps & {
-    /**
-     * The component used for the root node.
-     * Either a string to use a HTML element or a component.
-     */
-    as?: T;
-  }
+export type RootProps<E extends React.ElementType> = PolymorphicProps<
+  E,
+  RootOwnProps
 >;
 
-const ButtonBase = <
-  T extends React.ElementType = React.ElementType,
-  E extends HTMLElement = HTMLElement
->(
-  props: RootProps<T>,
-  ref: React.Ref<E>
+const ButtonBase = <E extends React.ElementType, R extends HTMLElement>(
+  props: RootProps<E>,
+  ref: React.Ref<R>
 ) => {
   const {
     className: classNameProp,
@@ -131,7 +122,6 @@ const ButtonBase = <
       id={id}
       ref={refCallback}
       className={className}
-      tabIndex={disabled ? -1 : 0}
       autoFocus={autoFocus}
       onClick={buttonBase.handleClick}
       onBlur={buttonBase.handleBlur}
@@ -139,9 +129,10 @@ const ButtonBase = <
       onKeyDown={buttonBase.handleKeyDown}
       onKeyUp={buttonBase.handleKeyUp}
       data-slot={Slots.Root}
+      {...otherProps}
+      tabIndex={disabled ? -1 : 0}
       data-disabled={disabled ? "" : undefined}
       data-focus-visible={buttonBase.isFocusedVisible ? "" : undefined}
-      {...otherProps}
     >
       {children}
     </RootNode>

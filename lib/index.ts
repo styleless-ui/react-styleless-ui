@@ -100,3 +100,5 @@ export {
 } from "./ToggleGroup";
 
 export { default as Tooltip, type RootProps as TooltipProps } from "./Tooltip";
+
+export type { MergeElementProps, PolymorphicProps } from "./typings.d";

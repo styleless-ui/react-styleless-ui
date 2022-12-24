@@ -1,6 +1,6 @@
 import * as React from "react";
 import RadioGroupContext from "../RadioGroup/context";
-import { type ClassesMap, type MergeElementProps } from "../typings.d";
+import type { Classes, MergeElementProps } from "../typings";
 import {
   componentWithForwardedRef,
   useCheckBase,
@@ -10,7 +10,7 @@ import {
 } from "../utils";
 import * as Slots from "./slots";
 
-type RadioClassesMap = ClassesMap<"root" | "label" | "check", never>;
+type RadioClassesMap = Classes<"root" | "label" | "check">;
 
 type ClassesContext = {
   /** The `checked` state of the radio. */
@@ -21,7 +21,7 @@ type ClassesContext = {
   focusedVisible: boolean;
 };
 
-interface RootBaseProps {
+interface RootOwnProps {
   /**
    * Map of sub-components and their correlated classNames.
    */
@@ -76,7 +76,7 @@ interface RootBaseProps {
   /**
    * The component to be used as the check element.
    */
-  checkComponent?: React.ReactElement<{ className?: string }>;
+  checkComponent?: React.ReactElement;
   onFocus?: React.FocusEventHandler<HTMLButtonElement>;
   onBlur?: React.FocusEventHandler<HTMLButtonElement>;
   onKeyDown?: React.KeyboardEventHandler<HTMLButtonElement>;
@@ -84,7 +84,7 @@ interface RootBaseProps {
 }
 
 export type RootProps = Omit<
-  MergeElementProps<"button", RootBaseProps>,
+  MergeElementProps<"button", RootOwnProps>,
   "defaultValue" | "className"
 >;
 
@@ -116,31 +116,11 @@ const getLabelInfo = (labelInput: RootProps["label"]) => {
   return props;
 };
 
-const _DefaultCheck = ({ className }: { className?: string }) => (
-  <svg
-    width={8}
-    height={8}
-    aria-hidden="true"
-    focusable="false"
-    className={className}
-    data-slot={Slots.Check}
-    viewBox="0 0 8 8"
-  >
+const _DefaultCheck = () => (
+  <svg aria-hidden="true" focusable="false" viewBox="0 0 8 8">
     <circle cx={4} cy={4} r={4} fill="currentColor" stroke="none" />
   </svg>
 );
-
-const mergeClasses = (
-  ...classNames: Array<string | undefined>
-): string | undefined =>
-  classNames.reduce((result, className) => {
-    if (typeof result === "undefined")
-      return typeof className !== "undefined" ? className : undefined;
-    else if (typeof className !== "undefined")
-      return result + " " + className.trim();
-
-    return result;
-  }, undefined);
 
 const RadioBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
   const {
@@ -266,17 +246,15 @@ const RadioBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
         aria-label={labelProps.srOnlyLabel}
         aria-labelledby={visibleLabel ? visibleLabelId : labelProps.labelledBy}
       >
-        {checkBase.checked &&
-          (checkComponent ? (
-            React.cloneElement(checkComponent, {
-              className: mergeClasses(
-                checkComponent.props.className,
-                classes?.check
-              )
-            })
-          ) : (
-            <_DefaultCheck className={classes?.check} />
-          ))}
+        {checkBase.checked && (
+          <div
+            className={classes?.check}
+            data-slot={Slots.Check}
+            aria-hidden="true"
+          >
+            {checkComponent ?? <_DefaultCheck />}
+          </div>
+        )}
       </button>
       {visibleLabel && (
         <span

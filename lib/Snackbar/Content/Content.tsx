@@ -1,6 +1,6 @@
 import * as React from "react";
 import FocusTrap from "../../FocusTrap";
-import { type MergeElementProps } from "../../typings.d";
+import type { MergeElementProps } from "../../typings";
 import {
   componentWithForwardedRef,
   setRef,
@@ -12,7 +12,7 @@ import {
   ActionRoot as ActionRootSlot
 } from "../slots";
 
-interface ContentBaseProps {
+interface ContentOwnProps {
   /**
    * The content of the component.
    */
@@ -24,7 +24,7 @@ interface ContentBaseProps {
 }
 
 export type ContentProps = Omit<
-  MergeElementProps<"div", ContentBaseProps>,
+  MergeElementProps<"div", ContentOwnProps>,
   "defaultChecked" | "defaultValue"
 >;
 

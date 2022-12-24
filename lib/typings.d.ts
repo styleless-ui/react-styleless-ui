@@ -32,21 +32,35 @@ export type Overwrite<T, U> = Omit<T, keyof U> & U;
  */
 export type OverridableStringUnion<
   T,
-  U = EmptyIntersectionObject
+  U = EmptyObjectNotation
 > = GenerateStringUnion<Overwrite<T, U>>;
 
 export type KeyofBase = keyof any;
 
-export type EmptyIntersectionObject = {};
+export type EmptyObjectNotation = {};
 
 export type AnyObject = Record<KeyofBase, any>;
 export type UnknownObject = Record<KeyofBase, unknown>;
 export type EmptyObject = Record<KeyofBase, never>;
 
 export type MergeElementProps<
-  T extends React.ElementType,
-  P = EmptyIntersectionObject
-> = Overwrite<React.ComponentPropsWithRef<T>, P>;
+  E extends React.ElementType,
+  P = EmptyObjectNotation
+> = Overwrite<React.ComponentPropsWithRef<E>, P>;
+
+export type PolymorphicProps<
+  E extends React.ElementType,
+  P = EmptyObjectNotation
+> = MergeElementProps<
+  E,
+  P & {
+    /**
+     * The component used for the root node.
+     * Either a string to use a HTML element or a component.
+     */
+    as: E;
+  }
+>;
 
 /**
  * Helps create a type where at least one of the properties of an interface is required to exist.
@@ -71,5 +85,4 @@ export type RequireOnlyOne<T, Keys extends keyof T = keyof T> = Pick<
       Partial<Record<Diff<Keys, K>, undefined>>;
   }[Keys];
 
-export type ClassesMap<Required, Optional> = Record<Required, string> &
-  Partial<Record<Optional, string>>;
+export type Classes<StringUnion> = Partial<Record<StringUnion, string>>;

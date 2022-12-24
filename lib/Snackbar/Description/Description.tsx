@@ -1,5 +1,5 @@
 import * as React from "react";
-import { type MergeElementProps } from "../../typings.d";
+import type { MergeElementProps } from "../../typings";
 import {
   componentWithForwardedRef,
   useDeterministicId,
@@ -10,7 +10,7 @@ import {
   DescriptionRoot as DescriptionRootSlot
 } from "../slots";
 
-interface DescriptionBaseProps {
+interface DescriptionOwnProps {
   /**
    * The content of the component.
    */
@@ -24,7 +24,7 @@ interface DescriptionBaseProps {
 export type DescriptionProps<T extends React.ElementType = "span"> =
   MergeElementProps<
     T,
-    DescriptionBaseProps & {
+    DescriptionOwnProps & {
       /**
        * The component used for the root node.
        * Either a string to use a HTML element or a component.

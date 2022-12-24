@@ -1,5 +1,5 @@
 import * as React from "react";
-import { type MergeElementProps } from "../typings.d";
+import type { Classes, MergeElementProps } from "../typings";
 import {
   componentWithForwardedRef,
   isFragment,
@@ -13,9 +13,7 @@ import {
   Root as RootSlot
 } from "./slots";
 
-type BreadcrumbClassesMap = Record<"root" | "label" | "list", string>;
-
-interface RootBaseProps {
+interface RootOwnProps {
   /**
    * The content of the breadcrumb.
    */
@@ -23,7 +21,7 @@ interface RootBaseProps {
   /**
    * Map of sub-components and their correlated classNames.
    */
-  classes?: BreadcrumbClassesMap;
+  classes?: Classes<"root" | "label" | "list">;
   /**
    * The label of the breadcrumb.
    */
@@ -46,7 +44,7 @@ interface RootBaseProps {
 }
 
 export type RootProps = Omit<
-  MergeElementProps<"nav", RootBaseProps>,
+  MergeElementProps<"nav", RootOwnProps>,
   "className" | "defaultChecked" | "defaultValue"
 >;
 
@@ -158,8 +156,8 @@ const BreadcrumbBase = (props: RootProps, ref: React.Ref<HTMLElement>) => {
         {...otherProps}
         id={id}
         ref={ref}
-        data-slot={RootSlot}
         className={classes?.root}
+        data-slot={RootSlot}
         aria-label={labelProps.srOnlyLabel}
         aria-labelledby={visibleLabel ? visibleLabelId : labelProps.labelledBy}
       >

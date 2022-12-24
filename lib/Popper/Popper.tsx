@@ -1,6 +1,6 @@
 import * as React from "react";
 import Portal from "../Portal";
-import type { MergeElementProps } from "../typings.d";
+import type { MergeElementProps } from "../typings";
 import {
   componentWithForwardedRef,
   useDeterministicId,
@@ -25,7 +25,7 @@ import {
 } from "./helpers";
 import * as Slots from "./slots";
 
-interface RootBaseProps {
+interface RootOwnProps {
   /**
    * The className applied to the component.
    */
@@ -125,7 +125,7 @@ interface RootBaseProps {
 }
 
 export type RootProps = Omit<
-  MergeElementProps<"div", RootBaseProps>,
+  MergeElementProps<"div", RootOwnProps>,
   | "defaultChecked"
   | "defaultValue"
   | "autoSave"

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { disableUserSelectCSSProperties, SystemKeys } from "../internals";
-import { type MergeElementProps } from "../typings.d";
+import type { Classes, MergeElementProps } from "../typings";
 import {
   clamp,
   componentWithForwardedRef,
@@ -17,7 +17,7 @@ import {
 } from "../utils";
 import * as Slots from "./slots";
 
-type InputSliderClassesMap = Record<
+type InputSliderClassesMap = Classes<
   | "root"
   | "track"
   | "range"
@@ -27,8 +27,7 @@ type InputSliderClassesMap = Record<
   | "segments"
   | "segment"
   | "segmentMark"
-  | "segmentLabel",
-  string
+  | "segmentLabel"
 >;
 
 type Segment = { length: number; label?: string | React.ReactNode };
@@ -64,7 +63,7 @@ type Label =
       labelledBy: string;
     };
 
-interface RootBaseProps {
+interface RootOwnProps {
   /**
    * Map of sub-components and their correlated classNames.
    */
@@ -153,7 +152,7 @@ interface RootBaseProps {
 }
 
 export type RootProps = Omit<
-  MergeElementProps<"div", RootBaseProps>,
+  MergeElementProps<"div", RootOwnProps>,
   "className" | "defaultChecked"
 >;
 
@@ -949,11 +948,11 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
       {...otherProps}
       ref={handleRootRef}
       style={{ ...inlineStyle, position: "relative" }}
-      data-slot={Slots.Root}
       className={classes?.root}
+      onClick={handleTrackClick}
+      data-slot={Slots.Root}
       aria-orientation={orientation}
       aria-disabled={disabled}
-      onClick={handleTrackClick}
     >
       <div
         aria-hidden="true"

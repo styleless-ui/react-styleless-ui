@@ -16,7 +16,7 @@ import {
 import MenuContext, { type IMenuContext } from "./context";
 import { Root as RootSlot } from "./slots";
 
-interface RootBaseProps {
+interface RootOwnProps {
   /**
    * The content of the component.
    */
@@ -70,7 +70,7 @@ interface RootBaseProps {
 }
 
 export type RootProps = Omit<
-  MergeElementProps<"div", RootBaseProps>,
+  MergeElementProps<"div", RootOwnProps>,
   "defaultValue" | "defaultChecked"
 >;
 

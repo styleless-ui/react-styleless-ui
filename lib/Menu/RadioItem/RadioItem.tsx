@@ -11,7 +11,7 @@ import MenuRadioGroupContext from "../RadioGroup/context";
 import { RadioItemRoot as RadioItemRootSlot } from "../slots";
 import useMenuItem from "../useMenuItem";
 
-interface RadioItemBaseProps {
+interface RadioItemOwnProps {
   /**
    * The content of the component.
    */
@@ -52,7 +52,7 @@ interface RadioItemBaseProps {
 }
 
 export type RadioItemProps = Omit<
-  MergeElementProps<"div", RadioItemBaseProps>,
+  MergeElementProps<"div", RadioItemOwnProps>,
   "defaultValue" | "defaultChecked"
 >;
 
@@ -69,6 +69,7 @@ const MenuRadioItemBase = (
     onClick,
     onMouseEnter,
     onMouseLeave,
+    style,
     ...otherProps
   } = props;
 
@@ -150,8 +151,8 @@ const MenuRadioItemBase = (
       aria-disabled={disabled}
       data-active={isActive ? "" : undefined}
       style={
-        otherProps.style
-          ? { ...otherProps.style, ...disableUserSelectCSSProperties }
+        style
+          ? { ...style, ...disableUserSelectCSSProperties }
           : disableUserSelectCSSProperties
       }
     >

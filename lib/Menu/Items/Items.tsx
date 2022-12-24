@@ -3,7 +3,7 @@ import type { MergeElementProps } from "../../typings";
 import { componentWithForwardedRef } from "../../utils";
 import { ItemsRoot as ItemsRootSlot } from "../slots";
 
-interface ItemsBaseProps {
+interface ItemsOwnProps {
   /**
    * The content of the component.
    */
@@ -33,7 +33,7 @@ interface ItemsBaseProps {
 }
 
 export type ItemsProps = Omit<
-  MergeElementProps<"div", ItemsBaseProps>,
+  MergeElementProps<"div", ItemsOwnProps>,
   "defaultValue" | "defaultChecked"
 >;
 
@@ -66,10 +66,10 @@ const MenuItemsBase = (props: ItemsProps, ref: React.Ref<HTMLDivElement>) => {
     <div
       {...otherProps}
       ref={ref}
-      data-slot={ItemsRootSlot}
+      className={className}
       role="menu"
       tabIndex={-1}
-      className={className}
+      data-slot={ItemsRootSlot}
       aria-label={labelProps.srOnlyLabel}
       aria-labelledby={labelProps.labelledBy}
     >

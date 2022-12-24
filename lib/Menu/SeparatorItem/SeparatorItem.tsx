@@ -3,7 +3,7 @@ import type { MergeElementProps } from "../../typings";
 import { componentWithForwardedRef } from "../../utils";
 import { SeparatorItemRoot as SeparatorItemRootSlot } from "../slots";
 
-interface SeparatorItemBaseProps {
+interface SeparatorItemOwnProps {
   /**
    * The className applied to the component.
    */
@@ -11,7 +11,7 @@ interface SeparatorItemBaseProps {
 }
 
 export type SeparatorItemProps = Omit<
-  MergeElementProps<"div", SeparatorItemBaseProps>,
+  MergeElementProps<"div", SeparatorItemOwnProps>,
   "defaultValue" | "defaultChecked" | "children"
 >;
 

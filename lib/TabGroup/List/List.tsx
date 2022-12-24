@@ -1,13 +1,11 @@
 import * as React from "react";
-import { type MergeElementProps } from "../../typings.d";
+import type { Classes, MergeElementProps } from "../../typings";
 import { componentWithForwardedRef, useDeterministicId } from "../../utils";
 import TabGroupContext from "../context";
 import { ListLabel as ListLabelSlot, ListRoot as ListRootSlot } from "../slots";
 import Tab from "../Tab";
 
-type TabListClassesMap = Record<"root" | "label", string>;
-
-interface ListBaseProps {
+interface ListOwnProps {
   /**
    * The content of the component.
    */
@@ -15,7 +13,7 @@ interface ListBaseProps {
   /**
    * Map of sub-components and their correlated classNames.
    */
-  classes?: TabListClassesMap;
+  classes?: Classes<"root" | "label">;
   /**
    * The label of the tablist.
    */
@@ -38,7 +36,7 @@ interface ListBaseProps {
 }
 
 export type ListProps = Omit<
-  MergeElementProps<"div", ListBaseProps>,
+  MergeElementProps<"div", ListOwnProps>,
   "className" | "defaultChecked" | "defaultValue"
 >;
 

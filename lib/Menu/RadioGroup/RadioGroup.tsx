@@ -1,5 +1,5 @@
 import * as React from "react";
-import type { MergeElementProps } from "../../typings";
+import type { Classes, MergeElementProps } from "../../typings";
 import {
   componentWithForwardedRef,
   useControlledProp,
@@ -11,9 +11,7 @@ import {
 } from "../slots";
 import MenuRadioGroupContext from "./context";
 
-type ClassesMap = Record<"root" | "label", string>;
-
-interface RadioGroupBaseProps {
+interface RadioGroupOwnProps {
   /**
    * The content of the component.
    */
@@ -21,7 +19,7 @@ interface RadioGroupBaseProps {
   /**
    * Map of sub-components and their correlated classNames.
    */
-  classes?: ClassesMap;
+  classes?: Classes<"root" | "label">;
   label:
     | string
     | {
@@ -53,7 +51,7 @@ interface RadioGroupBaseProps {
 }
 
 export type RadioGroupProps = Omit<
-  MergeElementProps<"div", RadioGroupBaseProps>,
+  MergeElementProps<"div", RadioGroupOwnProps>,
   "className" | "defaultChecked"
 >;
 
@@ -120,12 +118,12 @@ const MenuRadioGroupBase = (
   return (
     <div
       {...otherProps}
-      role="group"
       id={id}
       ref={ref}
-      data-slot={RadioGroupRootSlot}
       className={classes?.root}
+      role="group"
       tabIndex={-1}
+      data-slot={RadioGroupRootSlot}
       aria-label={labelProps.srOnlyLabel}
       aria-labelledby={visibleLabel ? visibleLabelId : labelProps.labelledBy}
     >

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { type ClassesMap, type MergeElementProps } from "../typings.d";
+import type { Classes, MergeElementProps } from "../typings";
 import {
   componentWithForwardedRef,
   useCheckBase,
@@ -9,7 +9,7 @@ import {
 } from "../utils";
 import * as Slots from "./slots";
 
-type SwitchClassesMap = ClassesMap<"root" | "label" | "thumb" | "track", never>;
+type SwitchClassesMap = Classes<"root" | "label" | "thumb" | "track">;
 
 type ClassesContext = {
   /** The `checked` state of the switch. */
@@ -20,7 +20,7 @@ type ClassesContext = {
   focusedVisible: boolean;
 };
 
-interface RootBaseProps {
+interface RootOwnProps {
   /**
    * Map of sub-components and their correlated classNames.
    */
@@ -75,11 +75,11 @@ interface RootBaseProps {
   /**
    * The component to be used as the thumb element.
    */
-  thumbComponent: React.ReactElement<{ className?: string }>;
+  thumbComponent: React.ReactElement;
   /**
    * The component to be used as the track element.
    */
-  trackComponent: React.ReactElement<{ className?: string }>;
+  trackComponent: React.ReactElement;
   onFocus?: React.FocusEventHandler<HTMLButtonElement>;
   onBlur?: React.FocusEventHandler<HTMLButtonElement>;
   onKeyDown?: React.KeyboardEventHandler<HTMLButtonElement>;
@@ -87,7 +87,7 @@ interface RootBaseProps {
 }
 
 export type RootProps = Omit<
-  MergeElementProps<"button", RootBaseProps>,
+  MergeElementProps<"button", RootOwnProps>,
   "defaultValue" | "className"
 >;
 
@@ -118,18 +118,6 @@ const getLabelInfo = (labelInput: RootProps["label"]) => {
 
   return props;
 };
-
-const mergeClasses = (
-  ...classNames: Array<string | undefined>
-): string | undefined =>
-  classNames.reduce((result, className) => {
-    if (typeof result === "undefined")
-      return typeof className !== "undefined" ? className : undefined;
-    else if (typeof className !== "undefined")
-      return result + " " + className.trim();
-
-    return result;
-  }, undefined);
 
 const SwitchBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
   const {
@@ -232,24 +220,20 @@ const SwitchBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
         aria-label={labelProps.srOnlyLabel}
         aria-labelledby={visibleLabel ? visibleLabelId : labelProps.labelledBy}
       >
-        {React.cloneElement(trackComponent, {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          "data-slot": Slots.Track,
-          className: mergeClasses(
-            trackComponent.props.className,
-            classes?.track
-          )
-        })}
-        {React.cloneElement(thumbComponent, {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          "data-slot": Slots.Thumb,
-          className: mergeClasses(
-            thumbComponent.props.className,
-            classes?.thumb
-          )
-        })}
+        <div
+          className={classes?.track}
+          data-slot={Slots.Track}
+          aria-hidden="true"
+        >
+          {trackComponent}
+        </div>
+        <div
+          className={classes?.thumb}
+          data-slot={Slots.Thumb}
+          aria-hidden="true"
+        >
+          {thumbComponent}
+        </div>
       </button>
     </>
   );

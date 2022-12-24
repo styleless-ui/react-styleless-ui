@@ -1,14 +1,12 @@
 import * as React from "react";
-import type { MergeElementProps } from "../../typings";
+import type { Classes, MergeElementProps } from "../../typings";
 import { componentWithForwardedRef, useDeterministicId } from "../../utils";
 import {
   GroupLabel as GroupLabelSlot,
   GroupRoot as GroupRootSlot
 } from "../slots";
 
-type ClassesMap = Record<"root" | "label", string>;
-
-interface GroupBaseProps {
+interface GroupOwnProps {
   /**
    * The content of the component.
    */
@@ -16,7 +14,7 @@ interface GroupBaseProps {
   /**
    * Map of sub-components and their correlated classNames.
    */
-  classes?: ClassesMap;
+  classes?: Classes<"root" | "label">;
   label:
     | string
     | {
@@ -36,7 +34,7 @@ interface GroupBaseProps {
 }
 
 export type GroupProps = Omit<
-  MergeElementProps<"div", GroupBaseProps>,
+  MergeElementProps<"div", GroupOwnProps>,
   "className" | "defaultChecked"
 >;
 
@@ -84,12 +82,12 @@ const MenuGroupBase = (props: GroupProps, ref: React.Ref<HTMLDivElement>) => {
   return (
     <div
       {...otherProps}
-      role="group"
       id={id}
       ref={ref}
-      data-slot={GroupRootSlot}
       className={classes?.root}
+      role="group"
       tabIndex={-1}
+      data-slot={GroupRootSlot}
       aria-label={labelProps.srOnlyLabel}
       aria-labelledby={visibleLabel ? visibleLabelId : labelProps.labelledBy}
     >

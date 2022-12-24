@@ -1,5 +1,5 @@
 import * as React from "react";
-import { type MergeElementProps } from "../typings.d";
+import type { Classes, MergeElementProps } from "../typings";
 import {
   componentWithForwardedRef,
   useControlledProp,
@@ -9,9 +9,7 @@ import {
 import ToggleGroupContext from "./context";
 import * as Slots from "./slots";
 
-type ToggleGroupClassesMap = Record<"root" | "label" | "group", string>;
-
-interface RootBaseProps {
+interface RootOwnProps {
   /**
    * The content of the group.
    */
@@ -19,7 +17,7 @@ interface RootBaseProps {
   /**
    * Map of sub-components and their correlated classNames.
    */
-  classes?: ToggleGroupClassesMap;
+  classes?: Classes<"root" | "label" | "group">;
   /**
    * The label of the group.
    */
@@ -63,7 +61,7 @@ interface RootBaseProps {
 }
 
 export type RootProps = Omit<
-  MergeElementProps<"div", RootBaseProps>,
+  MergeElementProps<"div", RootOwnProps>,
   "className" | "defaultChecked"
 >;
 

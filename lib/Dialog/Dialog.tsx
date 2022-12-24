@@ -1,7 +1,7 @@
 import * as React from "react";
 import { SystemKeys } from "../internals";
 import Portal from "../Portal";
-import { type MergeElementProps } from "../typings.d";
+import type { Classes, MergeElementProps } from "../typings";
 import {
   componentWithForwardedRef,
   useDeterministicId,
@@ -14,9 +14,9 @@ import {
 import DialogContext from "./context";
 import { Backdrop as BackdropSlot, Root as RootSlot } from "./slots";
 
-type DialogClassesMap = Record<"root" | "backdrop", string>;
+type DialogClassesMap = Classes<"root" | "backdrop">;
 
-interface RootBaseProps {
+interface RootOwnProps {
   /**
    * The content of the tab dialog.
    */
@@ -63,7 +63,7 @@ interface RootBaseProps {
 }
 
 export type RootProps = Omit<
-  MergeElementProps<"div", RootBaseProps>,
+  MergeElementProps<"div", RootOwnProps>,
   "className" | "defaultChecked" | "defaultValue"
 >;
 
@@ -152,9 +152,9 @@ const DialogBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
         <div
           {...otherProps}
           id={id}
-          data-slot={RootSlot}
           ref={ref}
           className={classes?.root}
+          data-slot={RootSlot}
         >
           <div
             aria-hidden="true"

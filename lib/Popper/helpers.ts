@@ -1,6 +1,6 @@
 // This file is cherry-picked from https://floating-ui.com/
 
-import type { RequireOnlyOne } from "../typings.d";
+import type { RequireOnlyOne } from "../typings";
 import {
   clamp,
   contains,

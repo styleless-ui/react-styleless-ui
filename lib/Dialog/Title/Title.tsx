@@ -1,5 +1,5 @@
 import * as React from "react";
-import { type MergeElementProps } from "../../typings.d";
+import type { PolymorphicProps } from "../../typings";
 import {
   componentWithForwardedRef,
   useDeterministicId,
@@ -10,7 +10,7 @@ import {
   TitleRoot as TitleRootSlot
 } from "../slots";
 
-interface TitleBaseProps {
+interface TitleOwnProps {
   /**
    * The content of the component.
    */
@@ -21,24 +21,14 @@ interface TitleBaseProps {
   className?: string;
 }
 
-export type TitleProps<T extends React.ElementType = "strong"> =
-  MergeElementProps<
-    T,
-    TitleBaseProps & {
-      /**
-       * The component used for the root node.
-       * Either a string to use a HTML element or a component.
-       */
-      as?: T;
-    }
-  >;
+export type TitleProps<E extends React.ElementType> = PolymorphicProps<
+  E,
+  TitleOwnProps
+>;
 
-const DialogTitleBase = <
-  T extends React.ElementType = React.ElementType,
-  E extends HTMLElement = HTMLElement
->(
-  props: TitleProps<T>,
-  ref: React.Ref<E>
+const DialogTitleBase = <E extends React.ElementType, R extends HTMLElement>(
+  props: TitleProps<E>,
+  ref: React.Ref<R>
 ) => {
   const {
     className,
@@ -50,10 +40,10 @@ const DialogTitleBase = <
 
   const id = useDeterministicId(idProp, "styleless-ui__dialog-title");
 
-  const rootRef = React.useRef<E>(null);
+  const rootRef = React.useRef<R>(null);
   const handleRef = useForkedRefs(ref, rootRef);
 
-  const refCallback = (node: E | null) => {
+  const refCallback = (node: R | null) => {
     handleRef(node);
 
     if (!node) return;
@@ -76,8 +66,8 @@ const DialogTitleBase = <
       {...otherProps}
       id={id}
       ref={refCallback}
-      data-slot={TitleRootSlot}
       className={className}
+      data-slot={TitleRootSlot}
     >
       {children}
     </RootNode>

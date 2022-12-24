@@ -1,6 +1,6 @@
 import * as React from "react";
 import { SystemKeys } from "../../internals";
-import { type MergeElementProps } from "../../typings.d";
+import type { MergeElementProps } from "../../typings";
 import {
   componentWithForwardedRef,
   useButtonBase,
@@ -11,7 +11,7 @@ import {
 import TabGroupContext from "../context";
 import { TabRoot as TabRootSlot } from "../slots";
 
-interface TabBaseProps {
+interface TabOwnProps {
   /**
    * The content of the component.
    */
@@ -46,7 +46,7 @@ interface TabBaseProps {
 }
 
 export type TabProps = Omit<
-  MergeElementProps<"button", TabBaseProps>,
+  MergeElementProps<"button", TabOwnProps>,
   "defaultChecked" | "defaultValue"
 >;
 

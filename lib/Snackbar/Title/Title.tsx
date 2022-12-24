@@ -1,5 +1,5 @@
 import * as React from "react";
-import { type MergeElementProps } from "../../typings.d";
+import type { MergeElementProps } from "../../typings";
 import {
   componentWithForwardedRef,
   useDeterministicId,
@@ -10,7 +10,7 @@ import {
   TitleRoot as TitleRootSlot
 } from "../slots";
 
-interface TitleBaseProps {
+interface TitleOwnProps {
   /**
    * The content of the component.
    */
@@ -24,7 +24,7 @@ interface TitleBaseProps {
 export type TitleProps<T extends React.ElementType = "strong"> =
   MergeElementProps<
     T,
-    TitleBaseProps & {
+    TitleOwnProps & {
       /**
        * The component used for the root node.
        * Either a string to use a HTML element or a component.

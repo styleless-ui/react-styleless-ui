@@ -1,6 +1,6 @@
 import * as React from "react";
-import Button from "../../Button";
-import { type MergeElementProps } from "../../typings.d";
+import Button, { type RootProps as ButtonProps } from "../../Button";
+import type { PolymorphicProps } from "../../typings";
 import {
   componentWithForwardedRef,
   setRef,
@@ -13,7 +13,7 @@ import {
   TriggerRoot as TriggerRootSlot
 } from "../slots";
 
-interface TriggerBaseProps {
+interface TriggerOwnProps {
   /**
    * The content of the component.
    */
@@ -29,43 +29,39 @@ interface TriggerBaseProps {
   className?:
     | string
     | ((ctx: { disabled: boolean; focusedVisible: boolean }) => string);
-  /**
-   * If `true`, the component will be disabled.
-   * @default false
-   */
-  disabled?: boolean;
 }
 
-export type TriggerProps = Omit<
-  MergeElementProps<"div", TriggerBaseProps>,
-  "defaultChecked" | "defaultValue"
+export type TriggerProps<E extends React.ElementType> = PolymorphicProps<
+  E,
+  TriggerOwnProps
 >;
 
-const ExpandableTriggerBase = (
-  props: TriggerProps,
-  ref: React.Ref<HTMLDivElement>
+const ExpandableTriggerBase = <
+  E extends React.ElementType,
+  R extends HTMLElement
+>(
+  props: TriggerProps<E>,
+  ref: React.Ref<R>
 ) => {
-  const { children, className, id: idProp, onClick, ...otherProps } = props;
+  const { id: idProp, onClick, ...otherProps } = props;
 
   const expandableCtx = React.useContext(ExpandableContext);
 
   const id = useDeterministicId(idProp, "styleless-ui__expandable-trigger");
 
-  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleClick = (event: React.MouseEvent<R>) => {
     expandableCtx?.handleExpandChange(!expandableCtx.isExpanded);
-    onClick?.(event);
+    (onClick as React.MouseEventHandler<R>)?.(event);
   };
 
-  const refCallback = (node: HTMLDivElement | null) => {
+  const refCallback = (node: R | null) => {
     setRef(ref, node);
     if (!node) return;
 
     const parent = node.closest(`[data-slot="${RootSlot}"]`);
     if (!parent) return;
 
-    const content = parent.querySelector<HTMLDivElement>(
-      `[data-slot="${ContentRootSlot}"]`
-    );
+    const content = parent.querySelector<R>(`[data-slot="${ContentRootSlot}"]`);
     if (!content) return;
 
     const panelId = content.id;
@@ -74,17 +70,13 @@ const ExpandableTriggerBase = (
 
   return (
     <Button
-      {...otherProps}
-      as="div"
+      {...(otherProps as ButtonProps<E>)}
       id={id}
       onClick={handleClick}
       ref={refCallback}
-      className={className}
       data-slot={TriggerRootSlot}
       aria-expanded={expandableCtx?.isExpanded}
-    >
-      {children}
-    </Button>
+    />
   );
 };
 

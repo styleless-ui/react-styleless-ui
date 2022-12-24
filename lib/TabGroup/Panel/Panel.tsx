@@ -1,5 +1,5 @@
 import * as React from "react";
-import { type MergeElementProps } from "../../typings.d";
+import type { MergeElementProps } from "../../typings";
 import {
   componentWithForwardedRef,
   useDeterministicId,
@@ -8,7 +8,7 @@ import {
 import TabGroupContext from "../context";
 import { PanelRoot as PanelRootSlot } from "../slots";
 
-interface PanelBaseProps {
+interface PanelOwnProps {
   /**
    * The content of the component.
    */
@@ -20,7 +20,7 @@ interface PanelBaseProps {
 }
 
 export type PanelProps = Omit<
-  MergeElementProps<"div", PanelBaseProps>,
+  MergeElementProps<"div", PanelOwnProps>,
   "defaultChecked" | "defaultValue"
 >;
 
