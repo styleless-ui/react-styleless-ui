@@ -42,10 +42,15 @@ describe("Dialog", () => {
         })}
       >
         <Dialog.Content className="content" data-testid="dialog-content">
-          <Dialog.Title className="title" data-testid="dialog-title">
+          <Dialog.Title
+            as="strong"
+            className="title"
+            data-testid="dialog-title"
+          >
             Title
           </Dialog.Title>
           <Dialog.Description
+            as="p"
             className="description"
             data-testid="dialog-description"
           >
@@ -73,8 +78,10 @@ describe("Dialog", () => {
     render(
       <Dialog.Root open role="dialog" data-testid="dialog-root">
         <Dialog.Content data-testid="dialog-content">
-          <Dialog.Title data-testid="dialog-title">Title</Dialog.Title>
-          <Dialog.Description data-testid="dialog-description">
+          <Dialog.Title as="strong" data-testid="dialog-title">
+            Title
+          </Dialog.Title>
+          <Dialog.Description as="p" data-testid="dialog-description">
             Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nostrum
             dolorum quod voluptas! Necessitatibus, velit perspiciatis odit
             laudantium impedit quos, non vitae id magnam sed dolore, aliquid

@@ -26,6 +26,7 @@ describe("Expandable", () => {
       >
         <Expandable.Trigger
           disabled
+          as="button"
           className={({ disabled }) =>
             disabled ? "trigger disabled" : "trigger"
           }
@@ -53,7 +54,7 @@ describe("Expandable", () => {
   it("checks for `aria-labelledby` attribute on <Expandable.Panel>", () => {
     render(
       <Expandable.Root>
-        <Expandable.Trigger>Trigger</Expandable.Trigger>
+        <Expandable.Trigger as="button">Trigger</Expandable.Trigger>
         <Expandable.Content data-testid="content">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima libero
           voluptatibus sint illo totam autem eligendi animi inventore distinctio
@@ -72,7 +73,7 @@ describe("Expandable", () => {
   it("checks for `aria-controls` attribute on <Expandable.Trigger>", () => {
     render(
       <Expandable.Root>
-        <Expandable.Trigger>Trigger</Expandable.Trigger>
+        <Expandable.Trigger as="button">Trigger</Expandable.Trigger>
         <Expandable.Content data-testid="content">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima libero
           voluptatibus sint illo totam autem eligendi animi inventore distinctio
@@ -97,7 +98,7 @@ describe("Expandable", () => {
         defaultExpanded={false}
         onExpandChange={handleOnExpandChange}
       >
-        <Expandable.Trigger>Trigger</Expandable.Trigger>
+        <Expandable.Trigger as="button">Trigger</Expandable.Trigger>
         <Expandable.Content data-testid="content">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima libero
           voluptatibus sint illo totam autem eligendi animi inventore distinctio
@@ -129,7 +130,7 @@ describe("Expandable", () => {
         defaultExpanded={false}
         onExpandChange={handleOnExpandChange}
       >
-        <Expandable.Trigger>Trigger</Expandable.Trigger>
+        <Expandable.Trigger as="button">Trigger</Expandable.Trigger>
         <Expandable.Content data-testid="content">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima libero
           voluptatibus sint illo totam autem eligendi animi inventore distinctio
