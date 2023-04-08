@@ -2,11 +2,11 @@ import * as React from "react";
 import type { Classes, MergeElementProps } from "../typings";
 import {
   componentWithForwardedRef,
-  isFragment,
   useDeterministicId,
   useRegisterNodeRef
 } from "../utils";
 import BreadcrumbItem, { type ItemProps } from "./Item";
+import BreadcrumbSeparatorItem from "./Separator/Separator";
 import {
   Label as LabelSlot,
   List as ListSlot,
@@ -120,19 +120,14 @@ const BreadcrumbBase = (props: RootProps, ref: React.Ref<HTMLElement>) => {
 
   const children = React.Children.map(childrenProp, child => {
     if (!React.isValidElement(child)) return null;
-    if (isFragment(child)) {
+
+    if (
+      (child as React.ReactElement).type !== BreadcrumbItem &&
+      (child as React.ReactElement).type !== BreadcrumbSeparatorItem
+    ) {
       // eslint-disable-next-line no-console
       console.error(
-        "[StylelessUI][Breadcrumb]: The Breadcrumb component doesn't accept a Fragment as a child."
-      );
-
-      return null;
-    }
-
-    if ((child as React.ReactElement).type !== BreadcrumbItem) {
-      // eslint-disable-next-line no-console
-      console.error(
-        "[StylelessUI][Breadcrumb]: The Breadcrumb component only accepts <BreadcrumbItem> as a child."
+        "[StylelessUI][Breadcrumb]: The Breadcrumb component only accepts <Breadcrumb.Item> and <Breadcrumb.Separator> as a children."
       );
 
       return null;

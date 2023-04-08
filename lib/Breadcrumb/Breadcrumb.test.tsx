@@ -31,6 +31,7 @@ describe("Breadcrumb", () => {
     render(
       <Breadcrumb.Root {...REQUIRED_PROPS}>
         <Breadcrumb.Item className="item"></Breadcrumb.Item>
+        <Breadcrumb.Separator className="separator" />
       </Breadcrumb.Root>
     );
 
@@ -38,11 +39,13 @@ describe("Breadcrumb", () => {
     const label = nav.previousElementSibling;
     const list = nav.firstElementChild;
     const item = list?.firstElementChild;
+    const separator = list?.lastElementChild;
 
     expect(nav).toHaveClass("root");
     expect(label).toHaveClass("label");
     expect(list).toHaveClass("list");
     expect(item).toHaveClass("item");
+    expect(separator).toHaveClass("separator");
   });
 
   it("should have `aria-label='label'` property when `label={{ screenReaderLabel: 'label' }}`", () => {
