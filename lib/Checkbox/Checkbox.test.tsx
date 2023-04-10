@@ -139,4 +139,24 @@ describe("Checkbox", () => {
 
     expect(screen.getByTestId("t2").tagName).toBe("DIV");
   });
+
+  it("should toggle check state when label is clicked.", async () => {
+    userEvent.setup();
+    render(<Checkbox {...REQUIRED_PROPS} />);
+
+    const checkbox = screen.getByRole("checkbox");
+    const label = checkbox.nextElementSibling;
+
+    expect(label).not.toBeUndefined();
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    await userEvent.click(label!);
+
+    expect(checkbox).toBeChecked();
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    await userEvent.click(label!);
+
+    expect(checkbox).not.toBeChecked();
+  });
 });

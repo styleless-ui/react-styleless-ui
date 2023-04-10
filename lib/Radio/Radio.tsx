@@ -5,7 +5,6 @@ import {
   componentWithForwardedRef,
   useCheckBase,
   useDeterministicId,
-  useEventListener,
   useForkedRefs,
 } from "../utils";
 import * as Slots from "./slots";
@@ -183,11 +182,6 @@ const RadioBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
 
   const labelProps = getLabelInfo(label);
 
-  const visibleLabel =
-    typeof labelProps.visibleLabel !== "undefined"
-      ? labelProps.visibleLabel
-      : undefined;
-
   const classesCtx: ClassesContext = {
     disabled,
     checked: checkBase.checked,
@@ -197,7 +191,7 @@ const RadioBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
   const classes =
     typeof classesMap === "function" ? classesMap(classesCtx) : classesMap;
 
-  if (typeof document !== "undefined") {
+  React.useEffect(() => {
     const labelTarget =
       labelProps.visibleLabel && visibleLabelId
         ? document.getElementById(visibleLabelId)
@@ -205,16 +199,21 @@ const RadioBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
         ? document.getElementById(labelProps.labelledBy)
         : null;
 
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useEventListener({
-      target: labelTarget,
-      eventType: "click",
-      handler: () => {
-        if (!labelProps.visibleLabel) checkBase.controllerRef.current?.click();
-        checkBase.controllerRef.current?.focus();
-      },
-    });
-  }
+    if (!labelTarget) return;
+
+    const handleTargetClick = () => checkBase.controllerRef.current?.click();
+
+    labelTarget.addEventListener("click", handleTargetClick);
+
+    return () => {
+      labelTarget.removeEventListener("click", handleTargetClick);
+    };
+  }, [
+    checkBase.controllerRef,
+    labelProps.labelledBy,
+    labelProps.visibleLabel,
+    visibleLabelId,
+  ]);
 
   const refCallback = (node: HTMLButtonElement | null) => {
     handleRef(node);
@@ -244,7 +243,9 @@ const RadioBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
         onClick={checkBase.handleClick}
         aria-checked={checkBase.checked}
         aria-label={labelProps.srOnlyLabel}
-        aria-labelledby={visibleLabel ? visibleLabelId : labelProps.labelledBy}
+        aria-labelledby={
+          labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
+        }
       >
         {checkBase.checked && (
           <div
@@ -256,14 +257,14 @@ const RadioBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
           </div>
         )}
       </button>
-      {visibleLabel && (
-        <span
+      {labelProps.visibleLabel && (
+        <label
           id={visibleLabelId}
           data-slot={Slots.Label}
           className={classes?.label}
         >
-          {visibleLabel}
-        </span>
+          {labelProps.visibleLabel}
+        </label>
       )}
     </>
   );

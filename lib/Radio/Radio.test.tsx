@@ -124,4 +124,19 @@ describe("Radio", () => {
 
     expect(screen.getByTestId("t2").tagName).toBe("DIV");
   });
+
+  it("should check the radio when label is clicked.", async () => {
+    userEvent.setup();
+    render(<Radio {...REQUIRED_PROPS} />);
+
+    const radio = screen.getByRole("radio");
+    const label = radio.nextElementSibling;
+
+    expect(label).not.toBeUndefined();
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    await userEvent.click(label!);
+
+    expect(radio).toBeChecked();
+  });
 });
