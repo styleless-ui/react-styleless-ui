@@ -32,6 +32,42 @@
     "no-console": "warn",
     "prefer-const": "error",
     "default-case": "warn",
+    "eol-last": "error",
+    "object-shorthand": "error",
+    "require-atomic-updates": "error",
+    "no-unused-private-class-members": "warn",
+    "no-promise-executor-return": "error",
+    "no-unmodified-loop-condition": "warn",
+    "eqeqeq": ["error", "smart"],
+    "no-duplicate-imports": ["error", { "includeExports": true }],
+    "padding-line-between-statements": [
+      "error",
+      {
+        "blankLine": "always",
+        "prev": [
+          "const",
+          "let",
+          "var",
+          "directive",
+          "function",
+          "class",
+          "block",
+          "block-like",
+          "multiline-block-like"
+        ],
+        "next": "*"
+      },
+      {
+        "blankLine": "any",
+        "prev": ["const", "let", "var", "directive"],
+        "next": ["const", "let", "var", "directive"]
+      },
+      {
+        "blankLine": "always",
+        "prev": ["multiline-const", "multiline-let"],
+        "next": "*"
+      }
+    ],
     "react/prop-types": "off",
     "react/react-in-jsx-scope": "off",
     "@typescript-eslint/no-unused-vars": [
