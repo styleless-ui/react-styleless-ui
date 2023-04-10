@@ -5,6 +5,10 @@ import { SeparatorItemRoot as SeparatorItemRootSlot } from "../slots";
 
 interface SeparatorItemOwnProps {
   /**
+   * The symbol which is used as separator.
+   */
+  separatorSymbol: JSX.Element | string;
+  /**
    * The className applied to the component.
    */
   className?: string;
@@ -19,7 +23,7 @@ const BreadcrumbSeparatorItemBase = (
   props: SeparatorItemProps,
   ref: React.Ref<HTMLLIElement>,
 ) => {
-  const { className, ...otherProps } = props;
+  const { className, separatorSymbol, ...otherProps } = props;
 
   return (
     <li
@@ -28,7 +32,9 @@ const BreadcrumbSeparatorItemBase = (
       ref={ref}
       className={className}
       data-slot={SeparatorItemRootSlot}
-    />
+    >
+      {separatorSymbol}
+    </li>
   );
 };
 
