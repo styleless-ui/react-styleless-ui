@@ -158,6 +158,7 @@ const BreadcrumbBase = (props: RootProps, ref: React.Ref<HTMLElement>) => {
       >
         <ol
           ref={registerListRef}
+          tabIndex={-1}
           className={classes?.list}
           data-slot={ListSlot}
         >
