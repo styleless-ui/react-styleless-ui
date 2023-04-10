@@ -59,8 +59,8 @@ const getLabelInfo = (labelInput: ListProps["label"]) => {
         [
           "[StylelessUI][TabGroup.List]: Invalid `label` property.",
           "The `label` property must be either a `string` or in shape of " +
-            "`{ screenReaderLabel: string; } | { labelledBy: string; }`"
-        ].join("\n")
+            "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
+        ].join("\n"),
       );
     }
   }
@@ -95,6 +95,7 @@ const TabListBase = (props: ListProps, ref: React.Ref<HTMLDivElement>) => {
 
     if ((child as React.ReactElement).type === Tab) {
       const props = { "data-index": tabIdx++ };
+
       return React.cloneElement(child, props);
     }
 

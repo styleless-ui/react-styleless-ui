@@ -11,7 +11,7 @@ import {
   useDirection,
   useEventCallback,
   useEventListener,
-  useForkedRefs
+  useForkedRefs,
 } from "../utils";
 import MenuContext, { type IMenuContext } from "./context";
 import { Root as RootSlot } from "./slots";
@@ -80,6 +80,7 @@ const makeRegisterItem =
     if (!itemRef.current) return;
 
     const itemAlreadyExists = items.some(i => i.current === itemRef.current);
+
     if (itemAlreadyExists) return;
 
     items.push(itemRef);
@@ -114,7 +115,7 @@ const MenuBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
   const id = useDeterministicId(idProp, "styleless-ui__menu");
 
   const { current: isPopper } = React.useRef(
-    typeof anchorElement !== "undefined"
+    typeof anchorElement !== "undefined",
   );
 
   const [activeElement, setActiveElement] =
@@ -158,7 +159,7 @@ const MenuBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
 
       setActiveElement(node);
       setActiveSubTrigger(null);
-    }
+    },
   };
 
   React.useEffect(() => {
@@ -186,9 +187,9 @@ const MenuBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
           setActiveSubTrigger(null);
 
           onOutsideClick?.(event);
-        })
+        }),
       },
-      open && isMenuActive
+      open && isMenuActive,
     );
 
     const openSubMenu = (element?: HTMLDivElement | null) => {
@@ -203,7 +204,7 @@ const MenuBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
         eventType: "keyup",
         handler: useEventCallback<KeyboardEvent>(event => {
           const select = [SystemKeys.ENTER, SystemKeys.SPACE].includes(
-            event.key
+            event.key,
           );
 
           if (event.key === query.current) isQueryingAllowed.current = true;
@@ -215,9 +216,9 @@ const MenuBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
           }
 
           onEscapeKeyUp?.(event);
-        })
+        }),
       },
-      open && isMenuActive
+      open && isMenuActive,
     );
 
     useEventListener(
@@ -232,6 +233,7 @@ const MenuBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
 
           const openSub =
             (dir === "rtl" ? SystemKeys.LEFT : SystemKeys.RIGHT) === event.key;
+
           const closeSub =
             (dir === "rtl" ? SystemKeys.RIGHT : SystemKeys.LEFT) === event.key;
 
@@ -240,7 +242,7 @@ const MenuBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
           const getAvailableItem = (
             idx: number,
             forward: boolean,
-            prevIdxs: number[] = []
+            prevIdxs: number[] = [],
           ): React.RefObject<HTMLDivElement> | null => {
             const itemRef = items[idx];
 
@@ -266,7 +268,7 @@ const MenuBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
               return menuCtx.setActiveSubTrigger(null);
 
             const currentIdx = items.findIndex(
-              itemRef => itemRef.current === nextActive
+              itemRef => itemRef.current === nextActive,
             );
 
             if (goNext) {
@@ -278,7 +280,7 @@ const MenuBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
                 getAvailableItem(
                   ((currentIdx === -1 ? 0 : currentIdx) - 1 + items.length) %
                     items.length,
-                  false
+                  false,
                 )?.current ?? null;
             }
           }
@@ -310,7 +312,7 @@ const MenuBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
                     ) {
                       const newRecord: [
                         React.RefObject<HTMLDivElement>,
-                        number
+                        number,
                       ] = [item, idx];
 
                       return [...result, newRecord];
@@ -321,7 +323,7 @@ const MenuBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
 
             if (occurrences.length) {
               const idx = occurrences.findIndex(
-                occ => occ[0].current === nextActive
+                occ => occ[0].current === nextActive,
               );
 
               let nextIdx: number | undefined = undefined;
@@ -333,7 +335,7 @@ const MenuBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
               setActiveElement(
                 typeof nextIdx !== "undefined"
                   ? items[nextIdx]?.current ?? null
-                  : null
+                  : null,
               );
             }
 
@@ -348,9 +350,9 @@ const MenuBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
               queryResults.current = [];
             }, 2000);
           }
-        })
+        }),
       },
-      open && isMenuActive
+      open && isMenuActive,
     );
     /* eslint-enable react-hooks/rules-of-hooks */
   }
@@ -365,6 +367,7 @@ const MenuBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
     if (initialFocus.current) return;
 
     const firstItem = node.querySelector<HTMLDivElement>("[role*='menuitem']");
+
     if (!firstItem) return;
 
     setActiveElement(firstItem);
@@ -374,11 +377,12 @@ const MenuBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
   const popperComputationMiddleware: PopperProps["computationMiddleware"] = ({
     overflow,
     elementRects,
-    placement
+    placement,
   }) => {
     if (dir === "rtl") {
       const desiredPlacement: typeof placement =
         alignment === "middle" ? "left" : `left-${alignment}`;
+
       const oppOfDesiredPlacement: typeof placement =
         alignment === "middle" ? "right" : `right-${alignment}`;
 
@@ -389,6 +393,7 @@ const MenuBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
     } else {
       const desiredPlacement: typeof placement =
         alignment === "middle" ? "right" : `right-${alignment}`;
+
       const oppOfDesiredPlacement: typeof placement =
         alignment === "middle" ? "left" : `left-${alignment}`;
 

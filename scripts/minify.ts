@@ -20,9 +20,9 @@ const minifyFiles = async (files: string[]) => {
         ? {
             module: isESModule,
             compress: { module: isESModule },
-            mangle: { module: isESModule }
+            mangle: { module: isESModule },
           }
-        : undefined
+        : undefined,
     );
 
     if (result.code) fs.writeFileSync(file, result.code);

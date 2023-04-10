@@ -23,7 +23,7 @@ export type ContentProps = Omit<
 
 const DialogContentBase = (
   props: ContentProps,
-  ref: React.Ref<HTMLDivElement>
+  ref: React.Ref<HTMLDivElement>,
 ) => {
   const { className, children, id: idProp, ...otherProps } = props;
 

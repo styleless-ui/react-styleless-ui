@@ -21,14 +21,15 @@ void (async () => {
       module: path.join(
         (depth => {
           let path = "";
+
           for (let i = 0; i < depth; i++) path += i < depth - 1 ? "../" : "..";
           return path;
         })(relativePath.split("/").length),
         "esm",
         relativePath,
-        "index.js"
+        "index.js",
       ),
-      main: "./index.js"
+      main: "./index.js",
     };
 
     if (typingsExist) packageJson.types = "./index.d.ts";

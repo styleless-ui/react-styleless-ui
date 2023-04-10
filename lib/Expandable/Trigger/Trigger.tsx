@@ -4,13 +4,13 @@ import type { PolymorphicProps } from "../../typings";
 import {
   componentWithForwardedRef,
   setRef,
-  useDeterministicId
+  useDeterministicId,
 } from "../../utils";
 import ExpandableContext from "../context";
 import {
   ContentRoot as ContentRootSlot,
   Root as RootSlot,
-  TriggerRoot as TriggerRootSlot
+  TriggerRoot as TriggerRootSlot,
 } from "../slots";
 
 interface TriggerOwnProps {
@@ -38,10 +38,10 @@ export type TriggerProps<E extends React.ElementType> = PolymorphicProps<
 
 const ExpandableTriggerBase = <
   E extends React.ElementType,
-  R extends HTMLElement
+  R extends HTMLElement,
 >(
   props: TriggerProps<E>,
-  ref: React.Ref<R>
+  ref: React.Ref<R>,
 ) => {
   const { id: idProp, onClick, ...otherProps } = props;
 
@@ -59,12 +59,15 @@ const ExpandableTriggerBase = <
     if (!node) return;
 
     const parent = node.closest(`[data-slot="${RootSlot}"]`);
+
     if (!parent) return;
 
     const content = parent.querySelector<R>(`[data-slot="${ContentRootSlot}"]`);
+
     if (!content) return;
 
     const panelId = content.id;
+
     panelId && node.setAttribute("aria-controls", panelId);
   };
 

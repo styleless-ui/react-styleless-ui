@@ -3,11 +3,11 @@ import type { MergeElementProps } from "../../typings";
 import {
   componentWithForwardedRef,
   useDeterministicId,
-  useForkedRefs
+  useForkedRefs,
 } from "../../utils";
 import {
   ContentRoot as ContentRootSlot,
-  DescriptionRoot as DescriptionRootSlot
+  DescriptionRoot as DescriptionRootSlot,
 } from "../slots";
 
 interface DescriptionOwnProps {
@@ -35,10 +35,10 @@ export type DescriptionProps<T extends React.ElementType = "span"> =
 
 const SnackbarDescriptionBase = <
   T extends React.ElementType = React.ElementType,
-  E extends HTMLElement = HTMLElement
+  E extends HTMLElement = HTMLElement,
 >(
   props: DescriptionProps<T>,
-  ref: React.Ref<E>
+  ref: React.Ref<E>,
 ) => {
   const {
     className,
@@ -66,7 +66,7 @@ const SnackbarDescriptionBase = <
     } else {
       // eslint-disable-next-line no-console
       console.error(
-        "[StylelessUI][Snackbar]: You should always wrap your content with `<Snackbar.Content>` to provide accessibility features."
+        "[StylelessUI][Snackbar]: You should always wrap your content with `<Snackbar.Content>` to provide accessibility features.",
       );
     }
   };

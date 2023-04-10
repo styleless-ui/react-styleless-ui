@@ -5,7 +5,7 @@ import {
   useCheckBase,
   useDeterministicId,
   useEventListener,
-  useForkedRefs
+  useForkedRefs,
 } from "../utils";
 import * as Slots from "./slots";
 
@@ -110,8 +110,8 @@ const getLabelInfo = (labelInput: RootProps["label"]) => {
         [
           "[StylelessUI][Switch]: Invalid `label` property.",
           "The `label` property must be either a `string` or in shape of " +
-            "`{ screenReaderLabel: string; } | { labelledBy: string; }`"
-        ].join("\n")
+            "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
+        ].join("\n"),
       );
     }
   }
@@ -147,7 +147,7 @@ const SwitchBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
     onBlur,
     onFocus,
     onKeyDown,
-    onKeyUp
+    onKeyUp,
   });
 
   const id = useDeterministicId(idProp, "styleless-ui__switch");
@@ -165,7 +165,7 @@ const SwitchBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
   const classesCtx: ClassesContext = {
     disabled,
     checked: checkBase.checked,
-    focusedVisible: checkBase.isFocusedVisible
+    focusedVisible: checkBase.isFocusedVisible,
   };
 
   const classes =
@@ -186,7 +186,7 @@ const SwitchBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
       handler: () => {
         if (!labelProps.visibleLabel) checkBase.controllerRef.current?.click();
         checkBase.controllerRef.current?.focus();
-      }
+      },
     });
   }
 

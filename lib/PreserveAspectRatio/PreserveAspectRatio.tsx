@@ -18,7 +18,7 @@ const PreserveAspectRatio = (props: RootProps) => {
   const rootStyles: React.CSSProperties = {
     position: "relative",
     paddingTop: `${100 / ratio}%`,
-    width: "100%"
+    width: "100%",
   };
 
   const containerStyles: React.CSSProperties = {
@@ -26,7 +26,7 @@ const PreserveAspectRatio = (props: RootProps) => {
     top: 0,
     left: 0,
     right: 0,
-    bottom: 0
+    bottom: 0,
   };
 
   return (

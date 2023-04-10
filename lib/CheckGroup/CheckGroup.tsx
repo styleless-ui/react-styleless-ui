@@ -3,7 +3,7 @@ import type { Classes, MergeElementProps } from "../typings";
 import {
   componentWithForwardedRef,
   useControlledProp,
-  useDeterministicId
+  useDeterministicId,
 } from "../utils";
 import CheckGroupContext from "./context";
 import * as Slots from "./slots";
@@ -74,8 +74,8 @@ const getLabelInfo = (labelInput: RootProps["label"]) => {
         [
           "[StylelessUI][CheckGroup]: Invalid `label` property.",
           "The `label` property must be either a `string` or in shape of " +
-            "`{ screenReaderLabel: string; } | { labelledBy: string; }`"
-        ].join("\n")
+            "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
+        ].join("\n"),
       );
     }
   }

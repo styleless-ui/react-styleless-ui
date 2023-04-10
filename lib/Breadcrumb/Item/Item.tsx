@@ -21,7 +21,7 @@ export type ItemProps = Omit<
 
 const BreadcrumbItemBase = (
   props: ItemProps,
-  ref: React.Ref<HTMLLIElement>
+  ref: React.Ref<HTMLLIElement>,
 ) => {
   const { className, children, ...otherProps } = props;
 

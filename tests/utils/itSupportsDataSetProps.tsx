@@ -7,7 +7,7 @@ const itSupportsDataSetProps = <T,>(
   Component: React.ComponentType<T>,
   requiredProps: T,
   selector?: string,
-  options?: { withPortal?: boolean }
+  options?: { withPortal?: boolean },
 ): void => {
   it("supports `data-*` props", () => {
     const { withPortal = false } = options ?? {};
@@ -27,12 +27,12 @@ const itSupportsDataSetProps = <T,>(
     };
 
     const { container } = render(
-      <Component {...requiredProps} data-other-attribute="test" />
+      <Component {...requiredProps} data-other-attribute="test" />,
     );
 
     expect(getTarget(container)).toHaveAttribute(
       "data-other-attribute",
-      "test"
+      "test",
     );
   });
 };

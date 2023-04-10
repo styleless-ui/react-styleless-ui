@@ -4,7 +4,7 @@ import type { MergeElementProps } from "../../typings";
 import {
   componentWithForwardedRef,
   useEventCallback,
-  useForkedRefs
+  useForkedRefs,
 } from "../../utils";
 import MenuContext, { type IMenuContext } from "../context";
 import { ItemRoot as ItemRootSlot } from "../slots";
@@ -43,7 +43,7 @@ interface ItemOwnProps {
   onSelect?: (
     event:
       | React.MouseEvent<HTMLDivElement>
-      | React.KeyboardEvent<HTMLDivElement>
+      | React.KeyboardEvent<HTMLDivElement>,
   ) => void;
 }
 
@@ -60,7 +60,7 @@ const makeRegisterSubMenu =
           id: string | undefined;
         }
       | undefined
-    >
+    >,
   ) =>
   (subMenuRef: React.RefObject<HTMLDivElement>, id: string | undefined) =>
     void (storeRef.current = { ref: subMenuRef, id });
@@ -97,7 +97,7 @@ const MenuItemBase = (props: ItemProps, ref: React.Ref<HTMLDivElement>) => {
   const renderCtx = {
     disabled,
     active: isActive,
-    isSubMenuOpen: isSubMenuOpen()
+    isSubMenuOpen: isSubMenuOpen(),
   };
 
   const children =
@@ -149,7 +149,7 @@ const MenuItemBase = (props: ItemProps, ref: React.Ref<HTMLDivElement>) => {
       React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>
     >(event => {
       onSelect?.(event);
-    })
+    }),
   });
 
   const refCallback = (node: HTMLDivElement | null) => {
@@ -191,7 +191,7 @@ const MenuItemBase = (props: ItemProps, ref: React.Ref<HTMLDivElement>) => {
         value={{
           ref: rootRef,
           isSubMenuOpen,
-          registerSubMenu
+          registerSubMenu,
         }}
       >
         {children}

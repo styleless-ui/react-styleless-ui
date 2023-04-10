@@ -7,7 +7,7 @@ import {
   itSupportsStyle,
   render,
   screen,
-  userEvent
+  userEvent,
 } from "../../tests/utils";
 import Toggle from "./Toggle";
 
@@ -29,15 +29,16 @@ describe("Toggle", () => {
           cls("toggle", {
             "toggle--active": active,
             "toggle--disabled": disabled,
-            "toggle--focus-visible": focusedVisible
+            "toggle--focus-visible": focusedVisible,
           })
         }
       >
         Toggle
-      </Toggle>
+      </Toggle>,
     );
 
     const toggle = screen.getByRole("button");
+
     await userEvent.tab();
 
     expect(toggle).not.toHaveFocus();
@@ -50,30 +51,32 @@ describe("Toggle", () => {
           cls("toggle", {
             "toggle--active": active,
             "toggle--disabled": disabled,
-            "toggle--focus-visible": focusedVisible
+            "toggle--focus-visible": focusedVisible,
           })
         }
       >
         Toggle
-      </Toggle>
+      </Toggle>,
     );
 
     await userEvent.tab();
     expect(toggle).toHaveClass(
       "toggle",
       "toggle--active",
-      "toggle--focus-visible"
+      "toggle--focus-visible",
     );
   });
 
   it("renders an unpressed toggle when `active={false}`", () => {
     const { unmount: u1 } = render(<Toggle>Toggle</Toggle>);
+
     expect(screen.getByRole("button")).not.toHaveAttribute("data-active");
 
     u1();
     const { unmount: u2 } = render(
-      <Toggle defaultActive={false}>Toggle</Toggle>
+      <Toggle defaultActive={false}>Toggle</Toggle>,
     );
+
     expect(screen.getByRole("button")).not.toHaveAttribute("data-active");
 
     u2();
@@ -83,6 +86,7 @@ describe("Toggle", () => {
 
   it("renders a pressed toggle when `active={true}`", () => {
     const { unmount: u1 } = render(<Toggle active={true}>Toggle</Toggle>);
+
     expect(screen.getByRole("button")).toHaveAttribute("data-active");
 
     u1();

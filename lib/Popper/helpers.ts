@@ -15,7 +15,7 @@ import {
   isHTMLElement,
   isOverflowElement,
   isWindow,
-  type ClientRect
+  type ClientRect,
 } from "../utils";
 
 export type Alignment = "start" | "end";
@@ -69,7 +69,7 @@ export type ComputationMiddlewareOrder =
   | "beforeAutoPlacement"
   | "afterAutoPlacement";
 export type ComputationMiddleware = (
-  args: ComputationMiddlewareArgs
+  args: ComputationMiddlewareArgs,
 ) => ComputationMiddlewareResult;
 
 export type ComputationResult = Coordinates & { placement: Placement };
@@ -89,7 +89,7 @@ export const strategies = ["absolute", "fixed"] as const;
 
 const allPlacements: Readonly<Placement[]> = sides.reduce(
   (result, side) => [...result, side, `${side}-start`, `${side}-end`],
-  [] as Placement[]
+  [] as Placement[],
 );
 
 const getSideFromPlacement = (placement: Placement): Side =>
@@ -102,13 +102,13 @@ const getLengthFromAxis = (axis: keyof Coordinates): keyof Dimensions =>
   axis === "y" ? "height" : "width";
 
 const getAlignmentFromPlacement = (
-  placement: Placement
+  placement: Placement,
 ): Alignment | undefined => placement.split("-")[1] as Alignment | undefined;
 
 const getAlignmentSidesFromPlacement = (
   placement: Placement,
   elementRects: ElementRects,
-  isRtl: boolean
+  isRtl: boolean,
 ): { mainSide: Side; crossSide: Side } => {
   const alignment = getAlignmentFromPlacement(placement);
   const mainAxis = getMainAxisFromPlacement(placement);
@@ -120,7 +120,7 @@ const getAlignmentSidesFromPlacement = (
       matched =>
         ({ left: "right", right: "left", top: "bottom", bottom: "top" }[
           matched
-        ] ?? "")
+        ] ?? ""),
     ) as Side;
 
   let mainSide: Side =
@@ -148,14 +148,14 @@ const getDocumentRect = (element: HTMLElement): Rect => {
     html.scrollWidth,
     html.clientWidth,
     body ? body.scrollWidth : 0,
-    body ? body.clientWidth : 0
+    body ? body.clientWidth : 0,
   );
 
   const height = Math.max(
     html.scrollHeight,
     html.clientHeight,
     body ? body.scrollHeight : 0,
-    body ? body.clientHeight : 0
+    body ? body.clientHeight : 0,
   );
 
   let x = -scroll.scrollLeft + getWindowScrollBarX(element);
@@ -183,7 +183,7 @@ const getClippingRect = (element: Element): Rect => {
 
   const _getOverflowAncestors = (
     node: Node,
-    list: (Element | Window | VisualViewport)[] = []
+    list: (Element | Window | VisualViewport)[] = [],
   ): typeof list => {
     const scrollableAncestor = _getNearestOverflowAncestor(node);
     const isBody = scrollableAncestor === node.ownerDocument?.body;
@@ -192,7 +192,7 @@ const getClippingRect = (element: Element): Rect => {
     const target = isBody
       ? (<(Element | Window | VisualViewport)[]>[window]).concat(
           window.visualViewport ?? [],
-          isOverflowElement(scrollableAncestor) ? scrollableAncestor : []
+          isOverflowElement(scrollableAncestor) ? scrollableAncestor : [],
         )
       : scrollableAncestor ?? [];
 
@@ -201,7 +201,7 @@ const getClippingRect = (element: Element): Rect => {
     return isBody
       ? updatedList
       : updatedList.concat(
-          _getOverflowAncestors(getParentNode(target as HTMLElement))
+          _getOverflowAncestors(getParentNode(target as HTMLElement)),
         );
   };
 
@@ -213,7 +213,7 @@ const getClippingRect = (element: Element): Rect => {
     const clippingAncestors = _getOverflowAncestors(element);
     const window = getWindow(element);
     const canEscapeClipping = ["absolute", "fixed"].includes(
-      window.getComputedStyle(element).position
+      window.getComputedStyle(element).position,
     );
 
     const clipperElement =
@@ -227,7 +227,7 @@ const getClippingRect = (element: Element): Rect => {
       ancestor =>
         isElement(ancestor) &&
         contains(ancestor, clipperElement) &&
-        getNodeName(ancestor) !== "body"
+        getNodeName(ancestor) !== "body",
     ) as Element[];
   };
 
@@ -245,13 +245,13 @@ const getClippingRect = (element: Element): Rect => {
       right: left + element.clientWidth,
       bottom: top + element.clientHeight,
       width: element.clientWidth,
-      height: element.clientHeight
+      height: element.clientHeight,
     };
   };
 
   const _getClientRectFromClippingAncestor = (
     element: Element,
-    clippingParent: Element | "viewport"
+    clippingParent: Element | "viewport",
   ): ClientRect => {
     if (clippingParent === "viewport")
       return rectToClientRect(getViewportRect(element));
@@ -264,7 +264,7 @@ const getClippingRect = (element: Element): Rect => {
 
   const clippingAncestors = [
     ..._getClippingAncestors(element),
-    "viewport" as const
+    "viewport" as const,
   ];
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -285,7 +285,7 @@ const getClippingRect = (element: Element): Rect => {
     width: clippingRect.right - clippingRect.left,
     height: clippingRect.bottom - clippingRect.top,
     x: clippingRect.left,
-    y: clippingRect.top
+    y: clippingRect.top,
   };
 };
 
@@ -294,7 +294,7 @@ const rectToClientRect = (rect: Rect): ClientRect => ({
   top: rect.y,
   left: rect.x,
   right: rect.x + rect.width,
-  bottom: rect.y + rect.height
+  bottom: rect.y + rect.height,
 });
 
 const getOffsetParentRectRelativeToViewport = (args: {
@@ -305,6 +305,7 @@ const getOffsetParentRectRelativeToViewport = (args: {
   const { popperRect, offsetParent, strategy } = args;
 
   const documentElement = getDocumentElement(offsetParent);
+
   if (offsetParent === documentElement) return popperRect;
 
   const isOffsetParentAHTMLElement = isHTMLElement(offsetParent);
@@ -324,6 +325,7 @@ const getOffsetParentRectRelativeToViewport = (args: {
 
     if (isHTMLElement(offsetParent)) {
       const offsetRect = getBoundingClientRect(offsetParent, true);
+
       offset.x = offsetRect.x + offsetParent.clientLeft;
       offset.y = offsetRect.y + offsetParent.clientTop;
     } else if (documentElement) offset.x = getWindowScrollBarX(documentElement);
@@ -332,7 +334,7 @@ const getOffsetParentRectRelativeToViewport = (args: {
   return {
     ...popperRect,
     x: popperRect.x - scroll.scrollLeft + offset.x,
-    y: popperRect.y - scroll.scrollTop + offset.y
+    y: popperRect.y - scroll.scrollTop + offset.y,
   };
 };
 
@@ -340,7 +342,7 @@ const getScrollProps = (element: Element | Window) => {
   if (isWindow(element)) {
     return {
       scrollLeft: element.scrollX || element.pageXOffset,
-      scrollTop: element.scrollY || element.pageYOffset
+      scrollTop: element.scrollY || element.pageYOffset,
     };
   }
 
@@ -359,7 +361,7 @@ const getWindowScrollBarX = (element: Element): number => {
 const getRectRelativeToOffsetParent = (
   element: HTMLElement | VirtualElement,
   offsetParent: Element | Window,
-  strategy: Strategy
+  strategy: Strategy,
 ): Rect => {
   const isOffsetParentAHTMLElement = isHTMLElement(offsetParent);
   const documentElement = getDocumentElement(offsetParent);
@@ -375,7 +377,7 @@ const getRectRelativeToOffsetParent = (
 
   const rect = getBoundingClientRect(
     element,
-    isOffsetParentAHTMLElement && _isScaled(offsetParent)
+    isOffsetParentAHTMLElement && _isScaled(offsetParent),
   );
 
   let scroll = { scrollLeft: 0, scrollTop: 0 };
@@ -393,6 +395,7 @@ const getRectRelativeToOffsetParent = (
 
     if (isHTMLElement(offsetParent)) {
       const offsetRect = getBoundingClientRect(offsetParent, true);
+
       offset.x = offsetRect.x + offsetParent.clientLeft;
       offset.y = offsetRect.y + offsetParent.clientTop;
     } else if (documentElement) offset.x = getWindowScrollBarX(documentElement);
@@ -402,25 +405,25 @@ const getRectRelativeToOffsetParent = (
     x: rect.left + scroll.scrollLeft - offset.x,
     y: rect.top + scroll.scrollTop - offset.y,
     width: rect.width,
-    height: rect.height
+    height: rect.height,
   };
 };
 
 const getElementRects = (
   elements: Elements,
-  strategy: Strategy
+  strategy: Strategy,
 ): ElementRects => ({
   anchorRect: getRectRelativeToOffsetParent(
     elements.anchorElement,
     getOffsetParent(elements.popperElement),
-    strategy
+    strategy,
   ),
   popperRect: {
     x: 0,
     y: 0,
     width: elements.popperElement.offsetWidth,
-    height: elements.popperElement.offsetHeight
-  }
+    height: elements.popperElement.offsetHeight,
+  },
 });
 
 /**
@@ -451,18 +454,18 @@ const detectBoundaryOverflow = (args: {
       popperRect: {
         ...args.elementRects.popperRect,
         x: args.coordinates.x,
-        y: args.coordinates.y
+        y: args.coordinates.y,
       },
       offsetParent: getOffsetParent(element),
-      strategy: args.strategy
-    })
+      strategy: args.strategy,
+    }),
   );
 
   return {
     top: clientClippingRect.top - elementClientRect.top + padding,
     bottom: elementClientRect.bottom - clientClippingRect.bottom + padding,
     left: clientClippingRect.left - elementClientRect.left + padding,
-    right: elementClientRect.right - clientClippingRect.right + padding
+    right: elementClientRect.right - clientClippingRect.right + padding,
   };
 };
 
@@ -491,6 +494,7 @@ const calcCoordinatesFromPlacement = (args: {
   const isVertical = mainAxis === "x";
 
   let coordinates: Coordinates;
+
   switch (side) {
     case "top":
       coordinates = { x: commonX, y: anchorRect.y - popperRect.height };
@@ -526,7 +530,7 @@ const calcCoordinatesFromPlacement = (args: {
       coordinates,
       elementRects,
       elements,
-      strategy
+      strategy,
     });
 
     const crossAxis = mainAxis === "x" ? "y" : ("x" as keyof Coordinates);
@@ -539,7 +543,7 @@ const calcCoordinatesFromPlacement = (args: {
 
     return {
       [crossAxis]: coordinates[crossAxis],
-      [mainAxis]: clamp(mainAxisCoord, min, max)
+      [mainAxis]: clamp(mainAxisCoord, min, max),
     } as Coordinates;
   })());
 
@@ -548,6 +552,7 @@ const calcCoordinatesFromPlacement = (args: {
     const mainAxisCoef = ["left", "top"].includes(side) ? -1 : 1;
 
     let crossAxisCoef = 1;
+
     if (alignment === "end") crossAxisCoef = -1;
     if (isRtl && isVertical) crossAxisCoef *= -1;
 
@@ -566,11 +571,11 @@ const calcCoordinatesFromPlacement = (args: {
       isVertical
         ? {
             x: crossAxisOffset * crossAxisCoef,
-            y: mainAxisOffset * mainAxisCoef
+            y: mainAxisOffset * mainAxisCoef,
           }
         : {
             x: mainAxisOffset * mainAxisCoef,
-            y: crossAxisOffset * crossAxisCoef
+            y: crossAxisOffset * crossAxisCoef,
           }
     ) as Coordinates;
   })();
@@ -588,7 +593,7 @@ const suppressViewportOverflow = (
     elementRects: ElementRects;
     isRtl: boolean;
     overflow: ComputationMiddlewareArgs["overflow"];
-  }
+  },
 ) => {
   const { overflow, placement, elementRects, isRtl } = args;
   const alignment = getAlignmentFromPlacement(placement);
@@ -596,7 +601,7 @@ const suppressViewportOverflow = (
   const _getOppositeAlignment = (placement: Placement) =>
     placement.replace(
       /start|end/g,
-      matched => ({ start: "end", end: "start" }[matched] ?? "")
+      matched => ({ start: "end", end: "start" }[matched] ?? ""),
     ) as Placement;
 
   const _onlySides = (placement: Placement) =>
@@ -612,16 +617,16 @@ const suppressViewportOverflow = (
     _getOppositeAlignment(placement) !== placement;
 
   const placements = allPlacements.filter(
-    placement => !excludeSides.includes(getSideFromPlacement(placement))
+    placement => !excludeSides.includes(getSideFromPlacement(placement)),
   );
 
   const placementsSortedByAlignment = alignment
     ? [
         ...placements.filter(_equalAlignments),
-        ...placements.filter(_notEqualAlignments)
+        ...placements.filter(_notEqualAlignments),
       ].filter(
         placement =>
-          _equalAlignments(placement) || _oppositeAlignments(placement)
+          _equalAlignments(placement) || _oppositeAlignments(placement),
       )
     : placements.filter(_onlySides);
 
@@ -637,18 +642,18 @@ const suppressViewportOverflow = (
     const { mainSide, crossSide } = getAlignmentSidesFromPlacement(
       currentPlacement,
       elementRects,
-      isRtl
+      isRtl,
     );
 
     const currentOverflows = [
       overflow[getSideFromPlacement(currentPlacement)],
       overflow[mainSide],
-      overflow[crossSide]
+      overflow[crossSide],
     ];
 
     const allOverflows = [
       ...overflows,
-      { placement: currentPlacement, overflows: currentOverflows }
+      { placement: currentPlacement, overflows: currentOverflows },
     ];
 
     const nextPlacementIndex = placementIndex + 1;
@@ -658,7 +663,7 @@ const suppressViewportOverflow = (
     if (nextPlacement) {
       return _findBestPlacement({
         overflows: allOverflows,
-        placementIndex: nextPlacementIndex
+        placementIndex: nextPlacementIndex,
       });
     }
 
@@ -667,20 +672,20 @@ const suppressViewportOverflow = (
       .sort((a, b) => (a.overflows[0] ?? 0) - (b.overflows[0] ?? 0));
 
     const placementThatFitsOnAllSides = placementsSortedByLeastOverflow.find(
-      ({ overflows }) => overflows.every(overflow => overflow <= 0)
+      ({ overflows }) => overflows.every(overflow => overflow <= 0),
     )?.placement;
 
     return {
       placement:
         placementThatFitsOnAllSides ??
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        placementsSortedByLeastOverflow[0]!.placement
+        placementsSortedByLeastOverflow[0]!.placement,
     };
   };
 
   return _findBestPlacement({
     placementIndex: 0,
-    overflows: []
+    overflows: [],
   });
 };
 
@@ -691,7 +696,7 @@ const suppressViewportOverflow = (
 export const computePosition = (
   anchorElement: HTMLElement | VirtualElement,
   popperElement: HTMLDivElement,
-  config: ComputationConfig
+  config: ComputationConfig,
 ): ComputationResult => {
   const {
     strategy,
@@ -700,7 +705,7 @@ export const computePosition = (
     offset,
     placement: initialPlacement,
     computationMiddleware,
-    computationMiddlewareOrder
+    computationMiddlewareOrder,
   } = config;
 
   let placement = initialPlacement;
@@ -714,7 +719,7 @@ export const computePosition = (
     strategy,
     elements,
     placement,
-    elementRects
+    elementRects,
   });
 
   const middlewares = (
@@ -731,7 +736,7 @@ export const computePosition = (
       placement,
       elements,
       elementRects,
-      strategy
+      strategy,
     };
 
     const overflow = detectBoundaryOverflow(args);
@@ -746,15 +751,18 @@ export const computePosition = (
             elementRects,
             placement,
             overflow,
-            isRtl
+            isRtl,
           });
         }
+
         break;
       }
+
       case "custom_middleware": {
         result = computationMiddleware?.({ ...args, overflow });
         break;
       }
+
       default:
     }
 
@@ -769,7 +777,7 @@ export const computePosition = (
         strategy,
         elements,
         placement,
-        elementRects
+        elementRects,
       });
 
       x = coords.x;

@@ -5,7 +5,7 @@ import {
   componentWithForwardedRef,
   computeAccessibleName,
   useCheckBase,
-  useForkedRefs
+  useForkedRefs,
 } from "../utils";
 import * as Slots from "./slots";
 
@@ -89,8 +89,8 @@ const ToggleBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
       [
         "[StylelessUI][Toggle]: The `value` property is missing.",
         "It's mandatory to provide a `value` property " +
-          "when <ToggleGroup /> is a wrapper for <Toggle />."
-      ].join("\n")
+          "when <ToggleGroup /> is a wrapper for <Toggle />.",
+      ].join("\n"),
     );
   }
 
@@ -108,14 +108,14 @@ const ToggleBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
       ? {
           value: toggleGroupCtx.value,
           onChange: toggleGroupCtx.onChange,
-          items: toggleGroupCtx.toggles
+          items: toggleGroupCtx.toggles,
         }
       : undefined,
     onChange: onActiveChange,
     onBlur,
     onFocus,
     onKeyDown,
-    onKeyUp
+    onKeyUp,
   });
 
   const rootRef = React.useRef<HTMLButtonElement>(null);
@@ -124,7 +124,7 @@ const ToggleBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
   const renderCtx = {
     disabled,
     active: checkBase.checked,
-    focusedVisible: checkBase.isFocusedVisible
+    focusedVisible: checkBase.isFocusedVisible,
   };
 
   const className =
@@ -157,8 +157,8 @@ const ToggleBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
           ". Set `aria-labelledby` attribute.",
           ". Set `title` attribute.",
           ". Use an informative content.",
-          ". Use a <label> with `for` attribute referencing to this component."
-        ].join("\n")
+          ". Use a <label> with `for` attribute referencing to this component.",
+        ].join("\n"),
       );
     }
   };

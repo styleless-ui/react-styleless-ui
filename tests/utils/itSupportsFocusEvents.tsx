@@ -7,14 +7,14 @@ import { render } from ".";
 const itSupportsFocusEvents = <T,>(
   Component: React.ComponentType<T>,
   requiredProps: T,
-  selector: string
+  selector: string,
 ): void => {
   it("supports focus events", () => {
     const onFocusSpy = jest.fn();
     const onBlurSpy = jest.fn();
 
     const { container } = render(
-      <Component {...requiredProps} onFocus={onFocusSpy} onBlur={onBlurSpy} />
+      <Component {...requiredProps} onFocus={onFocusSpy} onBlur={onBlurSpy} />,
     );
 
     fireEvent.focus(container.querySelector(selector) as Element);

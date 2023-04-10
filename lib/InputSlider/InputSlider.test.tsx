@@ -6,24 +6,24 @@ import {
   itSupportsStyle,
   render,
   screen,
-  userEvent
+  userEvent,
 } from "../../tests/utils";
 import InputSlider, { type RootProps } from "./InputSlider";
 
 const requiredMockProps: RootProps = {
   label: { screenReaderLabel: "Infimum value" },
   min: 0,
-  max: 100
+  max: 100,
 };
 
 const classNames: RootProps["classes"] = ({
   disabled,
   orientation,
   leadingThumbState,
-  trailingThumbState
+  trailingThumbState,
 }) => ({
   root: cls("root", `root--${orientation}`, {
-    "root--disabled": disabled
+    "root--disabled": disabled,
   }),
   range: "range",
   segment: "segment",
@@ -34,12 +34,12 @@ const classNames: RootProps["classes"] = ({
   thumb: "thumb",
   leadingThumb: cls("thumb--leading", {
     "thumb--active": leadingThumbState.active,
-    "thumb--focus-visible": leadingThumbState.focusedVisible
+    "thumb--focus-visible": leadingThumbState.focusedVisible,
   }),
   trailingThumb: cls("thumb--trailing", {
     "thumb--active": trailingThumbState.active,
-    "thumb--focus-visible": trailingThumbState.focusedVisible
-  })
+    "thumb--focus-visible": trailingThumbState.focusedVisible,
+  }),
 });
 
 describe("InputSlider", () => {
@@ -61,14 +61,14 @@ describe("InputSlider", () => {
           { label: "Step 1", value: 15 },
           { label: "Step 2", value: 50 },
           { label: "Step 3", value: 85 },
-          { label: "Step 4", value: 100 }
+          { label: "Step 4", value: 100 },
         ]}
         renderThumbValueText={(value, isOpen) => (
           <div className={cls("tooltip", { "tooltip--open": isOpen })}>
             {value.toFixed(1)}
           </div>
         )}
-      />
+      />,
     );
 
     const slider = screen.getByTestId("input-slider");
@@ -103,26 +103,31 @@ describe("InputSlider", () => {
           { label: "Step 1", value: 15 },
           { label: "Step 2", value: 50 },
           { label: "Step 3", value: 85 },
-          { label: "Step 4", value: 100 }
+          { label: "Step 4", value: 100 },
         ]}
         setThumbValueText={value => `${value.toFixed(1)} percent`}
-      />
+      />,
     );
 
     const slider = screen.getByTestId("input-slider");
+
     expect(slider).toHaveAttribute("aria-orientation", "horizontal");
     expect(slider).toHaveAttribute("aria-disabled", "false");
 
     const track = slider.querySelector(".track");
+
     expect(track).toHaveAttribute("aria-hidden", "true");
 
     const range = slider.querySelector(".range");
+
     expect(range).toHaveAttribute("aria-hidden", "true");
 
     const segments = slider.querySelector(".segments");
+
     expect(segments).toHaveAttribute("aria-hidden", "true");
 
     const thumb = slider.querySelector(".thumb");
+
     expect(thumb).toHaveAttribute("role", "slider");
     expect(thumb).toHaveAttribute("aria-orientation", "horizontal");
     expect(thumb).toHaveAttribute("aria-label", "Infimum value");
@@ -149,10 +154,10 @@ describe("InputSlider", () => {
           { label: "Step 1", value: 15 },
           { label: "Step 2", value: 50 },
           { label: "Step 3", value: 85 },
-          { label: "Step 4", value: 100 }
+          { label: "Step 4", value: 100 },
         ]}
         setThumbValueText={value => `${value.toFixed(1)} percent`}
-      />
+      />,
     );
 
     const slider = screen.getByTestId("input-slider");

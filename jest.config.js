@@ -7,7 +7,7 @@ const jestConfig = {
   setupFilesAfterEnv: ["<rootDir>/tests/jest.setup.ts"],
   testPathIgnorePatterns: ["<rootDir>/.next/", "<rootDir>/node_modules/"],
   testRegex: ".*\\.test\\.tsx?$",
-  testEnvironment: "jest-environment-jsdom"
+  testEnvironment: "jest-environment-jsdom",
 };
 
 export default createJestConfig(jestConfig);

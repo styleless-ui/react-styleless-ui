@@ -6,7 +6,7 @@ import {
   itSupportsStyle,
   render,
   screen,
-  userEvent
+  userEvent,
 } from "../../tests/utils";
 import Checkbox, { type RootProps } from "./Checkbox";
 
@@ -17,8 +17,8 @@ const REQUIRED_PROPS: RootProps = {
   classes: {
     label: "label",
     root: "root",
-    check: "check"
-  }
+    check: "check",
+  },
 };
 
 describe("Checkbox", () => {
@@ -44,23 +44,23 @@ describe("Checkbox", () => {
 
   it("should have `aria-label='label'` property when `label={{ screenReaderLabel: 'label' }}`", () => {
     render(
-      <Checkbox {...REQUIRED_PROPS} label={{ screenReaderLabel: labelText }} />
+      <Checkbox {...REQUIRED_PROPS} label={{ screenReaderLabel: labelText }} />,
     );
 
     expect(screen.getByRole("checkbox")).toHaveAttribute(
       "aria-label",
-      labelText
+      labelText,
     );
   });
 
   it("should have `aria-labelledby='identifier'` property when `label={{ labelledBy: 'identifier' }}`", () => {
     render(
-      <Checkbox {...REQUIRED_PROPS} label={{ labelledBy: "identifier" }} />
+      <Checkbox {...REQUIRED_PROPS} label={{ labelledBy: "identifier" }} />,
     );
 
     expect(screen.getByRole("checkbox")).toHaveAttribute(
       "aria-labelledby",
-      "identifier"
+      "identifier",
     );
   });
 
@@ -120,7 +120,7 @@ describe("Checkbox", () => {
         {...REQUIRED_PROPS}
         checked
         checkComponent={<div data-testid="t1"></div>}
-      />
+      />,
     );
 
     expect(screen.getByTestId("t1").tagName).toBe("DIV");
@@ -134,7 +134,7 @@ describe("Checkbox", () => {
         {...REQUIRED_PROPS}
         checked
         checkComponent={<CheckComponent />}
-      />
+      />,
     );
 
     expect(screen.getByTestId("t2").tagName).toBe("DIV");

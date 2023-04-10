@@ -19,6 +19,7 @@ describe("Tooltip", () => {
     );
 
     const { rerender, unmount } = render(Component);
+
     expect(() => void (rerender(Component), unmount())).not.toThrow();
   });
 
@@ -32,7 +33,7 @@ describe("Tooltip", () => {
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia
           magnam ad excepturi ipsa exercitationem cum?
         </Tooltip>
-      </>
+      </>,
     );
 
     expect(ref.current).toBeInstanceOf(HTMLDivElement);
@@ -41,15 +42,15 @@ describe("Tooltip", () => {
   it("supports `style` prop", () => {
     const getTarget = (containerEl: HTMLElement): HTMLElement => {
       const portal = document.querySelector<HTMLElement>(
-        "[data-slot='portal']"
+        "[data-slot='portal']",
       );
 
       return portal
         ? (portal.querySelector(
-            `[data-slot="${PopperSlots.Root}"]`
+            `[data-slot="${PopperSlots.Root}"]`,
           ) as HTMLElement)
         : (containerEl.querySelector(
-            `[data-slot="${PopperSlots.Root}"]`
+            `[data-slot="${PopperSlots.Root}"]`,
           ) as HTMLElement);
     };
 
@@ -62,7 +63,7 @@ describe("Tooltip", () => {
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia
           magnam ad excepturi ipsa exercitationem cum?
         </Tooltip>
-      </>
+      </>,
     );
 
     expect(getTarget(container)).toHaveStyle(style);
@@ -71,15 +72,15 @@ describe("Tooltip", () => {
   it("supports `data-*` props", () => {
     const getTarget = (containerEl: HTMLElement): HTMLElement => {
       const portal = document.querySelector<HTMLElement>(
-        "[data-slot='portal']"
+        "[data-slot='portal']",
       );
 
       return portal
         ? (portal.querySelector(
-            `[data-slot="${PopperSlots.Root}"]`
+            `[data-slot="${PopperSlots.Root}"]`,
           ) as HTMLElement)
         : (containerEl.querySelector(
-            `[data-slot="${PopperSlots.Root}"]`
+            `[data-slot="${PopperSlots.Root}"]`,
           ) as HTMLElement);
     };
 
@@ -94,12 +95,12 @@ describe("Tooltip", () => {
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia
           magnam ad excepturi ipsa exercitationem cum?
         </Tooltip>
-      </>
+      </>,
     );
 
     expect(getTarget(container)).toHaveAttribute(
       "data-other-attribute",
-      "test"
+      "test",
     );
   });
 
@@ -118,7 +119,7 @@ describe("Tooltip", () => {
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia
           magnam ad excepturi ipsa exercitationem cum?
         </Tooltip>
-      </>
+      </>,
     );
 
     const tooltip = screen.getByRole("tooltip");
@@ -143,7 +144,7 @@ describe("Tooltip", () => {
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia
           magnam ad excepturi ipsa exercitationem cum?
         </Tooltip>
-      </>
+      </>,
     );
 
     const tooltip = screen.getByRole("tooltip");

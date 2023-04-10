@@ -11,7 +11,7 @@ import {
   useDeterministicId,
   useEventCallback,
   useEventListener,
-  useForkedRefs
+  useForkedRefs,
 } from "../utils";
 
 interface RootOwnProps {
@@ -102,15 +102,15 @@ const TooltipBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
         "[StylelessUI][Tooltip]: Invalid `anchorElement` property.",
         "The `anchorElement` property must be either a `valid query selector (string)`, " +
           "`HTMLElement`, `RefObject<HTMLElement>`, or in shape of " +
-          "`{ getBoundingClientRect(): ClientRect }`"
-      ].join("\n")
+          "`{ getBoundingClientRect(): ClientRect }`",
+      ].join("\n"),
     );
   }
 
   if (behavior !== "full-controlled" && typeof openProp !== "undefined") {
     throw new Error(
       "[StylelessUI][Tooltip]: You are trying to control the `open` property " +
-        'while the `behavior` isn\'t `"full-controlled".`'
+        'while the `behavior` isn\'t `"full-controlled".`',
     );
   }
 
@@ -132,7 +132,7 @@ const TooltipBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
 
   const [coordinates, setCoordinates] = React.useState<Coordinates>({
     x: 0,
-    y: 0
+    y: 0,
   });
 
   const popperActions: PopperProps["actions"] = React.useRef(null);
@@ -146,8 +146,8 @@ const TooltipBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
       top: coordinates.y,
       left: coordinates.x,
       right: coordinates.x,
-      bottom: coordinates.y
-    })
+      bottom: coordinates.y,
+    }),
   });
 
   const outsideClickHandler = useEventCallback<MouseEvent>(event => {
@@ -174,30 +174,30 @@ const TooltipBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
         target: isHTMLElement(anchor) ? anchor : null,
         eventType: "click",
         handler: useEventCallback(
-          () => void (open ? setOpen(false) : setOpen(true))
-        )
+          () => void (open ? setOpen(false) : setOpen(true)),
+        ),
       },
-      isHTMLElement(anchor) && behavior === "open-on-click"
+      isHTMLElement(anchor) && behavior === "open-on-click",
     );
 
     useEventListener(
       {
         target: isHTMLElement(anchor) ? anchor : null,
         eventType: "mouseenter",
-        handler: useEventCallback(() => void setOpen(true))
+        handler: useEventCallback(() => void setOpen(true)),
       },
       isHTMLElement(anchor) &&
-        ["open-on-hover", "follow-mouse"].includes(behavior)
+        ["open-on-hover", "follow-mouse"].includes(behavior),
     );
 
     useEventListener(
       {
         target: isHTMLElement(anchor) ? anchor : null,
         eventType: "mouseleave",
-        handler: useEventCallback(() => void setOpen(false))
+        handler: useEventCallback(() => void setOpen(false)),
       },
       isHTMLElement(anchor) &&
-        ["open-on-hover", "follow-mouse"].includes(behavior)
+        ["open-on-hover", "follow-mouse"].includes(behavior),
     );
 
     useEventListener(
@@ -207,9 +207,9 @@ const TooltipBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
         handler: useEventCallback<MouseEvent>(event => {
           setCoordinates({ x: event.clientX, y: event.clientY });
           popperActions.current?.recompute();
-        })
+        }),
       },
-      isHTMLElement(anchor) && behavior === "follow-mouse"
+      isHTMLElement(anchor) && behavior === "follow-mouse",
     );
 
     useEventListener(
@@ -217,9 +217,9 @@ const TooltipBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
         target: document,
         eventType: "click",
         handler: outsideClickHandler,
-        options: { capture: true }
+        options: { capture: true },
       },
-      open && !!onOutsideClick
+      open && !!onOutsideClick,
     );
 
     useEventListener(
@@ -228,9 +228,9 @@ const TooltipBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
         eventType: "keyup",
         handler: useEventCallback<KeyboardEvent>(event => {
           if (event.key === SystemKeys.ESCAPE) setOpen(false);
-        })
+        }),
       },
-      open && behavior === "open-on-click"
+      open && behavior === "open-on-click",
     );
     /* eslint-enable react-hooks/rules-of-hooks */
   }

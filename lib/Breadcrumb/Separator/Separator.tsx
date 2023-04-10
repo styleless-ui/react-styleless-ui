@@ -17,7 +17,7 @@ export type SeparatorItemProps = Omit<
 
 const BreadcrumbSeparatorItemBase = (
   props: SeparatorItemProps,
-  ref: React.Ref<HTMLLIElement>
+  ref: React.Ref<HTMLLIElement>,
 ) => {
   const { className, ...otherProps } = props;
 
@@ -33,7 +33,7 @@ const BreadcrumbSeparatorItemBase = (
 };
 
 const BreadcrumbSeparatorItem = componentWithForwardedRef(
-  BreadcrumbSeparatorItemBase
+  BreadcrumbSeparatorItemBase,
 );
 
 export default BreadcrumbSeparatorItem;

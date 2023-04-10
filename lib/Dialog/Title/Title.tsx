@@ -3,11 +3,11 @@ import type { PolymorphicProps } from "../../typings";
 import {
   componentWithForwardedRef,
   useDeterministicId,
-  useForkedRefs
+  useForkedRefs,
 } from "../../utils";
 import {
   ContentRoot as ContentRootSlot,
-  TitleRoot as TitleRootSlot
+  TitleRoot as TitleRootSlot,
 } from "../slots";
 
 interface TitleOwnProps {
@@ -28,7 +28,7 @@ export type TitleProps<E extends React.ElementType> = PolymorphicProps<
 
 const DialogTitleBase = <E extends React.ElementType, R extends HTMLElement>(
   props: TitleProps<E>,
-  ref: React.Ref<R>
+  ref: React.Ref<R>,
 ) => {
   const {
     className,
@@ -56,7 +56,7 @@ const DialogTitleBase = <E extends React.ElementType, R extends HTMLElement>(
     } else {
       // eslint-disable-next-line no-console
       console.error(
-        "[StylelessUI][Dialog]: You should always wrap your content with `<Dialog.Content>` to provide accessibility features."
+        "[StylelessUI][Dialog]: You should always wrap your content with `<Dialog.Content>` to provide accessibility features.",
       );
     }
   };

@@ -19,7 +19,7 @@ const inputTypesWhitelist = {
   week: true,
   time: true,
   datetime: true,
-  "datetime-local": true
+  "datetime-local": true,
 };
 
 /**
@@ -28,7 +28,7 @@ const inputTypesWhitelist = {
  * `:focus-visible` when focused.
  */
 const focusTriggersKeyboardModality = <T extends HTMLElement = HTMLElement>(
-  node: T
+  node: T,
 ) => {
   if (!node) return false;
 
@@ -105,7 +105,7 @@ export const teardown = (_doc_: Document): void => {
 };
 
 const isFocusVisible = <T extends HTMLElement = HTMLElement>(
-  event: React.FocusEvent<T>
+  event: React.FocusEvent<T>,
 ) => {
   if (!event.target) return false;
 
@@ -142,7 +142,7 @@ interface Return<T extends HTMLElement = HTMLElement> {
  * Cherry-picked from https://github.com/mui-org/material-ui/blob/master/packages/mui-utils/src/useIsFocusVisible.js
  */
 const useIsFocusVisible = <
-  T extends HTMLElement = HTMLElement
+  T extends HTMLElement = HTMLElement,
 >(): Return<T> => {
   const ref = React.useCallback((node: T | null) => {
     if (node) prepare(node.ownerDocument);
@@ -201,7 +201,7 @@ const useIsFocusVisible = <
     isFocusVisibleRef,
     onFocus: handleFocusVisible,
     onBlur: handleBlurVisible,
-    ref
+    ref,
   };
 };
 

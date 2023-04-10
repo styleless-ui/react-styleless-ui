@@ -4,7 +4,7 @@ import {
   componentWithForwardedRef,
   useControlledProp,
   useDeterministicId,
-  useForkedRefs
+  useForkedRefs,
 } from "../utils";
 import RadioGroupContext from "./context";
 import * as Slots from "./slots";
@@ -75,8 +75,8 @@ const getLabelInfo = (labelInput: RootProps["label"]) => {
         [
           "[StylelessUI][RadioGroup]: Invalid `label` property.",
           "The `label` property must be either a `string` or in shape of " +
-            "`{ screenReaderLabel: string; } | { labelledBy: string; }`"
-        ].join("\n")
+            "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
+        ].join("\n"),
       );
     }
   }
@@ -121,8 +121,8 @@ const RadioGroupBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
   const radios: [string, React.RefObject<HTMLButtonElement>][] = [];
 
   const registerRadio = (
-    inputValue: typeof radios[number][0],
-    radioRef: typeof radios[number][1]
+    inputValue: (typeof radios)[number][0],
+    radioRef: (typeof radios)[number][1],
   ) => {
     if (!radios.some(r => r[0] === inputValue))
       radios.push([inputValue, radioRef]);
@@ -141,7 +141,7 @@ const RadioGroupBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
     });
 
     const notTabable = radios.filter(
-      ([_, rRef]) => rRef.current?.getAttribute("tabindex") !== "0"
+      ([_, rRef]) => rRef.current?.getAttribute("tabindex") !== "0",
     );
 
     if (notTabable.length !== radios.length) return;

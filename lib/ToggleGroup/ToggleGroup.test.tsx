@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   act,
   itShouldMount,
@@ -6,7 +7,7 @@ import {
   itSupportsStyle,
   render,
   screen,
-  userEvent
+  userEvent,
 } from "../../tests/utils";
 import Toggle from "../Toggle";
 import * as Slots from "./slots";
@@ -29,7 +30,7 @@ describe("CheckGroup", () => {
         classes={{
           label: "toggle-group__label",
           group: "toggle-group__group",
-          root: "toggle-group"
+          root: "toggle-group",
         }}
       >
         <Toggle value="0" disabled>
@@ -37,7 +38,7 @@ describe("CheckGroup", () => {
         </Toggle>
         <Toggle value="1">Item 1</Toggle>
         <Toggle value="2">Item 2</Toggle>
-      </ToggleGroup>
+      </ToggleGroup>,
     );
 
     const group = screen.getByRole("group");
@@ -60,7 +61,7 @@ describe("CheckGroup", () => {
 
     expect(screen.getByRole("group")).toHaveAttribute(
       "aria-labelledby",
-      "identifier"
+      "identifier",
     );
   });
 
@@ -75,45 +76,43 @@ describe("CheckGroup", () => {
         </Toggle>
         <Toggle value="1">Item 1</Toggle>
         <Toggle value="2">Item 2</Toggle>
-      </ToggleGroup>
+      </ToggleGroup>,
     );
 
     let toggles = screen.getAllByRole("button");
 
-    if (toggles[0]) {
-      await userEvent.click(toggles[0]);
+    expect(toggles[0]).not.toBeUndefined();
+    expect(toggles[1]).not.toBeUndefined();
+    expect(toggles[2]).not.toBeUndefined();
 
-      expect(toggles[0]).not.toHaveAttribute("data-active");
-      expect(handleChange.mock.calls.length).toBe(0);
-    }
+    await userEvent.click(toggles[0]!);
 
-    if (toggles[1]) {
-      await userEvent.click(toggles[1]);
+    expect(toggles[0]).not.toHaveAttribute("data-active");
+    expect(handleChange.mock.calls.length).toBe(0);
 
-      expect(toggles[1]).toHaveAttribute("data-active");
-      expect(handleChange.mock.calls.length).toBe(1);
-      expect(handleChange.mock.calls[0]?.join()).toBe("1");
+    await userEvent.click(toggles[1]!);
 
-      await userEvent.click(toggles[1]);
+    expect(toggles[1]).toHaveAttribute("data-active");
+    expect(handleChange.mock.calls.length).toBe(1);
+    expect(handleChange.mock.calls[0]?.join()).toBe("1");
 
-      expect(toggles[1]).not.toHaveAttribute("data-active");
-      expect(handleChange.mock.calls.length).toBe(2);
-      expect(handleChange.mock.calls[1]?.join()).toBe("");
+    await userEvent.click(toggles[1]!);
 
-      await userEvent.click(toggles[1]);
+    expect(toggles[1]).not.toHaveAttribute("data-active");
+    expect(handleChange.mock.calls.length).toBe(2);
+    expect(handleChange.mock.calls[1]?.join()).toBe("");
 
-      expect(toggles[1]).toHaveAttribute("data-active");
-      expect(handleChange.mock.calls.length).toBe(3);
-      expect(handleChange.mock.calls[2]?.join()).toBe("1");
-    }
+    await userEvent.click(toggles[1]!);
 
-    if (toggles[2]) {
-      await userEvent.click(toggles[2]);
+    expect(toggles[1]).toHaveAttribute("data-active");
+    expect(handleChange.mock.calls.length).toBe(3);
+    expect(handleChange.mock.calls[2]?.join()).toBe("1");
 
-      expect(toggles[2]).toHaveAttribute("data-active");
-      expect(handleChange.mock.calls.length).toBe(4);
-      expect(handleChange.mock.calls[3]?.join()).toBe("2");
-    }
+    await userEvent.click(toggles[2]!);
+
+    expect(toggles[2]).toHaveAttribute("data-active");
+    expect(handleChange.mock.calls.length).toBe(4);
+    expect(handleChange.mock.calls[3]?.join()).toBe("2");
 
     unmount();
     handleChange.mockReset();
@@ -125,39 +124,37 @@ describe("CheckGroup", () => {
         </Toggle>
         <Toggle value="1">Item 1</Toggle>
         <Toggle value="2">Item 2</Toggle>
-      </ToggleGroup>
+      </ToggleGroup>,
     );
 
     toggles = screen.getAllByRole("button");
 
-    if (toggles[0]) {
-      await userEvent.click(toggles[0]);
+    expect(toggles[0]).not.toBeUndefined();
+    expect(toggles[1]).not.toBeUndefined();
+    expect(toggles[2]).not.toBeUndefined();
 
-      expect(toggles[0]).not.toHaveAttribute("data-active");
-      expect(handleChange.mock.calls.length).toBe(0);
-    }
+    await userEvent.click(toggles[0]!);
 
-    if (toggles[1]) {
-      await userEvent.click(toggles[1]);
+    expect(toggles[0]).not.toHaveAttribute("data-active");
+    expect(handleChange.mock.calls.length).toBe(0);
 
-      expect(toggles[1]).toHaveAttribute("data-active");
-      expect(handleChange.mock.calls.length).toBe(1);
-      expect(handleChange.mock.calls[0]?.join()).toBe("1");
-    }
+    await userEvent.click(toggles[1]!);
 
-    if (toggles[2]) {
-      await userEvent.click(toggles[2]);
+    expect(toggles[1]).toHaveAttribute("data-active");
+    expect(handleChange.mock.calls.length).toBe(1);
+    expect(handleChange.mock.calls[0]?.join()).toBe("1");
 
-      expect(toggles[2]).toHaveAttribute("data-active");
-      expect(handleChange.mock.calls.length).toBe(2);
-      expect(handleChange.mock.calls[1]?.join()).toBe("1,2");
+    await userEvent.click(toggles[2]!);
 
-      await userEvent.click(toggles[2]);
+    expect(toggles[2]).toHaveAttribute("data-active");
+    expect(handleChange.mock.calls.length).toBe(2);
+    expect(handleChange.mock.calls[1]?.join()).toBe("1,2");
 
-      expect(toggles[2]).not.toHaveAttribute("data-active");
-      expect(handleChange.mock.calls.length).toBe(3);
-      expect(handleChange.mock.calls[2]?.join()).toBe("1");
-    }
+    await userEvent.click(toggles[2]!);
+
+    expect(toggles[2]).not.toHaveAttribute("data-active");
+    expect(handleChange.mock.calls.length).toBe(3);
+    expect(handleChange.mock.calls[2]?.join()).toBe("1");
   });
 
   it("toggles `value` state with keyboard interactions and calls `onChange` callback", async () => {
@@ -171,7 +168,7 @@ describe("CheckGroup", () => {
         </Toggle>
         <Toggle value="1">Item 1</Toggle>
         <Toggle value="2">Item 2</Toggle>
-      </ToggleGroup>
+      </ToggleGroup>,
     );
 
     let toggles = screen.getAllByRole("button");
@@ -222,7 +219,7 @@ describe("CheckGroup", () => {
         </Toggle>
         <Toggle value="1">Item 1</Toggle>
         <Toggle value="2">Item 2</Toggle>
-      </ToggleGroup>
+      </ToggleGroup>,
     );
 
     toggles = screen.getAllByRole("button");

@@ -1,5 +1,4 @@
 import * as React from "react";
-import { SystemKeys } from "../internals";
 import {
   requestFormSubmit,
   useControlledProp,
@@ -7,8 +6,9 @@ import {
   useForkedRefs,
   useIsFocusVisible,
   useIsMounted,
-  useIsomorphicLayoutEffect
+  useIsomorphicLayoutEffect,
 } from ".";
+import { SystemKeys } from "../internals";
 
 interface GenericGroupContext {
   value: string | string[];
@@ -50,7 +50,7 @@ const useCheckBase = (props: CheckBaseProps) => {
     strategy = "check-control",
     autoFocus = false,
     toggle = false,
-    disabled = false
+    disabled = false,
   } = props;
 
   const isMounted = useIsMounted();
@@ -58,7 +58,7 @@ const useCheckBase = (props: CheckBaseProps) => {
   const [checked, setChecked] = useControlledProp(
     checkedProp,
     defaultChecked,
-    false
+    false,
   );
 
   const checkedState = groupCtx
@@ -71,7 +71,7 @@ const useCheckBase = (props: CheckBaseProps) => {
     isFocusVisibleRef,
     onBlur: handleBlurVisible,
     onFocus: handleFocusVisible,
-    ref: focusVisibleRef
+    ref: focusVisibleRef,
   } = useIsFocusVisible<HTMLButtonElement>();
 
   const controllerRef = React.useRef<HTMLButtonElement>();
@@ -81,12 +81,12 @@ const useCheckBase = (props: CheckBaseProps) => {
   const enterKeyDownRef = React.useRef(false);
 
   const [isFocusedVisible, setIsFocusedVisible] = React.useState(() =>
-    disabled ? false : autoFocus
+    disabled ? false : autoFocus,
   );
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   React.useEffect(
-    () => void (disabled && isFocusedVisible && setIsFocusedVisible(false))
+    () => void (disabled && isFocusedVisible && setIsFocusedVisible(false)),
   );
   React.useEffect(() => void (isFocusVisibleRef.current = isFocusedVisible));
 
@@ -110,7 +110,7 @@ const useCheckBase = (props: CheckBaseProps) => {
       if (disabled || !isMounted()) return;
 
       emitChange(!checkedState);
-    }
+    },
   );
 
   const handleFocus = useEventCallback<React.FocusEvent<HTMLButtonElement>>(
@@ -125,7 +125,7 @@ const useCheckBase = (props: CheckBaseProps) => {
       if (isFocusVisibleRef.current) setIsFocusedVisible(true);
 
       onFocus?.(event);
-    }
+    },
   );
 
   const handleBlur = useEventCallback<React.FocusEvent<HTMLButtonElement>>(
@@ -137,7 +137,7 @@ const useCheckBase = (props: CheckBaseProps) => {
       if (isFocusVisibleRef.current === false) setIsFocusedVisible(false);
 
       onBlur?.(event);
-    }
+    },
   );
 
   const handleKeyDown = useEventCallback<
@@ -159,6 +159,7 @@ const useCheckBase = (props: CheckBaseProps) => {
 
       if (groupCtx && isFocusedVisible) {
         const { items } = groupCtx;
+
         if (!items) return;
 
         const currentItemIdx = items.findIndex(r => r[0] === value);
@@ -170,20 +171,20 @@ const useCheckBase = (props: CheckBaseProps) => {
 
         const goPrev = [
           SystemKeys.UP,
-          dir === "ltr" ? SystemKeys.LEFT : SystemKeys.RIGHT
+          dir === "ltr" ? SystemKeys.LEFT : SystemKeys.RIGHT,
         ].includes(event.key);
 
         const goNext = [
           SystemKeys.DOWN,
-          dir === "ltr" ? SystemKeys.RIGHT : SystemKeys.LEFT
+          dir === "ltr" ? SystemKeys.RIGHT : SystemKeys.LEFT,
         ].includes(event.key);
 
-        let activeItem: typeof items[number] | null = null;
+        let activeItem: (typeof items)[number] | null = null;
 
         const getAvailableItem = (
           idx: number,
           forward: boolean,
-          prevIdxs: number[] = []
+          prevIdxs: number[] = [],
         ): typeof activeItem => {
           const item = items[idx];
 
@@ -192,6 +193,7 @@ const useCheckBase = (props: CheckBaseProps) => {
           if (!item || !item[1].current || item[1].current.disabled) {
             const newIdx =
               (forward ? idx + 1 : idx - 1 + items.length) % items.length;
+
             return getAvailableItem(newIdx, forward, [...prevIdxs, idx]);
           }
 
@@ -201,12 +203,12 @@ const useCheckBase = (props: CheckBaseProps) => {
         if (goPrev) {
           activeItem = getAvailableItem(
             (currentItemIdx - 1 + items.length) % items.length,
-            false
+            false,
           );
         } else if (goNext) {
           activeItem = getAvailableItem(
             (currentItemIdx + 1) % items.length,
-            true
+            true,
           );
         }
 
@@ -238,11 +240,11 @@ const useCheckBase = (props: CheckBaseProps) => {
         if (event.key === SystemKeys.SPACE) emitChange(!checkedState);
         else if (event.key === SystemKeys.ENTER) {
           enterKeyFunctionality === "request-form-submit"
-            ? requestFormSubmit(event.target)
+            ? requestFormSubmit(event.target as HTMLElement)
             : emitChange(!checkedState);
         }
       }
-    }
+    },
   );
 
   return {
@@ -255,7 +257,7 @@ const useCheckBase = (props: CheckBaseProps) => {
     handleFocus,
     handleKeyDown,
     handleKeyUp,
-    handleControllerRef
+    handleControllerRef,
   };
 };
 

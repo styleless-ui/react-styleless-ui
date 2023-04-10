@@ -12,12 +12,12 @@ interface IToggleGroupContext {
   onChange: (newActiveState: boolean, toggleValue: string) => void;
   registerToggle: (
     value: string,
-    ref: React.RefObject<HTMLButtonElement>
+    ref: React.RefObject<HTMLButtonElement>,
   ) => void;
 }
 
 const ToggleGroupContext = React.createContext<IToggleGroupContext | undefined>(
-  undefined
+  undefined,
 );
 
 if (process.env.NODE_ENV !== "production") {
@@ -26,5 +26,5 @@ if (process.env.NODE_ENV !== "production") {
 
 export {
   ToggleGroupContext as default,
-  type IToggleGroupContext as IToggleGroupContext
+  type IToggleGroupContext as IToggleGroupContext,
 };

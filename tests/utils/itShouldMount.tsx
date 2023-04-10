@@ -1,9 +1,9 @@
 import * as React from "react";
 import { render } from ".";
 
-const itShouldMount = <T,>(
-  Component: React.ComponentType<T>,
-  requiredProps: T
+const itShouldMount = <P extends JSX.IntrinsicAttributes>(
+  Component: React.ComponentType<P>,
+  requiredProps: P,
 ): void => {
   it(`component could be updated and unmounted without errors`, () => {
     const elem = (<Component {...requiredProps} />) as React.ReactElement;

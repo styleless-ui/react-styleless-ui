@@ -6,7 +6,7 @@ import {
   itSupportsStyle,
   render,
   screen,
-  userEvent
+  userEvent,
 } from "../../tests/utils";
 import Switch, { type RootProps } from "./Switch";
 
@@ -20,8 +20,8 @@ const REQUIRED_PROPS: RootProps = {
     label: "label",
     root: "root",
     thumb: "thumb",
-    track: "track"
-  }
+    track: "track",
+  },
 };
 
 describe("Switch", () => {
@@ -49,7 +49,7 @@ describe("Switch", () => {
 
   it("should have `aria-label='label'` property when `label={{ screenReaderLabel: 'label' }}`", () => {
     render(
-      <Switch {...REQUIRED_PROPS} label={{ screenReaderLabel: labelText }} />
+      <Switch {...REQUIRED_PROPS} label={{ screenReaderLabel: labelText }} />,
     );
 
     expect(screen.getByRole("switch")).toHaveAttribute("aria-label", labelText);
@@ -60,7 +60,7 @@ describe("Switch", () => {
 
     expect(screen.getByRole("switch")).toHaveAttribute(
       "aria-labelledby",
-      "identifier"
+      "identifier",
     );
   });
 
@@ -120,7 +120,7 @@ describe("Switch", () => {
         {...REQUIRED_PROPS}
         checked
         thumbComponent={<div data-testid="t1"></div>}
-      />
+      />,
     );
 
     expect(screen.getByTestId("t1").tagName).toBe("DIV");
@@ -130,7 +130,11 @@ describe("Switch", () => {
     );
 
     render(
-      <Switch {...REQUIRED_PROPS} checked thumbComponent={<ThumbComponent />} />
+      <Switch
+        {...REQUIRED_PROPS}
+        checked
+        thumbComponent={<ThumbComponent />}
+      />,
     );
 
     expect(screen.getByTestId("t2").tagName).toBe("DIV");
@@ -142,7 +146,7 @@ describe("Switch", () => {
         {...REQUIRED_PROPS}
         checked
         trackComponent={<div data-testid="t1"></div>}
-      />
+      />,
     );
 
     expect(screen.getByTestId("t1").tagName).toBe("DIV");
@@ -152,7 +156,11 @@ describe("Switch", () => {
     );
 
     render(
-      <Switch {...REQUIRED_PROPS} checked trackComponent={<TrackComponent />} />
+      <Switch
+        {...REQUIRED_PROPS}
+        checked
+        trackComponent={<TrackComponent />}
+      />,
     );
 
     expect(screen.getByTestId("t2").tagName).toBe("DIV");

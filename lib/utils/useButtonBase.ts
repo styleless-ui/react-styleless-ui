@@ -4,7 +4,7 @@ import {
   useForkedRefs,
   useIsFocusVisible,
   useIsMounted,
-  useIsomorphicLayoutEffect
+  useIsomorphicLayoutEffect,
 } from ".";
 
 interface ButtonBaseProps<T extends HTMLElement = HTMLButtonElement> {
@@ -18,7 +18,7 @@ interface ButtonBaseProps<T extends HTMLElement = HTMLButtonElement> {
 }
 
 const useButtonBase = <T extends HTMLElement = HTMLButtonElement>(
-  props: ButtonBaseProps<T>
+  props: ButtonBaseProps<T>,
 ) => {
   const {
     onBlur,
@@ -27,7 +27,7 @@ const useButtonBase = <T extends HTMLElement = HTMLButtonElement>(
     onKeyUp,
     onClick,
     autoFocus = false,
-    disabled = false
+    disabled = false,
   } = props;
 
   const isMounted = useIsMounted();
@@ -36,7 +36,7 @@ const useButtonBase = <T extends HTMLElement = HTMLButtonElement>(
     isFocusVisibleRef,
     onBlur: handleBlurVisible,
     onFocus: handleFocusVisible,
-    ref: focusVisibleRef
+    ref: focusVisibleRef,
   } = useIsFocusVisible<T>();
 
   const buttonRef = React.useRef<T>();
@@ -46,7 +46,7 @@ const useButtonBase = <T extends HTMLElement = HTMLButtonElement>(
   const enterKeyDownRef = React.useRef(false);
 
   const [isFocusedVisible, setIsFocusedVisible] = React.useState(() =>
-    disabled ? false : autoFocus
+    disabled ? false : autoFocus,
   );
 
   if (disabled && isFocusedVisible) setIsFocusedVisible(false);
@@ -124,7 +124,7 @@ const useButtonBase = <T extends HTMLElement = HTMLButtonElement>(
       event.target === event.currentTarget &&
       [" ", "enter"].includes(event.key.toLowerCase())
     ) {
-      event.target.click();
+      (event.target as HTMLElement).click();
     }
   });
 
@@ -135,7 +135,7 @@ const useButtonBase = <T extends HTMLElement = HTMLButtonElement>(
     handleFocus,
     handleKeyDown,
     handleKeyUp,
-    handleButtonRef
+    handleButtonRef,
   };
 };
 

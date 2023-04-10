@@ -9,7 +9,7 @@ import {
   useIsMounted,
   useOnChange,
   usePreviousValue,
-  useScrollGuard
+  useScrollGuard,
 } from "../utils";
 import DialogContext from "./context";
 import { Backdrop as BackdropSlot, Root as RootSlot } from "./slots";
@@ -132,9 +132,9 @@ const DialogBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
         eventType: "keyup",
         handler: event => {
           if (event.key === SystemKeys.ESCAPE) onEscapeKeyUp?.(event);
-        }
+        },
       },
-      open && onEscapeKeyUp != null
+      open && onEscapeKeyUp != null,
     );
   }
 

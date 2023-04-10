@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import * as TabGroup from ".";
 import {
   act,
@@ -7,7 +8,7 @@ import {
   itSupportsStyle,
   render,
   screen,
-  userEvent
+  userEvent,
 } from "../../tests/utils";
 
 const tabListLabel = "Label";
@@ -36,28 +37,27 @@ describe("TabGroup", () => {
           <TabGroup.Panel>Panel 2</TabGroup.Panel>
           <TabGroup.Panel>Panel 3</TabGroup.Panel>
         </TabGroup.Panels>
-      </TabGroup.Root>
+      </TabGroup.Root>,
     );
 
     const tabs = screen.getAllByRole("tab");
 
-    if (tabs[0]) {
-      await userEvent.click(tabs[0]);
+    expect(tabs[0]).not.toBeUndefined();
+    expect(tabs[2]).not.toBeUndefined();
 
-      expect(handleChange.mock.calls.length).toBe(1);
-      expect(handleChange.mock.calls[0]?.[0]).toBe(0);
-      expect(screen.getAllByRole("tabpanel").length).toBe(1);
-      expect(screen.getByRole("tabpanel")).toHaveTextContent(/panel 1/i);
-    }
+    await userEvent.click(tabs[0]!);
 
-    if (tabs[2]) {
-      await userEvent.click(tabs[2]);
+    expect(handleChange.mock.calls.length).toBe(1);
+    expect(handleChange.mock.calls[0]?.[0]).toBe(0);
+    expect(screen.getAllByRole("tabpanel").length).toBe(1);
+    expect(screen.getByRole("tabpanel")).toHaveTextContent(/panel 1/i);
 
-      expect(handleChange.mock.calls.length).toBe(2);
-      expect(handleChange.mock.calls[1]?.[0]).toBe(2);
-      expect(screen.getAllByRole("tabpanel").length).toBe(1);
-      expect(screen.getByRole("tabpanel")).toHaveTextContent(/panel 3/i);
-    }
+    await userEvent.click(tabs[2]!);
+
+    expect(handleChange.mock.calls.length).toBe(2);
+    expect(handleChange.mock.calls[1]?.[0]).toBe(2);
+    expect(screen.getAllByRole("tabpanel").length).toBe(1);
+    expect(screen.getByRole("tabpanel")).toHaveTextContent(/panel 3/i);
   });
 
   it("selects tabs with keyboard interactions and calls `onChange` callback", async () => {
@@ -76,7 +76,7 @@ describe("TabGroup", () => {
           <TabGroup.Panel>Panel 2</TabGroup.Panel>
           <TabGroup.Panel>Panel 3</TabGroup.Panel>
         </TabGroup.Panels>
-      </TabGroup.Root>
+      </TabGroup.Root>,
     );
 
     const tabs = screen.getAllByRole("tab");
@@ -106,7 +106,7 @@ describe("TabList", () => {
 
   const REQUIRED_PROPS: TabGroup.ListProps = {
     label: tabListLabel,
-    classes: { label: "label", root: "root" }
+    classes: { label: "label", root: "root" },
   };
 
   itShouldMount(TabGroup.List, REQUIRED_PROPS);
@@ -119,23 +119,26 @@ describe("TabList", () => {
       <TabGroup.List
         {...REQUIRED_PROPS}
         label={{ screenReaderLabel: tabListLabel }}
-      />
+      />,
     );
 
     expect(screen.getByRole("tablist")).toHaveAttribute(
       "aria-label",
-      tabListLabel
+      tabListLabel,
     );
   });
 
   it("should have `aria-labelledby='identifier'` property when `label={{ labelledBy: 'identifier' }}`", () => {
     render(
-      <TabGroup.List {...REQUIRED_PROPS} label={{ labelledBy: "identifier" }} />
+      <TabGroup.List
+        {...REQUIRED_PROPS}
+        label={{ labelledBy: "identifier" }}
+      />,
     );
 
     expect(screen.getByRole("tablist")).toHaveAttribute(
       "aria-labelledby",
-      "identifier"
+      "identifier",
     );
   });
 });

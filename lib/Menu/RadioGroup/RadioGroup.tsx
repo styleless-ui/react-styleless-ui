@@ -3,11 +3,11 @@ import type { Classes, MergeElementProps } from "../../typings";
 import {
   componentWithForwardedRef,
   useControlledProp,
-  useDeterministicId
+  useDeterministicId,
 } from "../../utils";
 import {
   RadioGroupLabel as RadioGroupLabelSlot,
-  RadioGroupRoot as RadioGroupRootSlot
+  RadioGroupRoot as RadioGroupRootSlot,
 } from "../slots";
 import MenuRadioGroupContext from "./context";
 
@@ -74,8 +74,8 @@ const getLabelInfo = (labelInput: RadioGroupProps["label"]) => {
         [
           "[StylelessUI][Menu.RadioGroup]: Invalid `label` property.",
           "The `label` property must be either a `string` or in shape of " +
-            "`{ screenReaderLabel: string; } | { labelledBy: string; }`"
-        ].join("\n")
+            "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
+        ].join("\n"),
       );
     }
   }
@@ -85,7 +85,7 @@ const getLabelInfo = (labelInput: RadioGroupProps["label"]) => {
 
 const MenuRadioGroupBase = (
   props: RadioGroupProps,
-  ref: React.Ref<HTMLDivElement>
+  ref: React.Ref<HTMLDivElement>,
 ) => {
   const {
     children,

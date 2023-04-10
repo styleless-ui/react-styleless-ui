@@ -4,7 +4,7 @@ import {
   componentWithForwardedRef,
   useControlledProp,
   useForkedRefs,
-  useIsMounted
+  useIsMounted,
 } from "../utils";
 import TabGroupContext, { type ITabGroupContext } from "./context";
 import { Root as RootSlot } from "./slots";
@@ -69,11 +69,11 @@ const TabGroupBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
   const [activeTab, setActiveTab] = useControlledProp(
     activeTabProp,
     defaultActiveTab,
-    0
+    0,
   );
 
   const children = React.Children.map(childrenProp, child =>
-    React.isValidElement(child) ? child : null
+    React.isValidElement(child) ? child : null,
   );
 
   const handleChange = (tabIndex: number) => {
@@ -91,24 +91,28 @@ const TabGroupBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
 
     if (ref.current instanceof HTMLDivElement) {
       const idx = panels.findIndex(r => r.current === ref.current);
-      if (idx < 0) panels.push(ref as typeof panels[number]);
+
+      if (idx < 0) panels.push(ref as (typeof panels)[number]);
     } else {
       const idx = tabs.findIndex(r => r.current === ref.current);
-      if (idx < 0) tabs.push(ref as typeof tabs[number]);
+
+      if (idx < 0) tabs.push(ref as (typeof tabs)[number]);
     }
   };
 
   React.useEffect(() => {
     const tabs =
       rootRef.current?.querySelectorAll<HTMLButtonElement>('[role="tab"]');
+
     if (!tabs) return;
 
     const tabElement = tabs[activeTab];
+
     if (!tabElement) return;
 
     if (tabElement.disabled || tabElement.hasAttribute("disabled")) {
       throw new Error(
-        "[StylelessUI][TabGroup.Root]: The selected tab is `disabled`."
+        "[StylelessUI][TabGroup.Root]: The selected tab is `disabled`.",
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -129,7 +133,7 @@ const TabGroupBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
           register,
           orientation,
           keyboardActivationBehavior,
-          onChange: handleChange
+          onChange: handleChange,
         }}
       >
         {children}

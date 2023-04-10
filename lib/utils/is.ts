@@ -11,7 +11,7 @@ declare global {
 }
 
 export const isWindow = <T extends { toString?: () => string }>(
-  input: unknown
+  input: unknown,
 ): input is Window =>
   !input ? false : (input as T).toString?.() === "[object Window]";
 

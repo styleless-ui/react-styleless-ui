@@ -6,7 +6,7 @@ import { render } from ".";
 const itSupportsRef = <T,>(
   Component: React.ComponentType<T>,
   requiredProps: T,
-  refType: unknown
+  refType: unknown,
 ): void => {
   it(`supports forwarding ref`, () => {
     const ref = React.createRef<typeof refType>();

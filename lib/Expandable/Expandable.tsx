@@ -49,7 +49,7 @@ const ExpandableBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
   const [isExpanded, setIsExpanded] = useControlledProp(
     expanded,
     defaultExpanded,
-    false
+    false,
   );
 
   const className =

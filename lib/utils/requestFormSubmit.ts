@@ -3,7 +3,7 @@ const isSubmitAction = (element: Element): element is HTMLButtonElement => {
     element.tagName === "INPUT";
 
   const isHTMLButtonElement = (
-    element: Element
+    element: Element,
   ): element is HTMLButtonElement => element.tagName === "BUTTON";
 
   return (

@@ -7,7 +7,7 @@ interface ICheckGroupContext {
 }
 
 const CheckGroupContext = React.createContext<ICheckGroupContext | undefined>(
-  undefined
+  undefined,
 );
 
 if (process.env.NODE_ENV !== "production") {

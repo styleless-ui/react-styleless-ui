@@ -17,7 +17,7 @@ export type SeparatorItemProps = Omit<
 
 const MenuSeparatorItemBase = (
   props: SeparatorItemProps,
-  ref: React.Ref<HTMLDivElement>
+  ref: React.Ref<HTMLDivElement>,
 ) => {
   const { className, ...otherProps } = props;
 

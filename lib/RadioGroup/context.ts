@@ -7,12 +7,12 @@ interface IRadioGroupContext {
   onChange: (newCheckedState: boolean, inputValue: string) => void;
   registerRadio: (
     value: string,
-    ref: React.RefObject<HTMLButtonElement>
+    ref: React.RefObject<HTMLButtonElement>,
   ) => void;
 }
 
 const RadioGroupContext = React.createContext<IRadioGroupContext | undefined>(
-  undefined
+  undefined,
 );
 
 if (process.env.NODE_ENV !== "production") {

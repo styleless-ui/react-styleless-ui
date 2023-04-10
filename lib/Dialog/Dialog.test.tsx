@@ -8,7 +8,7 @@ import {
   itSupportsStyle,
   render,
   screen,
-  userEvent
+  userEvent,
 } from "../../tests/utils";
 import * as Slots from "./slots";
 
@@ -21,13 +21,13 @@ describe("Dialog", () => {
     Dialog.Root,
     { role: "dialog", open: true },
     `[data-slot='${Slots.Root}']`,
-    { withPortal: true }
+    { withPortal: true },
   );
   itSupportsDataSetProps(
     Dialog.Root,
     { role: "dialog", open: true },
     `[data-slot='${Slots.Root}']`,
-    { withPortal: true }
+    { withPortal: true },
   );
 
   it("should have the required classNames", () => {
@@ -38,7 +38,7 @@ describe("Dialog", () => {
         data-testid="dialog-root"
         classes={({ openState }) => ({
           root: cls("root", { "root--open": openState }),
-          backdrop: "backdrop"
+          backdrop: "backdrop",
         })}
       >
         <Dialog.Content className="content" data-testid="dialog-content">
@@ -60,7 +60,7 @@ describe("Dialog", () => {
             aliquam dolor corporis assumenda.
           </Dialog.Description>
         </Dialog.Content>
-      </Dialog.Root>
+      </Dialog.Root>,
     );
 
     const root = screen.getByTestId("dialog-root");
@@ -88,7 +88,7 @@ describe("Dialog", () => {
             aliquam dolor corporis assumenda.
           </Dialog.Description>
         </Dialog.Content>
-      </Dialog.Root>
+      </Dialog.Root>,
     );
 
     const content = screen.getByTestId("dialog-content");
@@ -103,7 +103,7 @@ describe("Dialog", () => {
     const props: Dialog.RootProps = {
       role: "dialog",
       open: false,
-      focusAfterClosed: "#focus-btn"
+      focusAfterClosed: "#focus-btn",
     };
 
     userEvent.setup();
@@ -111,16 +111,18 @@ describe("Dialog", () => {
       <>
         <button id="focus-btn">Button</button>
         <Dialog.Root {...props} open={true}></Dialog.Root>
-      </>
+      </>,
     );
+
     rerender(
       <>
         <button id="focus-btn">Button</button>
         <Dialog.Root {...props} open={false}></Dialog.Root>
-      </>
+      </>,
     );
 
     const focusBtn = screen.getByRole("button");
+
     expect(focusBtn).toHaveFocus();
   });
 
@@ -132,12 +134,12 @@ describe("Dialog", () => {
 
     userEvent.setup();
     render(
-      <Dialog.Root open role="dialog" onBackdropClick={handleBackdropClick} />
+      <Dialog.Root open role="dialog" onBackdropClick={handleBackdropClick} />,
     );
 
     const portal = screen.getByRole("presentation");
     const backdrop = portal.querySelector<HTMLElement>(
-      `[data-slot="${Slots.Backdrop}"]`
+      `[data-slot="${Slots.Backdrop}"]`,
     );
 
     expect(backdrop).toBeInTheDocument();
@@ -154,7 +156,7 @@ describe("Dialog", () => {
 
     userEvent.setup();
     render(
-      <Dialog.Root open role="dialog" onEscapeKeyUp={handleEscapeKeyUp} />
+      <Dialog.Root open role="dialog" onEscapeKeyUp={handleEscapeKeyUp} />,
     );
 
     await userEvent.keyboard("[Escape]");

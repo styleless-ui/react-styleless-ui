@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import cls from "classnames";
 import * as React from "react";
 import * as Menu from ".";
@@ -8,7 +9,7 @@ import {
   itSupportsStyle,
   render,
   screen,
-  userEvent
+  userEvent,
 } from "../../tests/utils";
 import * as Slots from "./slots";
 
@@ -21,7 +22,7 @@ describe("Menu", () => {
   itSupportsDataSetProps(
     Menu.Root,
     { open: true },
-    `[data-slot='${Slots.Root}']`
+    `[data-slot='${Slots.Root}']`,
   );
 
   it("should have the required classNames", () => {
@@ -112,7 +113,7 @@ describe("Menu", () => {
               className={({ disabled, selected }) =>
                 cls("menu__check-item", {
                   "menu__check-item--disabled": disabled,
-                  "menu__check-item--selected": selected
+                  "menu__check-item--selected": selected,
                 })
               }
             >
@@ -123,7 +124,7 @@ describe("Menu", () => {
               className={({ disabled, selected }) =>
                 cls("menu__check-item", {
                   "menu__check-item--disabled": disabled,
-                  "menu__check-item--selected": selected
+                  "menu__check-item--selected": selected,
                 })
               }
             >
@@ -133,7 +134,7 @@ describe("Menu", () => {
               className={({ disabled, selected }) =>
                 cls("menu__check-item", {
                   "menu__check-item--disabled": disabled,
-                  "menu__check-item--selected": selected
+                  "menu__check-item--selected": selected,
                 })
               }
             >
@@ -143,7 +144,7 @@ describe("Menu", () => {
           <Menu.RadioGroup
             classes={{
               label: "menu__group__label",
-              root: "menu__group"
+              root: "menu__group",
             }}
             label="Group 2"
             defaultValue="6"
@@ -153,7 +154,7 @@ describe("Menu", () => {
               className={({ disabled, selected }) =>
                 cls("menu__radio-item", {
                   "menu__radio-item--disabled": disabled,
-                  "menu__radio-item--selected": selected
+                  "menu__radio-item--selected": selected,
                 })
               }
             >
@@ -165,7 +166,7 @@ describe("Menu", () => {
               className={({ disabled, selected }) =>
                 cls("menu__radio-item", {
                   "menu__radio-item--disabled": disabled,
-                  "menu__radio-item--selected": selected
+                  "menu__radio-item--selected": selected,
                 })
               }
             >
@@ -176,7 +177,7 @@ describe("Menu", () => {
               className={({ disabled, selected }) =>
                 cls("menu__radio-item", {
                   "menu__radio-item--disabled": disabled,
-                  "menu__radio-item--selected": selected
+                  "menu__radio-item--selected": selected,
                 })
               }
             >
@@ -184,7 +185,7 @@ describe("Menu", () => {
             </Menu.RadioItem>
           </Menu.RadioGroup>
         </Menu.Items>
-      </Menu.Root>
+      </Menu.Root>,
     );
 
     const menuItemWrappers = screen.getAllByRole("menu");
@@ -195,14 +196,10 @@ describe("Menu", () => {
     const menuRadioItems = screen.getAllByRole("menuitemradio");
 
     menuItemWrappers.forEach((menuItemWrapper, idx) => {
-      if (idx === 0) {
-        expect(menuItemWrapper.parentElement).toHaveClass("menu", "menu--open");
-      } else {
-        expect(menuItemWrapper.parentElement).toHaveClass(
-          "menu",
-          "menu--sub-menu"
-        );
-      }
+      expect(menuItemWrapper.parentElement).toHaveClass(
+        "menu",
+        idx === 0 ? "menu--open" : "menu--sub-menu",
+      );
 
       expect(menuItemWrapper).toHaveClass("menu__items");
     });
@@ -219,29 +216,21 @@ describe("Menu", () => {
     menuItems.forEach(menuItem => {
       const isDisabled = menuItem.getAttribute("aria-disabled") === "true";
 
-      expect(menuItem).toHaveClass("menu__item");
-
-      if (isDisabled)
-        expect(menuItem).toHaveClass("menu__item", "menu__item--disabled");
+      expect(menuItem).toHaveClass(
+        "menu__item",
+        isDisabled ? "menu__item--disabled" : "",
+      );
     });
 
     menuCheckItems.forEach(menuCheckItem => {
       const isDisabled = menuCheckItem.getAttribute("aria-disabled") === "true";
       const isChecked = menuCheckItem.getAttribute("aria-checked") === "true";
 
-      expect(menuCheckItem).toHaveClass("menu__check-item");
-
-      if (isDisabled)
-        expect(menuCheckItem).toHaveClass(
-          "menu__check-item",
-          "menu__check-item--disabled"
-        );
-
-      if (isChecked)
-        expect(menuCheckItem).toHaveClass(
-          "menu__check-item",
-          "menu__check-item--selected"
-        );
+      expect(menuCheckItem).toHaveClass(
+        "menu__check-item",
+        isDisabled ? "menu__check-item--disabled" : "",
+        isChecked ? "menu__check-item--selected" : "",
+      );
     });
 
     menuRadioItems.forEach(menuRadioItem => {
@@ -250,17 +239,11 @@ describe("Menu", () => {
 
       expect(menuRadioItem).toHaveClass("menu__radio-item");
 
-      if (isDisabled)
-        expect(menuRadioItem).toHaveClass(
-          "menu__radio-item",
-          "menu__radio-item--disabled"
-        );
-
-      if (isChecked)
-        expect(menuRadioItem).toHaveClass(
-          "menu__radio-item",
-          "menu__radio-item--selected"
-        );
+      expect(menuRadioItem).toHaveClass(
+        "menu__radio-item",
+        isDisabled ? "menu__radio-item--disabled" : "",
+        isChecked ? "menu__radio-item--selected" : "",
+      );
     });
   });
 
@@ -283,7 +266,7 @@ describe("Menu", () => {
             </Menu.Item>
           </Menu.Group>
         </Menu.Items>
-      </Menu.Root>
+      </Menu.Root>,
     );
 
     const triggerItem = screen.getByTestId("item:2");
@@ -309,18 +292,20 @@ describe("Menu", () => {
           <Menu.Item onSelect={handleOnSelect}>Item 1</Menu.Item>
           <Menu.Item onSelect={handleOnSelect}>Item 2</Menu.Item>
         </Menu.Items>
-      </Menu.Root>
+      </Menu.Root>,
     );
 
     const items = screen.getAllByRole("menuitem");
 
     let calls = 0;
+
     for (const item of items) {
       const isDisabled = item.getAttribute("aria-disabled") === "true";
 
       await userEvent.click(item);
       if (!isDisabled) {
         calls++;
+        // eslint-disable-next-line jest/no-conditional-expect
         expect(handleOnSelect.mock.calls[0]?.[0]).not.toBeFalsy();
       }
 
@@ -360,20 +345,23 @@ describe("Menu", () => {
             Item 2
           </Menu.CheckItem>
         </Menu.Items>
-      </Menu.Root>
+      </Menu.Root>,
     );
 
     const items = screen.getAllByRole("menuitemcheckbox");
 
     let calls = 0;
+
     for (const item of items) {
       const isDisabled = item.getAttribute("aria-disabled") === "true";
 
       await userEvent.click(item);
       if (!isDisabled) {
         calls++;
+        /* eslint-disable jest/no-conditional-expect */
         expect(handleOnSelect.mock.calls[0]?.[0]).not.toBeFalsy();
         expect(handleOnCheckChange.mock.calls[0]?.[0]).toBe(true);
+        /* eslint-enable jest/no-conditional-expect */
       }
 
       expect(handleOnSelect.mock.calls.length).toBe(calls);
@@ -403,18 +391,20 @@ describe("Menu", () => {
             </Menu.RadioItem>
           </Menu.RadioGroup>
         </Menu.Items>
-      </Menu.Root>
+      </Menu.Root>,
     );
 
     const items = screen.getAllByRole("menuitemradio");
 
     let calls = 0;
+
     for (const item of items) {
       const isDisabled = item.getAttribute("aria-disabled") === "true";
 
       await userEvent.click(item);
       if (!isDisabled) {
         calls++;
+        // eslint-disable-next-line jest/no-conditional-expect
         expect(handleOnSelect.mock.calls[0]?.[0]).not.toBeFalsy();
       }
 
@@ -437,24 +427,23 @@ describe("Menu", () => {
             <Menu.RadioItem value="2">Item 2</Menu.RadioItem>
           </Menu.RadioGroup>
         </Menu.Items>
-      </Menu.Root>
+      </Menu.Root>,
     );
 
     const items = screen.getAllByRole("menuitemradio");
 
-    if (items[1]) {
-      await userEvent.click(items[1]);
-      expect(items[1]).toBeChecked();
-      expect(handleOnValueChange.mock.calls.length).toBe(1);
-      expect(handleOnValueChange.mock.calls[0]?.[0]).toBe("1");
-    }
+    expect(items[1]).not.toBeUndefined();
+    expect(items[2]).not.toBeUndefined();
 
-    if (items[2]) {
-      await userEvent.click(items[2]);
-      expect(items[2]).toBeChecked();
-      expect(handleOnValueChange.mock.calls.length).toBe(2);
-      expect(handleOnValueChange.mock.calls[1]?.[0]).toBe("2");
-    }
+    await userEvent.click(items[1]!);
+    expect(items[1]).toBeChecked();
+    expect(handleOnValueChange.mock.calls.length).toBe(1);
+    expect(handleOnValueChange.mock.calls[0]?.[0]).toBe("1");
+
+    await userEvent.click(items[2]!);
+    expect(items[2]).toBeChecked();
+    expect(handleOnValueChange.mock.calls.length).toBe(2);
+    expect(handleOnValueChange.mock.calls[1]?.[0]).toBe("2");
   });
 
   it("clicks outside of the component and calls `onOutsideClick` callback", async () => {
@@ -465,7 +454,7 @@ describe("Menu", () => {
       <>
         <button data-testid="btn">Button</button>
         <Menu.Root open onOutsideClick={handleOutsideClick} />
-      </>
+      </>,
     );
 
     await userEvent.click(screen.getByTestId("btn"));

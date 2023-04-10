@@ -4,7 +4,7 @@ import { getWindow, useIsServerHandoffComplete } from ".";
 type Direction = "rtl" | "ltr";
 
 const getDirection = <T extends HTMLElement = HTMLElement>(
-  targetRef?: React.RefObject<T>
+  targetRef?: React.RefObject<T>,
 ): Direction => {
   const _window = getWindow(targetRef?.current ?? window);
 
@@ -15,12 +15,12 @@ const getDirection = <T extends HTMLElement = HTMLElement>(
 };
 
 const useDirection = <T extends HTMLElement = HTMLElement>(
-  targetRef?: React.RefObject<T>
+  targetRef?: React.RefObject<T>,
 ) => {
   const handoffCompletes = useIsServerHandoffComplete();
 
   const [direction, setDirection] = React.useState<Direction | null>(
-    handoffCompletes ? getDirection(targetRef) : null
+    handoffCompletes ? getDirection(targetRef) : null,
   );
 
   React.useEffect(() => {

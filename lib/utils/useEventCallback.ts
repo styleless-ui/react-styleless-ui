@@ -8,9 +8,9 @@ import * as React from "react";
  */
 const useEventCallback = <
   E extends React.BaseSyntheticEvent | Event,
-  T extends (event: E) => void = (event: E) => void
+  T extends (event: E) => void = (event: E) => void,
 >(
-  fn: T
+  fn: T,
 ): T => {
   const ref = React.useRef<T>(fn);
 

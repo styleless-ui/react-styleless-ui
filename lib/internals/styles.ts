@@ -9,7 +9,7 @@ export const visuallyHiddenCSSProperties = {
   border: 0,
   overflow: "hidden",
   clip: "rect(0, 0, 0, 0)",
-  whiteSpace: "nowrap"
+  whiteSpace: "nowrap",
 } as CSSProperties;
 
 export const disableUserSelectCSSProperties = {
@@ -21,5 +21,5 @@ export const disableUserSelectCSSProperties = {
   WebkitTouchCallout: "none",
   MsTouchAction: "pan-y",
   touchAction: "pan-y",
-  WebkitTapHighlightColor: "transparent"
+  WebkitTapHighlightColor: "transparent",
 } as CSSProperties;

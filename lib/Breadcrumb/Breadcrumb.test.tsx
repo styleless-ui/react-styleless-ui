@@ -5,7 +5,7 @@ import {
   itSupportsRef,
   itSupportsStyle,
   render,
-  screen
+  screen,
 } from "../../tests/utils";
 
 const labelText = "Breadcrumb";
@@ -15,8 +15,8 @@ const REQUIRED_PROPS: Breadcrumb.RootProps = {
   classes: {
     label: "label",
     root: "root",
-    list: "list"
-  }
+    list: "list",
+  },
 };
 
 describe("Breadcrumb", () => {
@@ -32,7 +32,7 @@ describe("Breadcrumb", () => {
       <Breadcrumb.Root {...REQUIRED_PROPS}>
         <Breadcrumb.Item className="item"></Breadcrumb.Item>
         <Breadcrumb.Separator className="separator" />
-      </Breadcrumb.Root>
+      </Breadcrumb.Root>,
     );
 
     const nav = screen.getByRole("navigation");
@@ -53,12 +53,12 @@ describe("Breadcrumb", () => {
       <Breadcrumb.Root
         {...REQUIRED_PROPS}
         label={{ screenReaderLabel: labelText }}
-      />
+      />,
     );
 
     expect(screen.getByRole("navigation")).toHaveAttribute(
       "aria-label",
-      labelText
+      labelText,
     );
   });
 
@@ -67,12 +67,12 @@ describe("Breadcrumb", () => {
       <Breadcrumb.Root
         {...REQUIRED_PROPS}
         label={{ labelledBy: "identifier" }}
-      />
+      />,
     );
 
     expect(screen.getByRole("navigation")).toHaveAttribute(
       "aria-labelledby",
-      "identifier"
+      "identifier",
     );
   });
 });

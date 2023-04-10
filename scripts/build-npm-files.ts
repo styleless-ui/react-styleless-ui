@@ -9,7 +9,7 @@ const readme = path.join(packagePath, "README.md");
 const license = path.join(packagePath, "LICENSE");
 
 const rootPackageJsonData = JSON.parse(
-  fs.readFileSync(rootPackageJson, { encoding: "utf8" })
+  fs.readFileSync(rootPackageJson, { encoding: "utf8" }),
 ) as {
   name: string;
   version: string;
@@ -35,12 +35,12 @@ const npmPackageJson = {
   repository: rootPackageJsonData.repository,
   keywords: rootPackageJsonData.keywords,
   peerDependencies: rootPackageJsonData.peerDependencies,
-  dependencies: rootPackageJsonData.dependencies
+  dependencies: rootPackageJsonData.dependencies,
 };
 
 fs.copyFileSync(readme, path.join(buildPath, "README.md"));
 fs.copyFileSync(license, path.join(buildPath, "LICENSE"));
 fs.writeFileSync(
   path.join(buildPath, "package.json"),
-  JSON.stringify(npmPackageJson, null, 2)
+  JSON.stringify(npmPackageJson, null, 2),
 );

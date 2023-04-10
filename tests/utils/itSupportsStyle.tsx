@@ -7,7 +7,7 @@ const itSupportsStyle = <T,>(
   Component: React.ComponentType<T>,
   requiredProps: T,
   selector?: string,
-  options?: { withPortal?: boolean }
+  options?: { withPortal?: boolean },
 ): void => {
   it("supports style prop", () => {
     const { withPortal = false } = options ?? {};
@@ -29,7 +29,7 @@ const itSupportsStyle = <T,>(
     const style = { border: "1px solid red", backgroundColor: "black" };
 
     const { container } = render(
-      <Component {...requiredProps} style={style} />
+      <Component {...requiredProps} style={style} />,
     );
 
     expect(getTarget(container)).toHaveStyle(style);

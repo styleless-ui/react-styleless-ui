@@ -1,5 +1,13 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+export type KeyofBase = keyof any;
+
+export type EmptyObjectNotation = {};
+
+export type AnyObject = Record<KeyofBase, any>;
+export type UnknownObject = Record<KeyofBase, unknown>;
+export type EmptyObject = Record<KeyofBase, never>;
+
 type GenerateStringUnion<T> = Extract<
   {
     [Key in keyof T]: true extends T[Key] ? Key : never;
@@ -32,25 +40,17 @@ export type Overwrite<T, U> = Omit<T, keyof U> & U;
  */
 export type OverridableStringUnion<
   T,
-  U = EmptyObjectNotation
+  U = EmptyObjectNotation,
 > = GenerateStringUnion<Overwrite<T, U>>;
-
-export type KeyofBase = keyof any;
-
-export type EmptyObjectNotation = {};
-
-export type AnyObject = Record<KeyofBase, any>;
-export type UnknownObject = Record<KeyofBase, unknown>;
-export type EmptyObject = Record<KeyofBase, never>;
 
 export type MergeElementProps<
   E extends React.ElementType,
-  P = EmptyObjectNotation
+  P = EmptyObjectNotation,
 > = Overwrite<React.ComponentPropsWithRef<E>, P>;
 
 export type PolymorphicProps<
   E extends React.ElementType,
-  P = EmptyObjectNotation
+  P = EmptyObjectNotation,
 > = MergeElementProps<
   E,
   P & {

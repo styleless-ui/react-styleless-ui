@@ -7,7 +7,7 @@ import {
   itSupportsStyle,
   render,
   screen,
-  userEvent
+  userEvent,
 } from "../../tests/utils";
 
 describe("Expandable", () => {
@@ -39,7 +39,7 @@ describe("Expandable", () => {
           nulla consequatur voluptates facere, reprehenderit nisi placeat
           cupiditate vero repellendus rerum?
         </Expandable.Content>
-      </Expandable.Root>
+      </Expandable.Root>,
     );
 
     const trigger = screen.getByRole("button");
@@ -61,7 +61,7 @@ describe("Expandable", () => {
           nulla consequatur voluptates facere, reprehenderit nisi placeat
           cupiditate vero repellendus rerum?
         </Expandable.Content>
-      </Expandable.Root>
+      </Expandable.Root>,
     );
 
     const trigger = screen.getByRole("button");
@@ -80,7 +80,7 @@ describe("Expandable", () => {
           nulla consequatur voluptates facere, reprehenderit nisi placeat
           cupiditate vero repellendus rerum?
         </Expandable.Content>
-      </Expandable.Root>
+      </Expandable.Root>,
     );
 
     const trigger = screen.getByRole("button");
@@ -105,7 +105,7 @@ describe("Expandable", () => {
           nulla consequatur voluptates facere, reprehenderit nisi placeat
           cupiditate vero repellendus rerum?
         </Expandable.Content>
-      </Expandable.Root>
+      </Expandable.Root>,
     );
 
     const trigger = screen.getByRole("button");
@@ -137,7 +137,7 @@ describe("Expandable", () => {
           nulla consequatur voluptates facere, reprehenderit nisi placeat
           cupiditate vero repellendus rerum?
         </Expandable.Content>
-      </Expandable.Root>
+      </Expandable.Root>,
     );
 
     const trigger = screen.getByRole("button");

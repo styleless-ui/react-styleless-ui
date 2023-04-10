@@ -8,7 +8,7 @@ import {
   useEventListener,
   useIsMounted,
   useOnChange,
-  usePreviousValue
+  usePreviousValue,
 } from "../utils";
 import SnackbarContext from "./context";
 import { Root as SnackbarRootSlot } from "./slots";
@@ -128,9 +128,9 @@ const SnackbarBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
         eventType: "keyup",
         handler: event => {
           if (event.key === SystemKeys.ESCAPE) onEscapeKeyUp?.(event);
-        }
+        },
       },
-      open && onEscapeKeyUp != null
+      open && onEscapeKeyUp != null,
     );
   }
 

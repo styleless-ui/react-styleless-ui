@@ -6,7 +6,7 @@ import {
   itSupportsStyle,
   render,
   screen,
-  userEvent
+  userEvent,
 } from "../../tests/utils";
 import Radio, { type RootProps } from "./Radio";
 
@@ -17,8 +17,8 @@ const REQUIRED_PROPS: RootProps = {
   classes: {
     label: "label",
     root: "root",
-    check: "check"
-  }
+    check: "check",
+  },
 };
 
 describe("Radio", () => {
@@ -44,7 +44,7 @@ describe("Radio", () => {
 
   it("should have `aria-label='label'` property when `label={{ screenReaderLabel: 'label' }}`", () => {
     render(
-      <Radio {...REQUIRED_PROPS} label={{ screenReaderLabel: labelText }} />
+      <Radio {...REQUIRED_PROPS} label={{ screenReaderLabel: labelText }} />,
     );
 
     expect(screen.getByRole("radio")).toHaveAttribute("aria-label", labelText);
@@ -55,7 +55,7 @@ describe("Radio", () => {
 
     expect(screen.getByRole("radio")).toHaveAttribute(
       "aria-labelledby",
-      "identifier"
+      "identifier",
     );
   });
 
@@ -76,7 +76,7 @@ describe("Radio", () => {
 
     userEvent.setup();
     const { unmount } = render(
-      <Radio {...REQUIRED_PROPS} onChange={handleChange} />
+      <Radio {...REQUIRED_PROPS} onChange={handleChange} />,
     );
 
     let radio = screen.getByRole("radio");
@@ -109,7 +109,7 @@ describe("Radio", () => {
         {...REQUIRED_PROPS}
         checked
         checkComponent={<div data-testid="t1"></div>}
-      />
+      />,
     );
 
     expect(screen.getByTestId("t1").tagName).toBe("DIV");
@@ -119,7 +119,7 @@ describe("Radio", () => {
     );
 
     render(
-      <Radio {...REQUIRED_PROPS} checked checkComponent={<CheckComponent />} />
+      <Radio {...REQUIRED_PROPS} checked checkComponent={<CheckComponent />} />,
     );
 
     expect(screen.getByTestId("t2").tagName).toBe("DIV");

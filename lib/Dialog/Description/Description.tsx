@@ -3,11 +3,11 @@ import type { PolymorphicProps } from "../../typings";
 import {
   componentWithForwardedRef,
   useDeterministicId,
-  useForkedRefs
+  useForkedRefs,
 } from "../../utils";
 import {
   ContentRoot as ContentRootSlot,
-  DescriptionRoot as DescriptionRootSlot
+  DescriptionRoot as DescriptionRootSlot,
 } from "../slots";
 
 interface DescriptionOwnProps {
@@ -28,10 +28,10 @@ export type DescriptionProps<E extends React.ElementType> = PolymorphicProps<
 
 const DialogDescriptionBase = <
   E extends React.ElementType,
-  R extends HTMLElement
+  R extends HTMLElement,
 >(
   props: DescriptionProps<E>,
-  ref: React.Ref<R>
+  ref: React.Ref<R>,
 ) => {
   const {
     className,
@@ -59,7 +59,7 @@ const DialogDescriptionBase = <
     } else {
       // eslint-disable-next-line no-console
       console.error(
-        "[StylelessUI][Dialog]: You should always wrap your content with `<Snackbar.Content>` to provide accessibility features."
+        "[StylelessUI][Dialog]: You should always wrap your content with `<Snackbar.Content>` to provide accessibility features.",
       );
     }
   };

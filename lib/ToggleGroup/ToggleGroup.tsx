@@ -4,7 +4,7 @@ import {
   componentWithForwardedRef,
   useControlledProp,
   useDeterministicId,
-  useForkedRefs
+  useForkedRefs,
 } from "../utils";
 import ToggleGroupContext from "./context";
 import * as Slots from "./slots";
@@ -84,8 +84,8 @@ const getLabelInfo = (labelInput: RootProps["label"]) => {
         [
           "[StylelessUI][ToggleGroup]: Invalid `label` property.",
           "The `label` property must be either a `string` or in shape of " +
-            "`{ screenReaderLabel: string; } | { labelledBy: string; }`"
-        ].join("\n")
+            "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
+        ].join("\n"),
       );
     }
   }
@@ -123,20 +123,20 @@ const ToggleGroupBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
   const [value, setValue] = useControlledProp(
     valueProp,
     defaultValue,
-    multiple ? [] : ""
+    multiple ? [] : "",
   );
 
   if (multiple && !Array.isArray(value)) {
     throw new Error(
       "[StylelessUI][ToggleGroup]: The `value` and `defaultValue` " +
-        "should be an empty array or array of strings when `multiple={true}.`"
+        "should be an empty array or array of strings when `multiple={true}.`",
     );
   }
 
   if (!multiple && typeof value !== "string") {
     throw new Error(
       "[StylelessUI][ToggleGroup]: The `value` and `defaultValue` " +
-        "should be string when `multiple={false}.`"
+        "should be string when `multiple={false}.`",
     );
   }
 
@@ -156,8 +156,8 @@ const ToggleGroupBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
   const toggles: [string, React.RefObject<HTMLButtonElement>][] = [];
 
   const registerToggle = (
-    toggleValue: typeof toggles[number][0],
-    toggleRef: typeof toggles[number][1]
+    toggleValue: (typeof toggles)[number][0],
+    toggleRef: (typeof toggles)[number][1],
   ) => {
     if (!toggles.some(r => r[0] === toggleValue))
       toggles.push([toggleValue, toggleRef]);
@@ -176,7 +176,7 @@ const ToggleGroupBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
     });
 
     const notTabable = toggles.filter(
-      ([_, tRef]) => tRef.current?.getAttribute("tabindex") !== "0"
+      ([_, tRef]) => tRef.current?.getAttribute("tabindex") !== "0",
     );
 
     if (notTabable.length !== toggles.length) return;
@@ -206,7 +206,7 @@ const ToggleGroupBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
           toggles,
           keyboardActivationBehavior: keyboardActivationBehavior ?? "manual",
           onChange: handleChange,
-          registerToggle
+          registerToggle,
         }}
       >
         {visibleLabel && (

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   act,
   itShouldMount,
@@ -6,7 +7,7 @@ import {
   itSupportsStyle,
   render,
   screen,
-  userEvent
+  userEvent,
 } from "../../tests/utils";
 import Checkbox from "../Checkbox";
 import CheckGroup, { type RootProps } from "./CheckGroup";
@@ -16,7 +17,7 @@ const labelText = "Label";
 
 const REQUIRED_PROPS: RootProps = {
   label: labelText,
-  classes: { label: "label", root: "root", group: "group" }
+  classes: { label: "label", root: "root", group: "group" },
 };
 
 describe("CheckGroup", () => {
@@ -44,7 +45,7 @@ describe("CheckGroup", () => {
       <CheckGroup
         {...REQUIRED_PROPS}
         label={{ screenReaderLabel: labelText }}
-      />
+      />,
     );
 
     expect(screen.getByRole("group")).toHaveAttribute("aria-label", labelText);
@@ -52,12 +53,12 @@ describe("CheckGroup", () => {
 
   it("should have `aria-labelledby='identifier'` property when `label={{ labelledBy: 'identifier' }}`", () => {
     render(
-      <CheckGroup {...REQUIRED_PROPS} label={{ labelledBy: "identifier" }} />
+      <CheckGroup {...REQUIRED_PROPS} label={{ labelledBy: "identifier" }} />,
     );
 
     expect(screen.getByRole("group")).toHaveAttribute(
       "aria-labelledby",
-      "identifier"
+      "identifier",
     );
   });
 
@@ -71,45 +72,43 @@ describe("CheckGroup", () => {
         <Checkbox label="item 1" value="1" />
         <Checkbox label="item 2" value="2" />
         <Checkbox label="item 3" value="3" />
-      </CheckGroup>
+      </CheckGroup>,
     );
 
     const boxes = screen.getAllByRole("checkbox");
 
-    if (boxes[0]) {
-      await userEvent.click(boxes[0]);
+    expect(boxes[0]).not.toBeUndefined();
+    expect(boxes[1]).not.toBeUndefined();
+    expect(boxes[2]).not.toBeUndefined();
 
-      expect(boxes[0]).not.toBeChecked();
-      expect(handleChange.mock.calls.length).toBe(0);
-    }
+    await userEvent.click(boxes[0]!);
 
-    if (boxes[1]) {
-      await userEvent.click(boxes[1]);
+    expect(boxes[0]).not.toBeChecked();
+    expect(handleChange.mock.calls.length).toBe(0);
 
-      expect(boxes[1]).toBeChecked();
-      expect(handleChange.mock.calls.length).toBe(1);
-      expect(handleChange.mock.calls[0]?.join()).toBe("1");
+    await userEvent.click(boxes[1]!);
 
-      await userEvent.click(boxes[1]);
+    expect(boxes[1]).toBeChecked();
+    expect(handleChange.mock.calls.length).toBe(1);
+    expect(handleChange.mock.calls[0]?.join()).toBe("1");
 
-      expect(boxes[1]).not.toBeChecked();
-      expect(handleChange.mock.calls.length).toBe(2);
-      expect(handleChange.mock.calls[1]?.join()).toBe("");
+    await userEvent.click(boxes[1]!);
 
-      await userEvent.click(boxes[1]);
+    expect(boxes[1]).not.toBeChecked();
+    expect(handleChange.mock.calls.length).toBe(2);
+    expect(handleChange.mock.calls[1]?.join()).toBe("");
 
-      expect(boxes[1]).toBeChecked();
-      expect(handleChange.mock.calls.length).toBe(3);
-      expect(handleChange.mock.calls[2]?.join()).toBe("1");
-    }
+    await userEvent.click(boxes[1]!);
 
-    if (boxes[2]) {
-      await userEvent.click(boxes[2]);
+    expect(boxes[1]).toBeChecked();
+    expect(handleChange.mock.calls.length).toBe(3);
+    expect(handleChange.mock.calls[2]?.join()).toBe("1");
 
-      expect(boxes[2]).toBeChecked();
-      expect(handleChange.mock.calls.length).toBe(4);
-      expect(handleChange.mock.calls[3]?.join()).toBe("1,2");
-    }
+    await userEvent.click(boxes[2]!);
+
+    expect(boxes[2]).toBeChecked();
+    expect(handleChange.mock.calls.length).toBe(4);
+    expect(handleChange.mock.calls[3]?.join()).toBe("1,2");
   });
 
   it("toggles `checked` state with keyboard interactions and calls `onChange` callback", async () => {
@@ -122,7 +121,7 @@ describe("CheckGroup", () => {
         <Checkbox label="item 1" value="1" />
         <Checkbox label="item 2" value="2" />
         <Checkbox label="item 3" value="3" />
-      </CheckGroup>
+      </CheckGroup>,
     );
 
     const boxes = screen.getAllByRole("checkbox");

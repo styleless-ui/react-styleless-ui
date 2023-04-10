@@ -10,7 +10,7 @@ interface ItemHookProps {
   changeEmitter: (
     event:
       | React.MouseEvent<HTMLDivElement>
-      | React.KeyboardEvent<HTMLDivElement>
+      | React.KeyboardEvent<HTMLDivElement>,
   ) => void;
 }
 
@@ -32,7 +32,7 @@ const useMenuItem = (props: ItemHookProps) => {
 
       emitChange(event);
       onClick?.(event);
-    }
+    },
   );
 
   const handleMouseEnter = useEventCallback<React.MouseEvent<HTMLDivElement>>(
@@ -40,7 +40,7 @@ const useMenuItem = (props: ItemHookProps) => {
       if (!isMounted() || disabled) return;
 
       onMouseEnter?.(event);
-    }
+    },
   );
 
   const handleMouseLeave = useEventCallback<React.MouseEvent<HTMLDivElement>>(
@@ -48,13 +48,13 @@ const useMenuItem = (props: ItemHookProps) => {
       if (!isMounted() || disabled) return;
 
       onMouseLeave?.(event);
-    }
+    },
   );
 
   return {
     handleClick,
     handleMouseEnter,
-    handleMouseLeave
+    handleMouseLeave,
   };
 };
 

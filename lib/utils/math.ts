@@ -31,5 +31,5 @@ export const remap = (
   oMin: number,
   oMax: number,
   rMin: number,
-  rMax: number
+  rMax: number,
 ) => lerp(rMin, rMax, inLerp(oMin, oMax, v));

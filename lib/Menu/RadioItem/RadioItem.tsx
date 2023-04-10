@@ -4,7 +4,7 @@ import type { MergeElementProps } from "../../typings";
 import {
   componentWithForwardedRef,
   useEventCallback,
-  useForkedRefs
+  useForkedRefs,
 } from "../../utils";
 import MenuContext from "../context";
 import MenuRadioGroupContext from "../RadioGroup/context";
@@ -47,7 +47,7 @@ interface RadioItemOwnProps {
   onSelect?: (
     event:
       | React.MouseEvent<HTMLDivElement>
-      | React.KeyboardEvent<HTMLDivElement>
+      | React.KeyboardEvent<HTMLDivElement>,
   ) => void;
 }
 
@@ -58,7 +58,7 @@ export type RadioItemProps = Omit<
 
 const MenuRadioItemBase = (
   props: RadioItemProps,
-  ref: React.Ref<HTMLDivElement>
+  ref: React.Ref<HTMLDivElement>,
 ) => {
   const {
     children: childrenProp,
@@ -80,7 +80,7 @@ const MenuRadioItemBase = (
     if (!radioGroupCtx) {
       // eslint-disable-next-line no-console
       console.error(
-        "[StylelessUI][Menu.RadioItem]: You can't use `<Menu.RadioItem>` outside of the `<Menu.RadioGroup>`."
+        "[StylelessUI][Menu.RadioItem]: You can't use `<Menu.RadioItem>` outside of the `<Menu.RadioGroup>`.",
       );
     }
   }
@@ -98,7 +98,7 @@ const MenuRadioItemBase = (
   const renderCtx = {
     disabled,
     active: isActive,
-    selected: isSelected
+    selected: isSelected,
   };
 
   const children =
@@ -126,7 +126,7 @@ const MenuRadioItemBase = (
     >(event => {
       onSelect?.(event);
       radioGroupCtx?.onValueChange(value);
-    })
+    }),
   });
 
   const refCallback = (node: HTMLDivElement | null) => {

@@ -4,7 +4,7 @@ import {
   contains,
   isFocusable,
   useEventListener,
-  useForkedRefs
+  useForkedRefs,
 } from "../utils";
 
 export interface RootProps {
@@ -26,11 +26,11 @@ const FocusTrap = (props: RootProps) => {
     try {
       if (!React.isValidElement(children)) throw 0;
       return React.Children.only(
-        children
+        children,
       ) as React.FunctionComponentElement<unknown>;
     } catch {
       throw new Error(
-        "[StylelessUI][FocusTrap]: The `children` prop has to be a single valid element."
+        "[StylelessUI][FocusTrap]: The `children` prop has to be a single valid element.",
       );
     }
   })();
@@ -52,6 +52,7 @@ const FocusTrap = (props: RootProps) => {
       (node as HTMLElement).focus();
       // eslint-disable-next-line no-empty
     } catch {}
+
     ignoreFocusChanges.current = false;
 
     return document.activeElement === node;
@@ -62,7 +63,7 @@ const FocusTrap = (props: RootProps) => {
 
     return node
       ? Array.from(node.children).some(
-          child => attemptFocus(child) || focusFirstDescendant(child)
+          child => attemptFocus(child) || focusFirstDescendant(child),
         )
       : false;
   };
@@ -109,9 +110,9 @@ const FocusTrap = (props: RootProps) => {
             lastFocus.current = document.activeElement;
           }
         },
-        options: { capture: true }
+        options: { capture: true },
       },
-      enabled
+      enabled,
     );
   }
 

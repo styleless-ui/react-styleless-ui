@@ -5,7 +5,7 @@ import {
   componentWithForwardedRef,
   useControlledProp,
   useEventCallback,
-  useForkedRefs
+  useForkedRefs,
 } from "../../utils";
 import MenuContext from "../context";
 import { CheckItemRoot as CheckItemRootSlot } from "../slots";
@@ -57,7 +57,7 @@ interface CheckItemOwnProps {
   onSelect?: (
     event:
       | React.MouseEvent<HTMLDivElement>
-      | React.KeyboardEvent<HTMLDivElement>
+      | React.KeyboardEvent<HTMLDivElement>,
   ) => void;
 }
 
@@ -68,7 +68,7 @@ export type CheckItemProps = Omit<
 
 const MenuCheckItemBase = (
   props: CheckItemProps,
-  ref: React.Ref<HTMLDivElement>
+  ref: React.Ref<HTMLDivElement>,
 ) => {
   const {
     children: childrenProp,
@@ -93,7 +93,7 @@ const MenuCheckItemBase = (
   const [isSelected, setIsSelected] = useControlledProp(
     checked,
     defaultChecked,
-    false
+    false,
   );
 
   const isActive =
@@ -104,7 +104,7 @@ const MenuCheckItemBase = (
   const renderCtx = {
     disabled,
     active: isActive,
-    selected: isSelected
+    selected: isSelected,
   };
 
   const children =
@@ -133,7 +133,7 @@ const MenuCheckItemBase = (
       onSelect?.(event);
       onCheckChange?.(!isSelected);
       setIsSelected(!isSelected);
-    })
+    }),
   });
 
   const refCallback = (node: HTMLDivElement | null) => {

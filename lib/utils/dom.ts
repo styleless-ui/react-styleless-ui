@@ -16,6 +16,7 @@ export const getWindow = (node: Node | Window): Window => {
 
   if (!isWindow(node)) {
     const ownerDocument = node.ownerDocument;
+
     return ownerDocument ? ownerDocument.defaultView || window : window;
   }
 
@@ -77,6 +78,7 @@ export const getOffsetParent = (element: Element) => {
   };
 
   let offsetParent = _getSafeOffsetParent(element);
+
   while (
     offsetParent &&
     ["table", "td", "th"].includes(getNodeName(offsetParent)) &&
@@ -100,7 +102,7 @@ export const getOffsetParent = (element: Element) => {
 
 export const getBoundingClientRect = (
   element: Element | { getBoundingClientRect: () => ClientRect },
-  includeScale = false
+  includeScale = false,
 ) => {
   const clientRect = element.getBoundingClientRect();
 
@@ -126,7 +128,7 @@ export const getBoundingClientRect = (
     bottom: clientRect.bottom / scaleY,
     left: clientRect.left / scaleX,
     x: clientRect.left / scaleX,
-    y: clientRect.top / scaleY
+    y: clientRect.top / scaleY,
   };
 };
 
@@ -151,7 +153,7 @@ export const getViewportRect = (element: Element) => {
     // Safari returns a number <= 0, usually < -1 when pinch-zoomed
     if (
       Math.abs(
-        window.innerWidth / visualViewport.scale - visualViewport.width
+        window.innerWidth / visualViewport.scale - visualViewport.width,
       ) < 0.01
     ) {
       x = visualViewport.offsetLeft;
@@ -166,9 +168,11 @@ export const contains = (parent: Element, child: Element): boolean => {
   if (parent.contains(child)) return true;
 
   const rootNode = child.getRootNode?.();
+
   // Fallback to custom implementation with Shadow DOM support
   if (rootNode && isShadowRoot(rootNode)) {
     let next = child;
+
     do {
       if (next && parent === next) return true;
       /* eslint-disable */

@@ -4,12 +4,12 @@ import type { MergeElementProps } from "../../typings";
 import {
   componentWithForwardedRef,
   setRef,
-  useDeterministicId
+  useDeterministicId,
 } from "../../utils";
 import SnackbarContext from "../context";
 import {
   ContentRoot as ContentRootSlot,
-  ActionRoot as ActionRootSlot
+  ActionRoot as ActionRootSlot,
 } from "../slots";
 
 interface ContentOwnProps {
@@ -30,7 +30,7 @@ export type ContentProps = Omit<
 
 const SnackbarContentBase = (
   props: ContentProps,
-  ref: React.Ref<HTMLDivElement>
+  ref: React.Ref<HTMLDivElement>,
 ) => {
   const { className, children, id: idProp, ...otherProps } = props;
 
@@ -46,6 +46,7 @@ const SnackbarContentBase = (
     if (!node) return;
 
     const actionEl = node.querySelector(`[data-slot="${ActionRootSlot}"]`);
+
     if (!actionEl) return setIsTrappable(false);
 
     setIsTrappable(true);

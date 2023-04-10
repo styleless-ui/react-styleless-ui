@@ -6,7 +6,7 @@ import {
   getNodeName,
   useButtonBase,
   useDeterministicId,
-  useForkedRefs
+  useForkedRefs,
 } from "../utils";
 import * as Slots from "./slots";
 
@@ -40,7 +40,7 @@ export type RootProps<E extends React.ElementType> = PolymorphicProps<
 
 const ButtonBase = <E extends React.ElementType, R extends HTMLElement>(
   props: RootProps<E>,
-  ref: React.Ref<R>
+  ref: React.Ref<R>,
 ) => {
   const {
     className: classNameProp,
@@ -66,7 +66,7 @@ const ButtonBase = <E extends React.ElementType, R extends HTMLElement>(
     onKeyDown,
     onKeyUp,
     autoFocus,
-    disabled
+    disabled,
   });
 
   const rootRef = React.useRef<HTMLElement>(null);
@@ -74,7 +74,7 @@ const ButtonBase = <E extends React.ElementType, R extends HTMLElement>(
 
   const renderCtx = {
     disabled,
-    focusedVisible: buttonBase.isFocusedVisible
+    focusedVisible: buttonBase.isFocusedVisible,
   };
 
   const refCallback = (node: HTMLElement | null) => {
@@ -83,6 +83,7 @@ const ButtonBase = <E extends React.ElementType, R extends HTMLElement>(
     if (!node) return;
 
     const isNativeButton = getNodeName(node) === "button";
+
     if (!isNativeButton) {
       node.setAttribute("role", "button");
       node.setAttribute("aria-disabled", String(disabled));
@@ -103,8 +104,8 @@ const ButtonBase = <E extends React.ElementType, R extends HTMLElement>(
           ". Set `aria-labelledby` attribute.",
           ". Set `title` attribute.",
           ". Use an informative content.",
-          ". Use a <label> with `for` attribute referencing to this component."
-        ].join("\n")
+          ". Use a <label> with `for` attribute referencing to this component.",
+        ].join("\n"),
       );
     }
   };

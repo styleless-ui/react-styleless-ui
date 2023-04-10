@@ -29,6 +29,7 @@ const TabPanelsBase = (props: PanelsProps, ref: React.Ref<HTMLDivElement>) => {
 
     if ((child as React.ReactElement).type === Panel) {
       const props = { "data-index": panelIdx++ };
+
       return React.cloneElement(child, props);
     }
 

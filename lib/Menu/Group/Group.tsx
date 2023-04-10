@@ -3,7 +3,7 @@ import type { Classes, MergeElementProps } from "../../typings";
 import { componentWithForwardedRef, useDeterministicId } from "../../utils";
 import {
   GroupLabel as GroupLabelSlot,
-  GroupRoot as GroupRootSlot
+  GroupRoot as GroupRootSlot,
 } from "../slots";
 
 interface GroupOwnProps {
@@ -57,8 +57,8 @@ const getLabelInfo = (labelInput: GroupProps["label"]) => {
         [
           "[StylelessUI][Menu.Group]: Invalid `label` property.",
           "The `label` property must be either a `string` or in shape of " +
-            "`{ screenReaderLabel: string; } | { labelledBy: string; }`"
-        ].join("\n")
+            "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
+        ].join("\n"),
       );
     }
   }

@@ -3,7 +3,7 @@ import type { MergeElementProps } from "../../typings";
 import {
   componentWithForwardedRef,
   useDeterministicId,
-  useForkedRefs
+  useForkedRefs,
 } from "../../utils";
 import TabGroupContext from "../context";
 import { PanelRoot as PanelRootSlot } from "../slots";
@@ -47,6 +47,7 @@ const TabPanelBase = (props: PanelProps, ref: React.Ref<HTMLDivElement>) => {
     if (!node) return;
 
     const tabId = tabGroupCtx?.tabs[index]?.current?.id;
+
     tabId && node.setAttribute("aria-labelledby", tabId);
   };
 

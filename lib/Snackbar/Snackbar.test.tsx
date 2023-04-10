@@ -8,7 +8,7 @@ import {
   render,
   screen,
   userEvent,
-  wait
+  wait,
 } from "../../tests/utils";
 import * as Slots from "./slots";
 
@@ -21,13 +21,13 @@ describe("Snackbar", () => {
     Snackbar.Root,
     { open: true, role: "status" },
     `[data-slot='${Slots.Root}']`,
-    { withPortal: true }
+    { withPortal: true },
   );
   itSupportsDataSetProps(
     Snackbar.Root,
     { open: true, role: "status" },
     `[data-slot='${Slots.Root}']`,
-    { withPortal: true }
+    { withPortal: true },
   );
 
   it("should have the required classNames", () => {
@@ -56,14 +56,14 @@ describe("Snackbar", () => {
             className={({ disabled, focusedVisible }) =>
               cls("action", {
                 "action--disabled": disabled,
-                "action--focus-visible": focusedVisible
+                "action--focus-visible": focusedVisible,
               })
             }
           >
             Action
           </Snackbar.Action>
         </Snackbar.Content>
-      </Snackbar.Root>
+      </Snackbar.Root>,
     );
 
     const root = screen.getByTestId("snackbar-root");
@@ -91,7 +91,7 @@ describe("Snackbar", () => {
             aliquam dolor corporis assumenda.
           </Snackbar.Description>
         </Snackbar.Content>
-      </Snackbar.Root>
+      </Snackbar.Root>,
     );
 
     const content = screen.getByTestId("snackbar-content");
@@ -112,8 +112,9 @@ describe("Snackbar", () => {
           open={true}
           focusAfterClosed="#focus-btn"
         ></Snackbar.Root>
-      </>
+      </>,
     );
+
     rerender(
       <>
         <button id="focus-btn">Button</button>
@@ -122,10 +123,11 @@ describe("Snackbar", () => {
           open={false}
           focusAfterClosed="#focus-btn"
         ></Snackbar.Root>
-      </>
+      </>,
     );
 
     const focusBtn = screen.getByRole("button");
+
     expect(focusBtn).toHaveFocus();
   });
 
@@ -138,7 +140,7 @@ describe("Snackbar", () => {
         open
         role="status"
         onEscapeKeyUp={handleEscapeKeyUp}
-      ></Snackbar.Root>
+      ></Snackbar.Root>,
     );
 
     await userEvent.keyboard("[Escape]");
@@ -156,11 +158,11 @@ describe("Snackbar", () => {
       duration,
       role: "status",
       open: true,
-      onDurationEnd: handleDurationEnd
+      onDurationEnd: handleDurationEnd,
     };
 
     render(<Snackbar.Root {...props}></Snackbar.Root>);
-    expect(handleDurationEnd).not.toBeCalled();
+    expect(handleDurationEnd).not.toHaveBeenCalled();
 
     await wait(duration);
 

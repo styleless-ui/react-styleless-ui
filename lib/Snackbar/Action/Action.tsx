@@ -36,10 +36,10 @@ export type ActionProps<T extends React.ElementType = typeof Button> =
 
 const SnackbarActionBase = <
   T extends React.ElementType = React.ElementType,
-  E extends HTMLElement = HTMLElement
+  E extends HTMLElement = HTMLElement,
 >(
   props: ActionProps<T>,
-  ref: React.Ref<E>
+  ref: React.Ref<E>,
 ) => {
   const {
     className,

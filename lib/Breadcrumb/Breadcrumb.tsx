@@ -3,14 +3,14 @@ import type { Classes, MergeElementProps } from "../typings";
 import {
   componentWithForwardedRef,
   useDeterministicId,
-  useRegisterNodeRef
+  useRegisterNodeRef,
 } from "../utils";
 import BreadcrumbItem, { type ItemProps } from "./Item";
 import BreadcrumbSeparatorItem from "./Separator/Separator";
 import {
   Label as LabelSlot,
   List as ListSlot,
-  Root as RootSlot
+  Root as RootSlot,
 } from "./slots";
 
 interface RootOwnProps {
@@ -67,8 +67,8 @@ const getLabelInfo = (labelInput: RootProps["label"]) => {
         [
           "[StylelessUI][Breadcrumb]: Invalid `label` property.",
           "The `label` property must be either a `string` or in shape of " +
-            "`{ screenReaderLabel: string; } | { labelledBy: string; }`"
-        ].join("\n")
+            "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
+        ].join("\n"),
       );
     }
   }
@@ -105,8 +105,8 @@ const BreadcrumbBase = (props: RootProps, ref: React.Ref<HTMLElement>) => {
           "[StylelessUI][Breadcrumb]: The aria attribute `aria-current`" +
             " is missing from the last <BreadcrumbItem>'s anchor element.",
           "For more information check out: " +
-            "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current"
-        ].join("\n")
+            "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current",
+        ].join("\n"),
       );
     }
   });
@@ -127,7 +127,7 @@ const BreadcrumbBase = (props: RootProps, ref: React.Ref<HTMLElement>) => {
     ) {
       // eslint-disable-next-line no-console
       console.error(
-        "[StylelessUI][Breadcrumb]: The Breadcrumb component only accepts <Breadcrumb.Item> and <Breadcrumb.Separator> as a children."
+        "[StylelessUI][Breadcrumb]: The Breadcrumb component only accepts <Breadcrumb.Item> and <Breadcrumb.Separator> as a children.",
       );
 
       return null;

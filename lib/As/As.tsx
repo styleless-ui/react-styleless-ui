@@ -32,7 +32,7 @@ const mergeProps = (slotProps: AnyObject, childProps: AnyObject) => {
             [key]: (...args: unknown[]) => {
               (childPropValue as EventHandler)(...args);
               (slotPropValue as EventHandler)(...args);
-            }
+            },
           };
         } else if (slotPropValue) overrideProps[key] = slotPropValue;
       } else if (isStyle) {
@@ -40,19 +40,19 @@ const mergeProps = (slotProps: AnyObject, childProps: AnyObject) => {
           ...result,
           [key]: {
             ...(slotPropValue as React.CSSProperties),
-            ...(childPropValue as React.CSSProperties)
-          }
+            ...(childPropValue as React.CSSProperties),
+          },
         };
       } else if (isClassName) {
         return {
           ...result,
-          [key]: [slotPropValue, childPropValue].filter(Boolean).join(" ")
+          [key]: [slotPropValue, childPropValue].filter(Boolean).join(" "),
         };
       }
 
       return result;
     },
-    { ...childProps }
+    { ...childProps },
   );
 
   return { ...slotProps, ...overrideProps };
@@ -60,7 +60,7 @@ const mergeProps = (slotProps: AnyObject, childProps: AnyObject) => {
 
 const AsCloneBase = (
   props: RootProps & React.RefAttributes<HTMLElement>,
-  ref: React.Ref<HTMLElement>
+  ref: React.Ref<HTMLElement>,
 ) => {
   const { children, ...otherProps } = props;
 
@@ -69,15 +69,16 @@ const AsCloneBase = (
 
     if (isFragment(children)) {
       throw new Error(
-        "[StylelessUI][As]: The component is not expected to receive a React Fragment child."
+        "[StylelessUI][As]: The component is not expected to receive a React Fragment child.",
       );
     }
 
     const childProps = (children as SingleElement).props as UnknownObject;
     const cloneProps = mergeProps(otherProps, childProps);
+
     cloneProps.ref = forkRefs(
       ref,
-      (children as SingleElement & { ref: React.Ref<unknown> }).ref
+      (children as SingleElement & { ref: React.Ref<unknown> }).ref,
     );
 
     return React.cloneElement(children, cloneProps);
@@ -87,7 +88,7 @@ const AsCloneBase = (
     return React.Children.only(null);
   } catch {
     throw new Error(
-      "[StylelessUI][As]: The component expected to receive a single React element child."
+      "[StylelessUI][As]: The component expected to receive a single React element child.",
     );
   }
 };

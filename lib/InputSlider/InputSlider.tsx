@@ -13,7 +13,7 @@ import {
   useEventCallback,
   useEventListener,
   useForkedRefs,
-  useIsMounted
+  useIsMounted,
 } from "../utils";
 import * as Slots from "./slots";
 
@@ -135,7 +135,7 @@ interface RootOwnProps {
   renderThumbValueText?: (
     thumbValue: number,
     isOpen: boolean,
-    valueText?: string
+    valueText?: string,
   ) => React.ReactNode;
   /**
    * Accepts a function which returns a string value that provides a user-friendly name
@@ -147,7 +147,7 @@ interface RootOwnProps {
    */
   onChange?: (
     value: number | [number, number],
-    activeThumb: ActiveThumb | null
+    activeThumb: ActiveThumb | null,
   ) => void;
 }
 
@@ -168,8 +168,8 @@ const getLabelInfo = (labelInput: Label) => {
       [
         "[StylelessUI][InputSlider]: Invalid `label` provided.",
         "Each `label` property must be in shape of " +
-          "`{ screenReaderLabel: string; } | { labelledBy: string; }`"
-      ].join("\n")
+          "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
+      ].join("\n"),
     );
   }
 
@@ -211,7 +211,7 @@ const getRelativeValue = (
   requiredProps: {
     max: RootProps["max"];
     step: RootProps["step"];
-  }
+  },
 ) => {
   const { max, step } = requiredProps;
 
@@ -236,11 +236,12 @@ const getRelativeValue = (
 
 const getNearestThumb = (
   value: number,
-  thumbInfos: { left: ThumbInfo; right: ThumbInfo | null }
+  thumbInfos: { left: ThumbInfo; right: ThumbInfo | null },
 ): ThumbInfo & { index: 0 | 1 } => {
   const { left, right } = thumbInfos;
 
   const leftDiff = Math.abs(left.value - value);
+
   if (!right) return { ...left, index: 0 };
   const rightDiff = Math.abs(right.value - value);
 
@@ -270,52 +271,52 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
 
   if (typeof min === "undefined") {
     throw new Error(
-      "[StylelessUI][InputSlider]: The `min` property is missing."
+      "[StylelessUI][InputSlider]: The `min` property is missing.",
     );
   }
 
   if (typeof max === "undefined") {
     throw new Error(
-      "[StylelessUI][InputSlider]: The `max` property is missing."
+      "[StylelessUI][InputSlider]: The `max` property is missing.",
     );
   }
 
   if (max < min) {
     throw new Error(
-      "[StylelessUI][InputSlider]: The `min` property must be less than or equal to `max` property."
+      "[StylelessUI][InputSlider]: The `min` property must be less than or equal to `max` property.",
     );
   }
 
   if (typeof stops === "undefined" && step === "snap") {
     throw new Error(
-      '[StylelessUI][InputSlider]: When using `step="snap"` you must also provide a valid `stops` property.'
+      '[StylelessUI][InputSlider]: When using `step="snap"` you must also provide a valid `stops` property.',
     );
   }
 
   const [value, setValue] = useControlledProp<number | [number, number]>(
     valueProp,
     defaultValue,
-    multiThumb ? [min, max] : min
+    multiThumb ? [min, max] : min,
   );
 
   if (multiThumb && !Array.isArray(value)) {
     throw new Error(
       "[StylelessUI][InputSlider]: The `value` and `defaultValue` " +
-        "should be an array of exactly two numbers when `multiThumb={true}.`"
+        "should be an array of exactly two numbers when `multiThumb={true}.`",
     );
   }
 
   if (!multiThumb && typeof value !== "number") {
     throw new Error(
       "[StylelessUI][InputSlider]: The `value` and `defaultValue` " +
-        "should be a number when `multiThumb={false}.`"
+        "should be a number when `multiThumb={false}.`",
     );
   }
 
   if (multiThumb && !Array.isArray(labels)) {
     throw new Error(
       "[StylelessUI][InputSlider]: The `label` property " +
-        "should be an array of exactly two labels when `multiThumb={true}.`"
+        "should be an array of exactly two labels when `multiThumb={true}.`",
     );
   }
 
@@ -329,7 +330,7 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
       if (v0 > v1) {
         if (prevValue.current) return prevValue.current;
         throw new Error(
-          "[StylelessUI][InputSlider]: Invalid `value` provided! (`value[0] > value[1]`)"
+          "[StylelessUI][InputSlider]: Invalid `value` provided! (`value[0] > value[1]`)",
         );
       }
 
@@ -342,7 +343,7 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
     if (typeof stops === "number") {
       if (stops === 0) return [];
       return (Array(stops + 1).fill({ length: 100 / stops }) as Segment[]).map(
-        (segment, idx) => ({ length: segment.length * idx })
+        (segment, idx) => ({ length: segment.length * idx }),
       );
     }
 
@@ -350,9 +351,9 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
       stops?.reduce(
         (result, { value, label }) => [
           ...result,
-          { label, length: inLerp(0, max, value) * 100 }
+          { label, length: inLerp(0, max, value) * 100 },
         ],
-        [] as Segment[]
+        [] as Segment[],
       ) ?? []
     );
   }, [stops, max]);
@@ -366,7 +367,7 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
 
   const [valueDisplayState, setValueDisplayState] = React.useState({
     left: false,
-    right: false
+    right: false,
   });
 
   const rootRef = React.useRef<HTMLDivElement>(null);
@@ -382,21 +383,21 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
     const increase = isRtl
       ? [
           SystemKeys.LEFT,
-          orientation === "horizontal" ? SystemKeys.UP : SystemKeys.DOWN
+          orientation === "horizontal" ? SystemKeys.UP : SystemKeys.DOWN,
         ].includes(event.key)
       : [
           SystemKeys.RIGHT,
-          orientation === "horizontal" ? SystemKeys.UP : SystemKeys.DOWN
+          orientation === "horizontal" ? SystemKeys.UP : SystemKeys.DOWN,
         ].includes(event.key);
 
     const decrease = isRtl
       ? [
           SystemKeys.RIGHT,
-          orientation === "horizontal" ? SystemKeys.DOWN : SystemKeys.UP
+          orientation === "horizontal" ? SystemKeys.DOWN : SystemKeys.UP,
         ].includes(event.key)
       : [
           SystemKeys.LEFT,
-          orientation === "horizontal" ? SystemKeys.DOWN : SystemKeys.UP
+          orientation === "horizontal" ? SystemKeys.DOWN : SystemKeys.UP,
         ].includes(event.key);
 
     if (!increase && !decrease) return;
@@ -406,7 +407,7 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
     const activeThumb = getActiveThumb(event.currentTarget);
     const thumbInfo = getThumbInfo(activeThumb.index);
     const oppositeThumbInfo = getThumbInfo(
-      ((activeThumb.index + 1) % 2) as 0 | 1
+      ((activeThumb.index + 1) % 2) as 0 | 1,
     );
 
     activeThumbRef.current = null;
@@ -426,7 +427,7 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
       const nextIdx = clamp(
         increase ? valIdx + 1 : decrease ? valIdx - 1 : 0,
         0,
-        stopNums.length - 1
+        stopNums.length - 1,
       );
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -445,7 +446,7 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
         emitValueChange(
           activeThumb.index === 0
             ? [relativeValue, (valueState as [number, number])[1]]
-            : [(valueState as [number, number])[0], relativeValue]
+            : [(valueState as [number, number])[0], relativeValue],
         );
       }
     } else emitValueChange(relativeValue);
@@ -457,10 +458,10 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
     handleFocus: handleLeftFocus,
     handleKeyDown: handleLeftKeyDown,
     handleKeyUp: handleLeftKeyUp,
-    isFocusedVisible: isLeftFocusedVisible
+    isFocusedVisible: isLeftFocusedVisible,
   } = useButtonBase<HTMLDivElement>({
     disabled,
-    onKeyDown: handleThumbKeyDown
+    onKeyDown: handleThumbKeyDown,
   });
 
   const {
@@ -469,10 +470,10 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
     handleFocus: handleRightFocus,
     handleKeyDown: handleRightKeyDown,
     handleKeyUp: handleRightKeyUp,
-    isFocusedVisible: isRightFocusedVisible
+    isFocusedVisible: isRightFocusedVisible,
   } = useButtonBase<HTMLDivElement>({
     disabled,
-    onKeyDown: handleThumbKeyDown
+    onKeyDown: handleThumbKeyDown,
   });
 
   const leftThumbRef = React.useRef<HTMLDivElement>(null);
@@ -483,12 +484,12 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
 
   const leftThumbStateRef = React.useRef<ThumbState>({
     active: false,
-    zIndex: 1
+    zIndex: 1,
   });
 
   const rightThumbStateRef = React.useRef<ThumbState>({
     active: false,
-    zIndex: 1
+    zIndex: 1,
   });
 
   React.useEffect(() => {
@@ -515,6 +516,7 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
     const leftThumbValue = multiThumb
       ? (valueState as [number, number])[0]
       : (valueState as number);
+
     const rightThumbValue = multiThumb
       ? (valueState as [number, number])[1]
       : max;
@@ -527,8 +529,8 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
         ref: handleLeftThumbRef,
         stateRef: leftThumbStateRef,
         label: getLabelInfo(
-          multiThumb ? (labels as [Label, Label])[0] : (labels as Label)
-        )
+          multiThumb ? (labels as [Label, Label])[0] : (labels as Label),
+        ),
       } as ThumbInfo,
       right: {
         value: rightThumbValue,
@@ -536,8 +538,8 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
         maxValue: max,
         ref: handleRightThumbRef,
         stateRef: rightThumbStateRef,
-        label: multiThumb ? getLabelInfo((labels as [Label, Label])[1]) : {}
-      } as ThumbInfo
+        label: multiThumb ? getLabelInfo((labels as [Label, Label])[1]) : {},
+      } as ThumbInfo,
     };
   })();
 
@@ -547,7 +549,7 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
 
     const range = {
       start: multiThumb ? leftThumb : 0,
-      end: multiThumb ? rightThumb : 100 - leftThumb
+      end: multiThumb ? rightThumb : 100 - leftThumb,
     };
 
     return { leftThumb, rightThumb, range };
@@ -567,18 +569,19 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
         ? 0
         : eventTarget === rightThumbRef.current
         ? 1
-        : 0
+        : 0,
   });
 
   const getThumbInfo = (index: 0 | 1): ThumbInfo =>
     index === 0 ? thumbs.left : thumbs.right;
 
   const handleDragStart = (
-    event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>
+    event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>,
   ) => {
     if (!rootRef.current) return;
 
     const activeThumb = getActiveThumb(event.currentTarget);
+
     activeThumbRef.current = activeThumb;
 
     setIsDragStarted(true);
@@ -596,7 +599,7 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
 
     setValueDisplayState(s => ({
       ...s,
-      [activeThumb.index === 0 ? "left" : "right"]: true
+      [activeThumb.index === 0 ? "left" : "right"]: true,
     }));
   };
 
@@ -616,7 +619,7 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
 
     setValueDisplayState(s => ({
       ...s,
-      [activeThumb.index === 0 ? "left" : "right"]: false
+      [activeThumb.index === 0 ? "left" : "right"]: false,
     }));
   };
 
@@ -659,7 +662,7 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
       widthOrHeight,
       thumbInfo,
       segments,
-      { max, step }
+      { max, step },
     );
 
     if (multiThumb) {
@@ -670,7 +673,7 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
         emitValueChange(
           activeThumb.index === 0
             ? [relativeValue, (valueState as [number, number])[1]]
-            : [(valueState as [number, number])[0], relativeValue]
+            : [(valueState as [number, number])[0], relativeValue],
         );
       }
     } else emitValueChange(relativeValue);
@@ -694,7 +697,7 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
 
     const thumb = getNearestThumb(remap(clientXOrY, 0, widthOrHeight, 0, max), {
       left: getThumbInfo(0),
-      right: multiThumb ? getThumbInfo(1) : null
+      right: multiThumb ? getThumbInfo(1) : null,
     });
 
     const relativeValue = getRelativeValue(
@@ -702,7 +705,7 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
       widthOrHeight,
       thumb,
       segments,
-      { max, step }
+      { max, step },
     );
 
     if (multiThumb) {
@@ -713,7 +716,7 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
         emitValueChange(
           thumb.index === 0
             ? [relativeValue, (valueState as [number, number])[1]]
-            : [(valueState as [number, number])[0], relativeValue]
+            : [(valueState as [number, number])[0], relativeValue],
         );
       }
     } else emitValueChange(relativeValue);
@@ -730,11 +733,11 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
       horizontal: {
         ...{
           ltr: { left: `${positions.leftThumb}%` },
-          rtl: { right: `${positions.leftThumb}%` }
-        }[dir ?? "ltr"]
+          rtl: { right: `${positions.leftThumb}%` },
+        }[dir ?? "ltr"],
       },
-      vertical: { top: `${positions.leftThumb}%` }
-    }[orientation]
+      vertical: { top: `${positions.leftThumb}%` },
+    }[orientation],
   };
 
   const rightThumbStyles: React.CSSProperties = {
@@ -746,11 +749,11 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
       horizontal: {
         ...{
           ltr: { right: `${positions.rightThumb}%` },
-          rtl: { left: `${positions.rightThumb}%` }
-        }[dir ?? "ltr"]
+          rtl: { left: `${positions.rightThumb}%` },
+        }[dir ?? "ltr"],
       },
-      vertical: { bottom: `${positions.rightThumb}%` }
-    }[orientation]
+      vertical: { bottom: `${positions.rightThumb}%` },
+    }[orientation],
   };
 
   const rangeStyles: React.CSSProperties = {
@@ -760,59 +763,61 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
         ...{
           ltr: {
             left: `${positions.range.start}%`,
-            right: `${positions.range.end}%`
+            right: `${positions.range.end}%`,
           },
           rtl: {
             right: `${positions.range.start}%`,
-            left: `${positions.range.end}%`
-          }
-        }[dir ?? "ltr"]
+            left: `${positions.range.end}%`,
+          },
+        }[dir ?? "ltr"],
       },
       vertical: {
         top: `${positions.range.start}%`,
-        bottom: `${positions.range.end}%`
-      }
-    }[orientation]
+        bottom: `${positions.range.end}%`,
+      },
+    }[orientation],
   };
 
   const trackStyles: React.CSSProperties = {
     position: "relative",
     ...{ horizontal: { width: "100%" }, vertical: { height: "100%" } }[
       orientation
-    ]
+    ],
   };
 
   const sliderProps = {
     role: "slider",
     "aria-orientation": orientation,
     onTouchStart: handleDragStart,
-    onMouseDown: handleDragStart
+    onMouseDown: handleDragStart,
   };
 
   const handleMouseEnter = useEventCallback<React.MouseEvent<HTMLDivElement>>(
     event => {
       const activeThumb = getActiveThumb(event.currentTarget);
       const thumbState = getThumbInfo(activeThumb.index).stateRef.current;
+
       if (thumbState.active) return;
 
       setValueDisplayState(s => ({
         ...s,
-        [activeThumb.index === 0 ? "left" : "right"]: true
+        [activeThumb.index === 0 ? "left" : "right"]: true,
       }));
-    }
+    },
   );
 
   const handleMouseLeave = useEventCallback<React.MouseEvent<HTMLDivElement>>(
     event => {
       const activeThumb = getActiveThumb(event.currentTarget);
       const thumbState = getThumbInfo(activeThumb.index).stateRef.current;
+
       if (thumbState.active) return;
 
       setValueDisplayState(s => ({
         ...s,
-        [activeThumb.index === 0 ? "left" : "right"]: false
+        [activeThumb.index === 0 ? "left" : "right"]: false,
       }));
-    }
+    },
   );
 
   const handleSegmentLabelClick = useEventCallback<
@@ -821,18 +826,21 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
     event.stopPropagation();
 
     const parent = event.currentTarget.parentElement;
+
     if (!parent) return;
 
     const idxStringified = parent.getAttribute("data-segment-index");
+
     if (!idxStringified) return;
 
     const idx = Number(idxStringified);
     const newValue = segments[idx]?.length;
+
     if (typeof newValue === "undefined") return;
 
     const thumb = getNearestThumb(newValue, {
       left: getThumbInfo(0),
-      right: multiThumb ? getThumbInfo(1) : null
+      right: multiThumb ? getThumbInfo(1) : null,
     });
 
     const relativeMin = thumb.minValue;
@@ -848,7 +856,7 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
         emitValueChange(
           thumb.index === 0
             ? [relativeValue, (valueState as [number, number])[1]]
-            : [(valueState as [number, number])[0], relativeValue]
+            : [(valueState as [number, number])[0], relativeValue],
         );
       }
     } else emitValueChange(relativeValue);
@@ -869,7 +877,7 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
     onKeyDown: handleLeftKeyDown,
     onKeyUp: handleLeftKeyUp,
     onMouseEnter: renderThumbValueText ? handleMouseEnter : undefined,
-    onMouseLeave: renderThumbValueText ? handleMouseLeave : undefined
+    onMouseLeave: renderThumbValueText ? handleMouseLeave : undefined,
   };
 
   const rightThumbProps = multiThumb
@@ -888,7 +896,7 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
         onKeyDown: handleRightKeyDown,
         onKeyUp: handleRightKeyUp,
         onMouseEnter: renderThumbValueText ? handleMouseEnter : undefined,
-        onMouseLeave: renderThumbValueText ? handleMouseLeave : undefined
+        onMouseLeave: renderThumbValueText ? handleMouseLeave : undefined,
       }
     : null;
 
@@ -899,12 +907,12 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
           orientation,
           leadingThumbState: {
             active: activeThumbRef.current?.index === 0,
-            focusedVisible: isLeftFocusedVisible
+            focusedVisible: isLeftFocusedVisible,
           },
           trailingThumbState: {
             active: activeThumbRef.current?.index === 1,
-            focusedVisible: isRightFocusedVisible
-          }
+            focusedVisible: isRightFocusedVisible,
+          },
         })
       : classesProp;
 
@@ -914,31 +922,31 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
       target: document,
       eventType: "touchend",
       handler: handleDragEnd,
-      options: { passive: false }
+      options: { passive: false },
     });
     useEventListener({
       target: document,
       eventType: "mouseup",
       handler: handleDragEnd,
-      options: { passive: false }
+      options: { passive: false },
     });
     useEventListener(
       {
         target: document,
         eventType: "touchmove",
         handler: handleDragging,
-        options: { passive: false }
+        options: { passive: false },
       },
-      isDragStarted
+      isDragStarted,
     );
     useEventListener(
       {
         target: document,
         eventType: "mousemove",
         handler: handleDragging,
-        options: { passive: false }
+        options: { passive: false },
       },
-      isDragStarted
+      isDragStarted,
     );
     /* eslint-enable react-hooks/rules-of-hooks */
   }
@@ -984,11 +992,11 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
                     horizontal: {
                       ...{
                         ltr: { left: `${length}%` },
-                        rtl: { right: `${length}%` }
-                      }[dir ?? "ltr"]
+                        rtl: { right: `${length}%` },
+                      }[dir ?? "ltr"],
                     },
-                    vertical: { top: `${length}%` }
-                  }[orientation]
+                    vertical: { top: `${length}%` },
+                  }[orientation],
                 }}
               >
                 <div
@@ -998,11 +1006,11 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
                       horizontal: {
                         ...{
                           ltr: { left: 0, transform: "translateX(-50%)" },
-                          rtl: { right: 0, transform: "translateX(50%)" }
-                        }[dir ?? "ltr"]
+                          rtl: { right: 0, transform: "translateX(50%)" },
+                        }[dir ?? "ltr"],
                       },
-                      vertical: { top: 0, transform: "translateY(-50%)" }
-                    }[orientation]
+                      vertical: { top: 0, transform: "translateY(-50%)" },
+                    }[orientation],
                   }}
                   className={classes?.segmentMark}
                   data-slot={Slots.SegmentMark}
@@ -1034,7 +1042,7 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
           {renderThumbValueText?.(
             thumbs.left.value,
             valueDisplayState.left,
-            leftThumbProps["aria-valuetext"]
+            leftThumbProps["aria-valuetext"],
           )}
         </div>
       </div>
@@ -1056,7 +1064,7 @@ const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
               renderThumbValueText?.(
                 thumbs.right.value,
                 valueDisplayState.right,
-                rightThumbProps!["aria-valuetext"]
+                rightThumbProps!["aria-valuetext"],
               )
               /* eslint-enable @typescript-eslint/no-non-null-assertion */
             }

@@ -5,7 +5,7 @@ interface IMenuItemContext {
   isSubMenuOpen: () => boolean;
   registerSubMenu: (
     menuRef: React.RefObject<HTMLDivElement>,
-    id: string | undefined
+    id: string | undefined,
   ) => void;
 }
 

@@ -6,7 +6,7 @@ import {
   useButtonBase,
   useDeterministicId,
   useEventCallback,
-  useForkedRefs
+  useForkedRefs,
 } from "../../utils";
 import TabGroupContext from "../context";
 import { TabRoot as TabRootSlot } from "../slots";
@@ -113,7 +113,7 @@ const TabBase = (props: TabProps, ref: React.Ref<HTMLButtonElement>) => {
           const getAvailableTab = (
             idx: number,
             forward: boolean,
-            prevIdxs: number[] = []
+            prevIdxs: number[] = [],
           ): typeof focusTabRef => {
             const tabRef = tabs[idx];
 
@@ -122,6 +122,7 @@ const TabBase = (props: TabProps, ref: React.Ref<HTMLButtonElement>) => {
             if (!tabRef?.current || tabRef.current.disabled) {
               const newIdx =
                 (forward ? idx + 1 : idx - 1 + tabs.length) % tabs.length;
+
               return getAvailableTab(newIdx, forward, [...prevIdxs, idx]);
             }
 
@@ -131,7 +132,7 @@ const TabBase = (props: TabProps, ref: React.Ref<HTMLButtonElement>) => {
           if (goPrev) {
             focusTabRef = getAvailableTab(
               (index - 1 + tabs.length) % tabs.length,
-              false
+              false,
             );
           } else if (goNext) {
             focusTabRef = getAvailableTab((index + 1) % tabs.length, true);
@@ -151,9 +152,9 @@ const TabBase = (props: TabProps, ref: React.Ref<HTMLButtonElement>) => {
         }
 
         onKeyDown?.(event);
-      }
+      },
     ),
-    onClick: useEventCallback(() => void tabGroupCtx?.onChange(index))
+    onClick: useEventCallback(() => void tabGroupCtx?.onChange(index)),
   });
 
   const rootRef = React.useRef<HTMLButtonElement>(null);
@@ -166,7 +167,7 @@ const TabBase = (props: TabProps, ref: React.Ref<HTMLButtonElement>) => {
   const ctx = {
     selected,
     disabled,
-    focusedVisible: buttonBase.isFocusedVisible
+    focusedVisible: buttonBase.isFocusedVisible,
   };
 
   const children =
@@ -180,6 +181,7 @@ const TabBase = (props: TabProps, ref: React.Ref<HTMLButtonElement>) => {
     if (!node) return;
 
     const panelId = tabGroupCtx?.panels[index]?.current?.id;
+
     panelId && node.setAttribute("aria-controls", panelId);
   };
 

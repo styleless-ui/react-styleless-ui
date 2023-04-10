@@ -49,8 +49,8 @@ const getLabelInfo = (labelInput: ItemsProps["label"]) => {
       [
         "[StylelessUI][Menu.Items]: Invalid `label` property.",
         "The `label` property must be in shape of " +
-          "`{ screenReaderLabel: string; } | { labelledBy: string; }`"
-      ].join("\n")
+          "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
+      ].join("\n"),
     );
   }
 

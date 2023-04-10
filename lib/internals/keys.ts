@@ -13,5 +13,5 @@ export const SystemKeys = {
   HOME: "Home",
   END: "End",
   PAGE_UP: "PageUp",
-  PAGE_DOWN: "PageDown"
+  PAGE_DOWN: "PageDown",
 };

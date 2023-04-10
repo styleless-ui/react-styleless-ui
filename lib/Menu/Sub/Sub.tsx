@@ -3,7 +3,7 @@ import type { MergeElementProps } from "../../typings";
 import {
   componentWithForwardedRef,
   useDeterministicId,
-  useForkedRefs
+  useForkedRefs,
 } from "../../utils";
 import MenuItemContext from "../Item/context";
 import Menu, { type RootProps as MenuProps } from "../Menu";

@@ -7,7 +7,7 @@ import {
   useDirection,
   useForkedRefs,
   useIsomorphicLayoutEffect,
-  useRegisterNodeRef
+  useRegisterNodeRef,
 } from "../utils";
 import {
   computePosition,
@@ -21,7 +21,7 @@ import {
   type Placement,
   type Side,
   type Strategy,
-  type VirtualElement
+  type VirtualElement,
 } from "./helpers";
 import * as Slots from "./slots";
 
@@ -139,7 +139,7 @@ const translate = ({ x, y }: Coordinates) => {
   // Rounding coordinates by DPR
   const { x: _x, y: _y } = (() => ({
     x: Math.round(Math.round(x * dpr) / dpr),
-    y: Math.round(Math.round(y * dpr) / dpr)
+    y: Math.round(Math.round(y * dpr) / dpr),
   }))();
 
   const transformValue = `translate(${_x}px, ${_y}px)`;
@@ -148,7 +148,7 @@ const translate = ({ x, y }: Coordinates) => {
     transform: transformValue,
     WebkitTransform: transformValue,
     MozTransform: transformValue,
-    msTransform: transformValue
+    msTransform: transformValue,
   };
 };
 
@@ -187,8 +187,8 @@ const PopperBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
         "[StylelessUI][Popper]: Invalid `anchorElement` property.",
         "The `anchorElement` property must be either a `query selector (string)`, " +
           "`HTMLElement`, `RefObject<HTMLElement>`, or in shape of " +
-          "`{ getBoundingClientRect(): ClientRect }`"
-      ].join("\n")
+          "`{ getBoundingClientRect(): ClientRect }`",
+      ].join("\n"),
     );
   }
 
@@ -200,11 +200,11 @@ const PopperBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
 
   const [coordinates, setCoordinates] = React.useState<Coordinates>({
     x: 0,
-    y: 0
+    y: 0,
   });
 
   const { current: initialPlacement } = React.useRef<Placement>(
-    alignment === "middle" ? side : `${side}-${alignment}`
+    alignment === "middle" ? side : `${side}-${alignment}`,
   );
 
   const [placement, setPlacement] = React.useState(initialPlacement);
@@ -216,7 +216,7 @@ const PopperBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
     autoPlacement,
     offset,
     strategy,
-    isRtl
+    isRtl,
   };
 
   const updatePosition = () => {
@@ -235,7 +235,7 @@ const PopperBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
   };
 
   React.useImperativeHandle(actions, () => ({
-    recompute: (): void => void updatePosition()
+    recompute: (): void => void updatePosition(),
   }));
 
   useIsomorphicLayoutEffect(() => {
@@ -285,7 +285,7 @@ const PopperBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
             ...translate(coordinates),
             position: strategy,
             left: 0,
-            top: 0
+            top: 0,
           }}
         >
           {children}

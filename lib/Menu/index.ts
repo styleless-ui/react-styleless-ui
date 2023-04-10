@@ -8,5 +8,5 @@ export { default as RadioGroup, type RadioGroupProps } from "./RadioGroup";
 export { default as RadioItem, type RadioItemProps } from "./RadioItem";
 export {
   default as SeparatorItem,
-  type SeparatorItemProps
+  type SeparatorItemProps,
 } from "./SeparatorItem";

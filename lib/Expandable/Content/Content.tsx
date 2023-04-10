@@ -3,13 +3,13 @@ import type { MergeElementProps } from "../../typings";
 import {
   componentWithForwardedRef,
   setRef,
-  useDeterministicId
+  useDeterministicId,
 } from "../../utils";
 import ExpandableContext from "../context";
 import {
   ContentRoot as ContentRootSlot,
   Root as RootSlot,
-  TriggerRoot as TriggerRootSlot
+  TriggerRoot as TriggerRootSlot,
 } from "../slots";
 
 interface ContentOwnProps {
@@ -30,7 +30,7 @@ export type ContentProps = Omit<
 
 const ExpandableContentBase = (
   props: ContentProps,
-  ref: React.Ref<HTMLDivElement>
+  ref: React.Ref<HTMLDivElement>,
 ) => {
   const { children, className, id: idProp, ...otherProps } = props;
 
@@ -44,14 +44,17 @@ const ExpandableContentBase = (
     if (!node) return;
 
     const parent = node.closest(`[data-slot="${RootSlot}"]`);
+
     if (!parent) return;
 
     const trigger = parent.querySelector<HTMLDivElement>(
-      `[data-slot="${TriggerRootSlot}"]`
+      `[data-slot="${TriggerRootSlot}"]`,
     );
+
     if (!trigger) return;
 
     const triggerId = trigger.id;
+
     triggerId && node.setAttribute("aria-labelledby", triggerId);
   };
 
