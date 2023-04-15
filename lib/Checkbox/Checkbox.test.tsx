@@ -64,6 +64,25 @@ describe("Checkbox", () => {
     );
   });
 
+  it("renders a mixed checkbox with correct behavior", async () => {
+    userEvent.setup();
+    render(
+      <Checkbox {...REQUIRED_PROPS} indeterminated aria-controls="id1 id2" />,
+    );
+
+    const checkbox = screen.getByRole("checkbox");
+
+    expect(checkbox).not.toBeChecked();
+    // eslint-disable-next-line jest-dom/prefer-checked
+    expect(checkbox).toHaveAttribute("aria-checked", "mixed");
+
+    await userEvent.click(checkbox);
+    expect(checkbox).toBeChecked();
+
+    await userEvent.click(checkbox);
+    expect(checkbox).not.toBeChecked();
+  });
+
   it("renders an unchecked checkbox when `checked={false}`", () => {
     render(<Checkbox {...REQUIRED_PROPS} />);
 

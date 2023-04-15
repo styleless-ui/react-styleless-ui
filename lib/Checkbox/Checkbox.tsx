@@ -69,6 +69,12 @@ interface RootOwnProps {
    */
   disabled?: boolean;
   /**
+   * If `true`, the checkbox will appear indeterminate.
+   * This does not set the native input element to indeterminate due to inconsistent behavior across browsers.
+   * @default false;
+   */
+  indeterminated?: boolean;
+  /**
    * The Callback is fired when the state changes.
    */
   onChange?: (checkedState: boolean) => void;
@@ -115,7 +121,7 @@ const getLabelInfo = (labelInput: RootProps["label"]) => {
   return props;
 };
 
-const _DefaultCheck = () => (
+const _DefaultCheckIcon = () => (
   <svg aria-hidden="true" focusable="false" viewBox="0 0 12 8">
     <polyline
       fill="none"
@@ -125,7 +131,20 @@ const _DefaultCheck = () => (
       strokeLinejoin="round"
       transform="translate(5.974874, 2.353553) rotate(-45.000000) translate(-5.974874, -2.353553) "
       points="2 0.292893219 2 4.29289322 9.94974747 4.41421356"
-    ></polyline>
+    />
+  </svg>
+);
+
+const _DefaultIndeterminateIcon = () => (
+  <svg aria-hidden="true" focusable="false" viewBox="0 0 12 8">
+    <polyline
+      fill="none"
+      stroke="currentcolor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      points="2 4 10 4"
+    />
   </svg>
 );
 
@@ -140,6 +159,7 @@ const CheckboxBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
     checked: checkedProp,
     autoFocus = false,
     disabled = false,
+    indeterminated = false,
     onChange,
     onBlur,
     onFocus,
@@ -214,13 +234,29 @@ const CheckboxBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
     visibleLabelId,
   ]);
 
+  const refCallback = (node: HTMLButtonElement | null) => {
+    handleRef(node);
+
+    if (!node) return;
+    if (!indeterminated) return;
+
+    const controls = node.getAttribute("aria-controls");
+
+    if (controls) return;
+
+    // eslint-disable-next-line no-console
+    console.warn(
+      "[StylelessUI][Checkbox]: You must provide the set of checkbox IDs controlled by the mixed (`indeterminate`) checkbox by the `aria-controls` property.",
+    );
+  };
+
   return (
     <>
       <button
         {...otherProps}
         id={id}
         className={classes?.root}
-        ref={handleRef}
+        ref={refCallback}
         disabled={disabled}
         onFocus={checkBase.handleFocus}
         onBlur={checkBase.handleBlur}
@@ -231,21 +267,31 @@ const CheckboxBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
         type="button"
         role="checkbox"
         data-slot={Slots.Root}
-        aria-checked={checkBase.checked}
         aria-label={labelProps.srOnlyLabel}
+        aria-checked={
+          indeterminated && !checkBase.checked ? "mixed" : checkBase.checked
+        }
         aria-labelledby={
           labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
         }
       >
-        {checkBase.checked && (
+        {checkBase.checked ? (
           <div
             className={classes?.check}
             data-slot={Slots.Check}
             aria-hidden="true"
           >
-            {checkComponent ?? <_DefaultCheck />}
+            {checkComponent ?? <_DefaultCheckIcon />}
           </div>
-        )}
+        ) : indeterminated ? (
+          <div
+            className={classes?.check}
+            data-slot={Slots.Check}
+            aria-hidden="true"
+          >
+            {checkComponent ?? <_DefaultIndeterminateIcon />}
+          </div>
+        ) : null}
       </button>
       {labelProps.visibleLabel && (
         <span
