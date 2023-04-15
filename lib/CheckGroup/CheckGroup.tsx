@@ -37,6 +37,11 @@ interface RootOwnProps {
         labelledBy: string;
       };
   /**
+   * The orientation of the group.
+   * @default "vertical"
+   */
+  orientation?: "horizontal" | "vertical";
+  /**
    * The values of the selected checkboxes.
    */
   value?: string[];
@@ -92,6 +97,7 @@ const CheckGroupBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
     defaultValue,
     value: valueProp,
     onChange,
+    orientation = "vertical",
     ...otherProps
   } = props;
 
@@ -139,6 +145,7 @@ const CheckGroupBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
           data-slot={Slots.Group}
           className={classes?.group}
           aria-label={labelProps.srOnlyLabel}
+          aria-orientation={orientation}
           aria-labelledby={
             visibleLabel ? visibleLabelId : labelProps.labelledBy
           }
