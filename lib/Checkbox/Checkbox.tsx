@@ -16,6 +16,8 @@ type ClassesContext = {
   checked: boolean;
   /** The `disabled` state of the checkbox. */
   disabled: boolean;
+  /** The `indeterminated` state of the checkbox. */
+  indeterminated: boolean;
   /** The `:focus-visible` of the checkbox. */
   focusedVisible: boolean;
 };
@@ -203,6 +205,7 @@ const CheckboxBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
 
   const classesCtx: ClassesContext = {
     disabled,
+    indeterminated,
     checked: checkBase.checked,
     focusedVisible: checkBase.isFocusedVisible,
   };
