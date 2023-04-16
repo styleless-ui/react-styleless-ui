@@ -42,7 +42,7 @@ describe("Tooltip", () => {
   it("supports `style` prop", () => {
     const getTarget = (containerEl: HTMLElement): HTMLElement => {
       const portal = document.querySelector<HTMLElement>(
-        "[data-slot='portal']",
+        "[data-slot='Portal:Root']",
       );
 
       return portal
@@ -72,7 +72,7 @@ describe("Tooltip", () => {
   it("supports `data-*` props", () => {
     const getTarget = (containerEl: HTMLElement): HTMLElement => {
       const portal = document.querySelector<HTMLElement>(
-        "[data-slot='portal']",
+        "[data-slot='Portal:Root']",
       );
 
       return portal
