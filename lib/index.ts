@@ -61,6 +61,11 @@ export { default as Popper, type RootProps as PopperProps } from "./Popper";
 export { default as Portal, type RootProps as PortalProps } from "./Portal";
 
 export {
+  default as PortalConfigProvider,
+  type PortalConfigProviderProps,
+} from "./PortalConfigProvider";
+
+export {
   default as PreserveAspectRatio,
   type RootProps as PreserveAspectRatioProps,
 } from "./PreserveAspectRatio";
