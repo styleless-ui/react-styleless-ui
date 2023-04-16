@@ -1,14 +1,13 @@
 import * as React from "react";
-import { createPortal } from "react-dom";
-import { useIsomorphicLayoutEffect } from "../utils";
+import * as ReactDOM from "react-dom";
+import usePortalConfig from "../PortalConfigProvider/usePortalConfig";
+import { useIsServerHandoffComplete } from "../utils";
 
 export interface RootProps {
   /**
    * A string containing one selector to match.
    * This string must be a valid CSS selector string;
    * if it isn't, a `SyntaxError` exception is thrown.
-   *
-   * If not provided, `document.body` will be used as the default container.
    */
   containerQuerySelector?: string;
   /**
@@ -30,17 +29,20 @@ const getContainer = (querySelector?: string) =>
 const Portal = (props: RootProps) => {
   const { containerQuerySelector, children, disabled = false } = props;
 
-  const [container, setContainer] = React.useState<HTMLElement | null>(null);
+  const { destinationQuery } = usePortalConfig();
+  const isServerHandoffComplete = useIsServerHandoffComplete();
 
-  useIsomorphicLayoutEffect(() => {
-    if (disabled) return;
+  const containerQuery = containerQuerySelector || destinationQuery;
 
-    setContainer(getContainer(containerQuerySelector));
-  }, [disabled, containerQuerySelector]);
+  const container: HTMLElement | null = React.useMemo(
+    () => (isServerHandoffComplete ? getContainer(containerQuery) : null),
+    [containerQuery, isServerHandoffComplete],
+  );
 
-  if (disabled && React.isValidElement(children)) return <>{children}</>;
+  if (disabled) return <>{children}</>;
+  if (!container) return null;
 
-  return container ? createPortal(children, container) : null;
+  return ReactDOM.createPortal(children, container);
 };
 
 export default Portal;
