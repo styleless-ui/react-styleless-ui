@@ -143,7 +143,7 @@ const DialogBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
   return keepMounted || (!keepMounted && open) ? (
     <Portal>
       <div
-        data-slot="portal"
+        data-slot="Portal:Root"
         role="presentation"
         tabIndex={-1}
         aria-hidden={!open}

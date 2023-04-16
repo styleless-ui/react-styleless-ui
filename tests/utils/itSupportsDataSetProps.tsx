@@ -14,7 +14,7 @@ const itSupportsDataSetProps = <T,>(
 
     const getTarget = (container: HTMLElement): HTMLElement => {
       const portal = withPortal
-        ? document.querySelector<HTMLElement>("[data-slot='portal']")
+        ? document.querySelector<HTMLElement>("[data-slot='Portal:Root']")
         : null;
 
       return selector
