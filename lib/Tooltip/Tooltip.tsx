@@ -1,7 +1,7 @@
 import * as React from "react";
-import { SystemKeys } from "../internals";
-import Popper, { type PopperProps as PopperProps } from "../Popper";
+import Popper, { type PopperProps } from "../Popper";
 import type { Coordinates, VirtualElement } from "../Popper/helpers";
+import { SystemKeys } from "../internals";
 import type { MergeElementProps } from "../typings";
 import {
   componentWithForwardedRef,
@@ -80,6 +80,15 @@ export type Props = Omit<
   "defaultValue" | "defaultChecked"
 >;
 
+const getExactAnchorElement = (anchorElement: Props["anchorElement"]) =>
+  typeof anchorElement === "string"
+    ? typeof document !== "undefined"
+      ? document.querySelector<HTMLElement>(anchorElement)
+      : null
+    : "current" in anchorElement
+    ? anchorElement.current
+    : anchorElement;
+
 const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     children,
@@ -114,21 +123,16 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     );
   }
 
-  const getAnchor = (anchorElement: Props["anchorElement"]) =>
-    typeof anchorElement === "string"
-      ? typeof document !== "undefined"
-        ? document.querySelector<HTMLElement>(anchorElement)
-        : null
-      : "current" in anchorElement
-      ? anchorElement.current
-      : anchorElement;
-
   const id = useDeterministicId(idProp, "styleless-ui__tooltip");
 
   const tooltipRef = React.useRef<HTMLDivElement>(null);
   const handleTooltipRef = useForkedRefs(ref, tooltipRef);
 
   const [open, setOpen] = useControlledProp(openProp, defaultOpen, false);
+
+  const [anchor, setAnchor] = React.useState(() =>
+    getExactAnchorElement(anchorElement),
+  );
 
   const [coordinates, setCoordinates] = React.useState<Coordinates>({
     x: 0,
@@ -151,8 +155,6 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   });
 
   const outsideClickHandler = useEventCallback<MouseEvent>(event => {
-    const anchor = getAnchor(anchorElement);
-
     if (!event.target) return;
     if (!anchor) return;
     if (anchor === event.target) return;
@@ -165,13 +167,20 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     onOutsideClick?.(event);
   });
 
-  if (typeof document !== "undefined") {
-    const anchor = getAnchor(anchorElement);
+  React.useEffect(() => {
+    setAnchor(getExactAnchorElement(anchorElement));
+  }, [anchorElement]);
 
+  if (typeof document !== "undefined") {
     /* eslint-disable react-hooks/rules-of-hooks */
+    const eventTarget = React.useMemo(
+      () => (isHTMLElement(anchor) ? anchor : null),
+      [anchor],
+    );
+
     useEventListener(
       {
-        target: isHTMLElement(anchor) ? anchor : null,
+        target: eventTarget,
         eventType: "click",
         handler: useEventCallback(
           () => void (open ? setOpen(false) : setOpen(true)),
@@ -182,7 +191,7 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
     useEventListener(
       {
-        target: isHTMLElement(anchor) ? anchor : null,
+        target: eventTarget,
         eventType: "mouseenter",
         handler: useEventCallback(() => void setOpen(true)),
       },
@@ -192,7 +201,7 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
     useEventListener(
       {
-        target: isHTMLElement(anchor) ? anchor : null,
+        target: eventTarget,
         eventType: "mouseleave",
         handler: useEventCallback(() => void setOpen(false)),
       },
@@ -202,7 +211,7 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
     useEventListener(
       {
-        target: isHTMLElement(anchor) ? anchor : null,
+        target: eventTarget,
         eventType: "mousemove",
         handler: useEventCallback<MouseEvent>(event => {
           setCoordinates({ x: event.clientX, y: event.clientY });
