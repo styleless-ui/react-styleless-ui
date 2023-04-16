@@ -1,1 +1,1 @@
-export { default, type RootProps } from "./Radio";
+export { default, type Props as RadioProps } from "./Radio";

@@ -1,7 +1,7 @@
 import * as React from "react";
 import FocusTrap from "../FocusTrap";
 import { SystemKeys } from "../internals";
-import Popper, { type RootProps as PopperProps } from "../Popper";
+import Popper, { type PopperProps as PopperProps } from "../Popper";
 import type { VirtualElement } from "../Popper/helpers";
 import type { MergeElementProps } from "../typings";
 import {
@@ -16,7 +16,7 @@ import {
 import MenuContext, { type IMenuContext } from "./context";
 import { Root as RootSlot } from "./slots";
 
-interface RootOwnProps {
+interface OwnProps {
   /**
    * The content of the component.
    */
@@ -69,8 +69,8 @@ interface RootOwnProps {
   disabledKeySearch?: boolean;
 }
 
-export type RootProps = Omit<
-  MergeElementProps<"div", RootOwnProps>,
+export type Props = Omit<
+  MergeElementProps<"div", OwnProps>,
   "defaultValue" | "defaultChecked"
 >;
 
@@ -86,7 +86,7 @@ const makeRegisterItem =
     items.push(itemRef);
   };
 
-const MenuBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
+const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     id: idProp,
     className: classNameProp,

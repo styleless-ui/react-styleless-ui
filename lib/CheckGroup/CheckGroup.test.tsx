@@ -10,12 +10,12 @@ import {
   userEvent,
 } from "../../tests/utils";
 import Checkbox from "../Checkbox";
-import CheckGroup, { type RootProps } from "./CheckGroup";
+import CheckGroup, { type Props } from "./CheckGroup";
 import * as Slots from "./slots";
 
 const labelText = "Label";
 
-const REQUIRED_PROPS: RootProps = {
+const REQUIRED_PROPS: Props = {
   label: labelText,
   classes: { label: "label", root: "root", group: "group" },
 };

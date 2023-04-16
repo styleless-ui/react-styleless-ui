@@ -9,7 +9,7 @@ import {
 import TabGroupContext, { type ITabGroupContext } from "./context";
 import { Root as RootSlot } from "./slots";
 
-interface RootOwnProps {
+interface OwnProps {
   /**
    * The content of the tab group.
    */
@@ -44,12 +44,12 @@ interface RootOwnProps {
   keyboardActivationBehavior?: "manual" | "automatic";
 }
 
-export type RootProps = Omit<
-  MergeElementProps<"div", RootOwnProps>,
+export type Props = Omit<
+  MergeElementProps<"div", OwnProps>,
   "defaultChecked" | "defaultValue"
 >;
 
-const TabGroupBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
+const TabGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     children: childrenProp,
     className,

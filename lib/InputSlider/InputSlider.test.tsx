@@ -8,15 +8,15 @@ import {
   screen,
   userEvent,
 } from "../../tests/utils";
-import InputSlider, { type RootProps } from "./InputSlider";
+import InputSlider, { type Props } from "./InputSlider";
 
-const requiredMockProps: RootProps = {
+const requiredMockProps: Props = {
   label: { screenReaderLabel: "Infimum value" },
   min: 0,
   max: 100,
 };
 
-const classNames: RootProps["classes"] = ({
+const classNames: Props["classes"] = ({
   disabled,
   orientation,
   leadingThumbState,
@@ -139,7 +139,7 @@ describe("InputSlider", () => {
   it("changes `value` state with mouse/keyboard interactions and calls `onChange` callback", async () => {
     const handleChange = jest.fn<
       void,
-      Parameters<NonNullable<RootProps["onChange"]>>
+      Parameters<NonNullable<Props["onChange"]>>
     >();
 
     userEvent.setup();

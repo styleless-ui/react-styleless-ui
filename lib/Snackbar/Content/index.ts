@@ -1,1 +1,1 @@
-export { default, type ContentProps } from "./Content";
+export { default, type Props as ContentProps } from "./Content";

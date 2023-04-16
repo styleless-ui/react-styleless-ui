@@ -10,7 +10,7 @@ import {
   DescriptionRoot as DescriptionRootSlot,
 } from "../slots";
 
-interface DescriptionOwnProps {
+interface OwnProps {
   /**
    * The content of the component.
    */
@@ -21,23 +21,22 @@ interface DescriptionOwnProps {
   className?: string;
 }
 
-export type DescriptionProps<T extends React.ElementType = "span"> =
-  MergeElementProps<
-    T,
-    DescriptionOwnProps & {
-      /**
-       * The component used for the root node.
-       * Either a string to use a HTML element or a component.
-       */
-      as?: T;
-    }
-  >;
+export type Props<T extends React.ElementType = "span"> = MergeElementProps<
+  T,
+  OwnProps & {
+    /**
+     * The component used for the root node.
+     * Either a string to use a HTML element or a component.
+     */
+    as?: T;
+  }
+>;
 
 const SnackbarDescriptionBase = <
   T extends React.ElementType = React.ElementType,
   E extends HTMLElement = HTMLElement,
 >(
-  props: DescriptionProps<T>,
+  props: Props<T>,
   ref: React.Ref<E>,
 ) => {
   const {

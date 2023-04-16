@@ -1,1 +1,1 @@
-export { default, type RootProps } from "./FocusTrap";
+export { default, type Props as FocusTrapProps } from "./FocusTrap";

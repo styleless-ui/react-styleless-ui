@@ -1,1 +1,1 @@
-export { default, type ActionProps } from "./Action";
+export { default, type Props as ActionProps } from "./Action";

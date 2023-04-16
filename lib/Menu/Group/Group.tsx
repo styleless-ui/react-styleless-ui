@@ -6,7 +6,7 @@ import {
   GroupRoot as GroupRootSlot,
 } from "../slots";
 
-interface GroupOwnProps {
+interface OwnProps {
   /**
    * The content of the component.
    */
@@ -33,12 +33,12 @@ interface GroupOwnProps {
       };
 }
 
-export type GroupProps = Omit<
-  MergeElementProps<"div", GroupOwnProps>,
+export type Props = Omit<
+  MergeElementProps<"div", OwnProps>,
   "className" | "defaultChecked"
 >;
 
-const getLabelInfo = (labelInput: GroupProps["label"]) => {
+const getLabelInfo = (labelInput: Props["label"]) => {
   const props: {
     visibleLabel?: string;
     srOnlyLabel?: string;
@@ -66,7 +66,7 @@ const getLabelInfo = (labelInput: GroupProps["label"]) => {
   return props;
 };
 
-const MenuGroupBase = (props: GroupProps, ref: React.Ref<HTMLDivElement>) => {
+const MenuGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const { children, classes, label, id: idProp, ...otherProps } = props;
 
   const id = useDeterministicId(idProp, "styleless-ui__menu-group");

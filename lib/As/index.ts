@@ -1,1 +1,1 @@
-export { default, type RootProps } from "./As";
+export { default, type Props as AsProps } from "./As";

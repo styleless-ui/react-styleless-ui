@@ -1,1 +1,1 @@
-export { default, type SubProps } from "./Sub";
+export { default, type Props as SubProps } from "./Sub";

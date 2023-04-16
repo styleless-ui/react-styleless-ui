@@ -4,7 +4,7 @@ import { componentWithForwardedRef } from "../../utils";
 import Panel from "../Panel";
 import { PanelsRoot as PanelsRootSlot } from "../slots";
 
-interface PanelsOwnProps {
+interface OwnProps {
   /**
    * The content of the component.
    */
@@ -15,12 +15,12 @@ interface PanelsOwnProps {
   className?: string;
 }
 
-export type PanelsProps = Omit<
-  MergeElementProps<"div", PanelsOwnProps>,
+export type Props = Omit<
+  MergeElementProps<"div", OwnProps>,
   "defaultChecked" | "defaultValue"
 >;
 
-const TabPanelsBase = (props: PanelsProps, ref: React.Ref<HTMLDivElement>) => {
+const TabPanelsBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const { children: childrenProp, className, ...otherProps } = props;
 
   let panelIdx = 0;

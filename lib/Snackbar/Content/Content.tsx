@@ -12,7 +12,7 @@ import {
   ActionRoot as ActionRootSlot,
 } from "../slots";
 
-interface ContentOwnProps {
+interface OwnProps {
   /**
    * The content of the component.
    */
@@ -23,15 +23,12 @@ interface ContentOwnProps {
   className?: string;
 }
 
-export type ContentProps = Omit<
-  MergeElementProps<"div", ContentOwnProps>,
+export type Props = Omit<
+  MergeElementProps<"div", OwnProps>,
   "defaultChecked" | "defaultValue"
 >;
 
-const SnackbarContentBase = (
-  props: ContentProps,
-  ref: React.Ref<HTMLDivElement>,
-) => {
+const SnackbarContentBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const { className, children, id: idProp, ...otherProps } = props;
 
   const snackbarCtx = React.useContext(SnackbarContext);

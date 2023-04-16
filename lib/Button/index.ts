@@ -1,1 +1,1 @@
-export { default, type RootProps } from "./Button";
+export { default, type Props as ButtonProps } from "./Button";

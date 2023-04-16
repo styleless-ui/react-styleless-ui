@@ -1,1 +1,1 @@
-export { default, type TriggerProps } from "./Trigger";
+export { default, type Props as TriggerProps } from "./Trigger";

@@ -13,7 +13,7 @@ import {
 import SnackbarContext from "./context";
 import { Root as SnackbarRootSlot } from "./slots";
 
-interface RootOwnProps {
+interface OwnProps {
   /**
    * The content of the snackbar.
    */
@@ -59,12 +59,12 @@ interface RootOwnProps {
   onEscapeKeyUp?: (event: KeyboardEvent) => void;
 }
 
-export type RootProps = Omit<
-  MergeElementProps<"div", RootOwnProps>,
+export type Props = Omit<
+  MergeElementProps<"div", OwnProps>,
   "defaultChecked" | "defaultValue"
 >;
 
-const SnackbarBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
+const SnackbarBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     open,
     duration,

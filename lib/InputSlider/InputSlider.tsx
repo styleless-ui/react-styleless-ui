@@ -63,7 +63,7 @@ type Label =
       labelledBy: string;
     };
 
-interface RootOwnProps {
+interface OwnProps {
   /**
    * Map of sub-components and their correlated classNames.
    */
@@ -151,8 +151,8 @@ interface RootOwnProps {
   ) => void;
 }
 
-export type RootProps = Omit<
-  MergeElementProps<"div", RootOwnProps>,
+export type Props = Omit<
+  MergeElementProps<"div", OwnProps>,
   "className" | "defaultChecked"
 >;
 
@@ -209,8 +209,8 @@ const getRelativeValue = (
   thumbInfo: ThumbInfo,
   segments: Segment[],
   requiredProps: {
-    max: RootProps["max"];
-    step: RootProps["step"];
+    max: Props["max"];
+    step: Props["step"];
   },
 ) => {
   const { max, step } = requiredProps;
@@ -248,7 +248,7 @@ const getNearestThumb = (
   return leftDiff <= rightDiff ? { ...left, index: 0 } : { ...right, index: 1 };
 };
 
-const InputSliderBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
+const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     max,
     min,

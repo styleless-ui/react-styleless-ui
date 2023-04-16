@@ -3,7 +3,7 @@ import type { MergeElementProps } from "../../typings";
 import { componentWithForwardedRef } from "../../utils";
 import { ItemRoot as ItemRootSlot } from "../slots";
 
-interface ItemOwnProps {
+interface OwnProps {
   /**
    * The content of the component.
    */
@@ -14,15 +14,12 @@ interface ItemOwnProps {
   className?: string;
 }
 
-export type ItemProps = Omit<
-  MergeElementProps<"li", ItemOwnProps>,
+export type Props = Omit<
+  MergeElementProps<"li", OwnProps>,
   "defaultChecked" | "defaultValue"
 >;
 
-const BreadcrumbItemBase = (
-  props: ItemProps,
-  ref: React.Ref<HTMLLIElement>,
-) => {
+const BreadcrumbItemBase = (props: Props, ref: React.Ref<HTMLLIElement>) => {
   const { className, children, ...otherProps } = props;
 
   return (

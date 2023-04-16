@@ -3,7 +3,7 @@ import type { MergeElementProps } from "../../typings";
 import { componentWithForwardedRef } from "../../utils";
 import { ItemsRoot as ItemsRootSlot } from "../slots";
 
-interface ItemsOwnProps {
+interface OwnProps {
   /**
    * The content of the component.
    */
@@ -32,12 +32,12 @@ interface ItemsOwnProps {
       };
 }
 
-export type ItemsProps = Omit<
-  MergeElementProps<"div", ItemsOwnProps>,
+export type Props = Omit<
+  MergeElementProps<"div", OwnProps>,
   "defaultValue" | "defaultChecked"
 >;
 
-const getLabelInfo = (labelInput: ItemsProps["label"]) => {
+const getLabelInfo = (labelInput: Props["label"]) => {
   const props: { srOnlyLabel?: string; labelledBy?: string } = {};
 
   if ("screenReaderLabel" in labelInput) {
@@ -57,7 +57,7 @@ const getLabelInfo = (labelInput: ItemsProps["label"]) => {
   return props;
 };
 
-const MenuItemsBase = (props: ItemsProps, ref: React.Ref<HTMLDivElement>) => {
+const MenuItemsBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const { children, className, label, ...otherProps } = props;
 
   const labelProps = getLabelInfo(label);

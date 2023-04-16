@@ -8,11 +8,11 @@ import {
   screen,
   userEvent,
 } from "../../tests/utils";
-import Switch, { type RootProps } from "./Switch";
+import Switch, { type Props } from "./Switch";
 
 const labelText = "Label";
 
-const REQUIRED_PROPS: RootProps = {
+const REQUIRED_PROPS: Props = {
   label: labelText,
   thumbComponent: <div />,
   trackComponent: <div />,

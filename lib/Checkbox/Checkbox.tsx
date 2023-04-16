@@ -22,7 +22,7 @@ type ClassesContext = {
   focusedVisible: boolean;
 };
 
-interface RootOwnProps {
+interface OwnProps {
   /**
    * Map of sub-components and their correlated classNames.
    */
@@ -90,12 +90,12 @@ interface RootOwnProps {
   onKeyUp?: React.KeyboardEventHandler<HTMLButtonElement>;
 }
 
-export type RootProps = Omit<
-  MergeElementProps<"button", RootOwnProps>,
+export type Props = Omit<
+  MergeElementProps<"button", OwnProps>,
   "defaultValue" | "className"
 >;
 
-const getLabelInfo = (labelInput: RootProps["label"]) => {
+const getLabelInfo = (labelInput: Props["label"]) => {
   const props: {
     visibleLabel?: string;
     srOnlyLabel?: string;
@@ -150,7 +150,7 @@ const _DefaultIndeterminateIcon = () => (
   </svg>
 );
 
-const CheckboxBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
+const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   const {
     label,
     value,

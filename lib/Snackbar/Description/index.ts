@@ -1,1 +1,1 @@
-export { default, type DescriptionProps } from "./Description";
+export { default, type Props as DescriptionProps } from "./Description";

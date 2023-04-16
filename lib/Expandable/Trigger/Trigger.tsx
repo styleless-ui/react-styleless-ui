@@ -1,5 +1,5 @@
 import * as React from "react";
-import Button, { type RootProps as ButtonProps } from "../../Button";
+import Button, { type ButtonProps as ButtonProps } from "../../Button";
 import type { PolymorphicProps } from "../../typings";
 import {
   componentWithForwardedRef,
@@ -13,7 +13,7 @@ import {
   TriggerRoot as TriggerRootSlot,
 } from "../slots";
 
-interface TriggerOwnProps {
+interface OwnProps {
   /**
    * The content of the component.
    */
@@ -31,16 +31,13 @@ interface TriggerOwnProps {
     | ((ctx: { disabled: boolean; focusedVisible: boolean }) => string);
 }
 
-export type TriggerProps<E extends React.ElementType> = PolymorphicProps<
-  E,
-  TriggerOwnProps
->;
+export type Props<E extends React.ElementType> = PolymorphicProps<E, OwnProps>;
 
 const ExpandableTriggerBase = <
   E extends React.ElementType,
   R extends HTMLElement,
 >(
-  props: TriggerProps<E>,
+  props: Props<E>,
   ref: React.Ref<R>,
 ) => {
   const { id: idProp, onClick, ...otherProps } = props;

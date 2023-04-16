@@ -12,7 +12,7 @@ import {
   TriggerRoot as TriggerRootSlot,
 } from "../slots";
 
-interface ContentOwnProps {
+interface OwnProps {
   /**
    * The content of the component.
    */
@@ -23,13 +23,13 @@ interface ContentOwnProps {
   className?: string;
 }
 
-export type ContentProps = Omit<
-  MergeElementProps<"div", ContentOwnProps>,
+export type Props = Omit<
+  MergeElementProps<"div", OwnProps>,
   "defaultChecked" | "defaultValue"
 >;
 
 const ExpandableContentBase = (
-  props: ContentProps,
+  props: Props,
   ref: React.Ref<HTMLDivElement>,
 ) => {
   const { children, className, id: idProp, ...otherProps } = props;

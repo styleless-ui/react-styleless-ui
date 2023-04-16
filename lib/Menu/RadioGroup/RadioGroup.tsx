@@ -11,7 +11,7 @@ import {
 } from "../slots";
 import MenuRadioGroupContext from "./context";
 
-interface RadioGroupOwnProps {
+interface OwnProps {
   /**
    * The content of the component.
    */
@@ -50,12 +50,12 @@ interface RadioGroupOwnProps {
   onValueChange?: (value: string) => void;
 }
 
-export type RadioGroupProps = Omit<
-  MergeElementProps<"div", RadioGroupOwnProps>,
+export type Props = Omit<
+  MergeElementProps<"div", OwnProps>,
   "className" | "defaultChecked"
 >;
 
-const getLabelInfo = (labelInput: RadioGroupProps["label"]) => {
+const getLabelInfo = (labelInput: Props["label"]) => {
   const props: {
     visibleLabel?: string;
     srOnlyLabel?: string;
@@ -83,10 +83,7 @@ const getLabelInfo = (labelInput: RadioGroupProps["label"]) => {
   return props;
 };
 
-const MenuRadioGroupBase = (
-  props: RadioGroupProps,
-  ref: React.Ref<HTMLDivElement>,
-) => {
+const MenuRadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     children,
     classes,

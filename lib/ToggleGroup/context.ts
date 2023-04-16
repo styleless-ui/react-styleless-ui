@@ -1,13 +1,13 @@
 import * as React from "react";
-import { type RootProps } from "./ToggleGroup";
+import { type Props } from "./ToggleGroup";
 
 interface IToggleGroupContext {
   multiple: boolean;
   keyboardActivationBehavior: Exclude<
-    RootProps["keyboardActivationBehavior"],
+    Props["keyboardActivationBehavior"],
     undefined
   >;
-  value: Exclude<RootProps["value"], undefined>;
+  value: Exclude<Props["value"], undefined>;
   toggles: [string, React.RefObject<HTMLButtonElement>][];
   onChange: (newActiveState: boolean, toggleValue: string) => void;
   registerToggle: (

@@ -1,1 +1,1 @@
-export { default, type TabProps } from "./Tab";
+export { default, type Props as TabProps } from "./Tab";

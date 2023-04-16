@@ -8,7 +8,7 @@ import {
 import TabGroupContext from "../context";
 import { PanelRoot as PanelRootSlot } from "../slots";
 
-interface PanelOwnProps {
+interface OwnProps {
   /**
    * The content of the component.
    */
@@ -19,12 +19,12 @@ interface PanelOwnProps {
   className?: string;
 }
 
-export type PanelProps = Omit<
-  MergeElementProps<"div", PanelOwnProps>,
+export type Props = Omit<
+  MergeElementProps<"div", OwnProps>,
   "defaultChecked" | "defaultValue"
 >;
 
-const TabPanelBase = (props: PanelProps, ref: React.Ref<HTMLDivElement>) => {
+const TabPanelBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const { children, id: idProp, className, ...otherProps } = props;
 
   const tabGroupCtx = React.useContext(TabGroupContext);

@@ -3,7 +3,7 @@ import type { MergeElementProps } from "../../typings";
 import { componentWithForwardedRef } from "../../utils";
 import { SeparatorItemRoot as SeparatorItemRootSlot } from "../slots";
 
-interface SeparatorItemOwnProps {
+interface OwnProps {
   /**
    * The symbol which is used as separator.
    */
@@ -14,13 +14,13 @@ interface SeparatorItemOwnProps {
   className?: string;
 }
 
-export type SeparatorItemProps = Omit<
-  MergeElementProps<"li", SeparatorItemOwnProps>,
+export type Props = Omit<
+  MergeElementProps<"li", OwnProps>,
   "defaultChecked" | "defaultValue" | "children"
 >;
 
 const BreadcrumbSeparatorItemBase = (
-  props: SeparatorItemProps,
+  props: Props,
   ref: React.Ref<HTMLLIElement>,
 ) => {
   const { className, separatorSymbol, ...otherProps } = props;

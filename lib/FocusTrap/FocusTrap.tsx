@@ -7,7 +7,7 @@ import {
   useForkedRefs,
 } from "../utils";
 
-export interface RootProps {
+export interface Props {
   /**
    * The content of the component.
    */
@@ -19,7 +19,7 @@ export interface RootProps {
   enabled?: boolean;
 }
 
-const FocusTrap = (props: RootProps) => {
+const FocusTrap = (props: Props) => {
   const { children, enabled = false } = props;
 
   const child = (() => {

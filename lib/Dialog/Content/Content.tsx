@@ -5,7 +5,7 @@ import { componentWithForwardedRef, useDeterministicId } from "../../utils";
 import DialogContext from "../context";
 import { ContentRoot as ContentRootSlot } from "../slots";
 
-interface ContentOwnProps {
+interface OwnProps {
   /**
    * The content of the component.
    */
@@ -16,15 +16,12 @@ interface ContentOwnProps {
   className?: string;
 }
 
-export type ContentProps = Omit<
-  MergeElementProps<"div", ContentOwnProps>,
+export type Props = Omit<
+  MergeElementProps<"div", OwnProps>,
   "defaultChecked" | "defaultValue"
 >;
 
-const DialogContentBase = (
-  props: ContentProps,
-  ref: React.Ref<HTMLDivElement>,
-) => {
+const DialogContentBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const { className, children, id: idProp, ...otherProps } = props;
 
   const dialogCtx = React.useContext(DialogContext);

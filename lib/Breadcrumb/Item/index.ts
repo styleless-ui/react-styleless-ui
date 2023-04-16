@@ -1,1 +1,1 @@
-export { default, type ItemProps } from "./Item";
+export { default, type Props as ItemProps } from "./Item";

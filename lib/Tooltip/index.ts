@@ -1,1 +1,1 @@
-export { default, type RootProps } from "./Tooltip";
+export { default, type Props as TooltipProps } from "./Tooltip";

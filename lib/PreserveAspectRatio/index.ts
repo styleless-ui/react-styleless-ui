@@ -1,1 +1,4 @@
-export { default, type RootProps } from "./PreserveAspectRatio";
+export {
+  default,
+  type Props as PreserveAspectRatioProps,
+} from "./PreserveAspectRatio";

@@ -4,7 +4,7 @@ import type { MergeElementProps } from "../../typings";
 import { componentWithForwardedRef, useDeterministicId } from "../../utils";
 import { ActionRoot as ActionRootSlot } from "../slots";
 
-interface ActionOwnProps {
+interface OwnProps {
   /**
    * The content of the component.
    */
@@ -22,10 +22,10 @@ interface ActionOwnProps {
     | ((ctx: { disabled: boolean; focusedVisible: boolean }) => string);
 }
 
-export type ActionProps<T extends React.ElementType = typeof Button> =
+export type Props<T extends React.ElementType = typeof Button> =
   MergeElementProps<
     T,
-    ActionOwnProps & {
+    OwnProps & {
       /**
        * The component used for the root node.
        * Either a string to use a HTML element or a component.
@@ -38,7 +38,7 @@ const SnackbarActionBase = <
   T extends React.ElementType = React.ElementType,
   E extends HTMLElement = HTMLElement,
 >(
-  props: ActionProps<T>,
+  props: Props<T>,
   ref: React.Ref<E>,
 ) => {
   const {

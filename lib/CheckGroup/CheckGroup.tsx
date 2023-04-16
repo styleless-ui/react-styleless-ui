@@ -8,7 +8,7 @@ import {
 import CheckGroupContext from "./context";
 import * as Slots from "./slots";
 
-interface RootOwnProps {
+interface OwnProps {
   /**
    * The content of the group.
    */
@@ -55,12 +55,12 @@ interface RootOwnProps {
   onChange?: (selectedValues: string[]) => void;
 }
 
-export type RootProps = Omit<
-  MergeElementProps<"div", RootOwnProps>,
+export type Props = Omit<
+  MergeElementProps<"div", OwnProps>,
   "className" | "defaultChecked"
 >;
 
-const getLabelInfo = (labelInput: RootProps["label"]) => {
+const getLabelInfo = (labelInput: Props["label"]) => {
   const props: {
     visibleLabel?: string;
     srOnlyLabel?: string;
@@ -88,7 +88,7 @@ const getLabelInfo = (labelInput: RootProps["label"]) => {
   return props;
 };
 
-const CheckGroupBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
+const CheckGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     label,
     children,

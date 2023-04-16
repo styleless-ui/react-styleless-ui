@@ -10,7 +10,7 @@ import {
 } from "../utils";
 import * as Slots from "./slots";
 
-interface RootOwnProps {
+interface OwnProps {
   /**
    * The content of the component.
    */
@@ -33,13 +33,10 @@ interface RootOwnProps {
   disabled?: boolean;
 }
 
-export type RootProps<E extends React.ElementType> = PolymorphicProps<
-  E,
-  RootOwnProps
->;
+export type Props<E extends React.ElementType> = PolymorphicProps<E, OwnProps>;
 
 const ButtonBase = <E extends React.ElementType, R extends HTMLElement>(
-  props: RootProps<E>,
+  props: Props<E>,
   ref: React.Ref<R>,
 ) => {
   const {

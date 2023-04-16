@@ -1,1 +1,1 @@
-export { default, type GroupProps } from "./Group";
+export { default, type Props as GroupProps } from "./Group";

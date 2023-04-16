@@ -3,20 +3,20 @@ import type { MergeElementProps } from "../../typings";
 import { componentWithForwardedRef } from "../../utils";
 import { SeparatorItemRoot as SeparatorItemRootSlot } from "../slots";
 
-interface SeparatorItemOwnProps {
+interface OwnProps {
   /**
    * The className applied to the component.
    */
   className?: string;
 }
 
-export type SeparatorItemProps = Omit<
-  MergeElementProps<"div", SeparatorItemOwnProps>,
+export type Props = Omit<
+  MergeElementProps<"div", OwnProps>,
   "defaultValue" | "defaultChecked" | "children"
 >;
 
 const MenuSeparatorItemBase = (
-  props: SeparatorItemProps,
+  props: Props,
   ref: React.Ref<HTMLDivElement>,
 ) => {
   const { className, ...otherProps } = props;

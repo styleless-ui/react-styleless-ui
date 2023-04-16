@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Slots from "./slots";
 
-export interface RootProps {
+export interface Props {
   /**
    * The content of the component.
    */
@@ -12,7 +12,7 @@ export interface RootProps {
   ratio: number;
 }
 
-const PreserveAspectRatio = (props: RootProps) => {
+const PreserveAspectRatio = (props: Props) => {
   const { children, ratio } = props;
 
   const rootStyles: React.CSSProperties = {

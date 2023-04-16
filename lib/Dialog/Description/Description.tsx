@@ -10,7 +10,7 @@ import {
   DescriptionRoot as DescriptionRootSlot,
 } from "../slots";
 
-interface DescriptionOwnProps {
+interface OwnProps {
   /**
    * The content of the component.
    */
@@ -21,16 +21,13 @@ interface DescriptionOwnProps {
   className?: string;
 }
 
-export type DescriptionProps<E extends React.ElementType> = PolymorphicProps<
-  E,
-  DescriptionOwnProps
->;
+export type Props<E extends React.ElementType> = PolymorphicProps<E, OwnProps>;
 
 const DialogDescriptionBase = <
   E extends React.ElementType,
   R extends HTMLElement,
 >(
-  props: DescriptionProps<E>,
+  props: Props<E>,
   ref: React.Ref<R>,
 ) => {
   const {

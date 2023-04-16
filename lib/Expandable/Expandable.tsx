@@ -4,7 +4,7 @@ import { componentWithForwardedRef, useControlledProp } from "../utils";
 import ExpandableContext from "./context";
 import { Root as RootSlot } from "./slots";
 
-interface RootOwnProps {
+interface OwnProps {
   /**
    * The content of the component.
    */
@@ -31,12 +31,12 @@ interface RootOwnProps {
   onExpandChange?: (isExpanded: boolean) => void;
 }
 
-export type RootProps = Omit<
-  MergeElementProps<"div", RootOwnProps>,
+export type Props = Omit<
+  MergeElementProps<"div", OwnProps>,
   "defaultChecked" | "defaultValue"
 >;
 
-const ExpandableBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
+const ExpandableBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     onExpandChange,
     expanded,

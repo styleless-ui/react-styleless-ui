@@ -16,7 +16,7 @@ import { Backdrop as BackdropSlot, Root as RootSlot } from "./slots";
 
 type DialogClassesMap = Classes<"root" | "backdrop">;
 
-interface RootOwnProps {
+interface OwnProps {
   /**
    * The content of the tab dialog.
    */
@@ -62,12 +62,12 @@ interface RootOwnProps {
   keepMounted?: boolean;
 }
 
-export type RootProps = Omit<
-  MergeElementProps<"div", RootOwnProps>,
+export type Props = Omit<
+  MergeElementProps<"div", OwnProps>,
   "className" | "defaultChecked" | "defaultValue"
 >;
 
-const DialogBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
+const DialogBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     open,
     children,

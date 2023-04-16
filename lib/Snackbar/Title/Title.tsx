@@ -10,7 +10,7 @@ import {
   TitleRoot as TitleRootSlot,
 } from "../slots";
 
-interface TitleOwnProps {
+interface OwnProps {
   /**
    * The content of the component.
    */
@@ -21,23 +21,22 @@ interface TitleOwnProps {
   className?: string;
 }
 
-export type TitleProps<T extends React.ElementType = "strong"> =
-  MergeElementProps<
-    T,
-    TitleOwnProps & {
-      /**
-       * The component used for the root node.
-       * Either a string to use a HTML element or a component.
-       */
-      as?: T;
-    }
-  >;
+export type Props<T extends React.ElementType = "strong"> = MergeElementProps<
+  T,
+  OwnProps & {
+    /**
+     * The component used for the root node.
+     * Either a string to use a HTML element or a component.
+     */
+    as?: T;
+  }
+>;
 
 const SnackbarTitleBase = <
   T extends React.ElementType = React.ElementType,
   E extends HTMLElement = HTMLElement,
 >(
-  props: TitleProps<T>,
+  props: Props<T>,
   ref: React.Ref<E>,
 ) => {
   const {

@@ -11,7 +11,7 @@ import {
 import TabGroupContext from "../context";
 import { TabRoot as TabRootSlot } from "../slots";
 
-interface TabOwnProps {
+interface OwnProps {
   /**
    * The content of the component.
    */
@@ -45,12 +45,12 @@ interface TabOwnProps {
   disabled?: boolean;
 }
 
-export type TabProps = Omit<
-  MergeElementProps<"button", TabOwnProps>,
+export type Props = Omit<
+  MergeElementProps<"button", OwnProps>,
   "defaultChecked" | "defaultValue"
 >;
 
-const TabBase = (props: TabProps, ref: React.Ref<HTMLButtonElement>) => {
+const TabBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   const {
     id: idProp,
     children: childrenProp,

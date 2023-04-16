@@ -11,7 +11,7 @@ import { ItemRoot as ItemRootSlot } from "../slots";
 import useMenuItem from "../useMenuItem";
 import MenuItemContext from "./context";
 
-interface ItemOwnProps {
+interface OwnProps {
   /**
    * The content of the component.
    */
@@ -47,8 +47,8 @@ interface ItemOwnProps {
   ) => void;
 }
 
-export type ItemProps = Omit<
-  MergeElementProps<"div", ItemOwnProps>,
+export type Props = Omit<
+  MergeElementProps<"div", OwnProps>,
   "defaultValue" | "defaultChecked"
 >;
 
@@ -65,7 +65,7 @@ const makeRegisterSubMenu =
   (subMenuRef: React.RefObject<HTMLDivElement>, id: string | undefined) =>
     void (storeRef.current = { ref: subMenuRef, id });
 
-const MenuItemBase = (props: ItemProps, ref: React.Ref<HTMLDivElement>) => {
+const MenuItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     children: childrenProp,
     className: classNameProp,

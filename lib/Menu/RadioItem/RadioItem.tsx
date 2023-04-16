@@ -11,7 +11,7 @@ import MenuRadioGroupContext from "../RadioGroup/context";
 import { RadioItemRoot as RadioItemRootSlot } from "../slots";
 import useMenuItem from "../useMenuItem";
 
-interface RadioItemOwnProps {
+interface OwnProps {
   /**
    * The content of the component.
    */
@@ -51,15 +51,12 @@ interface RadioItemOwnProps {
   ) => void;
 }
 
-export type RadioItemProps = Omit<
-  MergeElementProps<"div", RadioItemOwnProps>,
+export type Props = Omit<
+  MergeElementProps<"div", OwnProps>,
   "defaultValue" | "defaultChecked"
 >;
 
-const MenuRadioItemBase = (
-  props: RadioItemProps,
-  ref: React.Ref<HTMLDivElement>,
-) => {
+const MenuRadioItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     children: childrenProp,
     className: classNameProp,

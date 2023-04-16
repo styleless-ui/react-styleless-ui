@@ -11,7 +11,7 @@ import MenuContext from "../context";
 import { CheckItemRoot as CheckItemRootSlot } from "../slots";
 import useMenuItem from "../useMenuItem";
 
-interface CheckItemOwnProps {
+interface OwnProps {
   /**
    * The content of the component.
    */
@@ -61,15 +61,9 @@ interface CheckItemOwnProps {
   ) => void;
 }
 
-export type CheckItemProps = Omit<
-  MergeElementProps<"div", CheckItemOwnProps>,
-  "defaultValue"
->;
+export type Props = Omit<MergeElementProps<"div", OwnProps>, "defaultValue">;
 
-const MenuCheckItemBase = (
-  props: CheckItemProps,
-  ref: React.Ref<HTMLDivElement>,
-) => {
+const MenuCheckItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     children: childrenProp,
     className: classNameProp,

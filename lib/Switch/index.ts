@@ -1,1 +1,1 @@
-export { default, type RootProps } from "./Switch";
+export { default, type Props as SwitchProps } from "./Switch";

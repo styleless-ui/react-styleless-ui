@@ -25,7 +25,7 @@ import {
 } from "./helpers";
 import * as Slots from "./slots";
 
-interface RootOwnProps {
+interface OwnProps {
   /**
    * The className applied to the component.
    */
@@ -124,8 +124,8 @@ interface RootOwnProps {
   keepMounted?: boolean;
 }
 
-export type RootProps = Omit<
-  MergeElementProps<"div", RootOwnProps>,
+export type Props = Omit<
+  MergeElementProps<"div", OwnProps>,
   | "defaultChecked"
   | "defaultValue"
   | "autoSave"
@@ -152,7 +152,7 @@ const translate = ({ x, y }: Coordinates) => {
   };
 };
 
-const getAnchor = (anchorElement: RootProps["anchorElement"]) =>
+const getAnchor = (anchorElement: Props["anchorElement"]) =>
   typeof anchorElement === "string"
     ? typeof document !== "undefined"
       ? document.querySelector<HTMLElement>(anchorElement)
@@ -161,7 +161,7 @@ const getAnchor = (anchorElement: RootProps["anchorElement"]) =>
     ? anchorElement.current
     : anchorElement;
 
-const PopperBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
+const PopperBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     open,
     actions,

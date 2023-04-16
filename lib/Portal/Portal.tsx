@@ -3,7 +3,7 @@ import * as ReactDOM from "react-dom";
 import usePortalConfig from "../PortalConfigProvider/usePortalConfig";
 import { useIsServerHandoffComplete } from "../utils";
 
-export interface RootProps {
+export interface Props {
   /**
    * A string containing one selector to match.
    * This string must be a valid CSS selector string;
@@ -26,7 +26,7 @@ const getContainer = (querySelector?: string) =>
     ? document.querySelector<HTMLElement>(querySelector)
     : document.body;
 
-const Portal = (props: RootProps) => {
+const Portal = (props: Props) => {
   const { containerQuerySelector, children, disabled = false } = props;
 
   const { destinationQuery } = usePortalConfig();

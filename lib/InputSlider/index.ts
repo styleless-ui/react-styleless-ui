@@ -1,1 +1,1 @@
-export { default, type RootProps } from "./InputSlider";
+export { default, type Props as InputSliderProps } from "./InputSlider";

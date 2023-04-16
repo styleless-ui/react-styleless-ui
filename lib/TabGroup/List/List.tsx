@@ -5,7 +5,7 @@ import TabGroupContext from "../context";
 import { ListLabel as ListLabelSlot, ListRoot as ListRootSlot } from "../slots";
 import Tab from "../Tab";
 
-interface ListOwnProps {
+interface OwnProps {
   /**
    * The content of the component.
    */
@@ -35,12 +35,12 @@ interface ListOwnProps {
       };
 }
 
-export type ListProps = Omit<
-  MergeElementProps<"div", ListOwnProps>,
+export type Props = Omit<
+  MergeElementProps<"div", OwnProps>,
   "className" | "defaultChecked" | "defaultValue"
 >;
 
-const getLabelInfo = (labelInput: ListProps["label"]) => {
+const getLabelInfo = (labelInput: Props["label"]) => {
   const props: {
     visibleLabel?: string;
     srOnlyLabel?: string;
@@ -68,7 +68,7 @@ const getLabelInfo = (labelInput: ListProps["label"]) => {
   return props;
 };
 
-const TabListBase = (props: ListProps, ref: React.Ref<HTMLDivElement>) => {
+const TabListBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     label,
     children: childrenProp,

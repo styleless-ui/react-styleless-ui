@@ -1,1 +1,1 @@
-export { default, type CheckItemProps } from "./CheckItem";
+export { default, type Props as CheckItemProps } from "./CheckItem";

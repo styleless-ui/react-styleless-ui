@@ -1,1 +1,1 @@
-export { default, type ListProps } from "./List";
+export { default, type Props as ListProps } from "./List";

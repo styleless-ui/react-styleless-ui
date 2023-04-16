@@ -1,1 +1,1 @@
-export { default, type RootProps } from "./Toggle";
+export { default, type Props as ToggleProps } from "./Toggle";

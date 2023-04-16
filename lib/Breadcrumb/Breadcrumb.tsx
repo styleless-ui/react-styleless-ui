@@ -13,7 +13,7 @@ import {
   Root as RootSlot,
 } from "./slots";
 
-interface RootOwnProps {
+interface OwnProps {
   /**
    * The content of the breadcrumb.
    */
@@ -43,12 +43,12 @@ interface RootOwnProps {
       };
 }
 
-export type RootProps = Omit<
-  MergeElementProps<"nav", RootOwnProps>,
+export type Props = Omit<
+  MergeElementProps<"nav", OwnProps>,
   "className" | "defaultChecked" | "defaultValue"
 >;
 
-const getLabelInfo = (labelInput: RootProps["label"]) => {
+const getLabelInfo = (labelInput: Props["label"]) => {
   const props: {
     visibleLabel?: string;
     srOnlyLabel?: string;
@@ -76,7 +76,7 @@ const getLabelInfo = (labelInput: RootProps["label"]) => {
   return props;
 };
 
-const BreadcrumbBase = (props: RootProps, ref: React.Ref<HTMLElement>) => {
+const BreadcrumbBase = (props: Props, ref: React.Ref<HTMLElement>) => {
   const {
     label,
     children: childrenProp,

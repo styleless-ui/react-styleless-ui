@@ -10,7 +10,7 @@ import {
   TitleRoot as TitleRootSlot,
 } from "../slots";
 
-interface TitleOwnProps {
+interface OwnProps {
   /**
    * The content of the component.
    */
@@ -21,13 +21,10 @@ interface TitleOwnProps {
   className?: string;
 }
 
-export type TitleProps<E extends React.ElementType> = PolymorphicProps<
-  E,
-  TitleOwnProps
->;
+export type Props<E extends React.ElementType> = PolymorphicProps<E, OwnProps>;
 
 const DialogTitleBase = <E extends React.ElementType, R extends HTMLElement>(
-  props: TitleProps<E>,
+  props: Props<E>,
   ref: React.Ref<R>,
 ) => {
   const {

@@ -1,1 +1,1 @@
-export { default, type SeparatorItemProps } from "./Separator";
+export { default, type Props as SeparatorItemProps } from "./Separator";

@@ -8,11 +8,11 @@ import {
   screen,
   userEvent,
 } from "../../tests/utils";
-import Radio, { type RootProps } from "./Radio";
+import Radio, { type Props } from "./Radio";
 
 const labelText = "Label";
 
-const REQUIRED_PROPS: RootProps = {
+const REQUIRED_PROPS: Props = {
   label: labelText,
   classes: {
     label: "label",

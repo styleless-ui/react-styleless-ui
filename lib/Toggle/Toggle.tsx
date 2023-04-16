@@ -9,7 +9,7 @@ import {
 } from "../utils";
 import * as Slots from "./slots";
 
-interface RootOwnProps {
+interface OwnProps {
   /**
    * The content of the component.
    */
@@ -60,12 +60,12 @@ interface RootOwnProps {
   onActiveChange?: (activeState: boolean) => void;
 }
 
-export type RootProps = Omit<
-  MergeElementProps<"button", RootOwnProps>,
+export type Props = Omit<
+  MergeElementProps<"button", OwnProps>,
   "defaultValue" | "defaultChecked"
 >;
 
-const ToggleBase = (props: RootProps, ref: React.Ref<HTMLButtonElement>) => {
+const ToggleBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   const {
     value,
     children: childrenProp,

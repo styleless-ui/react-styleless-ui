@@ -1,1 +1,1 @@
-export { default, type RootProps } from "./Checkbox";
+export { default, type Props as CheckboxProps } from "./Checkbox";

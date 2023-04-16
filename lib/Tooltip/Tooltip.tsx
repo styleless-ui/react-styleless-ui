@@ -1,6 +1,6 @@
 import * as React from "react";
 import { SystemKeys } from "../internals";
-import Popper, { type RootProps as PopperProps } from "../Popper";
+import Popper, { type PopperProps as PopperProps } from "../Popper";
 import type { Coordinates, VirtualElement } from "../Popper/helpers";
 import type { MergeElementProps } from "../typings";
 import {
@@ -14,7 +14,7 @@ import {
   useForkedRefs,
 } from "../utils";
 
-interface RootOwnProps {
+interface OwnProps {
   /**
    * The content of the component.
    */
@@ -75,12 +75,12 @@ interface RootOwnProps {
   keepMounted?: boolean;
 }
 
-export type RootProps = Omit<
-  MergeElementProps<"div", RootOwnProps>,
+export type Props = Omit<
+  MergeElementProps<"div", OwnProps>,
   "defaultValue" | "defaultChecked"
 >;
 
-const TooltipBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
+const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     children,
     className,
@@ -114,7 +114,7 @@ const TooltipBase = (props: RootProps, ref: React.Ref<HTMLDivElement>) => {
     );
   }
 
-  const getAnchor = (anchorElement: RootProps["anchorElement"]) =>
+  const getAnchor = (anchorElement: Props["anchorElement"]) =>
     typeof anchorElement === "string"
       ? typeof document !== "undefined"
         ? document.querySelector<HTMLElement>(anchorElement)

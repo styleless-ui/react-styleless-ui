@@ -10,12 +10,12 @@ import {
   userEvent,
 } from "../../tests/utils";
 import Radio from "../Radio";
-import RadioGroup, { type RootProps } from "./RadioGroup";
+import RadioGroup, { type Props } from "./RadioGroup";
 import * as Slots from "./slots";
 
 const labelText = "Label";
 
-const REQUIRED_PROPS: RootProps = {
+const REQUIRED_PROPS: Props = {
   label: labelText,
   classes: { label: "label", root: "root", group: "group" },
 };
