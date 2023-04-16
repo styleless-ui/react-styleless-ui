@@ -4,7 +4,6 @@ import {
   componentWithForwardedRef,
   useCheckBase,
   useDeterministicId,
-  useEventListener,
   useForkedRefs,
 } from "../utils";
 import * as Slots from "./slots";
@@ -171,7 +170,7 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   const classes =
     typeof classesMap === "function" ? classesMap(classesCtx) : classesMap;
 
-  if (typeof document !== "undefined") {
+  React.useEffect(() => {
     const labelTarget =
       labelProps.visibleLabel && visibleLabelId
         ? document.getElementById(visibleLabelId)
@@ -179,16 +178,21 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
         ? document.getElementById(labelProps.labelledBy)
         : null;
 
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useEventListener({
-      target: labelTarget,
-      eventType: "click",
-      handler: () => {
-        if (!labelProps.visibleLabel) checkBase.controllerRef.current?.click();
-        checkBase.controllerRef.current?.focus();
-      },
-    });
-  }
+    if (!labelTarget) return;
+
+    const handleTargetClick = () => checkBase.controllerRef.current?.click();
+
+    labelTarget.addEventListener("click", handleTargetClick);
+
+    return () => {
+      labelTarget.removeEventListener("click", handleTargetClick);
+    };
+  }, [
+    checkBase.controllerRef,
+    labelProps.labelledBy,
+    labelProps.visibleLabel,
+    visibleLabelId,
+  ]);
 
   return (
     <>
