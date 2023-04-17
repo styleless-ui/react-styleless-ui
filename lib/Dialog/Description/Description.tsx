@@ -56,7 +56,7 @@ const DialogDescriptionBase = <
     } else {
       // eslint-disable-next-line no-console
       console.error(
-        "[StylelessUI][Dialog]: You should always wrap your content with `<Snackbar.Content>` to provide accessibility features.",
+        "[StylelessUI][Dialog]: You should always wrap your content with `<Dialog.Content>` to provide accessibility features.",
       );
     }
   };
