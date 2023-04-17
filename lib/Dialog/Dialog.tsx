@@ -1,11 +1,9 @@
 import * as React from "react";
-import { SystemKeys } from "../internals";
 import Portal from "../Portal";
 import type { Classes, MergeElementProps } from "../typings";
 import {
   componentWithForwardedRef,
   useDeterministicId,
-  useEventListener,
   useIsMounted,
   useOnChange,
   usePreviousValue,
@@ -51,10 +49,6 @@ interface OwnProps {
    */
   onBackdropClick?: React.MouseEventHandler<HTMLDivElement>;
   /**
-   * Callback fired when the `Escape` key is released.
-   */
-  onEscapeKeyUp?: (event: KeyboardEvent) => void;
-  /**
    * Used to keep mounting when more control is needed.\
    * Useful when controlling animation with React animation libraries.
    * @default false
@@ -76,7 +70,6 @@ const DialogBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     keepMounted = false,
     focusAfterClosed,
     classes: classesProp,
-    onEscapeKeyUp,
     onBackdropClick,
     ...otherProps
   } = props;
@@ -123,20 +116,6 @@ const DialogBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     typeof classesProp === "function"
       ? classesProp({ openState: open })
       : classesProp;
-
-  if (typeof document !== "undefined") {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useEventListener(
-      {
-        target: document,
-        eventType: "keyup",
-        handler: event => {
-          if (event.key === SystemKeys.ESCAPE) onEscapeKeyUp?.(event);
-        },
-      },
-      open && onEscapeKeyUp != null,
-    );
-  }
 
   const context = React.useMemo(() => ({ open, role }), [role, open]);
 
