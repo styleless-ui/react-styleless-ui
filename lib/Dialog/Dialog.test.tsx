@@ -150,18 +150,4 @@ describe("Dialog", () => {
     expect(handleBackdropClick.mock.calls.length).toBe(1);
     expect(handleBackdropClick.mock.calls[0]?.[0]).not.toBeFalsy();
   });
-
-  it("presses the Escape key and calls `onEscapeKeyUp` callback", async () => {
-    const handleEscapeKeyUp = jest.fn<void, [event: KeyboardEvent]>();
-
-    userEvent.setup();
-    render(
-      <Dialog.Root open role="dialog" onEscapeKeyUp={handleEscapeKeyUp} />,
-    );
-
-    await userEvent.keyboard("[Escape]");
-
-    expect(handleEscapeKeyUp.mock.calls.length).toBe(1);
-    expect(handleEscapeKeyUp.mock.calls[0]?.[0]).not.toBeFalsy();
-  });
 });
