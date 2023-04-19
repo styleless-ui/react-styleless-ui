@@ -24,8 +24,14 @@ const rootPackageJsonData = JSON.parse(
 
 const npmPackageJson = {
   sideEffects: false,
-  main: "index.js",
-  types: "index.d.ts",
+  exports: {
+    ".": {
+      import: { types: "./esm/index.d.ts", default: "./esm/index.js" },
+      require: { types: "./index.d.ts", default: "./index.js" },
+    },
+  },
+  types: "./index.d.ts",
+  main: "./index.js",
   module: "esm/index.js",
   name: rootPackageJsonData.name,
   version: rootPackageJsonData.version,

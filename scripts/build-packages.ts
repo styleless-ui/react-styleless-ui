@@ -15,24 +15,35 @@ void (async () => {
     const typingsExist = fs.existsSync(typingsPath);
 
     const relativePath = path.relative(buildPath, moduleDirectory);
+    const relativePathToESM = path.join(
+      (depth => {
+        let path = "";
+
+        for (let i = 0; i < depth; i++) path += i < depth - 1 ? "../" : "..";
+        return path;
+      })(relativePath.split("/").length),
+      "esm",
+      relativePath,
+    );
 
     const packageJson: Record<string, unknown> = {
       sideEffects: false,
-      module: path.join(
-        (depth => {
-          let path = "";
-
-          for (let i = 0; i < depth; i++) path += i < depth - 1 ? "../" : "..";
-          return path;
-        })(relativePath.split("/").length),
-        "esm",
-        relativePath,
-        "index.js",
-      ),
+      exports: {
+        ".": {
+          import: {
+            types: path.join(relativePathToESM, "index.d.ts"),
+            default: path.join(relativePathToESM, "index.js"),
+          },
+          require: {
+            types: typingsExist ? "./index.d.ts" : undefined,
+            default: "./index.js",
+          },
+        },
+      },
+      types: typingsExist ? "./index.d.ts" : undefined,
       main: "./index.js",
+      module: path.join(relativePathToESM, "index.js"),
     };
-
-    if (typingsExist) packageJson.types = "./index.d.ts";
 
     const packageJsonPath = path.join(moduleDirectory, "package.json");
 
