@@ -152,11 +152,6 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const labelProps = getLabelInfo(label);
 
-  const visibleLabel =
-    typeof labelProps.visibleLabel !== "undefined"
-      ? labelProps.visibleLabel
-      : undefined;
-
   const classesCtx: ClassesContext = {
     disabled,
     checked: checkBase.checked,
@@ -192,13 +187,13 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   return (
     <>
-      {visibleLabel && (
+      {labelProps.visibleLabel && (
         <span
           id={visibleLabelId}
           data-slot={Slots.Label}
           className={classes?.label}
         >
-          {visibleLabel}
+          {labelProps.visibleLabel}
         </span>
       )}
       <button
@@ -218,7 +213,9 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
         onClick={checkBase.handleClick}
         aria-checked={checkBase.checked}
         aria-label={labelProps.srOnlyLabel}
-        aria-labelledby={visibleLabel ? visibleLabelId : labelProps.labelledBy}
+        aria-labelledby={
+          labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
+        }
       >
         <div
           className={classes?.track}
