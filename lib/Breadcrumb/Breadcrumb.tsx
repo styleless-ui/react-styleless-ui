@@ -1,10 +1,6 @@
 import * as React from "react";
 import type { Classes, MergeElementProps } from "../typings";
-import {
-  componentWithForwardedRef,
-  useDeterministicId,
-  useRegisterNodeRef,
-} from "../utils";
+import { componentWithForwardedRef, useDeterministicId } from "../utils";
 import BreadcrumbItem, { type ItemProps } from "./Item";
 import BreadcrumbSeparatorItem from "./Separator/Separator";
 import {
@@ -88,8 +84,10 @@ const BreadcrumbBase = (props: Props, ref: React.Ref<HTMLElement>) => {
   const id = useDeterministicId(idProp, "styleless-ui__breadcrumb");
   const visibleLabelId = id ? `${id}__label` : undefined;
 
-  const registerListRef = useRegisterNodeRef(list => {
-    const listItems = Array.from(list.children);
+  const listRefCallback = (node: HTMLOListElement | null) => {
+    if (!node) return;
+
+    const listItems = Array.from(node.children);
     const lastItem = listItems[listItems.length - 1];
 
     if (!lastItem?.firstElementChild) return;
@@ -109,14 +107,9 @@ const BreadcrumbBase = (props: Props, ref: React.Ref<HTMLElement>) => {
         ].join("\n"),
       );
     }
-  });
+  };
 
   const labelProps = getLabelInfo(label);
-
-  const visibleLabel =
-    typeof labelProps.visibleLabel !== "undefined"
-      ? labelProps.visibleLabel
-      : undefined;
 
   const children = React.Children.map(childrenProp, child => {
     if (!React.isValidElement(child)) return null;
@@ -138,13 +131,13 @@ const BreadcrumbBase = (props: Props, ref: React.Ref<HTMLElement>) => {
 
   return (
     <>
-      {visibleLabel && (
+      {labelProps.visibleLabel && (
         <span
           id={visibleLabelId}
           data-slot={LabelSlot}
           className={classes?.label}
         >
-          {visibleLabel}
+          {labelProps.visibleLabel}
         </span>
       )}
       <nav
@@ -154,10 +147,12 @@ const BreadcrumbBase = (props: Props, ref: React.Ref<HTMLElement>) => {
         className={classes?.root}
         data-slot={RootSlot}
         aria-label={labelProps.srOnlyLabel}
-        aria-labelledby={visibleLabel ? visibleLabelId : labelProps.labelledBy}
+        aria-labelledby={
+          labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
+        }
       >
         <ol
-          ref={registerListRef}
+          ref={listRefCallback}
           tabIndex={-1}
           className={classes?.list}
           data-slot={ListSlot}

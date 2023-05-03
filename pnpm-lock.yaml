@@ -19,9 +19,6 @@ dependencies:
   '@utilityjs/use-is-server-handoff-complete':
     specifier: ^1.0.0
     version: 1.0.0(react@18.2.0)
-  '@utilityjs/use-isomorphic-layout-effect':
-    specifier: ^1.0.2
-    version: 1.0.2(react@18.2.0)
   '@utilityjs/use-on-change':
     specifier: ^1.0.3
     version: 1.0.3(react@18.2.0)
@@ -31,9 +28,6 @@ dependencies:
   '@utilityjs/use-previous-value':
     specifier: ^1.0.1
     version: 1.0.1(react@18.2.0)
-  '@utilityjs/use-register-node-ref':
-    specifier: ^1.1.0
-    version: 1.1.0(react@18.2.0)
   '@utilityjs/use-scroll-guard':
     specifier: ^1.0.0
     version: 1.0.0(react@18.2.0)
@@ -1460,14 +1454,6 @@ packages:
       react: 18.2.0
     dev: false
 
-  /@utilityjs/use-isomorphic-layout-effect@1.0.2(react@18.2.0):
-    resolution: {integrity: sha512-fAnLmkWNzbJ0w6pVRjI5/Sb1ELvf72Cx0DpEGgjZmFQo/4lvw0CRnVB0UXjpEz3PFvPuqVHF8zHUi0///RFgmA==}
-    peerDependencies:
-      react: '>=16.8'
-    dependencies:
-      react: 18.2.0
-    dev: false
-
   /@utilityjs/use-on-change@1.0.3(react@18.2.0):
     resolution: {integrity: sha512-pbMbj1NXrPEgEeCDzBDBXNYVpI76vAnzT5tY99DOqUHKPEtKqKkwhgTH0pxlKt2pc/ETlDSeeqBzK/oqWiqHyg==}
     peerDependencies:
@@ -1490,14 +1476,6 @@ packages:
 
   /@utilityjs/use-previous-value@1.0.1(react@18.2.0):
     resolution: {integrity: sha512-iO9iqcUigfFNZ2dsOWrWqonwC8WTJic5+pr5/OWIxbwklBpbQuPoPmrGwQ9AZBueU2L86BH4FiJHMMhn15M4hQ==}
-    peerDependencies:
-      react: '>=16.8'
-    dependencies:
-      react: 18.2.0
-    dev: false
-
-  /@utilityjs/use-register-node-ref@1.1.0(react@18.2.0):
-    resolution: {integrity: sha512-Zn6Aoxqm96bP3Kf8lErKiUbdZkg3nmnbC8GcdXnqESDOGRbwZ7gIMD7WR7DLjSfx5ZV8TZQpS8lh5MQgdpAbuw==}
     peerDependencies:
       react: '>=16.8'
     dependencies:
