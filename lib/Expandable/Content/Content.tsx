@@ -69,6 +69,7 @@ const ExpandableContentBase = (
       // @ts-expect-error React hasn't added `inert` yet
       inert={expanded ? undefined : ""}
       data-slot={ContentRootSlot}
+      data-expanded={!expandableCtx?.isExpanded ? "" : undefined}
     >
       {children}
     </div>
