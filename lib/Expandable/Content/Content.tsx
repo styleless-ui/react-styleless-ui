@@ -36,7 +36,7 @@ const ExpandableContentBase = (
 
   const expandableCtx = React.useContext(ExpandableContext);
 
-  const id = useDeterministicId(idProp, "styleless-ui__expandable-panel");
+  const id = useDeterministicId(idProp, "styleless-ui__expandable-content");
 
   const refCallback = (node: HTMLDivElement | null) => {
     setRef(ref, node);
@@ -67,7 +67,7 @@ const ExpandableContentBase = (
       role="region"
       aria-hidden={!expandableCtx?.isExpanded}
       // @ts-expect-error React hasn't added `inert` yet
-      inert={expanded ? undefined : ""}
+      inert={!expandableCtx?.isExpanded ? undefined : ""}
       data-slot={ContentRootSlot}
       data-expanded={!expandableCtx?.isExpanded ? "" : undefined}
     >

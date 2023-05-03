@@ -63,9 +63,9 @@ const ExpandableTriggerBase = <
 
     if (!content) return;
 
-    const panelId = content.id;
+    const contentId = content.id;
 
-    panelId && node.setAttribute("aria-controls", panelId);
+    contentId && node.setAttribute("aria-controls", contentId);
   };
 
   return (

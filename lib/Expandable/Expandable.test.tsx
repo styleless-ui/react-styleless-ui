@@ -51,7 +51,7 @@ describe("Expandable", () => {
     expect(content).toHaveClass("content");
   });
 
-  it("checks for `aria-labelledby` attribute on <Expandable.Panel>", () => {
+  it("checks for `aria-labelledby` attribute on <Expandable.Content>", () => {
     render(
       <Expandable.Root>
         <Expandable.Trigger as="button">Trigger</Expandable.Trigger>
