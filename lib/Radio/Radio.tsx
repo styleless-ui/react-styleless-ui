@@ -225,6 +225,13 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     if (!radioGroupCtx) node.tabIndex = disabled ? -1 : 0;
   };
 
+  const dataAttrs = {
+    "data-slot": Slots.Root,
+    "data-disabled": classesCtx.disabled ? "" : undefined,
+    "data-focus-visible": classesCtx.focusedVisible ? "" : undefined,
+    "data-checked": classesCtx.checked ? "" : undefined,
+  };
+
   return (
     <>
       <button
@@ -234,7 +241,6 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
         className={classes?.root}
         type="button"
         ref={refCallback}
-        data-slot={Slots.Root}
         disabled={disabled}
         onFocus={checkBase.handleFocus}
         onBlur={checkBase.handleBlur}
@@ -246,6 +252,7 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
         aria-labelledby={
           labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
         }
+        {...dataAttrs}
       >
         {checkBase.checked && (
           <div

@@ -84,11 +84,6 @@ const TabListBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const labelProps = getLabelInfo(label);
 
-  const visibleLabel =
-    typeof labelProps.visibleLabel !== "undefined"
-      ? labelProps.visibleLabel
-      : undefined;
-
   let tabIdx = 0;
   const children = React.Children.map(childrenProp, child => {
     if (!React.isValidElement(child)) return null;
@@ -104,13 +99,13 @@ const TabListBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   return (
     <>
-      {visibleLabel && (
+      {labelProps.visibleLabel && (
         <span
           id={visibleLabelId}
           data-slot={ListLabelSlot}
           className={classes?.label}
         >
-          {visibleLabel}
+          {labelProps.visibleLabel}
         </span>
       )}
       <div
@@ -121,7 +116,9 @@ const TabListBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         data-slot={ListRootSlot}
         className={classes?.root}
         aria-label={labelProps.srOnlyLabel}
-        aria-labelledby={visibleLabel ? visibleLabelId : labelProps.labelledBy}
+        aria-labelledby={
+          labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
+        }
         aria-orientation={tabGroupCtx?.orientation}
       >
         {children}

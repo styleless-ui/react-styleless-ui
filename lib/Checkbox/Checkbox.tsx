@@ -253,6 +253,13 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     );
   };
 
+  const dataAttrs = {
+    "data-slot": Slots.Root,
+    "data-disabled": classesCtx.disabled ? "" : undefined,
+    "data-focus-visible": classesCtx.focusedVisible ? "" : undefined,
+    "data-checked": classesCtx.checked ? "" : undefined,
+  };
+
   return (
     <>
       <button
@@ -269,7 +276,6 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
         tabIndex={disabled ? -1 : 0}
         type="button"
         role="checkbox"
-        data-slot={Slots.Root}
         aria-label={labelProps.srOnlyLabel}
         aria-checked={
           indeterminated && !checkBase.checked ? "mixed" : checkBase.checked
@@ -277,6 +283,7 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
         aria-labelledby={
           labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
         }
+        {...dataAttrs}
       >
         {checkBase.checked ? (
           <div

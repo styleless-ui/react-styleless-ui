@@ -115,11 +115,6 @@ const ToggleGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const labelProps = getLabelInfo(label);
 
-  const visibleLabel =
-    typeof labelProps.visibleLabel !== "undefined"
-      ? labelProps.visibleLabel
-      : undefined;
-
   const [value, setValue] = useControlledProp(
     valueProp,
     defaultValue,
@@ -209,13 +204,13 @@ const ToggleGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           registerToggle,
         }}
       >
-        {visibleLabel && (
+        {labelProps.visibleLabel && (
           <span
             id={visibleLabelId}
             data-slot={Slots.Label}
             className={classes?.label}
           >
-            {visibleLabel}
+            {labelProps.visibleLabel}
           </span>
         )}
         <div
@@ -224,7 +219,7 @@ const ToggleGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           className={classes?.group}
           aria-label={labelProps.srOnlyLabel}
           aria-labelledby={
-            visibleLabel ? visibleLabelId : labelProps.labelledBy
+            labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
           }
         >
           {children}

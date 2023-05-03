@@ -134,6 +134,7 @@ const DialogBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           ref={ref}
           className={classes?.root}
           data-slot={RootSlot}
+          data-open={open ? "" : undefined}
         >
           <div
             aria-hidden="true"

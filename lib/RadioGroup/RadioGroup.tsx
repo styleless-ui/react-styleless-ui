@@ -110,11 +110,6 @@ const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const labelProps = getLabelInfo(label);
 
-  const visibleLabel =
-    typeof labelProps.visibleLabel !== "undefined"
-      ? labelProps.visibleLabel
-      : undefined;
-
   const [value, setValue] = useControlledProp(valueProp, defaultValue, "");
 
   const handleChange = (newCheckedState: boolean, inputValue: string) => {
@@ -173,13 +168,13 @@ const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       <RadioGroupContext.Provider
         value={{ value, onChange: handleChange, registerRadio, radios }}
       >
-        {visibleLabel && (
+        {labelProps.visibleLabel && (
           <span
             id={visibleLabelId}
             data-slot={Slots.Label}
             className={classes?.label}
           >
-            {visibleLabel}
+            {labelProps.visibleLabel}
           </span>
         )}
         <div
@@ -189,7 +184,7 @@ const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           aria-label={labelProps.srOnlyLabel}
           aria-orientation={orientation}
           aria-labelledby={
-            visibleLabel ? visibleLabelId : labelProps.labelledBy
+            labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
           }
         >
           {children}

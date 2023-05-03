@@ -100,11 +100,6 @@ const MenuRadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const labelProps = getLabelInfo(label);
 
-  const visibleLabel =
-    typeof labelProps.visibleLabel !== "undefined"
-      ? labelProps.visibleLabel
-      : undefined;
-
   const [value, setValue] = useControlledProp(valueProp, defaultValue, "");
 
   const handleChange = (radioValue: string) => {
@@ -122,15 +117,17 @@ const MenuRadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       tabIndex={-1}
       data-slot={RadioGroupRootSlot}
       aria-label={labelProps.srOnlyLabel}
-      aria-labelledby={visibleLabel ? visibleLabelId : labelProps.labelledBy}
+      aria-labelledby={
+        labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
+      }
     >
-      {visibleLabel && (
+      {labelProps.visibleLabel && (
         <span
           id={visibleLabelId}
           data-slot={RadioGroupLabelSlot}
           className={classes?.label}
         >
-          {visibleLabel}
+          {labelProps.visibleLabel}
         </span>
       )}
       <MenuRadioGroupContext.Provider

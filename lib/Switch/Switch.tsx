@@ -185,6 +185,13 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     visibleLabelId,
   ]);
 
+  const dataAttrs = {
+    "data-slot": Slots.Root,
+    "data-disabled": classesCtx.disabled ? "" : undefined,
+    "data-focus-visible": classesCtx.focusedVisible ? "" : undefined,
+    "data-checked": classesCtx.checked ? "" : undefined,
+  };
+
   return (
     <>
       {labelProps.visibleLabel && (
@@ -204,7 +211,6 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
         type="button"
         tabIndex={disabled ? -1 : 0}
         ref={handleRef}
-        data-slot={Slots.Root}
         disabled={disabled}
         onFocus={checkBase.handleFocus}
         onBlur={checkBase.handleBlur}
@@ -216,6 +222,7 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
         aria-labelledby={
           labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
         }
+        {...dataAttrs}
       >
         <div
           className={classes?.track}

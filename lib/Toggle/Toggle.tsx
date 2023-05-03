@@ -163,13 +163,19 @@ const ToggleBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     }
   };
 
+  const dataAttrs = {
+    "data-slot": Slots.Root,
+    "data-active": renderCtx.active,
+    "data-disable": renderCtx.disabled,
+    "data-focus-visible": renderCtx.focusedVisible,
+  };
+
   return (
     <button
       {...otherProps}
       className={className}
       type="button"
       ref={refCallback}
-      data-slot={Slots.Root}
       disabled={disabled}
       onFocus={checkBase.handleFocus}
       onBlur={checkBase.handleBlur}
@@ -177,7 +183,7 @@ const ToggleBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
       onKeyUp={checkBase.handleKeyUp}
       onClick={checkBase.handleClick}
       aria-pressed={checkBase.checked}
-      data-active={checkBase.checked ? "" : undefined}
+      {...dataAttrs}
     >
       {children}
     </button>

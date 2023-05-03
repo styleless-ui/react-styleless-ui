@@ -150,8 +150,9 @@ const SnackbarBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           style={{ ...(style ?? {}), position: "fixed" }}
           id={id}
           ref={ref}
-          data-slot={SnackbarRootSlot}
           className={className}
+          data-slot={SnackbarRootSlot}
+          data-open={open ? "" : undefined}
         >
           <SnackbarContext.Provider value={context}>
             {children}

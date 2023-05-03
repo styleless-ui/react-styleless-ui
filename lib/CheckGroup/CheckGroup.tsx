@@ -106,11 +106,6 @@ const CheckGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const labelProps = getLabelInfo(label);
 
-  const visibleLabel =
-    typeof labelProps.visibleLabel !== "undefined"
-      ? labelProps.visibleLabel
-      : undefined;
-
   const [value, setValue] = useControlledProp(valueProp, defaultValue, []);
 
   const handleChange = (newCheckedState: boolean, inputValue: string) => {
@@ -131,13 +126,13 @@ const CheckGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       data-slot={Slots.Root}
     >
       <CheckGroupContext.Provider value={{ value, onChange: handleChange }}>
-        {visibleLabel && (
+        {labelProps.visibleLabel && (
           <span
             id={visibleLabelId}
             data-slot={Slots.Label}
             className={classes?.label}
           >
-            {visibleLabel}
+            {labelProps.visibleLabel}
           </span>
         )}
         <div
@@ -147,7 +142,7 @@ const CheckGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           aria-label={labelProps.srOnlyLabel}
           aria-orientation={orientation}
           aria-labelledby={
-            visibleLabel ? visibleLabelId : labelProps.labelledBy
+            labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
           }
         >
           {children}

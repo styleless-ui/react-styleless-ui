@@ -115,8 +115,15 @@ const ButtonBase = <E extends React.ElementType, R extends HTMLElement>(
   const children =
     typeof childrenProp === "function" ? childrenProp(renderCtx) : childrenProp;
 
+  const dataAttrs = {
+    "data-slot": Slots.Root,
+    "data-disabled": renderCtx.disabled ? "" : undefined,
+    "data-focus-visible": renderCtx.focusedVisible ? "" : undefined,
+  };
+
   return (
     <RootNode
+      {...otherProps}
       id={id}
       ref={refCallback}
       className={className}
@@ -126,11 +133,8 @@ const ButtonBase = <E extends React.ElementType, R extends HTMLElement>(
       onFocus={buttonBase.handleFocus}
       onKeyDown={buttonBase.handleKeyDown}
       onKeyUp={buttonBase.handleKeyUp}
-      data-slot={Slots.Root}
-      {...otherProps}
       tabIndex={disabled ? -1 : 0}
-      data-disabled={disabled ? "" : undefined}
-      data-focus-visible={buttonBase.isFocusedVisible ? "" : undefined}
+      {...dataAttrs}
     >
       {children}
     </RootNode>

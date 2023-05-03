@@ -74,11 +74,6 @@ const MenuGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const labelProps = getLabelInfo(label);
 
-  const visibleLabel =
-    typeof labelProps.visibleLabel !== "undefined"
-      ? labelProps.visibleLabel
-      : undefined;
-
   return (
     <div
       {...otherProps}
@@ -89,15 +84,17 @@ const MenuGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       tabIndex={-1}
       data-slot={GroupRootSlot}
       aria-label={labelProps.srOnlyLabel}
-      aria-labelledby={visibleLabel ? visibleLabelId : labelProps.labelledBy}
+      aria-labelledby={
+        labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
+      }
     >
-      {visibleLabel && (
+      {labelProps.visibleLabel && (
         <span
           id={visibleLabelId}
           data-slot={GroupLabelSlot}
           className={classes?.label}
         >
-          {visibleLabel}
+          {labelProps.visibleLabel}
         </span>
       )}
 

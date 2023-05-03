@@ -202,6 +202,7 @@ const TabBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
       tabIndex={disabled ? -1 : selected ? 0 : -1}
       className={className}
       aria-selected={selected}
+      data-selected={selected ? "" : undefined}
     >
       {children}
     </button>

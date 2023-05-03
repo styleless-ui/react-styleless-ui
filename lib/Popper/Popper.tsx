@@ -286,6 +286,7 @@ const PopperBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
             left: 0,
             top: 0,
           }}
+          data-open={open ? "" : undefined}
         >
           {children}
         </div>
