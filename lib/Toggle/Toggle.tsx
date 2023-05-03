@@ -165,9 +165,9 @@ const ToggleBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const dataAttrs = {
     "data-slot": Slots.Root,
-    "data-active": renderCtx.active,
-    "data-disable": renderCtx.disabled,
-    "data-focus-visible": renderCtx.focusedVisible,
+    "data-active": renderCtx.active ? "" : undefined,
+    "data-disable": renderCtx.disabled ? "" : undefined,
+    "data-focus-visible": renderCtx.focusedVisible ? "" : undefined,
   };
 
   return (
