@@ -68,7 +68,13 @@ const ExpandableBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   };
 
   return (
-    <div {...otherProps} ref={ref} className={className} data-slot={RootSlot}>
+    <div
+      {...otherProps}
+      role="heading"
+      ref={ref}
+      className={className}
+      data-slot={RootSlot}
+    >
       <ExpandableContext.Provider
         value={{ isExpanded, setIsExpanded, handleExpandChange }}
       >
