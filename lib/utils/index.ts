@@ -7,6 +7,7 @@ export { default as useIsServerHandoffComplete } from "@utilityjs/use-is-server-
 export { default as useOnChange } from "@utilityjs/use-on-change";
 export { default as useOnOutsideClick } from "@utilityjs/use-on-outside-click";
 export { default as usePreviousValue } from "@utilityjs/use-previous-value";
+export { default as useRegisterNodeRef } from "@utilityjs/use-register-node-ref";
 export { default as useScrollGuard } from "@utilityjs/use-scroll-guard";
 export { computeAccessibleName } from "dom-accessibility-api";
 export { default as componentWithForwardedRef } from "./componentWithForwardedRef";

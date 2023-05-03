@@ -28,6 +28,9 @@ dependencies:
   '@utilityjs/use-previous-value':
     specifier: ^1.0.1
     version: 1.0.1(react@18.2.0)
+  '@utilityjs/use-register-node-ref':
+    specifier: ^1.1.0
+    version: 1.1.0(react@18.2.0)
   '@utilityjs/use-scroll-guard':
     specifier: ^1.0.0
     version: 1.0.0(react@18.2.0)
@@ -1476,6 +1479,14 @@ packages:
 
   /@utilityjs/use-previous-value@1.0.1(react@18.2.0):
     resolution: {integrity: sha512-iO9iqcUigfFNZ2dsOWrWqonwC8WTJic5+pr5/OWIxbwklBpbQuPoPmrGwQ9AZBueU2L86BH4FiJHMMhn15M4hQ==}
+    peerDependencies:
+      react: '>=16.8'
+    dependencies:
+      react: 18.2.0
+    dev: false
+
+  /@utilityjs/use-register-node-ref@1.1.0(react@18.2.0):
+    resolution: {integrity: sha512-Zn6Aoxqm96bP3Kf8lErKiUbdZkg3nmnbC8GcdXnqESDOGRbwZ7gIMD7WR7DLjSfx5ZV8TZQpS8lh5MQgdpAbuw==}
     peerDependencies:
       react: '>=16.8'
     dependencies:

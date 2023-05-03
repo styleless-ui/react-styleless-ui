@@ -7,6 +7,7 @@ import {
   useDirection,
   useForkedRefs,
   useIsomorphicLayoutEffect,
+  useRegisterNodeRef,
 } from "../utils";
 import {
   computePosition,
@@ -255,13 +256,11 @@ const PopperBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       ? classNameProp(renderCtx)
       : classNameProp;
 
-  const refCallback = (node: HTMLDivElement | null) => {
+  const registerRef = useRegisterNodeRef(node => {
     handlePopperRef(node as unknown as HTMLDivElement);
 
-    if (!node) return;
-
     updatePosition();
-  };
+  }, []);
 
   return keepMounted || (!keepMounted && open) ? (
     <Portal>
@@ -278,7 +277,7 @@ const PopperBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           data-slot={Slots.Root}
           id={id}
           className={className}
-          ref={refCallback}
+          ref={registerRef}
           style={{
             ...(style ?? {}),
             ...translate(coordinates),
