@@ -66,6 +66,8 @@ const ExpandableContentBase = (
       className={className}
       role="region"
       aria-hidden={!expandableCtx?.isExpanded}
+      // @ts-expect-error React hasn't added `inert` yet
+      inert={expanded ? undefined : ""}
       data-slot={ContentRootSlot}
     >
       {children}
