@@ -1,6 +1,6 @@
 import * as React from "react";
-import { SystemKeys } from "../internals";
 import Portal from "../Portal";
+import { SystemKeys } from "../internals";
 import type { MergeElementProps } from "../typings";
 import {
   componentWithForwardedRef,
@@ -10,24 +10,24 @@ import {
   useOnChange,
   usePreviousValue,
 } from "../utils";
-import SnackbarContext from "./context";
-import { Root as SnackbarRootSlot } from "./slots";
+import ToastContext from "./context";
+import { Root as ToastRootSlot } from "./slots";
 
 interface OwnProps {
   /**
-   * The content of the snackbar.
+   * The content of the toast.
    */
   children?: React.ReactNode;
   /**
-   * The className applied to the snackbar.
+   * The className applied to the toast.
    */
   className?: string | ((ctx: { openState: boolean }) => string);
   /**
-   * If `true`, the snackbar will be opened.
+   * If `true`, the toast will be opened.
    */
   open: boolean;
   /**
-   * The DOM node reference or selector to focus when the snackbar closes.
+   * The DOM node reference or selector to focus when the toast closes.
    *
    * If not provided, the previously focused element will be focused.
    */
@@ -46,7 +46,7 @@ interface OwnProps {
    */
   keepMounted?: boolean;
   /**
-   * The time in milliseconds that should elapse before automatically closing the snackbar.
+   * The time in milliseconds that should elapse before automatically closing the toast.
    */
   duration?: number;
   /**
@@ -64,7 +64,7 @@ export type Props = Omit<
   "defaultChecked" | "defaultValue"
 >;
 
-const SnackbarBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
+const ToastBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     open,
     duration,
@@ -82,7 +82,7 @@ const SnackbarBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const isMounted = useIsMounted();
 
-  const id = useDeterministicId(idProp, "styleless-ui__snackbar");
+  const id = useDeterministicId(idProp, "styleless-ui__toast");
 
   const timeoutRef = React.useRef<number>(NaN);
   const previouslyFocusedElement = React.useRef<HTMLElement | null>(null);
@@ -151,18 +151,18 @@ const SnackbarBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           id={id}
           ref={ref}
           className={className}
-          data-slot={SnackbarRootSlot}
+          data-slot={ToastRootSlot}
           data-open={open ? "" : undefined}
         >
-          <SnackbarContext.Provider value={context}>
+          <ToastContext.Provider value={context}>
             {children}
-          </SnackbarContext.Provider>
+          </ToastContext.Provider>
         </div>
       </div>
     </Portal>
   ) : null;
 };
 
-const Snackbar = componentWithForwardedRef(SnackbarBase);
+const Toast = componentWithForwardedRef(ToastBase);
 
-export default Snackbar;
+export default Toast;

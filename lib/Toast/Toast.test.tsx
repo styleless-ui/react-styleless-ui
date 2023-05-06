@@ -1,5 +1,5 @@
 import cls from "classnames";
-import * as Snackbar from ".";
+import * as Toast from ".";
 import {
   itShouldMount,
   itSupportsDataSetProps,
@@ -12,19 +12,19 @@ import {
 } from "../../tests/utils";
 import * as Slots from "./slots";
 
-describe("Snackbar", () => {
+describe("Toast", () => {
   afterEach(jest.clearAllMocks);
 
-  itShouldMount(Snackbar.Root, { open: true, role: "status" });
-  itSupportsRef(Snackbar.Root, { open: true, role: "status" }, HTMLDivElement);
+  itShouldMount(Toast.Root, { open: true, role: "status" });
+  itSupportsRef(Toast.Root, { open: true, role: "status" }, HTMLDivElement);
   itSupportsStyle(
-    Snackbar.Root,
+    Toast.Root,
     { open: true, role: "status" },
     `[data-slot='${Slots.Root}']`,
     { withPortal: true },
   );
   itSupportsDataSetProps(
-    Snackbar.Root,
+    Toast.Root,
     { open: true, role: "status" },
     `[data-slot='${Slots.Root}']`,
     { withPortal: true },
@@ -32,27 +32,27 @@ describe("Snackbar", () => {
 
   it("should have the required classNames", () => {
     render(
-      <Snackbar.Root
+      <Toast.Root
         open
         role="status"
-        data-testid="snackbar-root"
+        data-testid="toast-root"
         className={({ openState }) => cls("root", { "root--open": openState })}
       >
-        <Snackbar.Content className="content" data-testid="snackbar-content">
-          <Snackbar.Title className="title" data-testid="snackbar-title">
+        <Toast.Content className="content" data-testid="toast-content">
+          <Toast.Title className="title" data-testid="toast-title">
             Title
-          </Snackbar.Title>
-          <Snackbar.Description
+          </Toast.Title>
+          <Toast.Description
             className="description"
-            data-testid="snackbar-description"
+            data-testid="toast-description"
           >
             Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nostrum
             dolorum quod voluptas! Necessitatibus, velit perspiciatis odit
             laudantium impedit quos, non vitae id magnam sed dolore, aliquid
             aliquam dolor corporis assumenda.
-          </Snackbar.Description>
-          <Snackbar.Action
-            data-testid="snackbar-action"
+          </Toast.Description>
+          <Toast.Action
+            data-testid="toast-action"
             className={({ disabled, focusedVisible }) =>
               cls("action", {
                 "action--disabled": disabled,
@@ -61,16 +61,16 @@ describe("Snackbar", () => {
             }
           >
             Action
-          </Snackbar.Action>
-        </Snackbar.Content>
-      </Snackbar.Root>,
+          </Toast.Action>
+        </Toast.Content>
+      </Toast.Root>,
     );
 
-    const root = screen.getByTestId("snackbar-root");
-    const content = screen.getByTestId("snackbar-content");
-    const title = screen.getByTestId("snackbar-title");
-    const description = screen.getByTestId("snackbar-description");
-    const action = screen.getByTestId("snackbar-action");
+    const root = screen.getByTestId("toast-root");
+    const content = screen.getByTestId("toast-content");
+    const title = screen.getByTestId("toast-title");
+    const description = screen.getByTestId("toast-description");
+    const action = screen.getByTestId("toast-action");
 
     expect(root).toHaveClass("root", "root--open");
     expect(content).toHaveClass("content");
@@ -81,48 +81,48 @@ describe("Snackbar", () => {
 
   it("should have `aria-labelledby` and `aria-describedby` attributes", () => {
     render(
-      <Snackbar.Root open role="status" data-testid="snackbar-root">
-        <Snackbar.Content data-testid="snackbar-content">
-          <Snackbar.Title data-testid="snackbar-title">Title</Snackbar.Title>
-          <Snackbar.Description data-testid="snackbar-description">
+      <Toast.Root open role="status" data-testid="toast-root">
+        <Toast.Content data-testid="toast-content">
+          <Toast.Title data-testid="toast-title">Title</Toast.Title>
+          <Toast.Description data-testid="toast-description">
             Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nostrum
             dolorum quod voluptas! Necessitatibus, velit perspiciatis odit
             laudantium impedit quos, non vitae id magnam sed dolore, aliquid
             aliquam dolor corporis assumenda.
-          </Snackbar.Description>
-        </Snackbar.Content>
-      </Snackbar.Root>,
+          </Toast.Description>
+        </Toast.Content>
+      </Toast.Root>,
     );
 
-    const content = screen.getByTestId("snackbar-content");
-    const title = screen.getByTestId("snackbar-title");
-    const description = screen.getByTestId("snackbar-description");
+    const content = screen.getByTestId("toast-content");
+    const title = screen.getByTestId("toast-title");
+    const description = screen.getByTestId("toast-description");
 
     expect(content).toHaveAttribute("aria-labelledby", title.id);
     expect(content).toHaveAttribute("aria-describedby", description.id);
   });
 
-  it("closes the snackbar and focuses the specified `focusAfterClosed` element", () => {
+  it("closes the toast and focuses the specified `focusAfterClosed` element", () => {
     userEvent.setup();
     const { rerender } = render(
       <>
         <button id="focus-btn">Button</button>
-        <Snackbar.Root
+        <Toast.Root
           role="status"
           open={true}
           focusAfterClosed="#focus-btn"
-        ></Snackbar.Root>
+        ></Toast.Root>
       </>,
     );
 
     rerender(
       <>
         <button id="focus-btn">Button</button>
-        <Snackbar.Root
+        <Toast.Root
           role="status"
           open={false}
           focusAfterClosed="#focus-btn"
-        ></Snackbar.Root>
+        ></Toast.Root>
       </>,
     );
 
@@ -136,11 +136,11 @@ describe("Snackbar", () => {
 
     userEvent.setup();
     render(
-      <Snackbar.Root
+      <Toast.Root
         open
         role="status"
         onEscapeKeyUp={handleEscapeKeyUp}
-      ></Snackbar.Root>,
+      ></Toast.Root>,
     );
 
     await userEvent.keyboard("[Escape]");
@@ -154,14 +154,14 @@ describe("Snackbar", () => {
 
     const duration = 1000;
 
-    const props: Snackbar.RootProps = {
+    const props: Toast.RootProps = {
       duration,
       role: "status",
       open: true,
       onDurationEnd: handleDurationEnd,
     };
 
-    render(<Snackbar.Root {...props}></Snackbar.Root>);
+    render(<Toast.Root {...props}></Toast.Root>);
     expect(handleDurationEnd).not.toHaveBeenCalled();
 
     await wait(duration);

@@ -34,7 +34,7 @@ export type Props<T extends React.ElementType = typeof Button> =
     }
   >;
 
-const SnackbarActionBase = <
+const ToastActionBase = <
   T extends React.ElementType = React.ElementType,
   E extends HTMLElement = HTMLElement,
 >(
@@ -49,7 +49,7 @@ const SnackbarActionBase = <
     ...otherProps
   } = props;
 
-  const id = useDeterministicId(idProp, "styleless-ui__snackbar-action");
+  const id = useDeterministicId(idProp, "styleless-ui__toast-action");
 
   return (
     <RootNode
@@ -65,6 +65,6 @@ const SnackbarActionBase = <
   );
 };
 
-const SnackbarAction = componentWithForwardedRef(SnackbarActionBase);
+const ToastAction = componentWithForwardedRef(ToastActionBase);
 
-export default SnackbarAction;
+export default ToastAction;

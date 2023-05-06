@@ -32,7 +32,7 @@ export type Props<T extends React.ElementType = "strong"> = MergeElementProps<
   }
 >;
 
-const SnackbarTitleBase = <
+const ToastTitleBase = <
   T extends React.ElementType = React.ElementType,
   E extends HTMLElement = HTMLElement,
 >(
@@ -47,7 +47,7 @@ const SnackbarTitleBase = <
     ...otherProps
   } = props;
 
-  const id = useDeterministicId(idProp, "styleless-ui__snackbar-title");
+  const id = useDeterministicId(idProp, "styleless-ui__toast-title");
 
   const rootRef = React.useRef<E>(null);
   const handleRef = useForkedRefs(ref, rootRef);
@@ -65,7 +65,7 @@ const SnackbarTitleBase = <
     } else {
       // eslint-disable-next-line no-console
       console.error(
-        "[StylelessUI][Snackbar]: You should always wrap your content with `<Snackbar.Content>` to provide accessibility features.",
+        "[StylelessUI][Toast]: You should always wrap your content with `<Toast.Content>` to provide accessibility features.",
       );
     }
   };
@@ -83,6 +83,6 @@ const SnackbarTitleBase = <
   );
 };
 
-const SnackbarTitle = componentWithForwardedRef(SnackbarTitleBase);
+const ToastTitle = componentWithForwardedRef(ToastTitleBase);
 
-export default SnackbarTitle;
+export default ToastTitle;

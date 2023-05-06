@@ -6,7 +6,7 @@ import {
   setRef,
   useDeterministicId,
 } from "../../utils";
-import SnackbarContext from "../context";
+import ToastContext from "../context";
 import {
   ContentRoot as ContentRootSlot,
   ActionRoot as ActionRootSlot,
@@ -28,12 +28,12 @@ export type Props = Omit<
   "defaultChecked" | "defaultValue"
 >;
 
-const SnackbarContentBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
+const ToastContentBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const { className, children, id: idProp, ...otherProps } = props;
 
-  const snackbarCtx = React.useContext(SnackbarContext);
+  const toastCtx = React.useContext(ToastContext);
 
-  const id = useDeterministicId(idProp, "styleless-ui__snackbar-content");
+  const id = useDeterministicId(idProp, "styleless-ui__toast-content");
 
   const [isTrappable, setIsTrappable] = React.useState(false);
 
@@ -50,18 +50,18 @@ const SnackbarContentBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   };
 
   return (
-    <FocusTrap enabled={snackbarCtx?.open && isTrappable}>
+    <FocusTrap enabled={toastCtx?.open && isTrappable}>
       <div
         {...otherProps}
         id={id}
         ref={refCallback}
         className={className}
-        role={snackbarCtx?.role}
+        role={toastCtx?.role}
         data-slot={ContentRootSlot}
         aria-atomic="true"
         aria-live={
-          snackbarCtx
-            ? snackbarCtx.role === "alert"
+          toastCtx
+            ? toastCtx.role === "alert"
               ? "assertive"
               : "polite"
             : "off"
@@ -73,6 +73,6 @@ const SnackbarContentBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const SnackbarContent = componentWithForwardedRef(SnackbarContentBase);
+const ToastContent = componentWithForwardedRef(ToastContentBase);
 
-export default SnackbarContent;
+export default ToastContent;
