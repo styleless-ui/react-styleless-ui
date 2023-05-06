@@ -1,11 +1,9 @@
 import * as React from "react";
 import Portal from "../Portal";
-import { SystemKeys } from "../internals";
 import type { MergeElementProps } from "../typings";
 import {
   componentWithForwardedRef,
   useDeterministicId,
-  useEventListener,
   useIsMounted,
   useOnChange,
   usePreviousValue,
@@ -53,10 +51,6 @@ interface OwnProps {
    * The Callback is fired when the duration ends.
    */
   onDurationEnd?: () => void;
-  /**
-   * Callback fired when the `Escape` key is released.
-   */
-  onEscapeKeyUp?: (event: KeyboardEvent) => void;
 }
 
 export type Props = Omit<
@@ -69,7 +63,6 @@ const ToastBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     open,
     duration,
     style,
-    onEscapeKeyUp,
     onDurationEnd,
     id: idProp,
     focusAfterClosed,
@@ -119,20 +112,6 @@ const ToastBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     typeof classNameProp === "function"
       ? classNameProp({ openState: open })
       : classNameProp;
-
-  if (typeof document !== "undefined") {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useEventListener(
-      {
-        target: document,
-        eventType: "keyup",
-        handler: event => {
-          if (event.key === SystemKeys.ESCAPE) onEscapeKeyUp?.(event);
-        },
-      },
-      open && onEscapeKeyUp != null,
-    );
-  }
 
   const context = React.useMemo(() => ({ role, open }), [role, open]);
 
