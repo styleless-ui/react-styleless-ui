@@ -39,27 +39,11 @@ describe("Toast", () => {
         className={({ openState }) => cls("root", { "root--open": openState })}
       >
         <Toast.Content className="content" data-testid="toast-content">
-          <Toast.Title className="title" data-testid="toast-title">
-            Title
-          </Toast.Title>
-          <Toast.Description
-            className="description"
-            data-testid="toast-description"
-          >
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nostrum
-            dolorum quod voluptas! Necessitatibus, velit perspiciatis odit
-            laudantium impedit quos, non vitae id magnam sed dolore, aliquid
-            aliquam dolor corporis assumenda.
-          </Toast.Description>
-          <Toast.Action
-            data-testid="toast-action"
-            className={({ disabled, focusedVisible }) =>
-              cls("action", {
-                "action--disabled": disabled,
-                "action--focus-visible": focusedVisible,
-              })
-            }
-          >
+          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nostrum
+          dolorum quod voluptas! Necessitatibus, velit perspiciatis odit
+          laudantium impedit quos, non vitae id magnam sed dolore, aliquid
+          aliquam dolor corporis assumenda.
+          <Toast.Action data-testid="toast-action" className="action">
             Action
           </Toast.Action>
         </Toast.Content>
@@ -68,38 +52,11 @@ describe("Toast", () => {
 
     const root = screen.getByTestId("toast-root");
     const content = screen.getByTestId("toast-content");
-    const title = screen.getByTestId("toast-title");
-    const description = screen.getByTestId("toast-description");
     const action = screen.getByTestId("toast-action");
 
     expect(root).toHaveClass("root", "root--open");
     expect(content).toHaveClass("content");
-    expect(title).toHaveClass("title");
-    expect(description).toHaveClass("description");
-    expect(action).toHaveClass("action", "action--focus-visible");
-  });
-
-  it("should have `aria-labelledby` and `aria-describedby` attributes", () => {
-    render(
-      <Toast.Root open role="status" data-testid="toast-root">
-        <Toast.Content data-testid="toast-content">
-          <Toast.Title data-testid="toast-title">Title</Toast.Title>
-          <Toast.Description data-testid="toast-description">
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nostrum
-            dolorum quod voluptas! Necessitatibus, velit perspiciatis odit
-            laudantium impedit quos, non vitae id magnam sed dolore, aliquid
-            aliquam dolor corporis assumenda.
-          </Toast.Description>
-        </Toast.Content>
-      </Toast.Root>,
-    );
-
-    const content = screen.getByTestId("toast-content");
-    const title = screen.getByTestId("toast-title");
-    const description = screen.getByTestId("toast-description");
-
-    expect(content).toHaveAttribute("aria-labelledby", title.id);
-    expect(content).toHaveAttribute("aria-describedby", description.id);
+    expect(action).toHaveClass("action");
   });
 
   it("closes the toast and focuses the specified `focusAfterClosed` element", () => {
@@ -129,24 +86,6 @@ describe("Toast", () => {
     const focusBtn = screen.getByRole("button");
 
     expect(focusBtn).toHaveFocus();
-  });
-
-  it("presses the Escape key and calls `onEscapeKeyUp` callback", async () => {
-    const handleEscapeKeyUp = jest.fn<void, [event: KeyboardEvent]>();
-
-    userEvent.setup();
-    render(
-      <Toast.Root
-        open
-        role="status"
-        onEscapeKeyUp={handleEscapeKeyUp}
-      ></Toast.Root>,
-    );
-
-    await userEvent.keyboard("[Escape]");
-
-    expect(handleEscapeKeyUp.mock.calls.length).toBe(1);
-    expect(handleEscapeKeyUp.mock.calls[0]?.[0]).not.toBeFalsy();
   });
 
   it("set `duration` and calls `onDurationEnd` callback", async () => {

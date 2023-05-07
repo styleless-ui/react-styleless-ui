@@ -21,7 +21,6 @@ export type {
   RootProps as ExpandableRootProps,
   TriggerProps as ExpandableTriggerProps,
 } from "./Expandable";
-export { default as FocusTrap, type FocusTrapProps } from "./FocusTrap";
 export { default as InputSlider, type InputSliderProps } from "./InputSlider";
 export * as Menu from "./Menu";
 export type {
@@ -60,9 +59,7 @@ export * as Toast from "./Toast";
 export type {
   ActionProps as ToastActionProps,
   ContentProps as ToastContentProps,
-  DescriptionProps as ToastDescriptionProps,
   RootProps as ToastRootProps,
-  TitleProps as ToastTitleProps,
 } from "./Toast";
 export { default as Toggle, type ToggleProps } from "./Toggle";
 export { default as ToggleGroup, type ToggleGroupProps } from "./ToggleGroup";
