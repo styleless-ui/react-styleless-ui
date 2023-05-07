@@ -1,5 +1,5 @@
 import * as React from "react";
-import FocusTrap from "../../FocusTrap";
+import FocusTrap from "../../internals/FocusTrap";
 import type { MergeElementProps } from "../../typings";
 import { componentWithForwardedRef, useDeterministicId } from "../../utils";
 import DialogContext from "../context";

@@ -1,8 +1,7 @@
 import * as React from "react";
-import FocusTrap from "../FocusTrap";
-import { SystemKeys } from "../internals";
-import Popper, { type PopperProps as PopperProps } from "../Popper";
+import Popper, { type PopperProps } from "../Popper";
 import type { VirtualElement } from "../Popper/helpers";
+import { FocusTrap, SystemKeys } from "../internals";
 import type { MergeElementProps } from "../typings";
 import {
   componentWithForwardedRef,

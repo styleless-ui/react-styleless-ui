@@ -1,11 +1,11 @@
 import * as React from "react";
-import { visuallyHiddenCSSProperties } from "../internals";
+import { visuallyHiddenCSSProperties } from "..";
 import {
   contains,
   isFocusable,
   useEventListener,
   useForkedRefs,
-} from "../utils";
+} from "../../utils";
 
 export interface Props {
   /**
@@ -48,6 +48,7 @@ const FocusTrap = (props: Props) => {
     if (!isFocusable(node)) return false;
 
     ignoreFocusChanges.current = true;
+
     try {
       (node as HTMLElement).focus();
       // eslint-disable-next-line no-empty
