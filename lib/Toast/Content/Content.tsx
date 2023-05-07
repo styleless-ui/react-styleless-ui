@@ -1,16 +1,9 @@
 import * as React from "react";
-import FocusTrap from "../../FocusTrap";
+import { FocusRedirect } from "../../internals";
 import type { MergeElementProps } from "../../typings";
-import {
-  componentWithForwardedRef,
-  setRef,
-  useDeterministicId,
-} from "../../utils";
+import { componentWithForwardedRef, useDeterministicId } from "../../utils";
 import ToastContext from "../context";
-import {
-  ContentRoot as ContentRootSlot,
-  ActionRoot as ActionRootSlot,
-} from "../slots";
+import { ContentRoot as ContentRootSlot } from "../slots";
 
 interface OwnProps {
   /**
@@ -35,26 +28,12 @@ const ToastContentBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const id = useDeterministicId(idProp, "styleless-ui__toast-content");
 
-  const [isTrappable, setIsTrappable] = React.useState(false);
-
-  const refCallback = (node: HTMLDivElement | null) => {
-    setRef(ref, node);
-
-    if (!node) return;
-
-    const actionEl = node.querySelector(`[data-slot="${ActionRootSlot}"]`);
-
-    if (!actionEl) return setIsTrappable(false);
-
-    setIsTrappable(true);
-  };
-
   return (
-    <FocusTrap enabled={toastCtx?.open && isTrappable}>
+    <FocusRedirect enabled={toastCtx?.open}>
       <div
         {...otherProps}
         id={id}
-        ref={refCallback}
+        ref={ref}
         className={className}
         role={toastCtx?.role}
         data-slot={ContentRootSlot}
@@ -69,7 +48,7 @@ const ToastContentBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       >
         {children}
       </div>
-    </FocusTrap>
+    </FocusRedirect>
   );
 };
 
