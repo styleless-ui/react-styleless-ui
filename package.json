@@ -1,6 +1,6 @@
 {
   "name": "@styleless-ui/react",
-  "version": "1.0.0-canary.12",
+  "version": "1.0.0-canary.13",
   "description": "Completely unstyled, headless and accessible React UI components.",
   "repository": "git@github.com:styleless-ui/react-styleless-ui.git",
   "author": "mimshins <mostafa.sh.coderino@gmail.com>",
