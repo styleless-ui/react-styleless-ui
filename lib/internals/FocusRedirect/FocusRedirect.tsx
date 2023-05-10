@@ -61,6 +61,8 @@ const FocusRedirect = (props: Props) => {
     isRestored.current = false;
   }
 
+  React.useEffect(() => () => void nodeToRestore.current?.focus(), [enabled]);
+
   const attemptFocus = (element: HTMLElement) => {
     if (!element) return false;
     if (!isFocusable(element)) return false;
