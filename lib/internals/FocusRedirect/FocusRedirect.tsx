@@ -86,7 +86,10 @@ const FocusRedirect = (props: Props) => {
 
     for (const child of Array.from(node.children).reverse()) {
       if (isFocusable(child)) return child as HTMLElement;
-      return getLastFocusableDescendant(child);
+      const elFound = getLastFocusableDescendant(child);
+
+      if (!elFound) continue;
+      return elFound;
     }
 
     return null;
@@ -101,7 +104,10 @@ const FocusRedirect = (props: Props) => {
 
     for (const child of Array.from(node.children)) {
       if (isFocusable(child)) return child as HTMLElement;
-      return getFirstFocusableDescendant(child);
+      const elFound = getFirstFocusableDescendant(child);
+
+      if (!elFound) continue;
+      return elFound;
     }
 
     return null;
