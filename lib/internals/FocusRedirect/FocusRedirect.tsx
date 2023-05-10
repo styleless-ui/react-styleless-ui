@@ -2,8 +2,10 @@ import * as React from "react";
 import {
   contains,
   isFocusable,
+  useEventCallback,
   useEventListener,
   useForkedRefs,
+  usePreviousValue,
 } from "../../utils";
 
 export interface Props {
@@ -34,83 +36,146 @@ const FocusRedirect = (props: Props) => {
     }
   })();
 
+  const prevEnabledState = usePreviousValue(enabled);
+
   const ignoreFocusChanges = React.useRef(false);
   const isRedirectionCompleted = React.useRef(false);
+  const isRestored = React.useRef(false);
 
-  const reservedActiveElement = React.useRef<HTMLElement | null>(null);
+  const nodeToRestore = React.useRef<HTMLElement | null>(null);
+  const lastFocusableElement = React.useRef<HTMLElement | null>(null);
+  const firstFocusableElement = React.useRef<HTMLElement | null>(null);
 
   const rootRef = React.useRef<HTMLElement>();
   const handleRootRef = useForkedRefs(rootRef, child.ref ?? null);
 
   const childProps = { ref: handleRootRef };
 
-  React.useEffect(() => {
-    if (enabled) {
-      reservedActiveElement.current =
-        document.activeElement as HTMLElement | null;
-    }
+  if (enabled !== prevEnabledState) {
+    nodeToRestore.current = null;
+
+    lastFocusableElement.current = null;
+    firstFocusableElement.current = null;
 
     isRedirectionCompleted.current = false;
-  }, [enabled]);
+    isRestored.current = false;
+  }
 
-  const attemptFocus = (element?: Element) => {
-    const node = element ?? rootRef.current;
-
-    if (!node) return false;
-    if (!isFocusable(node)) return false;
+  const attemptFocus = (element: HTMLElement) => {
+    if (!element) return false;
+    if (!isFocusable(element)) return false;
 
     ignoreFocusChanges.current = true;
 
     try {
-      (node as HTMLElement).focus();
+      element.focus();
       // eslint-disable-next-line no-empty
     } catch {}
 
     ignoreFocusChanges.current = false;
 
-    return document.activeElement === node;
+    return document.activeElement === element;
   };
 
-  const focusFirstDescendant = (element?: Element): boolean => {
+  const getLastFocusableDescendant = (
+    element?: Element,
+  ): HTMLElement | null => {
     const node = element ?? rootRef.current;
 
-    return node
-      ? Array.from(node.children).some(
-          child => attemptFocus(child) || focusFirstDescendant(child),
-        )
-      : false;
+    if (!node) return null;
+
+    for (const child of Array.from(node.children).reverse()) {
+      if (isFocusable(child)) return child as HTMLElement;
+      return getLastFocusableDescendant(child);
+    }
+
+    return null;
+  };
+
+  const getFirstFocusableDescendant = (
+    element?: Element,
+  ): HTMLElement | null => {
+    const node = element ?? rootRef.current;
+
+    if (!node) return null;
+
+    for (const child of Array.from(node.children)) {
+      if (isFocusable(child)) return child as HTMLElement;
+      return getFirstFocusableDescendant(child);
+    }
+
+    return null;
   };
 
   if (typeof document !== "undefined") {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
+    /* eslint-disable react-hooks/rules-of-hooks */
     useEventListener(
       {
         target: document,
-        eventType: "focus",
-        handler: event => {
-          if (ignoreFocusChanges.current) return;
+        eventType: "keydown",
+        handler: useEventCallback<KeyboardEvent>(event => {
           if (!rootRef.current) return;
-          if (contains(rootRef.current, event.target as Element)) return;
-          else if (isRedirectionCompleted.current) {
-            if (event.relatedTarget !== reservedActiveElement.current)
-              reservedActiveElement.current?.focus();
+          if (isRestored.current) return;
+          if (!lastFocusableElement.current) return;
 
-            reservedActiveElement.current = null;
-            return;
+          const isTabKey = event.key === "Tab";
+          const isShiftTabKey = isTabKey && event.shiftKey;
+
+          if (
+            (isTabKey &&
+              !isShiftTabKey &&
+              event.target === lastFocusableElement.current) ||
+            (isShiftTabKey && event.target === firstFocusableElement.current)
+          ) {
+            event.preventDefault();
+
+            nodeToRestore.current?.focus();
+            isRestored.current = true;
           }
-
-          isRedirectionCompleted.current = true;
-          const focused = focusFirstDescendant();
-
-          if (!focused) {
-            reservedActiveElement.current =
-              document.activeElement as HTMLElement | null;
-          }
-        },
-        options: { capture: true },
+        }),
       },
       enabled,
     );
+    useEventListener(
+      {
+        target: document,
+        eventType: "focusout",
+        handler: useEventCallback<FocusEvent>(event => {
+          if (!rootRef.current) return;
+          if (ignoreFocusChanges.current) return;
+          if (isRestored.current) return;
+
+          if (!nodeToRestore.current)
+            nodeToRestore.current = event.relatedTarget as HTMLElement | null;
+        }),
+      },
+      enabled,
+    );
+    useEventListener(
+      {
+        target: document,
+        eventType: "focusin",
+        handler: useEventCallback<FocusEvent>(event => {
+          if (ignoreFocusChanges.current) return;
+          if (!rootRef.current) return;
+          if (contains(rootRef.current, event.target as HTMLElement)) return;
+          if (!isRedirectionCompleted.current) {
+            if (!lastFocusableElement.current)
+              lastFocusableElement.current = getLastFocusableDescendant();
+
+            if (!firstFocusableElement.current)
+              firstFocusableElement.current = getFirstFocusableDescendant();
+
+            isRedirectionCompleted.current = true;
+
+            if (!firstFocusableElement.current) return;
+            attemptFocus(firstFocusableElement.current);
+          }
+        }),
+      },
+      enabled,
+    );
+    /* eslint-enable react-hooks/rules-of-hooks */
   }
 
   return React.cloneElement(child, childProps);
