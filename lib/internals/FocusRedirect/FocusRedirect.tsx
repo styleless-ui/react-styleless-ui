@@ -46,7 +46,7 @@ const FocusRedirect = (props: Props) => {
   const lastFocusableElement = React.useRef<HTMLElement | null>(null);
   const firstFocusableElement = React.useRef<HTMLElement | null>(null);
 
-  const rootRef = React.useRef<HTMLElement>();
+  const rootRef = React.useRef<HTMLElement>(null);
   const handleRootRef = useForkedRefs(rootRef, child.ref ?? null);
 
   const childProps = { ref: handleRootRef };
@@ -60,8 +60,6 @@ const FocusRedirect = (props: Props) => {
     isRedirectionCompleted.current = false;
     isRestored.current = false;
   }
-
-  React.useEffect(() => () => void nodeToRestore.current?.focus(), [enabled]);
 
   const attemptFocus = (element: HTMLElement) => {
     if (!element) return false;
