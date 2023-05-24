@@ -79,10 +79,7 @@ const MenuItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     ...otherProps
   } = props;
 
-  const id = useDeterministicId(
-    undefined,
-    "styleless-ui__menu-item__sub-anchor",
-  );
+  const id = useDeterministicId(undefined, "styleless-ui__menu-item");
 
   const menuCtx = React.useContext(MenuContext);
 
@@ -170,7 +167,6 @@ const MenuItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
     node.setAttribute("aria-haspopup", "menu");
     node.setAttribute("aria-expanded", String(isSubMenuOpen()));
-    node.setAttribute("id", id);
 
     subMenuId && node.setAttribute("aria-controls", subMenuId);
   };
@@ -178,6 +174,7 @@ const MenuItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   return (
     <div
       {...otherProps}
+      id={id}
       ref={refCallback}
       className={className}
       onClick={menuItem.handleClick}

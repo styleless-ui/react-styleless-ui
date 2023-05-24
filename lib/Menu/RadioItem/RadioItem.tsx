@@ -3,6 +3,7 @@ import { disableUserSelectCSSProperties } from "../../internals";
 import type { MergeElementProps } from "../../typings";
 import {
   componentWithForwardedRef,
+  useDeterministicId,
   useEventCallback,
   useForkedRefs,
 } from "../../utils";
@@ -70,6 +71,8 @@ const MenuRadioItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     ...otherProps
   } = props;
 
+  const id = useDeterministicId(undefined, "styleless-ui__menu-item");
+
   const menuCtx = React.useContext(MenuContext);
   const radioGroupCtx = React.useContext(MenuRadioGroupContext);
 
@@ -136,6 +139,7 @@ const MenuRadioItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   return (
     <div
       {...otherProps}
+      id={id}
       role="menuitemradio"
       ref={refCallback}
       data-slot={RadioItemRootSlot}

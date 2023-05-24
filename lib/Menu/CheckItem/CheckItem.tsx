@@ -4,6 +4,7 @@ import type { MergeElementProps } from "../../typings";
 import {
   componentWithForwardedRef,
   useControlledProp,
+  useDeterministicId,
   useEventCallback,
   useForkedRefs,
 } from "../../utils";
@@ -79,6 +80,8 @@ const MenuCheckItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     ...otherProps
   } = props;
 
+  const id = useDeterministicId(undefined, "styleless-ui__menu-item");
+
   const menuCtx = React.useContext(MenuContext);
 
   const rootRef = React.useRef<HTMLDivElement>(null);
@@ -140,6 +143,7 @@ const MenuCheckItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   return (
     <div
       {...otherProps}
+      id={id}
       ref={refCallback}
       className={className}
       onClick={menuItem.handleClick}

@@ -2,6 +2,7 @@ import * as React from "react";
 import type { MergeElementProps } from "../../typings";
 import { componentWithForwardedRef } from "../../utils";
 import { ItemsRoot as ItemsRootSlot } from "../slots";
+import MenuContext from "../context";
 
 interface OwnProps {
   /**
@@ -60,6 +61,8 @@ const getLabelInfo = (labelInput: Props["label"]) => {
 const MenuItemsBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const { children, className, label, ...otherProps } = props;
 
+  const menuCtx = React.useContext(MenuContext);
+
   const labelProps = getLabelInfo(label);
 
   return (
@@ -72,6 +75,7 @@ const MenuItemsBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       data-slot={ItemsRootSlot}
       aria-label={labelProps.srOnlyLabel}
       aria-labelledby={labelProps.labelledBy}
+      aria-activedescendant={menuCtx?.activeElement?.id ?? undefined}
     >
       {children}
     </div>
