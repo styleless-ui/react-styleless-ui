@@ -26,13 +26,29 @@ const npmPackageJson = {
   sideEffects: false,
   exports: {
     ".": {
-      import: { types: "./esm/index.d.ts", default: "./esm/index.js" },
-      require: { types: "./index.d.ts", default: "./index.js" },
+      import: {
+        types: "./esm/index.d.ts",
+        default: "./esm/index.js",
+      },
+      require: {
+        types: "./index.d.ts",
+        default: "./index.js",
+      },
+    },
+    "./utils": {
+      import: {
+        types: "./esm/utils/index.d.ts",
+        default: "./esm/utils/index.js",
+      },
+      require: {
+        types: "./utils/index.d.ts",
+        default: "./utils/index.js",
+      },
     },
   },
   types: "./index.d.ts",
   main: "./index.js",
-  module: "esm/index.js",
+  module: "./esm/index.js",
   name: rootPackageJsonData.name,
   version: rootPackageJsonData.version,
   description: rootPackageJsonData.description,
