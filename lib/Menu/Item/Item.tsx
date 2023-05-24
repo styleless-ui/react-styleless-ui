@@ -3,6 +3,7 @@ import { disableUserSelectCSSProperties } from "../../internals";
 import type { MergeElementProps } from "../../typings";
 import {
   componentWithForwardedRef,
+  useDeterministicId,
   useEventCallback,
   useForkedRefs,
 } from "../../utils";
@@ -49,7 +50,7 @@ interface OwnProps {
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,
-  "defaultValue" | "defaultChecked"
+  "defaultValue" | "defaultChecked" | "id"
 >;
 
 const makeRegisterSubMenu =
@@ -77,6 +78,11 @@ const MenuItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     style,
     ...otherProps
   } = props;
+
+  const id = useDeterministicId(
+    undefined,
+    "styleless-ui__menu-item__sub-anchor",
+  );
 
   const menuCtx = React.useContext(MenuContext);
 
@@ -160,12 +166,13 @@ const MenuItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
     if (!subMenuRef.current) return;
 
-    const { id } = subMenuRef.current;
+    const { id: subMenuId } = subMenuRef.current;
 
     node.setAttribute("aria-haspopup", "menu");
     node.setAttribute("aria-expanded", String(isSubMenuOpen()));
+    node.setAttribute("id", id);
 
-    id && node.setAttribute("aria-controls", id);
+    subMenuId && node.setAttribute("aria-controls", subMenuId);
   };
 
   return (
@@ -189,7 +196,7 @@ const MenuItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     >
       <MenuItemContext.Provider
         value={{
-          ref: rootRef,
+          id,
           isSubMenuOpen,
           registerSubMenu,
         }}

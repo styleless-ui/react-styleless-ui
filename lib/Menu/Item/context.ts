@@ -1,7 +1,7 @@
 import * as React from "react";
 
 interface IMenuItemContext {
-  ref: React.RefObject<HTMLDivElement>;
+  id: string;
   isSubMenuOpen: () => boolean;
   registerSubMenu: (
     menuRef: React.RefObject<HTMLDivElement>,
