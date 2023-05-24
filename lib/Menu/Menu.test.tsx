@@ -463,15 +463,15 @@ describe("Menu", () => {
     expect(handleOutsideClick.mock.calls[0]?.[0]).not.toBeFalsy();
   });
 
-  it("presses the Escape key and calls `onEscapeKeyUp` callback", async () => {
-    const handleEscapeKeyUp = jest.fn<void, [event: KeyboardEvent]>();
+  it("presses the Escape key and calls `onEscape` callback", async () => {
+    const handleEscape = jest.fn<void, [event: KeyboardEvent]>();
 
     userEvent.setup();
-    render(<Menu.Root open onEscapeKeyUp={handleEscapeKeyUp} />);
+    render(<Menu.Root open onEscape={handleEscape} />);
 
     await userEvent.keyboard("[Escape]");
 
-    expect(handleEscapeKeyUp.mock.calls.length).toBe(1);
-    expect(handleEscapeKeyUp.mock.calls[0]?.[0]).not.toBeFalsy();
+    expect(handleEscape.mock.calls.length).toBe(1);
+    expect(handleEscape.mock.calls[0]?.[0]).not.toBeFalsy();
   });
 });

@@ -46,9 +46,9 @@ interface OwnProps {
    */
   onOutsideClick?: (event: MouseEvent) => void;
   /**
-   * Callback fired when the `Escape` key is released.
+   * Callback fired when the `Escape` key is pressed.
    */
-  onEscapeKeyUp?: (event: KeyboardEvent) => void;
+  onEscape?: (event: KeyboardEvent) => void;
   /**
    * Used to prevent/allow keyboard navigation when more control is needed.
    * @default true
@@ -96,7 +96,7 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     disabledKeySearch = false,
     open = false,
     onOutsideClick,
-    onEscapeKeyUp,
+    onEscape,
     shouldActivateKeyboardNavigation,
     ...otherProps
   } = props;
@@ -200,7 +200,7 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     useEventListener(
       {
         target: document,
-        eventType: "keyup",
+        eventType: "keydown",
         handler: useEventCallback<KeyboardEvent>(event => {
           const select = [SystemKeys.ENTER, SystemKeys.SPACE].includes(
             event.key,
@@ -214,7 +214,7 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
               openSubMenu(activeElement);
           }
 
-          onEscapeKeyUp?.(event);
+          onEscape?.(event);
         }),
       },
       open && isMenuActive,
