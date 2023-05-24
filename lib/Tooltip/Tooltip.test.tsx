@@ -11,7 +11,7 @@ describe("Tooltip", () => {
     const Component = (
       <>
         <div id="anchor">Anchor</div>
-        <Tooltip anchorElement="#anchor">
+        <Tooltip anchorElement="anchor">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia
           magnam ad excepturi ipsa exercitationem cum?
         </Tooltip>
@@ -29,7 +29,7 @@ describe("Tooltip", () => {
     render(
       <>
         <div id="anchor">Anchor</div>
-        <Tooltip anchorElement="#anchor" defaultOpen={true} ref={ref}>
+        <Tooltip anchorElement="anchor" defaultOpen={true} ref={ref}>
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia
           magnam ad excepturi ipsa exercitationem cum?
         </Tooltip>
@@ -59,7 +59,7 @@ describe("Tooltip", () => {
     const { container } = render(
       <>
         <div id="anchor">Anchor</div>
-        <Tooltip anchorElement="#anchor" defaultOpen={true} style={style}>
+        <Tooltip anchorElement="anchor" defaultOpen={true} style={style}>
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia
           magnam ad excepturi ipsa exercitationem cum?
         </Tooltip>
@@ -88,7 +88,7 @@ describe("Tooltip", () => {
       <>
         <div id="anchor">Anchor</div>
         <Tooltip
-          anchorElement="#anchor"
+          anchorElement="anchor"
           defaultOpen={true}
           data-other-attribute="test"
         >
@@ -109,7 +109,7 @@ describe("Tooltip", () => {
       <>
         <div id="anchor">Anchor</div>
         <Tooltip
-          anchorElement="#anchor"
+          anchorElement="anchor"
           defaultOpen={true}
           data-other-attribute="test"
           className={({ placement, openState }) =>
@@ -134,7 +134,7 @@ describe("Tooltip", () => {
           Anchor
         </div>
         <Tooltip
-          anchorElement="#anchor"
+          anchorElement="anchor"
           defaultOpen={true}
           data-other-attribute="test"
           className={({ placement, openState }) =>

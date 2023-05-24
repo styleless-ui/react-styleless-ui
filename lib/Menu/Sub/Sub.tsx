@@ -35,7 +35,7 @@ const SubMenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       id={id}
       ref={handleRootRef}
       className={className}
-      anchorElement={menuItemCtx?.ref}
+      anchorElement={menuItemCtx?.id}
       data-slot={SubRootSlot}
       data-submenu
     >

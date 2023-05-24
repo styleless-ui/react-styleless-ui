@@ -155,7 +155,7 @@ const translate = ({ x, y }: Coordinates) => {
 const getAnchor = (anchorElement: Props["anchorElement"]) =>
   typeof anchorElement === "string"
     ? typeof document !== "undefined"
-      ? document.querySelector<HTMLElement>(anchorElement)
+      ? document.getElementById(anchorElement)
       : null
     : "current" in anchorElement
     ? anchorElement.current
@@ -185,7 +185,7 @@ const PopperBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     throw new Error(
       [
         "[StylelessUI][Popper]: Invalid `anchorElement` property.",
-        "The `anchorElement` property must be either a `query selector (string)`, " +
+        "The `anchorElement` property must be either a `id (string)`, " +
           "`HTMLElement`, `RefObject<HTMLElement>`, or in shape of " +
           "`{ getBoundingClientRect(): ClientRect }`",
       ].join("\n"),

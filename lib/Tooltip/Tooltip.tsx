@@ -83,7 +83,7 @@ export type Props = Omit<
 const getExactAnchorElement = (anchorElement: Props["anchorElement"]) =>
   typeof anchorElement === "string"
     ? typeof document !== "undefined"
-      ? document.querySelector<HTMLElement>(anchorElement)
+      ? document.getElementById(anchorElement)
       : null
     : "current" in anchorElement
     ? anchorElement.current
@@ -109,7 +109,7 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     throw new Error(
       [
         "[StylelessUI][Tooltip]: Invalid `anchorElement` property.",
-        "The `anchorElement` property must be either a `valid query selector (string)`, " +
+        "The `anchorElement` property must be either a `id (string)`, " +
           "`HTMLElement`, `RefObject<HTMLElement>`, or in shape of " +
           "`{ getBoundingClientRect(): ClientRect }`",
       ].join("\n"),
