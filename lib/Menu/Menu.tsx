@@ -11,6 +11,7 @@ import {
   useEventCallback,
   useEventListener,
   useForkedRefs,
+  usePreviousValue,
 } from "../utils";
 import MenuContext, { type IMenuContext } from "./context";
 import { Root as RootSlot } from "./slots";
@@ -106,6 +107,10 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const rootRef = React.useRef<HTMLDivElement>(null);
   const handleRootRef = useForkedRefs(ref, rootRef);
 
+  const prevOpen = usePreviousValue(open);
+
+  const previouslyFocusedElement = React.useRef<HTMLElement | null>(null);
+
   const keepMounted =
     typeof keepMountedProp === "undefined"
       ? menuCtx?.keepMounted ?? false
@@ -162,13 +167,31 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   };
 
   React.useEffect(() => {
+    if (!open && typeof prevOpen === "boolean" && open !== prevOpen) {
+      previouslyFocusedElement.current
+        ? previouslyFocusedElement.current.focus()
+        : document.body.focus();
+    }
+  }, [open, prevOpen]);
+
+  React.useEffect(() => {
     if (!open) {
       setActiveElement(null);
       setIsMenuActive(false);
 
+      previouslyFocusedElement.current = null;
       initialFocus.current = false;
-    } else setIsMenuActive(true);
-  }, [open]);
+    } else {
+      setIsMenuActive(true);
+
+      if (menuCtx) return;
+
+      previouslyFocusedElement.current =
+        document.activeElement as HTMLElement | null;
+
+      (document.activeElement as HTMLDivElement | null)?.blur();
+    }
+  }, [open, menuCtx]);
 
   if (typeof document !== "undefined") {
     /* eslint-disable react-hooks/rules-of-hooks */
@@ -202,6 +225,20 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         target: document,
         eventType: "keydown",
         handler: useEventCallback<KeyboardEvent>(event => {
+          if (event.key === SystemKeys.ESCAPE) {
+            event.preventDefault();
+            onEscape?.(event);
+          }
+        }),
+      },
+      open && isMenuActive,
+    );
+
+    useEventListener(
+      {
+        target: document,
+        eventType: "keydown",
+        handler: useEventCallback<KeyboardEvent>(event => {
           const select = [SystemKeys.ENTER, SystemKeys.SPACE].includes(
             event.key,
           );
@@ -213,8 +250,6 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
             if (activeElement.hasAttribute("aria-haspopup"))
               openSubMenu(activeElement);
           }
-
-          onEscape?.(event);
         }),
       },
       open && isMenuActive,
@@ -365,11 +400,33 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     if (!menuCtx.shouldActivateFirstSubItemRef.current) return;
     if (initialFocus.current) return;
 
-    const firstItem = node.querySelector<HTMLDivElement>("[role*='menuitem']");
+    const items = node.querySelectorAll<HTMLDivElement>("[role*='menuitem']");
 
-    if (!firstItem) return;
+    const getAvailableItem = (
+      idx: number,
+      forward: boolean,
+      prevIdxs: number[] = [],
+    ): HTMLDivElement | null => {
+      const item = items[idx];
 
-    setActiveElement(firstItem);
+      if (!item) return null;
+      if (prevIdxs.includes(idx)) return null;
+
+      if (item.getAttribute("aria-disabled") === "true") {
+        const newIdx =
+          (forward ? idx + 1 : idx - 1 + items.length) % items.length;
+
+        return getAvailableItem(newIdx, forward, [...prevIdxs, idx]);
+      }
+
+      return item;
+    };
+
+    const item = getAvailableItem(0, true);
+
+    if (!item) return;
+
+    setActiveElement(item);
     initialFocus.current = true;
   };
 
@@ -415,6 +472,8 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     <FocusTrap enabled={open}>
       <div
         {...otherProps}
+        // @ts-expect-error React hasn't added `inert` yet
+        inert={!open ? "" : undefined}
         ref={refCallback}
         id={id}
         data-slot={RootSlot}
