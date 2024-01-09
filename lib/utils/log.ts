@@ -2,7 +2,7 @@
 import type { AnyFunction } from "../typings";
 import prefixMessage from "./prefix-message";
 
-type Type = "print-error" | "print-warn" | "default";
+type Type = "error" | "warn" | "default";
 
 type Options = {
   scope: string;
@@ -15,8 +15,8 @@ const log = (message: string, options?: Partial<Options>) => {
   const prefixedMessage = prefixMessage(message, scope);
 
   const map = {
-    "print-error": console.error,
-    "print-warn": console.warn,
+    error: console.error,
+    warn: console.warn,
     default: console.log,
   } satisfies Record<Exclude<Type, "throw-error">, AnyFunction>;
 
