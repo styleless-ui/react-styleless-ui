@@ -1,15 +1,15 @@
 import * as React from "react";
+import { getLabelInfo, logger } from "../internals";
 import type { Classes, MergeElementProps } from "../typings";
 import { componentWithForwardedRef, useDeterministicId } from "../utils";
-import BreadcrumbItem, { type ItemProps } from "./Item";
-import BreadcrumbSeparatorItem from "./Separator/Separator";
+import { Item, SeparatorItem, type ItemProps } from "./components";
 import {
   Label as LabelSlot,
   List as ListSlot,
   Root as RootSlot,
 } from "./slots";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the breadcrumb.
    */
@@ -37,40 +37,12 @@ interface OwnProps {
          */
         labelledBy: string;
       };
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"nav", OwnProps>,
   "className" | "defaultChecked" | "defaultValue"
 >;
-
-const getLabelInfo = (labelInput: Props["label"]) => {
-  const props: {
-    visibleLabel?: string;
-    srOnlyLabel?: string;
-    labelledBy?: string;
-  } = {};
-
-  if (typeof labelInput === "string") {
-    props.visibleLabel = labelInput;
-  } else {
-    if ("screenReaderLabel" in labelInput) {
-      props.srOnlyLabel = labelInput.screenReaderLabel;
-    } else if ("labelledBy" in labelInput) {
-      props.labelledBy = labelInput.labelledBy;
-    } else {
-      throw new Error(
-        [
-          "[StylelessUI][Breadcrumb]: Invalid `label` property.",
-          "The `label` property must be either a `string` or in shape of " +
-            "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
-        ].join("\n"),
-      );
-    }
-  }
-
-  return props;
-};
 
 const BreadcrumbBase = (props: Props, ref: React.Ref<HTMLElement>) => {
   const {
@@ -97,30 +69,31 @@ const BreadcrumbBase = (props: Props, ref: React.Ref<HTMLElement>) => {
 
       if (anchorLink.hasAttribute("aria-current")) return;
 
-      // eslint-disable-next-line no-console
-      console.warn(
+      logger(
         [
-          "[StylelessUI][Breadcrumb]: The aria attribute `aria-current`" +
+          "The aria attribute `aria-current`" +
             " is missing from the last <BreadcrumbItem>'s anchor element.",
           "For more information check out: " +
             "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current",
         ].join("\n"),
+        { scope: "Breadcrumb", type: "warn" },
       );
     }
   };
 
-  const labelProps = getLabelInfo(label);
+  const labelProps = getLabelInfo(label, "Breadcrumb");
 
   const children = React.Children.map(childrenProp, child => {
     if (!React.isValidElement(child)) return null;
 
     if (
-      (child as React.ReactElement).type !== BreadcrumbItem &&
-      (child as React.ReactElement).type !== BreadcrumbSeparatorItem
+      (child as React.ReactElement).type !== Item &&
+      (child as React.ReactElement).type !== SeparatorItem
     ) {
-      // eslint-disable-next-line no-console
-      console.error(
-        "[StylelessUI][Breadcrumb]: The Breadcrumb component only accepts <Breadcrumb.Item> and <Breadcrumb.Separator> as a children.",
+      logger(
+        "The Breadcrumb component only accepts <Breadcrumb.Item> and " +
+          "<Breadcrumb.Separator> as a children",
+        { scope: "Breadcrumb", type: "error" },
       );
 
       return null;
@@ -129,17 +102,23 @@ const BreadcrumbBase = (props: Props, ref: React.Ref<HTMLElement>) => {
     return child as React.ReactElement<ItemProps>;
   });
 
+  const renderLabel = () => {
+    if (!labelProps.visibleLabel) return null;
+
+    return (
+      <span
+        id={visibleLabelId}
+        data-slot={LabelSlot}
+        className={classes?.label}
+      >
+        {labelProps.visibleLabel}
+      </span>
+    );
+  };
+
   return (
     <>
-      {labelProps.visibleLabel && (
-        <span
-          id={visibleLabelId}
-          data-slot={LabelSlot}
-          className={classes?.label}
-        >
-          {labelProps.visibleLabel}
-        </span>
-      )}
+      {renderLabel()}
       <nav
         {...otherProps}
         id={id}
@@ -164,7 +143,6 @@ const BreadcrumbBase = (props: Props, ref: React.Ref<HTMLElement>) => {
   );
 };
 
-const Breadcrumb =
-  componentWithForwardedRef<typeof BreadcrumbBase>(BreadcrumbBase);
+const Breadcrumb = componentWithForwardedRef(BreadcrumbBase, "Breadcrumb");
 
 export default Breadcrumb;

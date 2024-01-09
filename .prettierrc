@@ -5,5 +5,11 @@
   "singleQuote": false,
   "tabWidth": 2,
   "trailingComma": "all",
-  "arrowParens": "avoid"
+  "arrowParens": "avoid",
+  "bracketSameLine": false,
+  "endOfLine": "lf",
+  "htmlWhitespaceSensitivity": "css",
+  "jsxSingleQuote": false,
+  "singleAttributePerLine": true,
+  "plugins": ["prettier-plugin-organize-imports"]
 }

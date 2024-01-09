@@ -8,10 +8,10 @@ import {
   useOnChange,
   usePreviousValue,
 } from "../utils";
-import ToastContext from "./context";
+import { ToastContext } from "./context";
 import { Root as ToastRootSlot } from "./slots";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the toast.
    */
@@ -51,7 +51,7 @@ interface OwnProps {
    * The Callback is fired when the duration ends.
    */
   onDurationEnd?: () => void;
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,
@@ -115,7 +115,9 @@ const ToastBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const context = React.useMemo(() => ({ role, open }), [role, open]);
 
-  return keepMounted || (!keepMounted && open) ? (
+  if (!keepMounted && !open) return null;
+
+  return (
     <Portal>
       <div
         data-slot="Portal:Root"
@@ -139,9 +141,9 @@ const ToastBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         </div>
       </div>
     </Portal>
-  ) : null;
+  );
 };
 
-const Toast = componentWithForwardedRef(ToastBase);
+const Toast = componentWithForwardedRef(ToastBase, "Toast");
 
 export default Toast;

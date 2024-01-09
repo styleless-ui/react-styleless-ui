@@ -1,4 +1,5 @@
 import * as React from "react";
+import { getLabelInfo } from "../internals";
 import type { Classes, MergeElementProps } from "../typings";
 import {
   componentWithForwardedRef,
@@ -6,10 +7,10 @@ import {
   useDeterministicId,
   useForkedRefs,
 } from "../utils";
-import RadioGroupContext from "./context";
+import { RadioGroupContext } from "./context";
 import * as Slots from "./slots";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the group.
    */
@@ -54,40 +55,12 @@ interface OwnProps {
    * The Callback is fired when the state changes.
    */
   onChange?: (selectedValue: string) => void;
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,
   "className" | "defaultChecked"
 >;
-
-const getLabelInfo = (labelInput: Props["label"]) => {
-  const props: {
-    visibleLabel?: string;
-    srOnlyLabel?: string;
-    labelledBy?: string;
-  } = {};
-
-  if (typeof labelInput === "string") {
-    props.visibleLabel = labelInput;
-  } else {
-    if ("screenReaderLabel" in labelInput) {
-      props.srOnlyLabel = labelInput.screenReaderLabel;
-    } else if ("labelledBy" in labelInput) {
-      props.labelledBy = labelInput.labelledBy;
-    } else {
-      throw new Error(
-        [
-          "[StylelessUI][RadioGroup]: Invalid `label` property.",
-          "The `label` property must be either a `string` or in shape of " +
-            "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
-        ].join("\n"),
-      );
-    }
-  }
-
-  return props;
-};
 
 const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
@@ -108,7 +81,7 @@ const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const id = useDeterministicId(idProp, "styleless-ui__radio-group");
   const visibleLabelId = id ? `${id}__label` : undefined;
 
-  const labelProps = getLabelInfo(label);
+  const labelProps = getLabelInfo(label, "RadioGroup");
 
   const [value, setValue] = useControlledProp(valueProp, defaultValue, "");
 
@@ -157,6 +130,20 @@ const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     rRef.current?.setAttribute("tabindex", "0");
   });
 
+  const renderLabel = () => {
+    if (!labelProps.visibleLabel) return null;
+
+    return (
+      <span
+        id={visibleLabelId}
+        data-slot={Slots.Label}
+        className={classes?.label}
+      >
+        {labelProps.visibleLabel}
+      </span>
+    );
+  };
+
   return (
     <div
       {...otherProps}
@@ -168,15 +155,7 @@ const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       <RadioGroupContext.Provider
         value={{ value, onChange: handleChange, registerRadio, radios }}
       >
-        {labelProps.visibleLabel && (
-          <span
-            id={visibleLabelId}
-            data-slot={Slots.Label}
-            className={classes?.label}
-          >
-            {labelProps.visibleLabel}
-          </span>
-        )}
+        {renderLabel()}
         <div
           role="radiogroup"
           data-slot={Slots.Group}
@@ -194,6 +173,6 @@ const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const RadioGroup = componentWithForwardedRef(RadioGroupBase);
+const RadioGroup = componentWithForwardedRef(RadioGroupBase, "RadioGroup");
 
 export default RadioGroup;

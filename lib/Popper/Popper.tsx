@@ -1,6 +1,7 @@
 import * as React from "react";
 import Portal from "../Portal";
-import type { MergeElementProps } from "../typings";
+import { SystemError } from "../internals";
+import type { MergeElementProps, RequireOnlyOne } from "../typings";
 import {
   componentWithForwardedRef,
   useDeterministicId,
@@ -8,24 +9,77 @@ import {
   useForkedRefs,
   useIsomorphicLayoutEffect,
   useRegisterNodeRef,
+  type ClientRect,
 } from "../utils";
-import {
-  computePosition,
-  type Alignment,
-  type AutoPlacementMiddleware,
-  type ComputationConfig,
-  type ComputationMiddleware,
-  type ComputationMiddlewareOrder,
-  type Coordinates,
-  type OffsetMiddleware,
-  type Placement,
-  type Side,
-  type Strategy,
-  type VirtualElement,
-} from "./helpers";
 import * as Slots from "./slots";
+import { computePosition, getAnchor, translate } from "./utils";
 
-interface OwnProps {
+export type Alignment = "start" | "end";
+export type Side = "top" | "right" | "bottom" | "left";
+export type AlignedPlacement = `${Side}-${Alignment}`;
+export type Placement = Side | AlignedPlacement;
+
+export type Strategy = "absolute" | "fixed";
+
+export type Coordinates = { x: number; y: number };
+export type Dimensions = { width: number; height: number };
+
+export type Rect = Coordinates & Dimensions;
+export type ElementRects = { anchorRect: Rect; popperRect: Rect };
+export type VirtualElement = { getBoundingClientRect(): ClientRect };
+export type Elements = {
+  anchorElement: HTMLElement | VirtualElement;
+  popperElement: HTMLDivElement;
+};
+
+export type OffsetMiddleware =
+  | number
+  | {
+      /**
+       * The axis that runs along the side of the popper element.
+       */
+      mainAxis?: number;
+      /**
+       * The axis that runs along the alignment of the popper element.
+       */
+      crossAxis?: number;
+    };
+
+export type AutoPlacementMiddleware = boolean | { excludeSides: Side[] };
+
+export type MiddlewareResult = RequireOnlyOne<{
+  coordinates: Partial<Coordinates>;
+  placement: Placement;
+}>;
+
+export type ComputationMiddlewareArgs = {
+  elementRects: ElementRects;
+  elements: Elements;
+  coordinates: Coordinates;
+  placement: Placement;
+  strategy: Strategy;
+  overflow: Record<Side, number>;
+};
+export type ComputationMiddlewareResult = MiddlewareResult;
+export type ComputationMiddlewareOrder =
+  | "beforeAutoPlacement"
+  | "afterAutoPlacement";
+export type ComputationMiddleware = (
+  args: ComputationMiddlewareArgs,
+) => ComputationMiddlewareResult;
+
+export type ComputationResult = Coordinates & { placement: Placement };
+export type ComputationConfig = {
+  placement: Placement;
+  strategy: Strategy;
+  isRtl: boolean;
+  autoPlacement: AutoPlacementMiddleware;
+  offset: OffsetMiddleware;
+  computationMiddleware?: ComputationMiddleware;
+  computationMiddlewareOrder: ComputationMiddlewareOrder;
+};
+
+type OwnProps = {
   /**
    * The className applied to the component.
    */
@@ -122,7 +176,7 @@ interface OwnProps {
    * @default false
    */
   keepMounted?: boolean;
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,
@@ -133,39 +187,11 @@ export type Props = Omit<
   | "autoCorrect"
 >;
 
-const translate = ({ x, y }: Coordinates) => {
-  const dpr = typeof window !== "undefined" ? window.devicePixelRatio : 1;
-
-  // Rounding coordinates by DPR
-  const { x: _x, y: _y } = (() => ({
-    x: Math.round(Math.round(x * dpr) / dpr),
-    y: Math.round(Math.round(y * dpr) / dpr),
-  }))();
-
-  const transformValue = `translate(${_x}px, ${_y}px)`;
-
-  return {
-    transform: transformValue,
-    WebkitTransform: transformValue,
-    MozTransform: transformValue,
-    msTransform: transformValue,
-  };
-};
-
-const getAnchor = (anchorElement: Props["anchorElement"]) =>
-  typeof anchorElement === "string"
-    ? typeof document !== "undefined"
-      ? document.getElementById(anchorElement)
-      : null
-    : "current" in anchorElement
-    ? anchorElement.current
-    : anchorElement;
-
 const PopperBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     open,
     actions,
-    style,
+    style: styleProp,
     id: idProp,
     className: classNameProp,
     children: childrenProp,
@@ -182,13 +208,14 @@ const PopperBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   } = props;
 
   if (!anchorElement) {
-    throw new Error(
+    throw new SystemError(
       [
-        "[StylelessUI][Popper]: Invalid `anchorElement` property.",
+        "Invalid `anchorElement` property.",
         "The `anchorElement` property must be either a `id (string)`, " +
           "`HTMLElement`, `RefObject<HTMLElement>`, or in shape of " +
           "`{ getBoundingClientRect(): ClientRect }`",
       ].join("\n"),
+      "Popper",
     );
   }
 
@@ -262,7 +289,17 @@ const PopperBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     updatePosition();
   }, []);
 
-  return keepMounted || (!keepMounted && open) ? (
+  const style = {
+    ...(styleProp ?? {}),
+    ...translate(coordinates),
+    position: strategy,
+    left: 0,
+    top: 0,
+  };
+
+  if (!keepMounted && !open) return null;
+
+  return (
     <Portal>
       <div
         data-slot="Portal:Root"
@@ -278,22 +315,16 @@ const PopperBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           id={id}
           className={className}
           ref={registerRef}
-          style={{
-            ...(style ?? {}),
-            ...translate(coordinates),
-            position: strategy,
-            left: 0,
-            top: 0,
-          }}
+          style={style}
           data-open={open ? "" : undefined}
         >
           {children}
         </div>
       </div>
     </Portal>
-  ) : null;
+  );
 };
 
-const Popper = componentWithForwardedRef(PopperBase);
+const Popper = componentWithForwardedRef(PopperBase, "Popper");
 
 export default Popper;

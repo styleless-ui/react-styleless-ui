@@ -286,7 +286,10 @@ describe("Menu", () => {
     render(
       <Menu.Root open>
         <Menu.Items label={{ screenReaderLabel: "Menu 0" }}>
-          <Menu.Item disabled onSelect={handleOnSelect}>
+          <Menu.Item
+            disabled
+            onSelect={handleOnSelect}
+          >
             Item 0
           </Menu.Item>
           <Menu.Item onSelect={handleOnSelect}>Item 1</Menu.Item>
@@ -380,13 +383,23 @@ describe("Menu", () => {
       <Menu.Root open>
         <Menu.Items label={{ screenReaderLabel: "Menu 0" }}>
           <Menu.RadioGroup label="Group 0">
-            <Menu.RadioItem disabled value="0" onSelect={handleOnSelect}>
+            <Menu.RadioItem
+              disabled
+              value="0"
+              onSelect={handleOnSelect}
+            >
               Item 0
             </Menu.RadioItem>
-            <Menu.RadioItem value="1" onSelect={handleOnSelect}>
+            <Menu.RadioItem
+              value="1"
+              onSelect={handleOnSelect}
+            >
               Item 1
             </Menu.RadioItem>
-            <Menu.RadioItem value="2" onSelect={handleOnSelect}>
+            <Menu.RadioItem
+              value="2"
+              onSelect={handleOnSelect}
+            >
               Item 2
             </Menu.RadioItem>
           </Menu.RadioGroup>
@@ -419,8 +432,14 @@ describe("Menu", () => {
     render(
       <Menu.Root open>
         <Menu.Items label={{ screenReaderLabel: "Menu 0" }}>
-          <Menu.RadioGroup label="Group 0" onValueChange={handleOnValueChange}>
-            <Menu.RadioItem disabled value="0">
+          <Menu.RadioGroup
+            label="Group 0"
+            onValueChange={handleOnValueChange}
+          >
+            <Menu.RadioItem
+              disabled
+              value="0"
+            >
               Item 0
             </Menu.RadioItem>
             <Menu.RadioItem value="1">Item 1</Menu.RadioItem>
@@ -453,7 +472,10 @@ describe("Menu", () => {
     render(
       <>
         <button data-testid="btn">Button</button>
-        <Menu.Root open onOutsideClick={handleOutsideClick} />
+        <Menu.Root
+          open
+          onOutsideClick={handleOutsideClick}
+        />
       </>,
     );
 
@@ -467,7 +489,12 @@ describe("Menu", () => {
     const handleEscape = jest.fn<void, [event: KeyboardEvent]>();
 
     userEvent.setup();
-    render(<Menu.Root open onEscape={handleEscape} />);
+    render(
+      <Menu.Root
+        open
+        onEscape={handleEscape}
+      />,
+    );
 
     await userEvent.keyboard("[Escape]");
 

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { type Props } from "./RadioGroup";
 
-interface IRadioGroupContext {
+type ContextValue = {
   value: Exclude<Props["value"], undefined>;
   radios: [string, React.RefObject<HTMLButtonElement>][];
   onChange: (newCheckedState: boolean, inputValue: string) => void;
@@ -9,14 +9,15 @@ interface IRadioGroupContext {
     value: string,
     ref: React.RefObject<HTMLButtonElement>,
   ) => void;
-}
+};
 
-const RadioGroupContext = React.createContext<IRadioGroupContext | undefined>(
-  undefined,
-);
+const Context = React.createContext<ContextValue | null>(null);
 
 if (process.env.NODE_ENV !== "production") {
-  RadioGroupContext.displayName = "RadioGroupContext";
+  Context.displayName = "RadioGroupContext";
 }
 
-export { RadioGroupContext as default, type IRadioGroupContext };
+export {
+  Context as RadioGroupContext,
+  type ContextValue as RadioGroupContextValue,
+};

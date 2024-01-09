@@ -1,12 +1,15 @@
 import * as React from "react";
-import CheckGroupContext from "../CheckGroup/context";
+import { CheckGroupContext } from "../CheckGroup/context";
+import { SystemError, getLabelInfo, logger } from "../internals";
 import type { Classes, MergeElementProps } from "../typings";
 import {
   componentWithForwardedRef,
   useCheckBase,
   useDeterministicId,
   useForkedRefs,
+  useHandleTargetLabelClick,
 } from "../utils";
+import { CheckIcon, IndeterminateIcon } from "./components";
 import * as Slots from "./slots";
 
 type CheckboxClassesMap = Classes<"root" | "label" | "check">;
@@ -22,7 +25,7 @@ type ClassesContext = {
   focusedVisible: boolean;
 };
 
-interface OwnProps {
+type OwnProps = {
   /**
    * Map of sub-components and their correlated classNames.
    */
@@ -88,67 +91,12 @@ interface OwnProps {
   onBlur?: React.FocusEventHandler<HTMLButtonElement>;
   onKeyDown?: React.KeyboardEventHandler<HTMLButtonElement>;
   onKeyUp?: React.KeyboardEventHandler<HTMLButtonElement>;
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"button", OwnProps>,
   "defaultValue" | "className"
 >;
-
-const getLabelInfo = (labelInput: Props["label"]) => {
-  const props: {
-    visibleLabel?: string;
-    srOnlyLabel?: string;
-    labelledBy?: string;
-  } = {};
-
-  if (typeof labelInput === "string") {
-    props.visibleLabel = labelInput;
-  } else {
-    if ("screenReaderLabel" in labelInput) {
-      props.srOnlyLabel = labelInput.screenReaderLabel;
-    } else if ("labelledBy" in labelInput) {
-      props.labelledBy = labelInput.labelledBy;
-    } else {
-      throw new Error(
-        [
-          "[StylelessUI][Checkbox]: Invalid `label` property.",
-          "The `label` property must be either a `string` or in shape of " +
-            "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
-        ].join("\n"),
-      );
-    }
-  }
-
-  return props;
-};
-
-const _DefaultCheckIcon = () => (
-  <svg aria-hidden="true" focusable="false" viewBox="0 0 12 8">
-    <polyline
-      fill="none"
-      stroke="currentcolor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      transform="translate(5.974874, 2.353553) rotate(-45.000000) translate(-5.974874, -2.353553) "
-      points="2 0.292893219 2 4.29289322 9.94974747 4.41421356"
-    />
-  </svg>
-);
-
-const _DefaultIndeterminateIcon = () => (
-  <svg aria-hidden="true" focusable="false" viewBox="0 0 12 8">
-    <polyline
-      fill="none"
-      stroke="currentcolor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      points="2 4 10 4"
-    />
-  </svg>
-);
 
 const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   const {
@@ -173,12 +121,13 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   const checkGroupCtx = React.useContext(CheckGroupContext);
 
   if (checkGroupCtx && typeof value === "undefined") {
-    throw new Error(
+    throw new SystemError(
       [
-        "[StylelessUI][Checkbox]: The `value` property is missing.",
+        "The `value` property is missing.",
         "It's mandatory to provide a `value` property " +
           "when <CheckGroup /> is a wrapper for <Checkbox />.",
       ].join("\n"),
+      "Checkbox",
     );
   }
 
@@ -201,7 +150,7 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const handleRef = useForkedRefs(ref, checkBase.handleControllerRef);
 
-  const labelProps = getLabelInfo(label);
+  const labelProps = getLabelInfo(label, "Checkbox");
 
   const classesCtx: ClassesContext = {
     disabled,
@@ -213,30 +162,6 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   const classes =
     typeof classesMap === "function" ? classesMap(classesCtx) : classesMap;
 
-  React.useEffect(() => {
-    const labelTarget =
-      labelProps.visibleLabel && visibleLabelId
-        ? document.getElementById(visibleLabelId)
-        : labelProps.labelledBy
-        ? document.getElementById(labelProps.labelledBy)
-        : null;
-
-    if (!labelTarget) return;
-
-    const handleTargetClick = () => checkBase.controllerRef.current?.click();
-
-    labelTarget.addEventListener("click", handleTargetClick);
-
-    return () => {
-      labelTarget.removeEventListener("click", handleTargetClick);
-    };
-  }, [
-    checkBase.controllerRef,
-    labelProps.labelledBy,
-    labelProps.visibleLabel,
-    visibleLabelId,
-  ]);
-
   const refCallback = (node: HTMLButtonElement | null) => {
     handleRef(node);
 
@@ -247,9 +172,48 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
     if (controls) return;
 
-    // eslint-disable-next-line no-console
-    console.warn(
-      "[StylelessUI][Checkbox]: You must provide the set of checkbox IDs controlled by the mixed (`indeterminate`) checkbox by the `aria-controls` property.",
+    logger(
+      "You must provide the set of checkbox IDs controlled by the mixed " +
+        "(`indeterminate`) checkbox by the `aria-controls` property.",
+      { scope: "Checkbox", type: "warn" },
+    );
+  };
+
+  const renderIcon = () => {
+    if (checkBase.checked) {
+      return (
+        <CheckIcon
+          className={classes?.check}
+          slot={Slots.Check}
+          checkComponent={checkComponent}
+        />
+      );
+    }
+
+    if (indeterminated) {
+      return (
+        <IndeterminateIcon
+          className={classes?.check}
+          slot={Slots.Check}
+          checkComponent={checkComponent}
+        />
+      );
+    }
+
+    return null;
+  };
+
+  const renderLabel = () => {
+    if (!labelProps.visibleLabel) return null;
+
+    return (
+      <span
+        id={visibleLabelId}
+        data-slot={Slots.Label}
+        className={classes?.label}
+      >
+        {labelProps.visibleLabel}
+      </span>
     );
   };
 
@@ -259,6 +223,12 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     "data-focus-visible": classesCtx.focusedVisible ? "" : undefined,
     "data-checked": classesCtx.checked ? "" : undefined,
   };
+
+  useHandleTargetLabelClick({
+    visibleLabelId,
+    labelInfo: labelProps,
+    onClick: () => checkBase.controllerRef.current?.click(),
+  });
 
   return (
     <>
@@ -285,37 +255,13 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
         }
         {...dataAttrs}
       >
-        {checkBase.checked ? (
-          <div
-            className={classes?.check}
-            data-slot={Slots.Check}
-            aria-hidden="true"
-          >
-            {checkComponent ?? <_DefaultCheckIcon />}
-          </div>
-        ) : indeterminated ? (
-          <div
-            className={classes?.check}
-            data-slot={Slots.Check}
-            aria-hidden="true"
-          >
-            {checkComponent ?? <_DefaultIndeterminateIcon />}
-          </div>
-        ) : null}
+        {renderIcon()}
       </button>
-      {labelProps.visibleLabel && (
-        <span
-          id={visibleLabelId}
-          data-slot={Slots.Label}
-          className={classes?.label}
-        >
-          {labelProps.visibleLabel}
-        </span>
-      )}
+      {renderLabel()}
     </>
   );
 };
 
-const Checkbox = componentWithForwardedRef(CheckboxBase);
+const Checkbox = componentWithForwardedRef(CheckboxBase, "Checkbox");
 
 export default Checkbox;

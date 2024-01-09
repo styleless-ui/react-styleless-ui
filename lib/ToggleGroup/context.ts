@@ -1,7 +1,7 @@
 import * as React from "react";
 import { type Props } from "./ToggleGroup";
 
-interface IToggleGroupContext {
+type ContextValue = {
   multiple: boolean;
   keyboardActivationBehavior: Exclude<
     Props["keyboardActivationBehavior"],
@@ -14,17 +14,15 @@ interface IToggleGroupContext {
     value: string,
     ref: React.RefObject<HTMLButtonElement>,
   ) => void;
-}
+};
 
-const ToggleGroupContext = React.createContext<IToggleGroupContext | undefined>(
-  undefined,
-);
+const Context = React.createContext<ContextValue | null>(null);
 
 if (process.env.NODE_ENV !== "production") {
-  ToggleGroupContext.displayName = "ToggleGroupContext";
+  Context.displayName = "ToggleGroupContext";
 }
 
 export {
-  ToggleGroupContext as default,
-  type IToggleGroupContext as IToggleGroupContext,
+  Context as ToggleGroupContext,
+  type ContextValue as ToggleGroupContextValue,
 };

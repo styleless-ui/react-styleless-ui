@@ -1,7 +1,10 @@
 import * as React from "react";
-import Popper, { type PopperProps } from "../Popper";
-import type { Coordinates, VirtualElement } from "../Popper/helpers";
-import { SystemKeys } from "../internals";
+import Popper, {
+  type Coordinates,
+  type PopperProps,
+  type VirtualElement,
+} from "../Popper";
+import { SystemError, SystemKeys } from "../internals";
 import type { MergeElementProps } from "../typings";
 import {
   componentWithForwardedRef,
@@ -13,8 +16,9 @@ import {
   useEventListener,
   useForkedRefs,
 } from "../utils";
+import { getExactAnchorElement } from "./utils";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the component.
    */
@@ -73,21 +77,12 @@ interface OwnProps {
    * @default false
    */
   keepMounted?: boolean;
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,
   "defaultValue" | "defaultChecked"
 >;
-
-const getExactAnchorElement = (anchorElement: Props["anchorElement"]) =>
-  typeof anchorElement === "string"
-    ? typeof document !== "undefined"
-      ? document.getElementById(anchorElement)
-      : null
-    : "current" in anchorElement
-    ? anchorElement.current
-    : anchorElement;
 
 const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
@@ -106,20 +101,22 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   } = props;
 
   if (!anchorElement) {
-    throw new Error(
+    throw new SystemError(
       [
-        "[StylelessUI][Tooltip]: Invalid `anchorElement` property.",
+        "Invalid `anchorElement` property.",
         "The `anchorElement` property must be either a `id (string)`, " +
           "`HTMLElement`, `RefObject<HTMLElement>`, or in shape of " +
           "`{ getBoundingClientRect(): ClientRect }`",
       ].join("\n"),
+      "Tooltip",
     );
   }
 
   if (behavior !== "full-controlled" && typeof openProp !== "undefined") {
-    throw new Error(
-      "[StylelessUI][Tooltip]: You are trying to control the `open` property " +
+    throw new SystemError(
+      "You are trying to control the `open` property " +
         'while the `behavior` isn\'t `"full-controlled".`',
+      "Tooltip",
     );
   }
 
@@ -266,6 +263,6 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const Tooltip = componentWithForwardedRef(TooltipBase);
+const Tooltip = componentWithForwardedRef(TooltipBase, "Tooltip");
 
 export default Tooltip;

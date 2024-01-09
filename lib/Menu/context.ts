@@ -1,6 +1,6 @@
 import * as React from "react";
 
-export interface IMenuContext {
+type ContextValue = {
   ref: React.RefObject<HTMLDivElement>;
   activeElement: HTMLDivElement | null;
   activeSubTrigger: HTMLDivElement | null;
@@ -13,12 +13,12 @@ export interface IMenuContext {
   >;
   setActiveElement: React.Dispatch<React.SetStateAction<HTMLDivElement | null>>;
   registerItem: (itemRef: React.RefObject<HTMLDivElement>) => void;
-}
+};
 
-const MenuContext = React.createContext<IMenuContext | null>(null);
+const Context = React.createContext<ContextValue | null>(null);
 
 if (process.env.NODE_ENV !== "production") {
-  MenuContext.displayName = "MenuContext";
+  Context.displayName = "MenuContext";
 }
 
-export default MenuContext;
+export { Context as MenuContext, type ContextValue as MenuContextValue };

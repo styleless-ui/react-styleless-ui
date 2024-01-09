@@ -7,8 +7,9 @@ import {
   useForkedRefs,
   usePreviousValue,
 } from "../../utils";
+import SystemError from "../SystemError";
 
-export interface Props {
+export type Props = {
   /**
    * The content of the component.
    */
@@ -18,7 +19,7 @@ export interface Props {
    * @default false
    */
   enabled?: boolean;
-}
+};
 
 const FocusRedirect = (props: Props) => {
   const { children, enabled = false } = props;
@@ -30,8 +31,9 @@ const FocusRedirect = (props: Props) => {
         children,
       ) as React.FunctionComponentElement<unknown>;
     } catch {
-      throw new Error(
-        "[StylelessUI][FocusTrap]: The `children` prop has to be a single valid element.",
+      throw new SystemError(
+        "The `children` prop has to be a single valid element.",
+        "FocusRedirect",
       );
     }
   })();

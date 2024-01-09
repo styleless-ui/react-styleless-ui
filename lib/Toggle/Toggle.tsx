@@ -1,5 +1,6 @@
 import * as React from "react";
-import ToggleGroupContext from "../ToggleGroup/context";
+import { ToggleGroupContext } from "../ToggleGroup/context";
+import { SystemError, logger } from "../internals";
 import type { MergeElementProps } from "../typings";
 import {
   componentWithForwardedRef,
@@ -9,7 +10,7 @@ import {
 } from "../utils";
 import * as Slots from "./slots";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the component.
    */
@@ -58,7 +59,7 @@ interface OwnProps {
    * The Callback is fired when the state of `active` changes.
    */
   onActiveChange?: (activeState: boolean) => void;
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"button", OwnProps>,
@@ -85,14 +86,23 @@ const ToggleBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   const toggleGroupCtx = React.useContext(ToggleGroupContext);
 
   if (toggleGroupCtx && typeof value === "undefined") {
-    throw new Error(
+    throw new SystemError(
       [
-        "[StylelessUI][Toggle]: The `value` property is missing.",
+        "The `value` property is missing.",
         "It's mandatory to provide a `value` property " +
           "when <ToggleGroup /> is a wrapper for <Toggle />.",
       ].join("\n"),
+      "Toggle",
     );
   }
+
+  const groupCtx = toggleGroupCtx
+    ? {
+        value: toggleGroupCtx.value,
+        onChange: toggleGroupCtx.onChange,
+        items: toggleGroupCtx.toggles,
+      }
+    : null;
 
   const checkBase = useCheckBase({
     value,
@@ -104,13 +114,7 @@ const ToggleBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     strategy: toggleGroupCtx?.multiple ? "check-control" : "radio-control",
     defaultChecked: defaultActive,
     enterKeyFunctionality: "check",
-    groupCtx: toggleGroupCtx
-      ? {
-          value: toggleGroupCtx.value,
-          onChange: toggleGroupCtx.onChange,
-          items: toggleGroupCtx.toggles,
-        }
-      : undefined,
+    groupCtx,
     onChange: onActiveChange,
     onBlur,
     onFocus,
@@ -147,10 +151,9 @@ const ToggleBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     const accessibleName = computeAccessibleName(node);
 
     if (!accessibleName) {
-      // eslint-disable-next-line no-console
-      console.error(
+      logger(
         [
-          "[StylelessUI][Toggle]: Can't determine an accessible name.",
+          "Can't determine an accessible name.",
           "It's mandatory to provide an accessible name for the component. " +
             "Possible accessible names:",
           ". Set `aria-label` attribute.",
@@ -159,6 +162,7 @@ const ToggleBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
           ". Use an informative content.",
           ". Use a <label> with `for` attribute referencing to this component.",
         ].join("\n"),
+        { scope: "Toggle", type: "error" },
       );
     }
   };
@@ -190,6 +194,6 @@ const ToggleBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   );
 };
 
-const Toggle = componentWithForwardedRef(ToggleBase);
+const Toggle = componentWithForwardedRef(ToggleBase, "Toggle");
 
 export default Toggle;

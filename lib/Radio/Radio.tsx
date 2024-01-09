@@ -1,12 +1,15 @@
 import * as React from "react";
-import RadioGroupContext from "../RadioGroup/context";
+import { RadioGroupContext } from "../RadioGroup/context";
+import { SystemError, getLabelInfo } from "../internals";
 import type { Classes, MergeElementProps } from "../typings";
 import {
   componentWithForwardedRef,
   useCheckBase,
   useDeterministicId,
   useForkedRefs,
+  useHandleTargetLabelClick,
 } from "../utils";
+import { CheckIcon } from "./components";
 import * as Slots from "./slots";
 
 type RadioClassesMap = Classes<"root" | "label" | "check">;
@@ -20,7 +23,7 @@ type ClassesContext = {
   focusedVisible: boolean;
 };
 
-interface OwnProps {
+type OwnProps = {
   /**
    * Map of sub-components and their correlated classNames.
    */
@@ -80,46 +83,12 @@ interface OwnProps {
   onBlur?: React.FocusEventHandler<HTMLButtonElement>;
   onKeyDown?: React.KeyboardEventHandler<HTMLButtonElement>;
   onKeyUp?: React.KeyboardEventHandler<HTMLButtonElement>;
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"button", OwnProps>,
   "defaultValue" | "className"
 >;
-
-const getLabelInfo = (labelInput: Props["label"]) => {
-  const props: {
-    visibleLabel?: string;
-    srOnlyLabel?: string;
-    labelledBy?: string;
-  } = {};
-
-  if (typeof labelInput === "string") {
-    props.visibleLabel = labelInput;
-  } else {
-    if ("screenReaderLabel" in labelInput) {
-      props.srOnlyLabel = labelInput.screenReaderLabel;
-    } else if ("labelledBy" in labelInput) {
-      props.labelledBy = labelInput.labelledBy;
-    } else {
-      throw new Error(
-        [
-          "[StylelessUI][Radio]: Invalid `label` property.",
-          "The `label` property must be either a `string` or in shape of " +
-            "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
-        ].join("\n"),
-      );
-    }
-  }
-
-  return props;
-};
-
-const _DefaultCheck = () => (
-  <svg aria-hidden="true" focusable="false" viewBox="0 0 8 8">
-    <circle cx={4} cy={4} r={4} fill="currentColor" stroke="none" />
-  </svg>
-);
 
 const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   const {
@@ -143,24 +112,27 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   const radioGroupCtx = React.useContext(RadioGroupContext);
 
   if (radioGroupCtx && typeof value === "undefined") {
-    throw new Error(
+    throw new SystemError(
       [
-        "[StylelessUI][Radio]: The `value` property is missing.",
+        "The `value` property is missing.",
         "It's mandatory to provide a `value` property " +
           "when <RadioGroup /> is a wrapper for <Radio />.",
       ].join("\n"),
+      "Radio",
     );
   }
 
+  const groupCtx = radioGroupCtx
+    ? {
+        value: radioGroupCtx.value,
+        onChange: radioGroupCtx.onChange,
+        items: radioGroupCtx.radios,
+      }
+    : null;
+
   const checkBase = useCheckBase({
     value,
-    groupCtx: radioGroupCtx
-      ? {
-          value: radioGroupCtx.value,
-          onChange: radioGroupCtx.onChange,
-          items: radioGroupCtx.radios,
-        }
-      : undefined,
+    groupCtx,
     strategy: "radio-control",
     autoFocus,
     disabled,
@@ -180,7 +152,7 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const handleRef = useForkedRefs(ref, rootRef, checkBase.handleControllerRef);
 
-  const labelProps = getLabelInfo(label);
+  const labelProps = getLabelInfo(label, "Radio");
 
   const classesCtx: ClassesContext = {
     disabled,
@@ -190,30 +162,6 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const classes =
     typeof classesMap === "function" ? classesMap(classesCtx) : classesMap;
-
-  React.useEffect(() => {
-    const labelTarget =
-      labelProps.visibleLabel && visibleLabelId
-        ? document.getElementById(visibleLabelId)
-        : labelProps.labelledBy
-        ? document.getElementById(labelProps.labelledBy)
-        : null;
-
-    if (!labelTarget) return;
-
-    const handleTargetClick = () => checkBase.controllerRef.current?.click();
-
-    labelTarget.addEventListener("click", handleTargetClick);
-
-    return () => {
-      labelTarget.removeEventListener("click", handleTargetClick);
-    };
-  }, [
-    checkBase.controllerRef,
-    labelProps.labelledBy,
-    labelProps.visibleLabel,
-    visibleLabelId,
-  ]);
 
   const refCallback = (node: HTMLButtonElement | null) => {
     handleRef(node);
@@ -225,12 +173,44 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     if (!radioGroupCtx) node.tabIndex = disabled ? -1 : 0;
   };
 
+  const renderIcon = () => {
+    if (!checkBase.checked) return null;
+
+    return (
+      <CheckIcon
+        className={classes?.check}
+        slot={Slots.Check}
+        checkComponent={checkComponent}
+      />
+    );
+  };
+
+  const renderLabel = () => {
+    if (!labelProps.visibleLabel) return null;
+
+    return (
+      <label
+        id={visibleLabelId}
+        data-slot={Slots.Label}
+        className={classes?.label}
+      >
+        {labelProps.visibleLabel}
+      </label>
+    );
+  };
+
   const dataAttrs = {
     "data-slot": Slots.Root,
     "data-disabled": classesCtx.disabled ? "" : undefined,
     "data-focus-visible": classesCtx.focusedVisible ? "" : undefined,
     "data-checked": classesCtx.checked ? "" : undefined,
   };
+
+  useHandleTargetLabelClick({
+    visibleLabelId,
+    labelInfo: labelProps,
+    onClick: () => checkBase.controllerRef.current?.click(),
+  });
 
   return (
     <>
@@ -254,29 +234,13 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
         }
         {...dataAttrs}
       >
-        {checkBase.checked && (
-          <div
-            className={classes?.check}
-            data-slot={Slots.Check}
-            aria-hidden="true"
-          >
-            {checkComponent ?? <_DefaultCheck />}
-          </div>
-        )}
+        {renderIcon()}
       </button>
-      {labelProps.visibleLabel && (
-        <label
-          id={visibleLabelId}
-          data-slot={Slots.Label}
-          className={classes?.label}
-        >
-          {labelProps.visibleLabel}
-        </label>
-      )}
+      {renderLabel()}
     </>
   );
 };
 
-const Radio = componentWithForwardedRef(RadioBase);
+const Radio = componentWithForwardedRef(RadioBase, "Radio");
 
 export default Radio;

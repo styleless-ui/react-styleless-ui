@@ -1,14 +1,14 @@
 import * as React from "react";
 
-export interface IDialogContext {
+type ContextValue = {
   role: "dialog" | "alertdialog";
   open: boolean;
-}
+};
 
-const DialogContext = React.createContext<IDialogContext | null>(null);
+const Context = React.createContext<ContextValue | null>(null);
 
 if (process.env.NODE_ENV !== "production") {
-  DialogContext.displayName = "DialogContext";
+  Context.displayName = "DialogContext";
 }
 
-export default DialogContext;
+export { Context as DialogContext, type ContextValue as DialogContextValue };

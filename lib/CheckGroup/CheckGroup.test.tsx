@@ -53,7 +53,10 @@ describe("CheckGroup", () => {
 
   it("should have `aria-labelledby='identifier'` property when `label={{ labelledBy: 'identifier' }}`", () => {
     render(
-      <CheckGroup {...REQUIRED_PROPS} label={{ labelledBy: "identifier" }} />,
+      <CheckGroup
+        {...REQUIRED_PROPS}
+        label={{ labelledBy: "identifier" }}
+      />,
     );
 
     expect(screen.getByRole("group")).toHaveAttribute(
@@ -67,11 +70,27 @@ describe("CheckGroup", () => {
 
     userEvent.setup();
     render(
-      <CheckGroup {...REQUIRED_PROPS} onChange={handleChange}>
-        <Checkbox label="item 0" value="0" disabled />
-        <Checkbox label="item 1" value="1" />
-        <Checkbox label="item 2" value="2" />
-        <Checkbox label="item 3" value="3" />
+      <CheckGroup
+        {...REQUIRED_PROPS}
+        onChange={handleChange}
+      >
+        <Checkbox
+          label="item 0"
+          value="0"
+          disabled
+        />
+        <Checkbox
+          label="item 1"
+          value="1"
+        />
+        <Checkbox
+          label="item 2"
+          value="2"
+        />
+        <Checkbox
+          label="item 3"
+          value="3"
+        />
       </CheckGroup>,
     );
 
@@ -116,11 +135,27 @@ describe("CheckGroup", () => {
 
     userEvent.setup();
     render(
-      <CheckGroup {...REQUIRED_PROPS} onChange={handleChange}>
-        <Checkbox label="item 0" value="0" disabled />
-        <Checkbox label="item 1" value="1" />
-        <Checkbox label="item 2" value="2" />
-        <Checkbox label="item 3" value="3" />
+      <CheckGroup
+        {...REQUIRED_PROPS}
+        onChange={handleChange}
+      >
+        <Checkbox
+          label="item 0"
+          value="0"
+          disabled
+        />
+        <Checkbox
+          label="item 1"
+          value="1"
+        />
+        <Checkbox
+          label="item 2"
+          value="2"
+        />
+        <Checkbox
+          label="item 3"
+          value="3"
+        />
       </CheckGroup>,
     );
 

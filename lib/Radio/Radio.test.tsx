@@ -31,7 +31,12 @@ describe("Radio", () => {
   itSupportsDataSetProps(Radio, REQUIRED_PROPS);
 
   it("should have the required classNames", () => {
-    render(<Radio {...REQUIRED_PROPS} checked />);
+    render(
+      <Radio
+        {...REQUIRED_PROPS}
+        checked
+      />,
+    );
 
     const radio = screen.getByRole("radio");
     const label = radio.nextElementSibling;
@@ -44,14 +49,22 @@ describe("Radio", () => {
 
   it("should have `aria-label='label'` property when `label={{ screenReaderLabel: 'label' }}`", () => {
     render(
-      <Radio {...REQUIRED_PROPS} label={{ screenReaderLabel: labelText }} />,
+      <Radio
+        {...REQUIRED_PROPS}
+        label={{ screenReaderLabel: labelText }}
+      />,
     );
 
     expect(screen.getByRole("radio")).toHaveAttribute("aria-label", labelText);
   });
 
   it("should have `aria-labelledby='identifier'` property when `label={{ labelledBy: 'identifier' }}`", () => {
-    render(<Radio {...REQUIRED_PROPS} label={{ labelledBy: "identifier" }} />);
+    render(
+      <Radio
+        {...REQUIRED_PROPS}
+        label={{ labelledBy: "identifier" }}
+      />,
+    );
 
     expect(screen.getByRole("radio")).toHaveAttribute(
       "aria-labelledby",
@@ -66,7 +79,12 @@ describe("Radio", () => {
   });
 
   it("renders a checked radio when `checked={true}`", () => {
-    render(<Radio {...REQUIRED_PROPS} checked />);
+    render(
+      <Radio
+        {...REQUIRED_PROPS}
+        checked
+      />,
+    );
 
     expect(screen.getByRole("radio")).toBeChecked();
   });
@@ -76,7 +94,10 @@ describe("Radio", () => {
 
     userEvent.setup();
     const { unmount } = render(
-      <Radio {...REQUIRED_PROPS} onChange={handleChange} />,
+      <Radio
+        {...REQUIRED_PROPS}
+        onChange={handleChange}
+      />,
     );
 
     let radio = screen.getByRole("radio");
@@ -89,7 +110,12 @@ describe("Radio", () => {
 
     handleChange.mockClear();
     unmount();
-    render(<Radio {...REQUIRED_PROPS} onChange={handleChange} />);
+    render(
+      <Radio
+        {...REQUIRED_PROPS}
+        onChange={handleChange}
+      />,
+    );
 
     radio = screen.getByRole("radio");
 
@@ -115,11 +141,18 @@ describe("Radio", () => {
     expect(screen.getByTestId("t1").tagName).toBe("DIV");
 
     const CheckComponent = ({ className }: { className?: string }) => (
-      <div data-testid="t2" className={className}></div>
+      <div
+        data-testid="t2"
+        className={className}
+      ></div>
     );
 
     render(
-      <Radio {...REQUIRED_PROPS} checked checkComponent={<CheckComponent />} />,
+      <Radio
+        {...REQUIRED_PROPS}
+        checked
+        checkComponent={<CheckComponent />}
+      />,
     );
 
     expect(screen.getByTestId("t2").tagName).toBe("DIV");

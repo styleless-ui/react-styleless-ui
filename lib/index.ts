@@ -3,7 +3,7 @@ export * as Breadcrumb from "./Breadcrumb";
 export type {
   ItemProps as BreadcrumbItemProps,
   RootProps as BreadcrumbRootProps,
-  SeparatorItemProps as BreadcrumbSeparatorItemProps,
+  SeparatorItem as BreadcrumbSeparatorItemProps,
 } from "./Breadcrumb";
 export { default as Button, type ButtonProps } from "./Button";
 export { default as CheckGroup, type CheckGroupProps } from "./CheckGroup";
@@ -38,6 +38,7 @@ export { default as Popper, type PopperProps } from "./Popper";
 export { default as Portal, type PortalProps } from "./Portal";
 export {
   default as PortalConfigProvider,
+  usePortalConfig,
   type PortalConfigProviderProps,
 } from "./PortalConfigProvider";
 export {

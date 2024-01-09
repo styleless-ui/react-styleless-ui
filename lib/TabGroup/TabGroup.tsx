@@ -1,4 +1,5 @@
 import * as React from "react";
+import { SystemError } from "../internals";
 import type { MergeElementProps } from "../typings";
 import {
   componentWithForwardedRef,
@@ -6,10 +7,10 @@ import {
   useForkedRefs,
   useIsMounted,
 } from "../utils";
-import TabGroupContext, { type ITabGroupContext } from "./context";
+import { TabGroupContext, type TabGroupContextValue } from "./context";
 import { Root as RootSlot } from "./slots";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the tab group.
    */
@@ -42,7 +43,7 @@ interface OwnProps {
    * @default "manual"
    */
   keyboardActivationBehavior?: "manual" | "automatic";
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,
@@ -83,10 +84,10 @@ const TabGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     onChange?.(tabIndex);
   };
 
-  const tabs: ITabGroupContext["tabs"] = [];
-  const panels: ITabGroupContext["panels"] = [];
+  const tabs: TabGroupContextValue["tabs"] = [];
+  const panels: TabGroupContextValue["panels"] = [];
 
-  const register: ITabGroupContext["register"] = ref => {
+  const register: TabGroupContextValue["register"] = ref => {
     if (!ref.current) return;
 
     if (ref.current instanceof HTMLDivElement) {
@@ -111,9 +112,7 @@ const TabGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     if (!tabElement) return;
 
     if (tabElement.disabled || tabElement.hasAttribute("disabled")) {
-      throw new Error(
-        "[StylelessUI][TabGroup.Root]: The selected tab is `disabled`.",
-      );
+      throw new SystemError("The selected tab is `disabled`.", "TabGroup.Root");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -142,6 +141,6 @@ const TabGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const TabGroup = componentWithForwardedRef(TabGroupBase);
+const TabGroup = componentWithForwardedRef(TabGroupBase, "TabGroup");
 
 export default TabGroup;
