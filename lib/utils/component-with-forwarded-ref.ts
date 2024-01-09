@@ -5,11 +5,11 @@ const componentWithForwardedRef = <
   C extends React.ForwardRefRenderFunction<any, any>,
 >(
   component: C,
-  name?: string,
+  name: string,
 ): C => {
   const forwarded = React.forwardRef(component);
 
-  forwarded.displayName = name ?? component.displayName ?? component.name;
+  forwarded.displayName = name;
 
   return forwarded as unknown as C;
 };
