@@ -1,11 +1,7 @@
 import * as React from "react";
-import { getLabelInfo } from "../internals";
+import { getLabelInfo, logger } from "../internals";
 import type { Classes, MergeElementProps } from "../typings";
-import {
-  componentWithForwardedRef,
-  logger,
-  useDeterministicId,
-} from "../utils";
+import { componentWithForwardedRef, useDeterministicId } from "../utils";
 import { Item, SeparatorItem, type ItemProps } from "./components";
 import {
   Label as LabelSlot,

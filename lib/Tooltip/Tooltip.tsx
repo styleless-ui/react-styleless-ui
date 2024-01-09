@@ -4,10 +4,9 @@ import Popper, {
   type PopperProps,
   type VirtualElement,
 } from "../Popper";
-import { SystemKeys } from "../internals";
+import { SystemError, SystemKeys } from "../internals";
 import type { MergeElementProps } from "../typings";
 import {
-  SystemError,
   componentWithForwardedRef,
   contains,
   isHTMLElement,

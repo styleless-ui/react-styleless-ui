@@ -1,11 +1,7 @@
 import * as React from "react";
+import { SystemError } from "../internals";
 import type { UnknownObject } from "../typings";
-import {
-  SystemError,
-  componentWithForwardedRef,
-  forkRefs,
-  isFragment,
-} from "../utils";
+import { componentWithForwardedRef, forkRefs, isFragment } from "../utils";
 import { type Props } from "./As";
 import { mergeProps } from "./utils";
 

@@ -1,11 +1,10 @@
 import * as React from "react";
 import { ToggleGroupContext } from "../ToggleGroup/context";
+import { SystemError, logger } from "../internals";
 import type { MergeElementProps } from "../typings";
 import {
-  SystemError,
   componentWithForwardedRef,
   computeAccessibleName,
-  logger,
   useCheckBase,
   useForkedRefs,
 } from "../utils";

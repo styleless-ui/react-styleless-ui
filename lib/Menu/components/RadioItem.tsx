@@ -1,9 +1,8 @@
 import * as React from "react";
-import { disableUserSelectCSSProperties } from "../../internals";
+import { disableUserSelectCSSProperties, logger } from "../../internals";
 import type { MergeElementProps } from "../../typings";
 import {
   componentWithForwardedRef,
-  logger,
   useDeterministicId,
   useEventCallback,
   useForkedRefs,

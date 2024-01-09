@@ -1,4 +1,4 @@
-import { SystemError } from "../utils";
+import SystemError from "./SystemError";
 
 type SrOnlyLabel = {
   /**

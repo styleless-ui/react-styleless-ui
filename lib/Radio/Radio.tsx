@@ -1,9 +1,8 @@
 import * as React from "react";
 import { RadioGroupContext } from "../RadioGroup/context";
-import { getLabelInfo } from "../internals";
+import { SystemError, getLabelInfo } from "../internals";
 import type { Classes, MergeElementProps } from "../typings";
 import {
-  SystemError,
   componentWithForwardedRef,
   useCheckBase,
   useDeterministicId,

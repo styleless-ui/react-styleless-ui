@@ -1,8 +1,8 @@
 import * as React from "react";
 import Portal from "../Portal";
+import { SystemError } from "../internals";
 import type { MergeElementProps, RequireOnlyOne } from "../typings";
 import {
-  SystemError,
   componentWithForwardedRef,
   useDeterministicId,
   useDirection,

@@ -1,8 +1,7 @@
 import * as React from "react";
-import { getLabelInfo } from "../internals";
+import { SystemError, getLabelInfo } from "../internals";
 import type { Classes, MergeElementProps } from "../typings";
 import {
-  SystemError,
   componentWithForwardedRef,
   useControlledProp,
   useDeterministicId,

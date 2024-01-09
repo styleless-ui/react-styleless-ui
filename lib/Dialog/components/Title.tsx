@@ -1,8 +1,8 @@
 import * as React from "react";
+import { logger } from "../../internals";
 import type { PolymorphicProps } from "../../typings";
 import {
   componentWithForwardedRef,
-  logger,
   useDeterministicId,
   useForkedRefs,
 } from "../../utils";

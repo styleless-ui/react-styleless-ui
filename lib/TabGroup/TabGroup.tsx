@@ -1,7 +1,7 @@
 import * as React from "react";
+import { SystemError } from "../internals";
 import type { MergeElementProps } from "../typings";
 import {
-  SystemError,
   componentWithForwardedRef,
   useControlledProp,
   useForkedRefs,

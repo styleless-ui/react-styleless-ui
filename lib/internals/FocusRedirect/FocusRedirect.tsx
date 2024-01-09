@@ -1,6 +1,5 @@
 import * as React from "react";
 import {
-  SystemError,
   contains,
   isFocusable,
   useEventCallback,
@@ -8,6 +7,7 @@ import {
   useForkedRefs,
   usePreviousValue,
 } from "../../utils";
+import SystemError from "../SystemError";
 
 export type Props = {
   /**

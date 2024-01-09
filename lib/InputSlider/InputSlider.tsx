@@ -1,12 +1,12 @@
 import * as React from "react";
 import {
+  SystemError,
   SystemKeys,
   disableUserSelectCSSProperties,
   getLabelInfo,
 } from "../internals";
 import type { Classes, MergeElementProps } from "../typings";
 import {
-  SystemError,
   clamp,
   componentWithForwardedRef,
   getBoundingClientRect,

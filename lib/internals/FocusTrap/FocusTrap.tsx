@@ -1,7 +1,6 @@
 import * as React from "react";
-import { visuallyHiddenCSSProperties } from "..";
+import { SystemError, visuallyHiddenCSSProperties } from "..";
 import {
-  SystemError,
   contains,
   isFocusable,
   useEventListener,

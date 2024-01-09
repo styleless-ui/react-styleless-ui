@@ -1,10 +1,10 @@
 import * as React from "react";
+import { logger } from "../internals";
 import type { PolymorphicProps } from "../typings";
 import {
   componentWithForwardedRef,
   computeAccessibleName,
   getNodeName,
-  logger,
   useButtonBase,
   useDeterministicId,
   useForkedRefs,

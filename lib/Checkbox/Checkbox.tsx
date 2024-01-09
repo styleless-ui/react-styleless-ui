@@ -1,11 +1,9 @@
 import * as React from "react";
 import { CheckGroupContext } from "../CheckGroup/context";
-import { getLabelInfo } from "../internals";
+import { SystemError, getLabelInfo, logger } from "../internals";
 import type { Classes, MergeElementProps } from "../typings";
 import {
-  SystemError,
   componentWithForwardedRef,
-  logger,
   useCheckBase,
   useDeterministicId,
   useForkedRefs,
