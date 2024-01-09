@@ -7,6 +7,7 @@ import {
 } from "../utils";
 import CheckGroupContext from "./context";
 import * as Slots from "./slots";
+import { getLabelInfo } from "./utils";
 
 interface OwnProps {
   /**
@@ -60,34 +61,6 @@ export type Props = Omit<
   "className" | "defaultChecked"
 >;
 
-const getLabelInfo = (labelInput: Props["label"]) => {
-  const props: {
-    visibleLabel?: string;
-    srOnlyLabel?: string;
-    labelledBy?: string;
-  } = {};
-
-  if (typeof labelInput === "string") {
-    props.visibleLabel = labelInput;
-  } else {
-    if ("screenReaderLabel" in labelInput) {
-      props.srOnlyLabel = labelInput.screenReaderLabel;
-    } else if ("labelledBy" in labelInput) {
-      props.labelledBy = labelInput.labelledBy;
-    } else {
-      throw new Error(
-        [
-          "[StylelessUI][CheckGroup]: Invalid `label` property.",
-          "The `label` property must be either a `string` or in shape of " +
-            "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
-        ].join("\n"),
-      );
-    }
-  }
-
-  return props;
-};
-
 const CheckGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     label,
@@ -117,6 +90,20 @@ const CheckGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     onChange?.(newValue);
   };
 
+  const renderLabel = () => {
+    if (!labelProps.visibleLabel) return null;
+
+    return (
+      <span
+        id={visibleLabelId}
+        data-slot={Slots.Label}
+        className={classes?.label}
+      >
+        {labelProps.visibleLabel}
+      </span>
+    );
+  };
+
   return (
     <div
       {...otherProps}
@@ -126,15 +113,7 @@ const CheckGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       data-slot={Slots.Root}
     >
       <CheckGroupContext.Provider value={{ value, onChange: handleChange }}>
-        {labelProps.visibleLabel && (
-          <span
-            id={visibleLabelId}
-            data-slot={Slots.Label}
-            className={classes?.label}
-          >
-            {labelProps.visibleLabel}
-          </span>
-        )}
+        {renderLabel()}
         <div
           role="group"
           data-slot={Slots.Group}
@@ -152,6 +131,6 @@ const CheckGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const CheckGroup = componentWithForwardedRef(CheckGroupBase);
+const CheckGroup = componentWithForwardedRef(CheckGroupBase, "CheckGroup");
 
 export default CheckGroup;
