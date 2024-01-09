@@ -1,31 +1,5 @@
-import { SystemError, clamp, remap } from "../utils";
-import {
-  type Label,
-  type Props,
-  type Segment,
-  type ThumbInfo,
-} from "./InputSlider";
-
-export const getLabelInfo = (labelInput: Label) => {
-  const props: { srOnlyLabel?: string; labelledBy?: string } = {};
-
-  if ("screenReaderLabel" in labelInput) {
-    props.srOnlyLabel = labelInput.screenReaderLabel;
-  } else if ("labelledBy" in labelInput) {
-    props.labelledBy = labelInput.labelledBy;
-  } else {
-    throw new SystemError(
-      [
-        "Invalid `label` provided.",
-        "Each `label` property must be in shape of " +
-          "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
-      ].join("\n"),
-      "InputSlider",
-    );
-  }
-
-  return props;
-};
+import { clamp, remap } from "../utils";
+import { type Props, type Segment, type ThumbInfo } from "./InputSlider";
 
 export const findNearestValue = (vals: number[], target: number) => {
   const midIdx = Math.floor(vals.length / 2);

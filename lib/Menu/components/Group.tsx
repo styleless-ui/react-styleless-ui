@@ -1,11 +1,11 @@
 import * as React from "react";
-import type { Classes, MergeElementProps } from "../../../typings";
-import { componentWithForwardedRef, useDeterministicId } from "../../../utils";
+import { getLabelInfo } from "../../internals";
+import type { Classes, MergeElementProps } from "../../typings";
+import { componentWithForwardedRef, useDeterministicId } from "../../utils";
 import {
   GroupLabel as GroupLabelSlot,
   GroupRoot as GroupRootSlot,
-} from "../../slots";
-import { getLabelInfo } from "./utils";
+} from "../slots";
 
 type OwnProps = {
   /**
@@ -45,7 +45,7 @@ const GroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const id = useDeterministicId(idProp, "styleless-ui__menu-group");
   const visibleLabelId = id ? `${id}__label` : undefined;
 
-  const labelProps = getLabelInfo(label);
+  const labelProps = getLabelInfo(label, "Menu.Group");
 
   const renderLabel = () => {
     if (!labelProps.visibleLabel) return null;

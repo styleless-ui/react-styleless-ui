@@ -1,13 +1,10 @@
 import * as React from "react";
-import type { Classes, MergeElementProps } from "../../../typings";
-import { componentWithForwardedRef, useDeterministicId } from "../../../utils";
-import { TabGroupContext } from "../../context";
-import {
-  ListLabel as ListLabelSlot,
-  ListRoot as ListRootSlot,
-} from "../../slots";
-import Tab from "../Tab";
-import { getLabelInfo } from "./utils";
+import { getLabelInfo } from "../../internals";
+import type { Classes, MergeElementProps } from "../../typings";
+import { componentWithForwardedRef, useDeterministicId } from "../../utils";
+import { TabGroupContext } from "../context";
+import { ListLabel as ListLabelSlot, ListRoot as ListRootSlot } from "../slots";
+import Tab from "./Tab";
 
 type OwnProps = {
   /**
@@ -58,7 +55,7 @@ const ListBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const id = useDeterministicId(idProp, "styleless-ui__tablist");
   const visibleLabelId = id ? `${id}__label` : undefined;
 
-  const labelProps = getLabelInfo(label);
+  const labelProps = getLabelInfo(label, "TabGroup.List");
 
   let tabIdx = 0;
   const children = React.Children.map(childrenProp, child => {

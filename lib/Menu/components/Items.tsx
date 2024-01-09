@@ -1,9 +1,9 @@
 import * as React from "react";
-import type { MergeElementProps } from "../../../typings";
-import { componentWithForwardedRef } from "../../../utils";
-import { MenuContext } from "../../context";
-import { ItemsRoot as ItemsRootSlot } from "../../slots";
-import { getLabelInfo } from "./utils";
+import { getLabelInfo } from "../../internals";
+import type { MergeElementProps } from "../../typings";
+import { componentWithForwardedRef } from "../../utils";
+import { MenuContext } from "../context";
+import { ItemsRoot as ItemsRootSlot } from "../slots";
 
 type OwnProps = {
   /**
@@ -44,7 +44,13 @@ const ItemsBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const menuCtx = React.useContext(MenuContext);
 
-  const labelProps = getLabelInfo(label);
+  const labelProps = getLabelInfo(label, "Menu.Items", {
+    customErrorMessage: [
+      "Invalid `label` property.",
+      "The `label` property must be in shape of " +
+        "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
+    ].join("\n"),
+  });
 
   return (
     <div

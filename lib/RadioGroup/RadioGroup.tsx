@@ -1,4 +1,5 @@
 import * as React from "react";
+import { getLabelInfo } from "../internals";
 import type { Classes, MergeElementProps } from "../typings";
 import {
   componentWithForwardedRef,
@@ -8,7 +9,6 @@ import {
 } from "../utils";
 import { RadioGroupContext } from "./context";
 import * as Slots from "./slots";
-import { getLabelInfo } from "./utils";
 
 type OwnProps = {
   /**
@@ -81,7 +81,7 @@ const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const id = useDeterministicId(idProp, "styleless-ui__radio-group");
   const visibleLabelId = id ? `${id}__label` : undefined;
 
-  const labelProps = getLabelInfo(label);
+  const labelProps = getLabelInfo(label, "RadioGroup");
 
   const [value, setValue] = useControlledProp(valueProp, defaultValue, "");
 

@@ -2,9 +2,9 @@ export {
   default as CheckItem,
   type Props as CheckItemProps,
 } from "./CheckItem";
-export { default as Group, type GroupProps } from "./Group";
+export { default as Group, type Props as GroupProps } from "./Group";
 export { default as Item, type ItemProps } from "./Item";
-export { default as Items, type ItemsProps } from "./Items";
+export { default as Items, type Props as ItemsProps } from "./Items";
 export { default as RadioGroup, type RadioGroupProps } from "./RadioGroup";
 export {
   default as RadioItem,

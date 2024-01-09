@@ -1,5 +1,6 @@
 import * as React from "react";
 import { RadioGroupContext } from "../RadioGroup/context";
+import { getLabelInfo } from "../internals";
 import type { Classes, MergeElementProps } from "../typings";
 import {
   SystemError,
@@ -11,7 +12,6 @@ import {
 } from "../utils";
 import { CheckIcon } from "./components";
 import * as Slots from "./slots";
-import { getLabelInfo } from "./utils";
 
 type RadioClassesMap = Classes<"root" | "label" | "check">;
 
@@ -153,7 +153,7 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const handleRef = useForkedRefs(ref, rootRef, checkBase.handleControllerRef);
 
-  const labelProps = getLabelInfo(label);
+  const labelProps = getLabelInfo(label, "Radio");
 
   const classesCtx: ClassesContext = {
     disabled,

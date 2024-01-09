@@ -1,4 +1,5 @@
 import * as React from "react";
+import { getLabelInfo } from "../internals";
 import type { Classes, MergeElementProps } from "../typings";
 import {
   componentWithForwardedRef,
@@ -11,7 +12,6 @@ import {
   List as ListSlot,
   Root as RootSlot,
 } from "./slots";
-import { getLabelInfo } from "./utils";
 
 type OwnProps = {
   /**
@@ -85,7 +85,7 @@ const BreadcrumbBase = (props: Props, ref: React.Ref<HTMLElement>) => {
     }
   };
 
-  const labelProps = getLabelInfo(label);
+  const labelProps = getLabelInfo(label, "Breadcrumb");
 
   const children = React.Children.map(childrenProp, child => {
     if (!React.isValidElement(child)) return null;

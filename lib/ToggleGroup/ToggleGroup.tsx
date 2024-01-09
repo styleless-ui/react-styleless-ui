@@ -1,4 +1,5 @@
 import * as React from "react";
+import { getLabelInfo } from "../internals";
 import type { Classes, MergeElementProps } from "../typings";
 import {
   SystemError,
@@ -9,7 +10,6 @@ import {
 } from "../utils";
 import { ToggleGroupContext } from "./context";
 import * as Slots from "./slots";
-import { getLabelInfo } from "./utils";
 
 type OwnProps = {
   /**
@@ -87,7 +87,7 @@ const ToggleGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const id = useDeterministicId(idProp, "styleless-ui__toggle-group");
   const visibleLabelId = `${id}__label`;
 
-  const labelProps = getLabelInfo(label);
+  const labelProps = getLabelInfo(label, "ToggleGroup");
 
   const [value, setValue] = useControlledProp(
     valueProp,

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { getLabelInfo } from "../internals";
 import type { Classes, MergeElementProps } from "../typings";
 import {
   componentWithForwardedRef,
@@ -8,7 +9,6 @@ import {
   useHandleTargetLabelClick,
 } from "../utils";
 import * as Slots from "./slots";
-import { getLabelInfo } from "./utils";
 
 type SwitchClassesMap = Classes<"root" | "label" | "thumb" | "track">;
 
@@ -125,7 +125,7 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const handleRef = useForkedRefs(ref, checkBase.handleControllerRef);
 
-  const labelProps = getLabelInfo(label);
+  const labelProps = getLabelInfo(label, "Switch");
 
   const classesCtx: ClassesContext = {
     disabled,

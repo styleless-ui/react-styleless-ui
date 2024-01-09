@@ -1,13 +1,17 @@
 import * as React from "react";
-import { disableUserSelectCSSProperties, SystemKeys } from "../internals";
+import {
+  SystemKeys,
+  disableUserSelectCSSProperties,
+  getLabelInfo,
+} from "../internals";
 import type { Classes, MergeElementProps } from "../typings";
 import {
+  SystemError,
   clamp,
   componentWithForwardedRef,
   getBoundingClientRect,
   inLerp,
   remap,
-  SystemError,
   useButtonBase,
   useControlledProp,
   useDirection,
@@ -17,7 +21,7 @@ import {
   useIsMounted,
 } from "../utils";
 import * as Slots from "./slots";
-import { getLabelInfo, getNearestThumb, getRelativeValue } from "./utils";
+import { getNearestThumb, getRelativeValue } from "./utils";
 
 type InputSliderClassesMap = Classes<
   | "root"
@@ -49,7 +53,7 @@ type ThumbState = {
   zIndex: number;
 };
 
-export type Label =
+type Label =
   | {
       /**
        * The label to use as `aria-label` property.
@@ -433,6 +437,28 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       ? (valueState as [number, number])[1]
       : max;
 
+    const leftLabelInfo = getLabelInfo(
+      multiThumb ? (labels as [Label, Label])[0] : (labels as Label),
+      "InputSlider",
+      {
+        customErrorMessage: [
+          "Invalid `label` provided.",
+          "Each `label` property must be in shape of " +
+            "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
+        ].join("\n"),
+      },
+    );
+
+    const rightLabelInfo = multiThumb
+      ? getLabelInfo((labels as [Label, Label])[1], "InputSlider", {
+          customErrorMessage: [
+            "Invalid `label` provided.",
+            "Each `label` property must be in shape of " +
+              "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
+          ].join("\n"),
+        })
+      : {};
+
     return {
       left: {
         value: leftThumbValue,
@@ -440,9 +466,7 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         maxValue: rightThumbValue,
         ref: handleLeftThumbRef,
         stateRef: leftThumbStateRef,
-        label: getLabelInfo(
-          multiThumb ? (labels as [Label, Label])[0] : (labels as Label),
-        ),
+        label: leftLabelInfo,
       } as ThumbInfo,
       right: {
         value: rightThumbValue,
@@ -450,7 +474,7 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         maxValue: max,
         ref: handleRightThumbRef,
         stateRef: rightThumbStateRef,
-        label: multiThumb ? getLabelInfo((labels as [Label, Label])[1]) : {},
+        label: rightLabelInfo,
       } as ThumbInfo,
     };
   })();

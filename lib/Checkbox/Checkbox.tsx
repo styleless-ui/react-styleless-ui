@@ -1,5 +1,6 @@
 import * as React from "react";
 import { CheckGroupContext } from "../CheckGroup/context";
+import { getLabelInfo } from "../internals";
 import type { Classes, MergeElementProps } from "../typings";
 import {
   SystemError,
@@ -12,7 +13,6 @@ import {
 } from "../utils";
 import { CheckIcon, IndeterminateIcon } from "./components";
 import * as Slots from "./slots";
-import { getLabelInfo } from "./utils";
 
 type CheckboxClassesMap = Classes<"root" | "label" | "check">;
 
@@ -152,7 +152,7 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const handleRef = useForkedRefs(ref, checkBase.handleControllerRef);
 
-  const labelProps = getLabelInfo(label);
+  const labelProps = getLabelInfo(label, "Checkbox");
 
   const classesCtx: ClassesContext = {
     disabled,
