@@ -8,6 +8,8 @@ export type AnyObject = Record<KeyofBase, any>;
 export type UnknownObject = Record<KeyofBase, unknown>;
 export type EmptyObject = Record<KeyofBase, never>;
 
+export type AnyFunction = (...args: any) => any;
+
 type GenerateStringUnion<T> = Extract<
   {
     [Key in keyof T]: true extends T[Key] ? Key : never;
