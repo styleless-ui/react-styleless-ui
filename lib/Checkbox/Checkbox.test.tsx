@@ -31,7 +31,12 @@ describe("Checkbox", () => {
   itSupportsDataSetProps(Checkbox, REQUIRED_PROPS);
 
   it("should have the required classNames", () => {
-    render(<Checkbox {...REQUIRED_PROPS} checked />);
+    render(
+      <Checkbox
+        {...REQUIRED_PROPS}
+        checked
+      />,
+    );
 
     const checkbox = screen.getByRole("checkbox");
     const label = checkbox.nextElementSibling;
@@ -44,7 +49,10 @@ describe("Checkbox", () => {
 
   it("should have `aria-label='label'` property when `label={{ screenReaderLabel: 'label' }}`", () => {
     render(
-      <Checkbox {...REQUIRED_PROPS} label={{ screenReaderLabel: labelText }} />,
+      <Checkbox
+        {...REQUIRED_PROPS}
+        label={{ screenReaderLabel: labelText }}
+      />,
     );
 
     expect(screen.getByRole("checkbox")).toHaveAttribute(
@@ -55,7 +63,10 @@ describe("Checkbox", () => {
 
   it("should have `aria-labelledby='identifier'` property when `label={{ labelledBy: 'identifier' }}`", () => {
     render(
-      <Checkbox {...REQUIRED_PROPS} label={{ labelledBy: "identifier" }} />,
+      <Checkbox
+        {...REQUIRED_PROPS}
+        label={{ labelledBy: "identifier" }}
+      />,
     );
 
     expect(screen.getByRole("checkbox")).toHaveAttribute(
@@ -67,7 +78,11 @@ describe("Checkbox", () => {
   it("renders a mixed checkbox with correct behavior", async () => {
     userEvent.setup();
     render(
-      <Checkbox {...REQUIRED_PROPS} indeterminated aria-controls="id1 id2" />,
+      <Checkbox
+        {...REQUIRED_PROPS}
+        indeterminated
+        aria-controls="id1 id2"
+      />,
     );
 
     const checkbox = screen.getByRole("checkbox");
@@ -90,7 +105,12 @@ describe("Checkbox", () => {
   });
 
   it("renders a checked checkbox when `checked={true}`", () => {
-    render(<Checkbox {...REQUIRED_PROPS} checked />);
+    render(
+      <Checkbox
+        {...REQUIRED_PROPS}
+        checked
+      />,
+    );
 
     expect(screen.getByRole("checkbox")).toBeChecked();
   });
@@ -99,7 +119,12 @@ describe("Checkbox", () => {
     const handleChange = jest.fn<void, [checkedState: boolean]>();
 
     userEvent.setup();
-    render(<Checkbox {...REQUIRED_PROPS} onChange={handleChange} />);
+    render(
+      <Checkbox
+        {...REQUIRED_PROPS}
+        onChange={handleChange}
+      />,
+    );
 
     const checkbox = screen.getByRole("checkbox");
 
@@ -145,7 +170,10 @@ describe("Checkbox", () => {
     expect(screen.getByTestId("t1").tagName).toBe("DIV");
 
     const CheckComponent = ({ className }: { className?: string }) => (
-      <div data-testid="t2" className={className}></div>
+      <div
+        data-testid="t2"
+        className={className}
+      ></div>
     );
 
     render(

@@ -4,7 +4,7 @@ import {
   componentWithForwardedRef,
   computeAccessibleName,
   getNodeName,
-  log,
+  logger,
   useButtonBase,
   useDeterministicId,
   useForkedRefs,
@@ -92,7 +92,7 @@ const ButtonBase = <E extends React.ElementType, R extends HTMLElement>(
     const accessibleName = computeAccessibleName(node);
 
     if (!accessibleName) {
-      log(
+      logger(
         [
           "Can't determine an accessible name.",
           "It's mandatory to provide an accessible name for the component. " +

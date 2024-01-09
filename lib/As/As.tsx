@@ -15,7 +15,10 @@ const AsBase = (props: Props, ref: React.Ref<HTMLElement>) => {
   const { children, ...otherProps } = props;
 
   return (
-    <AsClone ref={ref} {...otherProps}>
+    <AsClone
+      ref={ref}
+      {...otherProps}
+    >
       {children}
     </AsClone>
   );

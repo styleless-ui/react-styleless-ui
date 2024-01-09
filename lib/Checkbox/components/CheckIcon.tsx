@@ -10,7 +10,11 @@ const CheckIcon = (props: Props) => {
   const { slot, checkComponent, className } = props;
 
   const defaultIcon = (
-    <svg aria-hidden="true" focusable="false" viewBox="0 0 12 8">
+    <svg
+      aria-hidden="true"
+      focusable="false"
+      viewBox="0 0 12 8"
+    >
       <polyline
         fill="none"
         stroke="currentcolor"
@@ -24,7 +28,11 @@ const CheckIcon = (props: Props) => {
   );
 
   return (
-    <div className={className} data-slot={slot} aria-hidden="true">
+    <div
+      className={className}
+      data-slot={slot}
+      aria-hidden="true"
+    >
       {checkComponent ?? defaultIcon}
     </div>
   );

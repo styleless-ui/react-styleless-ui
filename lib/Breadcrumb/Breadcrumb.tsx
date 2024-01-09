@@ -1,6 +1,10 @@
 import * as React from "react";
 import type { Classes, MergeElementProps } from "../typings";
-import { componentWithForwardedRef, log, useDeterministicId } from "../utils";
+import {
+  componentWithForwardedRef,
+  logger,
+  useDeterministicId,
+} from "../utils";
 import { Item, SeparatorItem, type ItemProps } from "./components";
 import {
   Label as LabelSlot,
@@ -69,7 +73,7 @@ const BreadcrumbBase = (props: Props, ref: React.Ref<HTMLElement>) => {
 
       if (anchorLink.hasAttribute("aria-current")) return;
 
-      log(
+      logger(
         [
           "The aria attribute `aria-current`" +
             " is missing from the last <BreadcrumbItem>'s anchor element.",
@@ -90,7 +94,7 @@ const BreadcrumbBase = (props: Props, ref: React.Ref<HTMLElement>) => {
       (child as React.ReactElement).type !== Item &&
       (child as React.ReactElement).type !== SeparatorItem
     ) {
-      log(
+      logger(
         "The Breadcrumb component only accepts <Breadcrumb.Item> and " +
           "<Breadcrumb.Separator> as a children",
         { scope: "Breadcrumb", type: "error" },

@@ -1,17 +1,18 @@
 import * as React from "react";
 import { type Props } from "./CheckGroup";
 
-interface ICheckGroupContext {
+interface ContextValue {
   value: Exclude<Props["value"], undefined>;
   onChange: (newCheckedState: boolean, inputValue: string) => void;
 }
 
-const CheckGroupContext = React.createContext<ICheckGroupContext | undefined>(
-  undefined,
-);
+const Context = React.createContext<ContextValue | null>(null);
 
 if (process.env.NODE_ENV !== "production") {
-  CheckGroupContext.displayName = "CheckGroupContext";
+  Context.displayName = "CheckGroupContext";
 }
 
-export { CheckGroupContext as default, type ICheckGroupContext };
+export {
+  Context as CheckGroupContext,
+  type ContextValue as CheckGroupContextValue,
+};

@@ -31,7 +31,10 @@ describe("Breadcrumb", () => {
     render(
       <Breadcrumb.Root {...REQUIRED_PROPS}>
         <Breadcrumb.Item className="item"></Breadcrumb.Item>
-        <Breadcrumb.SeparatorItem className="separator" separatorSymbol={"/"} />
+        <Breadcrumb.SeparatorItem
+          className="separator"
+          separatorSymbol={"/"}
+        />
       </Breadcrumb.Root>,
     );
 

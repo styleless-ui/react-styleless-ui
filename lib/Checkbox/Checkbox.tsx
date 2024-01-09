@@ -1,8 +1,10 @@
 import * as React from "react";
-import CheckGroupContext from "../CheckGroup/context";
+import { CheckGroupContext } from "../CheckGroup/context";
 import type { Classes, MergeElementProps } from "../typings";
 import {
+  SystemError,
   componentWithForwardedRef,
+  logger,
   useCheckBase,
   useDeterministicId,
   useForkedRefs,
@@ -121,12 +123,13 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   const checkGroupCtx = React.useContext(CheckGroupContext);
 
   if (checkGroupCtx && typeof value === "undefined") {
-    throw new Error(
+    throw new SystemError(
       [
-        "[StylelessUI][Checkbox]: The `value` property is missing.",
+        "The `value` property is missing.",
         "It's mandatory to provide a `value` property " +
           "when <CheckGroup /> is a wrapper for <Checkbox />.",
       ].join("\n"),
+      "Checkbox",
     );
   }
 
@@ -171,9 +174,10 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
     if (controls) return;
 
-    // eslint-disable-next-line no-console
-    console.warn(
-      "[StylelessUI][Checkbox]: You must provide the set of checkbox IDs controlled by the mixed (`indeterminate`) checkbox by the `aria-controls` property.",
+    logger(
+      "You must provide the set of checkbox IDs controlled by the mixed " +
+        "(`indeterminate`) checkbox by the `aria-controls` property.",
+      { scope: "Checkbox", type: "warn" },
     );
   };
 

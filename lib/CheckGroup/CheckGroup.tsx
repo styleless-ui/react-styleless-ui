@@ -5,7 +5,7 @@ import {
   useControlledProp,
   useDeterministicId,
 } from "../utils";
-import CheckGroupContext from "./context";
+import { CheckGroupContext } from "./context";
 import * as Slots from "./slots";
 import { getLabelInfo } from "./utils";
 
