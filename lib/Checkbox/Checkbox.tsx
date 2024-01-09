@@ -8,8 +8,7 @@ import {
   useForkedRefs,
   useHandleTargetLabelClick,
 } from "../utils";
-import CheckIcon from "./CheckIcon";
-import IndeterminateIcon from "./IndeterminateIcon";
+import { CheckIcon, IndeterminateIcon } from "./components";
 import * as Slots from "./slots";
 import { getLabelInfo } from "./utils";
 
@@ -261,6 +260,6 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   );
 };
 
-const Checkbox = componentWithForwardedRef(CheckboxBase);
+const Checkbox = componentWithForwardedRef(CheckboxBase, "Checkbox");
 
 export default Checkbox;
