@@ -13,7 +13,7 @@ import {
   TriggerRoot as TriggerRootSlot,
 } from "../slots";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the component.
    */
@@ -29,7 +29,7 @@ interface OwnProps {
   className?:
     | string
     | ((ctx: { disabled: boolean; focusedVisible: boolean }) => string);
-}
+};
 
 export type Props<E extends React.ElementType> = PolymorphicProps<E, OwnProps>;
 

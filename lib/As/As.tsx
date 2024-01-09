@@ -2,12 +2,12 @@ import * as React from "react";
 import { componentWithForwardedRef } from "../utils";
 import AsClone from "./AsClone";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the component. It should be a single non-fragment React element.
    */
   children: React.ReactElement;
-}
+};
 
 export type Props = React.HTMLAttributes<HTMLElement> & OwnProps;
 

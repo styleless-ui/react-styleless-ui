@@ -7,7 +7,7 @@ import {
   useIsomorphicLayoutEffect,
 } from ".";
 
-interface ButtonBaseProps<T extends HTMLElement = HTMLButtonElement> {
+type ButtonBaseProps<T extends HTMLElement = HTMLButtonElement> = {
   disabled?: boolean;
   autoFocus?: boolean;
   onClick?: React.MouseEventHandler<T>;
@@ -15,7 +15,7 @@ interface ButtonBaseProps<T extends HTMLElement = HTMLButtonElement> {
   onFocus?: React.FocusEventHandler<T>;
   onKeyDown?: React.KeyboardEventHandler<T>;
   onKeyUp?: React.KeyboardEventHandler<T>;
-}
+};
 
 const useButtonBase = <T extends HTMLElement = HTMLButtonElement>(
   props: ButtonBaseProps<T>,

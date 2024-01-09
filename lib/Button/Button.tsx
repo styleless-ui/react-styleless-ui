@@ -11,7 +11,7 @@ import {
 } from "../utils";
 import * as Slots from "./slots";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the component.
    */
@@ -32,7 +32,7 @@ interface OwnProps {
    * @default false
    */
   disabled?: boolean;
-}
+};
 
 export type Props<E extends React.ElementType> = PolymorphicProps<E, OwnProps>;
 

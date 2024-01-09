@@ -1,10 +1,10 @@
 import * as React from "react";
 import { type Props } from "./CheckGroup";
 
-interface ContextValue {
+type ContextValue = {
   value: Exclude<Props["value"], undefined>;
   onChange: (newCheckedState: boolean, inputValue: string) => void;
-}
+};
 
 const Context = React.createContext<ContextValue | null>(null);
 

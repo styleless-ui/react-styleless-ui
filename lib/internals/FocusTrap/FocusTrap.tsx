@@ -8,7 +8,7 @@ import {
   useForkedRefs,
 } from "../../utils";
 
-export interface Props {
+export type Props = {
   /**
    * The content of the component.
    */
@@ -18,7 +18,7 @@ export interface Props {
    * @default false
    */
   enabled?: boolean;
-}
+};
 
 const FocusTrap = (props: Props) => {
   const { children, enabled = false } = props;

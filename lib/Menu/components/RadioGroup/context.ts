@@ -1,9 +1,9 @@
 import * as React from "react";
 
-interface ContextValue {
+type ContextValue = {
   value: string;
   onValueChange: (value: string) => void;
-}
+};
 
 const Context = React.createContext<ContextValue | null>(null);
 

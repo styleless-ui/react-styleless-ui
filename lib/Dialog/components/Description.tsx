@@ -11,7 +11,7 @@ import {
   DescriptionRoot as DescriptionRootSlot,
 } from "../slots";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the component.
    */
@@ -20,7 +20,7 @@ interface OwnProps {
    * The className applied to the component.
    */
   className?: string;
-}
+};
 
 export type Props<E extends React.ElementType> = PolymorphicProps<E, OwnProps>;
 

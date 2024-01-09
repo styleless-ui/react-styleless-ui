@@ -16,7 +16,7 @@ import { MenuContext, type MenuContextValue } from "./context";
 import { Root as RootSlot } from "./slots";
 import { makeRegisterItem } from "./utils";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the component.
    */
@@ -67,7 +67,7 @@ interface OwnProps {
    * @default false
    */
   disabledKeySearch?: boolean;
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,

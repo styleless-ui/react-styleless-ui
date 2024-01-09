@@ -1,10 +1,10 @@
 import * as React from "react";
 
-interface ContextValue {
+type ContextValue = {
   isExpanded: boolean;
   setIsExpanded: (value: React.SetStateAction<boolean>) => void;
   handleExpandChange: (expandState: boolean) => void;
-}
+};
 
 const Context = React.createContext<ContextValue | null>(null);
 

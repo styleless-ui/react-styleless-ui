@@ -12,7 +12,7 @@ import {
   TriggerRoot as TriggerRootSlot,
 } from "../slots";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the component.
    */
@@ -21,7 +21,7 @@ interface OwnProps {
    * The className applied to the component.
    */
   className?: string;
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,

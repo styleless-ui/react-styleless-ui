@@ -3,7 +3,7 @@ import type { MergeElementProps } from "../../typings";
 import { componentWithForwardedRef } from "../../utils";
 import { ItemRoot as ItemRootSlot } from "../slots";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the component.
    */
@@ -12,7 +12,7 @@ interface OwnProps {
    * The className applied to the component.
    */
   className?: string;
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"li", OwnProps>,

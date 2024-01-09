@@ -3,7 +3,7 @@ import type { MergeElementProps } from "../../typings";
 import { componentWithForwardedRef } from "../../utils";
 import { SeparatorItemRoot as SeparatorItemRootSlot } from "../slots";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The symbol which is used as separator.
    */
@@ -12,7 +12,7 @@ interface OwnProps {
    * The className applied to the component.
    */
   className?: string;
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"li", OwnProps>,

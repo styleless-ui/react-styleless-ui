@@ -9,7 +9,7 @@ import {
 import Tab from "../Tab";
 import { getLabelInfo } from "./utils";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the component.
    */
@@ -37,7 +37,7 @@ interface OwnProps {
          */
         labelledBy: string;
       };
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,

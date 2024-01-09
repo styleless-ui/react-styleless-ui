@@ -1,6 +1,6 @@
 import * as React from "react";
 
-interface ContextValue {
+type ContextValue = {
   activeTab: number;
   tabs: React.RefObject<HTMLButtonElement>[];
   panels: React.RefObject<HTMLDivElement>[];
@@ -8,7 +8,7 @@ interface ContextValue {
   keyboardActivationBehavior: "manual" | "automatic";
   onChange: (tabIndex: number) => void;
   register: (ref: React.RefObject<HTMLButtonElement | HTMLDivElement>) => void;
-}
+};
 
 const Context = React.createContext<ContextValue | null>(null);
 

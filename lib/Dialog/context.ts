@@ -1,9 +1,9 @@
 import * as React from "react";
 
-interface ContextValue {
+type ContextValue = {
   role: "dialog" | "alertdialog";
   open: boolean;
-}
+};
 
 const Context = React.createContext<ContextValue | null>(null);
 

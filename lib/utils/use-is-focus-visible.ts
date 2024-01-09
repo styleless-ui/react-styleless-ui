@@ -131,12 +131,12 @@ const isFocusVisible = <T extends HTMLElement = HTMLElement>(
   );
 };
 
-interface Return<T extends HTMLElement = HTMLElement> {
+type Return<T extends HTMLElement = HTMLElement> = {
   isFocusVisibleRef: React.MutableRefObject<boolean>;
   onFocus: (event: React.FocusEvent<T>) => boolean;
   onBlur: (event: React.FocusEvent<T>) => boolean;
   ref: (node: T | null) => void;
-}
+};
 
 /**
  * Cherry-picked from https://github.com/mui-org/material-ui/blob/master/packages/mui-utils/src/useIsFocusVisible.js

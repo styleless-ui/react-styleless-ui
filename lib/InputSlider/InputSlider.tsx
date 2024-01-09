@@ -65,7 +65,7 @@ export type Label =
       labelledBy: string;
     };
 
-interface OwnProps {
+type OwnProps = {
   /**
    * Map of sub-components and their correlated classNames.
    */
@@ -151,7 +151,7 @@ interface OwnProps {
     value: number | [number, number],
     activeThumb: ActiveThumb | null,
   ) => void;
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,

@@ -11,7 +11,7 @@ import {
 } from "../utils";
 import * as Slots from "./slots";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the component.
    */
@@ -60,7 +60,7 @@ interface OwnProps {
    * The Callback is fired when the state of `active` changes.
    */
   onActiveChange?: (activeState: boolean) => void;
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"button", OwnProps>,

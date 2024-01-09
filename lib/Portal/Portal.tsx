@@ -4,7 +4,7 @@ import { usePortalConfig } from "../PortalConfigProvider";
 import { useIsServerHandoffComplete } from "../utils";
 import { getContainer } from "./utils";
 
-export interface Props {
+export type Props = {
   /**
    * A string containing one selector to match.
    * This string must be a valid CSS selector string;
@@ -20,7 +20,7 @@ export interface Props {
    * @default false
    */
   disabled?: boolean;
-}
+};
 
 const Portal = (props: Props) => {
   const { containerQuerySelector, children, disabled = false } = props;

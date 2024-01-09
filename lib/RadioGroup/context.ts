@@ -1,7 +1,7 @@
 import * as React from "react";
 import { type Props } from "./RadioGroup";
 
-interface ContextValue {
+type ContextValue = {
   value: Exclude<Props["value"], undefined>;
   radios: [string, React.RefObject<HTMLButtonElement>][];
   onChange: (newCheckedState: boolean, inputValue: string) => void;
@@ -9,7 +9,7 @@ interface ContextValue {
     value: string,
     ref: React.RefObject<HTMLButtonElement>,
   ) => void;
-}
+};
 
 const Context = React.createContext<ContextValue | null>(null);
 

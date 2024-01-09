@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Slots from "./slots";
 
-export interface Props {
+export type Props = {
   /**
    * The content of the component.
    */
@@ -10,7 +10,7 @@ export interface Props {
    * The ratio which needs to be preserved.
    */
   ratio: number;
-}
+};
 
 const PreserveAspectRatio = (props: Props) => {
   const { children, ratio } = props;

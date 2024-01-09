@@ -11,7 +11,7 @@ import {
 import { ToastContext } from "./context";
 import { Root as ToastRootSlot } from "./slots";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the toast.
    */
@@ -51,7 +51,7 @@ interface OwnProps {
    * The Callback is fired when the duration ends.
    */
   onDurationEnd?: () => void;
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,

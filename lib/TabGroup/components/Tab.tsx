@@ -11,7 +11,7 @@ import {
 import { TabGroupContext } from "../context";
 import { TabRoot as TabRootSlot } from "../slots";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the component.
    */
@@ -43,7 +43,7 @@ interface OwnProps {
    * @default false
    */
   disabled?: boolean;
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"button", OwnProps>,

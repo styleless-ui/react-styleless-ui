@@ -13,7 +13,7 @@ import {
 } from "./slots";
 import { getLabelInfo } from "./utils";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the breadcrumb.
    */
@@ -41,7 +41,7 @@ interface OwnProps {
          */
         labelledBy: string;
       };
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"nav", OwnProps>,

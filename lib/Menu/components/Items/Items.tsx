@@ -5,7 +5,7 @@ import { MenuContext } from "../../context";
 import { ItemsRoot as ItemsRootSlot } from "../../slots";
 import { getLabelInfo } from "./utils";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the component.
    */
@@ -32,7 +32,7 @@ interface OwnProps {
          */
         labelledBy: string;
       };
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,

@@ -1,8 +1,8 @@
 import * as React from "react";
 
-interface ContextValue {
+type ContextValue = {
   destinationQuery?: string;
-}
+};
 
 const Context = React.createContext<ContextValue>({
   destinationQuery: undefined,

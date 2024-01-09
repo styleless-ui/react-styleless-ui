@@ -13,7 +13,7 @@ import useMenuItem from "../../useMenuItem";
 import { MenuItemContext } from "./context";
 import { makeRegisterSubMenu } from "./utils";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the component.
    */
@@ -47,7 +47,7 @@ interface OwnProps {
       | React.MouseEvent<HTMLDivElement>
       | React.KeyboardEvent<HTMLDivElement>,
   ) => void;
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,

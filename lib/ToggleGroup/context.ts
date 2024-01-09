@@ -1,7 +1,7 @@
 import * as React from "react";
 import { type Props } from "./ToggleGroup";
 
-interface ContextValue {
+type ContextValue = {
   multiple: boolean;
   keyboardActivationBehavior: Exclude<
     Props["keyboardActivationBehavior"],
@@ -14,7 +14,7 @@ interface ContextValue {
     value: string,
     ref: React.RefObject<HTMLButtonElement>,
   ) => void;
-}
+};
 
 const Context = React.createContext<ContextValue | null>(null);
 

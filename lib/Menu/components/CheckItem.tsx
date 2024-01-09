@@ -12,7 +12,7 @@ import { MenuContext } from "../context";
 import { CheckItemRoot as CheckItemRootSlot } from "../slots";
 import useMenuItem from "../useMenuItem";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the component.
    */
@@ -60,7 +60,7 @@ interface OwnProps {
       | React.MouseEvent<HTMLDivElement>
       | React.KeyboardEvent<HTMLDivElement>,
   ) => void;
-}
+};
 
 export type Props = Omit<MergeElementProps<"div", OwnProps>, "defaultValue">;
 

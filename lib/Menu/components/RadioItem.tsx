@@ -13,7 +13,7 @@ import { RadioItemRoot as RadioItemRootSlot } from "../slots";
 import useMenuItem from "../useMenuItem";
 import { RadioGroupContext } from "./RadioGroup/context";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the component.
    */
@@ -51,7 +51,7 @@ interface OwnProps {
       | React.MouseEvent<HTMLDivElement>
       | React.KeyboardEvent<HTMLDivElement>,
   ) => void;
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,

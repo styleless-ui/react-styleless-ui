@@ -78,7 +78,7 @@ export type ComputationConfig = {
   computationMiddlewareOrder: ComputationMiddlewareOrder;
 };
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The className applied to the component.
    */
@@ -175,7 +175,7 @@ interface OwnProps {
    * @default false
    */
   keepMounted?: boolean;
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,

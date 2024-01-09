@@ -3,12 +3,12 @@ import type { MergeElementProps } from "../../typings";
 import { componentWithForwardedRef } from "../../utils";
 import { SeparatorItemRoot as SeparatorItemRootSlot } from "../slots";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The className applied to the component.
    */
   className?: string;
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,

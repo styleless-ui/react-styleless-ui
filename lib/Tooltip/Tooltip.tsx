@@ -19,7 +19,7 @@ import {
 } from "../utils";
 import { getExactAnchorElement } from "./utils";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the component.
    */
@@ -78,7 +78,7 @@ interface OwnProps {
    * @default false
    */
   keepMounted?: boolean;
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,

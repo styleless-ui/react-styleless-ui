@@ -9,7 +9,7 @@ import {
 import { TabGroupContext, type TabGroupContextValue } from "./context";
 import { Root as RootSlot } from "./slots";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the tab group.
    */
@@ -42,7 +42,7 @@ interface OwnProps {
    * @default "manual"
    */
   keyboardActivationBehavior?: "manual" | "automatic";
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,

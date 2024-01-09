@@ -10,18 +10,18 @@ import {
 } from ".";
 import { SystemKeys } from "../internals";
 
-interface GenericGroupContext {
+type GenericGroupContextValue = {
   value: string | string[];
   onChange: (newState: boolean, itemValue: string) => void;
   items?: [string, React.RefObject<HTMLButtonElement>][];
-}
+};
 
-interface CheckBaseProps {
+type CheckBaseProps = {
   strategy?: "check-control" | "radio-control";
   enterKeyFunctionality?: "request-form-submit" | "check";
   keyboardActivationBehavior?: "manual" | "automatic";
   value?: string;
-  groupCtx: GenericGroupContext | null;
+  groupCtx: GenericGroupContextValue | null;
   checked?: boolean;
   toggle?: boolean;
   defaultChecked?: boolean;
@@ -32,7 +32,7 @@ interface CheckBaseProps {
   onFocus?: React.FocusEventHandler<HTMLButtonElement>;
   onKeyDown?: React.KeyboardEventHandler<HTMLButtonElement>;
   onKeyUp?: React.KeyboardEventHandler<HTMLButtonElement>;
-}
+};
 
 const useCheckBase = (props: CheckBaseProps) => {
   const {

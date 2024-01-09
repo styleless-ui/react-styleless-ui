@@ -1,6 +1,6 @@
 import * as React from "react";
 
-interface ContextValue {
+type ContextValue = {
   ref: React.RefObject<HTMLDivElement>;
   activeElement: HTMLDivElement | null;
   activeSubTrigger: HTMLDivElement | null;
@@ -13,7 +13,7 @@ interface ContextValue {
   >;
   setActiveElement: React.Dispatch<React.SetStateAction<HTMLDivElement | null>>;
   registerItem: (itemRef: React.RefObject<HTMLDivElement>) => void;
-}
+};
 
 const Context = React.createContext<ContextValue | null>(null);
 

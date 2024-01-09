@@ -4,7 +4,7 @@ import type { MergeElementProps } from "../../typings";
 import { componentWithForwardedRef, useDeterministicId } from "../../utils";
 import { ActionRoot as ActionRootSlot } from "../slots";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the component.
    */
@@ -20,7 +20,7 @@ interface OwnProps {
   className?:
     | string
     | ((ctx: { disabled: boolean; focusedVisible: boolean }) => string);
-}
+};
 
 export type Props<T extends React.ElementType = typeof Button> =
   MergeElementProps<

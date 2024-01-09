@@ -24,7 +24,7 @@ type ClassesContext = {
   focusedVisible: boolean;
 };
 
-interface OwnProps {
+type OwnProps = {
   /**
    * Map of sub-components and their correlated classNames.
    */
@@ -84,7 +84,7 @@ interface OwnProps {
   onBlur?: React.FocusEventHandler<HTMLButtonElement>;
   onKeyDown?: React.KeyboardEventHandler<HTMLButtonElement>;
   onKeyUp?: React.KeyboardEventHandler<HTMLButtonElement>;
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"button", OwnProps>,

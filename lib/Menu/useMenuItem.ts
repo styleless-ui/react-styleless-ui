@@ -1,7 +1,7 @@
 import type * as React from "react";
 import { useEventCallback, useIsMounted } from "../utils";
 
-interface ItemHookProps {
+type ItemHookProps = {
   disabled: boolean;
   isActive: boolean;
   onClick?: React.MouseEventHandler<HTMLDivElement>;
@@ -12,7 +12,7 @@ interface ItemHookProps {
       | React.MouseEvent<HTMLDivElement>
       | React.KeyboardEvent<HTMLDivElement>,
   ) => void;
-}
+};
 
 const useMenuItem = (props: ItemHookProps) => {
   const { changeEmitter, onClick, onMouseEnter, onMouseLeave, disabled } =

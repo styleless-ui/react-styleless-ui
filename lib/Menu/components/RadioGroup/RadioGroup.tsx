@@ -12,7 +12,7 @@ import {
 import { RadioGroupContext } from "./context";
 import { getLabelInfo } from "./utils";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the component.
    */
@@ -49,7 +49,7 @@ interface OwnProps {
    * The Callback is fired when the state changes.
    */
   onValueChange?: (value: string) => void;
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,

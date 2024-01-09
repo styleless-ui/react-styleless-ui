@@ -4,7 +4,7 @@ import { componentWithForwardedRef } from "../../utils";
 import { PanelsRoot as PanelsRootSlot } from "../slots";
 import Panel from "./Panel";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the component.
    */
@@ -13,7 +13,7 @@ interface OwnProps {
    * The className applied to the component.
    */
   className?: string;
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,

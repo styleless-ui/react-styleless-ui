@@ -14,7 +14,7 @@ import { Backdrop as BackdropSlot, Root as RootSlot } from "./slots";
 
 type DialogClassesMap = Classes<"root" | "backdrop">;
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the tab dialog.
    */
@@ -54,7 +54,7 @@ interface OwnProps {
    * @default false
    */
   keepMounted?: boolean;
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,

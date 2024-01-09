@@ -11,7 +11,7 @@ import { ToggleGroupContext } from "./context";
 import * as Slots from "./slots";
 import { getLabelInfo } from "./utils";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the group.
    */
@@ -60,7 +60,7 @@ interface OwnProps {
    * If `manual`, users activate a toggle by focusing them and pressing `Space` or `Enter`.
    */
   keyboardActivationBehavior?: "manual" | "automatic";
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,

@@ -9,7 +9,7 @@ import { CheckGroupContext } from "./context";
 import * as Slots from "./slots";
 import { getLabelInfo } from "./utils";
 
-interface OwnProps {
+type OwnProps = {
   /**
    * The content of the group.
    */
@@ -54,7 +54,7 @@ interface OwnProps {
    * The Callback is fired when the state changes.
    */
   onChange?: (selectedValues: string[]) => void;
-}
+};
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,
