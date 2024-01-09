@@ -138,6 +138,6 @@ const ButtonBase = <E extends React.ElementType, R extends HTMLElement>(
   );
 };
 
-const Button = componentWithForwardedRef(ButtonBase);
+const Button = componentWithForwardedRef(ButtonBase, "Button");
 
 export default Button;

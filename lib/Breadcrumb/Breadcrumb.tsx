@@ -143,7 +143,9 @@ const BreadcrumbBase = (props: Props, ref: React.Ref<HTMLElement>) => {
   );
 };
 
-const Breadcrumb =
-  componentWithForwardedRef<typeof BreadcrumbBase>(BreadcrumbBase);
+const Breadcrumb = componentWithForwardedRef<typeof BreadcrumbBase>(
+  BreadcrumbBase,
+  "Breadcrumb",
+);
 
 export default Breadcrumb;
