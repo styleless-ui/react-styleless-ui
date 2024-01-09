@@ -21,7 +21,7 @@ interface CheckBaseProps {
   enterKeyFunctionality?: "request-form-submit" | "check";
   keyboardActivationBehavior?: "manual" | "automatic";
   value?: string;
-  groupCtx?: GenericGroupContext;
+  groupCtx: GenericGroupContext | null;
   checked?: boolean;
   toggle?: boolean;
   defaultChecked?: boolean;
