@@ -40,6 +40,10 @@
     "no-unmodified-loop-condition": "warn",
     "eqeqeq": ["error", "smart"],
     "no-duplicate-imports": ["error", { "includeExports": true }],
+    "@typescript-eslint/consistent-type-imports": [
+      "error",
+      { "fixStyle": "inline-type-imports" }
+    ],
     "padding-line-between-statements": [
       "error",
       {
