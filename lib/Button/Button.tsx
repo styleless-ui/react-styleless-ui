@@ -4,6 +4,7 @@ import {
   componentWithForwardedRef,
   computeAccessibleName,
   getNodeName,
+  log,
   useButtonBase,
   useDeterministicId,
   useForkedRefs,
@@ -91,10 +92,9 @@ const ButtonBase = <E extends React.ElementType, R extends HTMLElement>(
     const accessibleName = computeAccessibleName(node);
 
     if (!accessibleName) {
-      // eslint-disable-next-line no-console
-      console.error(
+      log(
         [
-          "[StylelessUI][Button]: Can't determine an accessible name.",
+          "Can't determine an accessible name.",
           "It's mandatory to provide an accessible name for the component. " +
             "Possible accessible names:",
           ". Set `aria-label` attribute.",
@@ -103,6 +103,7 @@ const ButtonBase = <E extends React.ElementType, R extends HTMLElement>(
           ". Use an informative content.",
           ". Use a <label> with `for` attribute referencing to this component.",
         ].join("\n"),
+        { scope: "Button", type: "error" },
       );
     }
   };
