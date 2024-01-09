@@ -28,7 +28,7 @@ interface OwnProps {
   /**
    * The anchor element for the menu.
    */
-  anchorElement?:
+  anchorElement:
     | React.RefObject<HTMLElement>
     | HTMLElement
     | VirtualElement
@@ -117,10 +117,6 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       : keepMountedProp;
 
   const id = useDeterministicId(idProp, "styleless-ui__menu");
-
-  const { current: isPopper } = React.useRef(
-    typeof anchorElement !== "undefined",
-  );
 
   const [activeElement, setActiveElement] =
     React.useState<HTMLDivElement | null>(null);
@@ -468,29 +464,12 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       ? classNameProp({ open })
       : classNameProp;
 
-  const createMenu = () => (
-    <FocusTrap enabled={open}>
-      <div
-        {...otherProps}
-        // @ts-expect-error React hasn't added `inert` yet
-        inert={!open ? "" : undefined}
-        ref={refCallback}
-        id={id}
-        data-slot={RootSlot}
-        className={className}
-        tabIndex={-1}
-        data-open={open ? "" : undefined}
-      >
-        <MenuContext.Provider value={context}>{children}</MenuContext.Provider>
-      </div>
-    </FocusTrap>
-  );
-
   const createPopper = () => {
     if (!anchorElement) return null;
 
     return (
       <Popper
+        autoPlacement
         keepMounted={keepMounted}
         open={open}
         anchorElement={anchorElement}
@@ -498,18 +477,29 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         computationMiddleware={popperComputationMiddleware}
         offset={0}
         alignment={alignment}
-        autoPlacement={{ excludeSides: ["top", "bottom"] }}
       >
-        {createMenu()}
+        <FocusTrap enabled={open}>
+          <div
+            {...otherProps}
+            // @ts-expect-error React hasn't added `inert` yet
+            inert={!open ? "" : undefined}
+            ref={refCallback}
+            id={id}
+            data-slot={RootSlot}
+            className={className}
+            tabIndex={-1}
+            data-open={open ? "" : undefined}
+          >
+            <MenuContext.Provider value={context}>
+              {children}
+            </MenuContext.Provider>
+          </div>
+        </FocusTrap>
       </Popper>
     );
   };
 
-  return isPopper
-    ? createPopper()
-    : keepMounted || (!keepMounted && open)
-    ? createMenu()
-    : null;
+  return createPopper();
 };
 
 const Menu = componentWithForwardedRef(MenuBase);
