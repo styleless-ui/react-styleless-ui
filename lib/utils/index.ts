@@ -16,7 +16,7 @@ export { default as componentWithForwardedRef } from "./component-with-forwarded
 export * from "./dom";
 export { default as forkRefs } from "./fork-refs";
 export * from "./is";
-export { default as log } from "./log";
+export { default as logger } from "./logger";
 export * from "./math";
 export { default as prefixMessage } from "./prefix-message";
 export { default as requestFormSubmit } from "./request-form-submit";

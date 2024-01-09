@@ -9,20 +9,20 @@ type Options = {
   type: Type;
 };
 
-const log = (message: string, options?: Partial<Options>) => {
+const logger = (message: string, options?: Partial<Options>) => {
   const { scope, type = "default" } = options ?? {};
 
   const prefixedMessage = prefixMessage(message, scope);
 
-  const map = {
+  const mapTypeToLoggerFn = {
     error: console.error,
     warn: console.warn,
     default: console.log,
   } satisfies Record<Exclude<Type, "throw-error">, AnyFunction>;
 
-  const logger = map[type];
+  const loggerFn = mapTypeToLoggerFn[type];
 
-  logger(prefixedMessage);
+  loggerFn(prefixedMessage);
 };
 
-export default log;
+export default logger;
