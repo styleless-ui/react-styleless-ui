@@ -19,7 +19,7 @@ export type Props = Omit<
   "defaultChecked" | "defaultValue"
 >;
 
-const BreadcrumbItemBase = (props: Props, ref: React.Ref<HTMLLIElement>) => {
+const ItemBase = (props: Props, ref: React.Ref<HTMLLIElement>) => {
   const { className, children, ...otherProps } = props;
 
   return (
@@ -34,6 +34,6 @@ const BreadcrumbItemBase = (props: Props, ref: React.Ref<HTMLLIElement>) => {
   );
 };
 
-const BreadcrumbItem = componentWithForwardedRef(BreadcrumbItemBase);
+const Item = componentWithForwardedRef(ItemBase, "BreadcrumbItem");
 
-export default BreadcrumbItem;
+export default Item;

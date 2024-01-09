@@ -19,10 +19,7 @@ export type Props = Omit<
   "defaultChecked" | "defaultValue" | "children"
 >;
 
-const BreadcrumbSeparatorItemBase = (
-  props: Props,
-  ref: React.Ref<HTMLLIElement>,
-) => {
+const SeparatorItemBase = (props: Props, ref: React.Ref<HTMLLIElement>) => {
   const { className, separatorSymbol, ...otherProps } = props;
 
   return (
@@ -38,8 +35,9 @@ const BreadcrumbSeparatorItemBase = (
   );
 };
 
-const BreadcrumbSeparatorItem = componentWithForwardedRef(
-  BreadcrumbSeparatorItemBase,
+const SeparatorItem = componentWithForwardedRef(
+  SeparatorItemBase,
+  "BreadcrumbSeparatorItem",
 );
 
-export default BreadcrumbSeparatorItem;
+export default SeparatorItem;

@@ -1,8 +1,7 @@
 import * as React from "react";
 import type { Classes, MergeElementProps } from "../typings";
 import { componentWithForwardedRef, log, useDeterministicId } from "../utils";
-import BreadcrumbItem, { type ItemProps } from "./Item";
-import BreadcrumbSeparatorItem from "./Separator/Separator";
+import { Item, SeparatorItem, type ItemProps } from "./components";
 import {
   Label as LabelSlot,
   List as ListSlot,
@@ -88,8 +87,8 @@ const BreadcrumbBase = (props: Props, ref: React.Ref<HTMLElement>) => {
     if (!React.isValidElement(child)) return null;
 
     if (
-      (child as React.ReactElement).type !== BreadcrumbItem &&
-      (child as React.ReactElement).type !== BreadcrumbSeparatorItem
+      (child as React.ReactElement).type !== Item &&
+      (child as React.ReactElement).type !== SeparatorItem
     ) {
       log(
         "The Breadcrumb component only accepts <Breadcrumb.Item> and " +
