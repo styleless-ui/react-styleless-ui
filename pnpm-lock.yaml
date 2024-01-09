@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 dependencies:
   '@utilityjs/use-controlled-prop':
     specifier: ^1.1.2
@@ -11,6 +15,9 @@ dependencies:
     specifier: ^1.0.6
     version: 1.0.6(react@18.2.0)
   '@utilityjs/use-forked-refs':
+    specifier: ^1.0.2
+    version: 1.0.2(react@18.2.0)
+  '@utilityjs/use-get-latest':
     specifier: ^1.0.2
     version: 1.0.2(react@18.2.0)
   '@utilityjs/use-is-mounted':

@@ -4,7 +4,6 @@
   "description": "Completely unstyled, headless and accessible React UI components.",
   "repository": "git@github.com:styleless-ui/react-styleless-ui.git",
   "author": "mimshins <mostafa.sh.coderino@gmail.com>",
-  "packageManager": "pnpm@8.3.0+",
   "license": "MIT",
   "type": "module",
   "keywords": [
@@ -81,6 +80,7 @@
     "@utilityjs/use-deterministic-id": "^1.2.0",
     "@utilityjs/use-event-listener": "^1.0.6",
     "@utilityjs/use-forked-refs": "^1.0.2",
+    "@utilityjs/use-get-latest": "^1.0.2",
     "@utilityjs/use-is-mounted": "^1.0.2",
     "@utilityjs/use-is-server-handoff-complete": "^1.0.0",
     "@utilityjs/use-on-change": "^1.0.3",
