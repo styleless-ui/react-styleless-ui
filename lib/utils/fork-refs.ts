@@ -1,4 +1,4 @@
-import setRef from "./setRef";
+import setRef from "./set-ref";
 
 const forkRefs =
   <T>(...refs: React.Ref<T>[]) =>
