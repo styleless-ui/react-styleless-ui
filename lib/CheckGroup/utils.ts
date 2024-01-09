@@ -1,4 +1,5 @@
-import { Props } from "./CheckGroup";
+import { SystemError } from "../utils";
+import { type Props } from "./CheckGroup";
 
 export const getLabelInfo = (labelInput: Props["label"]) => {
   const props: {
@@ -15,12 +16,13 @@ export const getLabelInfo = (labelInput: Props["label"]) => {
     } else if ("labelledBy" in labelInput) {
       props.labelledBy = labelInput.labelledBy;
     } else {
-      throw new Error(
+      throw new SystemError(
         [
-          "[StylelessUI][CheckGroup]: Invalid `label` property.",
+          "Invalid `label` property.",
           "The `label` property must be either a `string` or in shape of " +
             "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
         ].join("\n"),
+        "CheckGroup",
       );
     }
   }

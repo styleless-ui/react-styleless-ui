@@ -1,5 +1,5 @@
 import { SystemError } from "../utils";
-import { Props } from "./Breadcrumb";
+import { type Props } from "./Breadcrumb";
 
 export const getLabelInfo = (labelInput: Props["label"]) => {
   const props: {

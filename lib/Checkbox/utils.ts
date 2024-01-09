@@ -1,5 +1,5 @@
 import { SystemError } from "../utils";
-import { Props } from "./Checkbox";
+import { type Props } from "./Checkbox";
 
 export const getLabelInfo = (labelInput: Props["label"]) => {
   const props: {
