@@ -1,3 +1,4 @@
+import { SystemError } from "../utils";
 import { type Props } from "./ToggleGroup";
 
 export const getLabelInfo = (labelInput: Props["label"]) => {
@@ -15,12 +16,13 @@ export const getLabelInfo = (labelInput: Props["label"]) => {
     } else if ("labelledBy" in labelInput) {
       props.labelledBy = labelInput.labelledBy;
     } else {
-      throw new Error(
+      throw new SystemError(
         [
-          "[StylelessUI][ToggleGroup]: Invalid `label` property.",
+          "Invalid `label` property.",
           "The `label` property must be either a `string` or in shape of " +
             "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
         ].join("\n"),
+        "ToggleGroup",
       );
     }
   }

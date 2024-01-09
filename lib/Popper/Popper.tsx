@@ -2,6 +2,7 @@ import * as React from "react";
 import Portal from "../Portal";
 import type { MergeElementProps, RequireOnlyOne } from "../typings";
 import {
+  SystemError,
   componentWithForwardedRef,
   useDeterministicId,
   useDirection,
@@ -207,13 +208,14 @@ const PopperBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   } = props;
 
   if (!anchorElement) {
-    throw new Error(
+    throw new SystemError(
       [
-        "[StylelessUI][Popper]: Invalid `anchorElement` property.",
+        "Invalid `anchorElement` property.",
         "The `anchorElement` property must be either a `id (string)`, " +
           "`HTMLElement`, `RefObject<HTMLElement>`, or in shape of " +
           "`{ getBoundingClientRect(): ClientRect }`",
       ].join("\n"),
+      "Popper",
     );
   }
 

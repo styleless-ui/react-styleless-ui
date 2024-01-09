@@ -1,6 +1,7 @@
 import * as React from "react";
 import type { MergeElementProps } from "../typings";
 import {
+  SystemError,
   componentWithForwardedRef,
   useControlledProp,
   useForkedRefs,
@@ -111,9 +112,7 @@ const TabGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     if (!tabElement) return;
 
     if (tabElement.disabled || tabElement.hasAttribute("disabled")) {
-      throw new Error(
-        "[StylelessUI][TabGroup.Root]: The selected tab is `disabled`.",
-      );
+      throw new SystemError("The selected tab is `disabled`.", "TabGroup.Root");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
