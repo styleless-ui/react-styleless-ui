@@ -1,6 +1,5 @@
 import * as React from "react";
-import Popper, { type PopperProps } from "../Popper";
-import type { VirtualElement } from "../Popper/helpers";
+import Popper, { type PopperProps, type VirtualElement } from "../Popper";
 import { FocusTrap, SystemKeys } from "../internals";
 import type { MergeElementProps } from "../typings";
 import {
@@ -13,8 +12,9 @@ import {
   useForkedRefs,
   usePreviousValue,
 } from "../utils";
-import MenuContext, { type IMenuContext } from "./context";
+import { MenuContext, type MenuContextValue } from "./context";
 import { Root as RootSlot } from "./slots";
+import { makeRegisterItem } from "./utils";
 
 interface OwnProps {
   /**
@@ -74,18 +74,6 @@ export type Props = Omit<
   "defaultValue" | "defaultChecked"
 >;
 
-const makeRegisterItem =
-  (items: React.RefObject<HTMLDivElement>[]) =>
-  (itemRef: React.RefObject<HTMLDivElement>) => {
-    if (!itemRef.current) return;
-
-    const itemAlreadyExists = items.some(i => i.current === itemRef.current);
-
-    if (itemAlreadyExists) return;
-
-    items.push(itemRef);
-  };
-
 const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     id: idProp,
@@ -144,7 +132,7 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const items: React.RefObject<HTMLDivElement>[] = [];
   const registerItem = makeRegisterItem(items);
 
-  const context: IMenuContext = {
+  const context: MenuContextValue = {
     ref: rootRef,
     activeElement,
     activeSubTrigger,
@@ -502,6 +490,6 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   return createPopper();
 };
 
-const Menu = componentWithForwardedRef(MenuBase);
+const Menu = componentWithForwardedRef(MenuBase, "Menu");
 
 export default Menu;

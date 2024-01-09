@@ -1,8 +1,8 @@
 import cls from "classnames";
 import * as React from "react";
 import { render, screen } from "../../tests/utils";
-import Tooltip from "./Tooltip";
 import * as PopperSlots from "../Popper/slots";
+import Tooltip from "./Tooltip";
 
 describe("Tooltip", () => {
   afterEach(jest.clearAllMocks);
@@ -29,7 +29,11 @@ describe("Tooltip", () => {
     render(
       <>
         <div id="anchor">Anchor</div>
-        <Tooltip anchorElement="anchor" defaultOpen={true} ref={ref}>
+        <Tooltip
+          anchorElement="anchor"
+          defaultOpen={true}
+          ref={ref}
+        >
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia
           magnam ad excepturi ipsa exercitationem cum?
         </Tooltip>
@@ -59,7 +63,11 @@ describe("Tooltip", () => {
     const { container } = render(
       <>
         <div id="anchor">Anchor</div>
-        <Tooltip anchorElement="anchor" defaultOpen={true} style={style}>
+        <Tooltip
+          anchorElement="anchor"
+          defaultOpen={true}
+          style={style}
+        >
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia
           magnam ad excepturi ipsa exercitationem cum?
         </Tooltip>
@@ -130,7 +138,10 @@ describe("Tooltip", () => {
   it("should have `aria-describedby` attribute on anchor element", () => {
     render(
       <>
-        <div id="anchor" data-testid="anchor">
+        <div
+          id="anchor"
+          data-testid="anchor"
+        >
           Anchor
         </div>
         <Tooltip

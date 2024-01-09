@@ -1,14 +1,14 @@
 import * as React from "react";
 
-export interface ToastContextValue {
+interface ContextValue {
   role: "alert" | "status";
   open: boolean;
 }
 
-const ToastContext = React.createContext<ToastContextValue | null>(null);
+const Context = React.createContext<ContextValue | null>(null);
 
 if (process.env.NODE_ENV !== "production") {
-  ToastContext.displayName = "ToastContext";
+  Context.displayName = "ToastContext";
 }
 
-export default ToastContext;
+export { Context as ToastContext, type ContextValue as ToastContextValue };

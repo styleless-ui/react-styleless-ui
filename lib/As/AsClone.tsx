@@ -46,6 +46,6 @@ const AsCloneBase = (
   }
 };
 
-const AsClone = componentWithForwardedRef(AsCloneBase);
+const AsClone = componentWithForwardedRef(AsCloneBase, "AsClone");
 
 export default AsClone;

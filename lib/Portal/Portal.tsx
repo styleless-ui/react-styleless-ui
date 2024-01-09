@@ -1,7 +1,8 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import usePortalConfig from "../PortalConfigProvider/usePortalConfig";
+import { usePortalConfig } from "../PortalConfigProvider";
 import { useIsServerHandoffComplete } from "../utils";
+import { getContainer } from "./utils";
 
 export interface Props {
   /**
@@ -20,11 +21,6 @@ export interface Props {
    */
   disabled?: boolean;
 }
-
-const getContainer = (querySelector?: string) =>
-  querySelector
-    ? document.querySelector<HTMLElement>(querySelector)
-    : document.body;
 
 const Portal = (props: Props) => {
   const { containerQuerySelector, children, disabled = false } = props;

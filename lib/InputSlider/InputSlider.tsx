@@ -7,6 +7,7 @@ import {
   getBoundingClientRect,
   inLerp,
   remap,
+  SystemError,
   useButtonBase,
   useControlledProp,
   useDirection,
@@ -16,6 +17,7 @@ import {
   useIsMounted,
 } from "../utils";
 import * as Slots from "./slots";
+import { getLabelInfo, getNearestThumb, getRelativeValue } from "./utils";
 
 type InputSliderClassesMap = Classes<
   | "root"
@@ -30,10 +32,10 @@ type InputSliderClassesMap = Classes<
   | "segmentLabel"
 >;
 
-type Segment = { length: number; label?: string | React.ReactNode };
+export type Segment = { length: number; label?: string | React.ReactNode };
 
 type ActiveThumb = { index: 0 | 1; element: HTMLDivElement };
-type ThumbInfo = {
+export type ThumbInfo = {
   value: number;
   minValue: number;
   maxValue: number;
@@ -47,7 +49,7 @@ type ThumbState = {
   zIndex: number;
 };
 
-type Label =
+export type Label =
   | {
       /**
        * The label to use as `aria-label` property.
@@ -156,98 +158,6 @@ export type Props = Omit<
   "className" | "defaultChecked"
 >;
 
-const getLabelInfo = (labelInput: Label) => {
-  const props: { srOnlyLabel?: string; labelledBy?: string } = {};
-
-  if ("screenReaderLabel" in labelInput) {
-    props.srOnlyLabel = labelInput.screenReaderLabel;
-  } else if ("labelledBy" in labelInput) {
-    props.labelledBy = labelInput.labelledBy;
-  } else {
-    throw new Error(
-      [
-        "[StylelessUI][InputSlider]: Invalid `label` provided.",
-        "Each `label` property must be in shape of " +
-          "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
-      ].join("\n"),
-    );
-  }
-
-  return props;
-};
-
-const findNearestValue = (vals: number[], target: number) => {
-  const midIdx = Math.floor(vals.length / 2);
-
-  let diff = Infinity;
-  let nominee = target;
-
-  const nominate = (idx: number) => {
-    /* eslint-disable @typescript-eslint/no-non-null-assertion */
-    const val = vals[idx]!;
-    const newDiff = Math.abs(target - val);
-
-    if (diff > newDiff) {
-      diff = newDiff;
-      nominee = val;
-    }
-  };
-
-  if (vals[midIdx]! < target) {
-    for (let idx = midIdx; idx < vals.length; idx++) nominate(idx);
-  } else {
-    for (let idx = 0; idx <= midIdx; idx++) nominate(idx);
-  }
-  /* eslint-enable @typescript-eslint/no-non-null-assertion */
-
-  return nominee;
-};
-
-const getRelativeValue = (
-  clientXOrY: number,
-  parentWidthOrHeight: number,
-  thumbInfo: ThumbInfo,
-  segments: Segment[],
-  requiredProps: {
-    max: Props["max"];
-    step: Props["step"];
-  },
-) => {
-  const { max, step } = requiredProps;
-
-  let newValue = remap(clientXOrY, 0, parentWidthOrHeight, 0, max);
-
-  if (typeof step === "number" && step)
-    newValue = Math.floor(newValue / step) * step;
-
-  if (step === "snap") {
-    const stopNums = segments
-      .sort()
-      .map(segment => (segment.length * max) / 100);
-
-    newValue = findNearestValue(stopNums, newValue);
-  }
-
-  const relativeMin = thumbInfo.minValue;
-  const relativeMax = thumbInfo.maxValue;
-
-  return clamp(newValue, relativeMin, relativeMax);
-};
-
-const getNearestThumb = (
-  value: number,
-  thumbInfos: { left: ThumbInfo; right: ThumbInfo | null },
-): ThumbInfo & { index: 0 | 1 } => {
-  const { left, right } = thumbInfos;
-
-  const leftDiff = Math.abs(left.value - value);
-
-  if (!right) return { ...left, index: 0 };
-  const rightDiff = Math.abs(right.value - value);
-
-  return leftDiff <= rightDiff ? { ...left, index: 0 } : { ...right, index: 1 };
-};
-
 const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     max,
@@ -270,26 +180,24 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   } = props;
 
   if (typeof min === "undefined") {
-    throw new Error(
-      "[StylelessUI][InputSlider]: The `min` property is missing.",
-    );
+    throw new SystemError("The `min` property is missing.", "InputSlider");
   }
 
   if (typeof max === "undefined") {
-    throw new Error(
-      "[StylelessUI][InputSlider]: The `max` property is missing.",
-    );
+    throw new SystemError("The `max` property is missing.", "InputSlider");
   }
 
   if (max < min) {
-    throw new Error(
-      "[StylelessUI][InputSlider]: The `min` property must be less than or equal to `max` property.",
+    throw new SystemError(
+      "The `min` property must be less than or equal to `max` property.",
+      "InputSlider",
     );
   }
 
   if (typeof stops === "undefined" && step === "snap") {
-    throw new Error(
-      '[StylelessUI][InputSlider]: When using `step="snap"` you must also provide a valid `stops` property.',
+    throw new SystemError(
+      'When using `step="snap"` you must also provide a valid `stops` property.',
+      "InputSlider",
     );
   }
 
@@ -300,23 +208,26 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   );
 
   if (multiThumb && !Array.isArray(value)) {
-    throw new Error(
-      "[StylelessUI][InputSlider]: The `value` and `defaultValue` " +
+    throw new SystemError(
+      "The `value` and `defaultValue` " +
         "should be an array of exactly two numbers when `multiThumb={true}.`",
+      "InputSlider",
     );
   }
 
   if (!multiThumb && typeof value !== "number") {
-    throw new Error(
-      "[StylelessUI][InputSlider]: The `value` and `defaultValue` " +
+    throw new SystemError(
+      "The `value` and `defaultValue` " +
         "should be a number when `multiThumb={false}.`",
+      "InputSlider",
     );
   }
 
   if (multiThumb && !Array.isArray(labels)) {
-    throw new Error(
-      "[StylelessUI][InputSlider]: The `label` property " +
+    throw new SystemError(
+      "The `label` property " +
         "should be an array of exactly two labels when `multiThumb={true}.`",
+      "InputSlider",
     );
   }
 
@@ -329,8 +240,9 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
       if (v0 > v1) {
         if (prevValue.current) return prevValue.current;
-        throw new Error(
-          "[StylelessUI][InputSlider]: Invalid `value` provided! (`value[0] > value[1]`)",
+        throw new SystemError(
+          "Invalid `value` provided! (`value[0] > value[1]`)",
+          "InputSlider",
         );
       }
 
@@ -1038,7 +950,10 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         data-active={activeThumbRef.current?.index === 0 ? "" : undefined}
         data-focus-visible={isLeftFocusedVisible ? "" : undefined}
       >
-        <div aria-hidden="true" data-slot={Slots.ThumbText}>
+        <div
+          aria-hidden="true"
+          data-slot={Slots.ThumbText}
+        >
           {renderThumbValueText?.(
             thumbs.left.value,
             valueDisplayState.left,
@@ -1059,7 +974,10 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           data-active={activeThumbRef.current?.index === 1 ? "" : undefined}
           data-focus-visible={isRightFocusedVisible ? "" : undefined}
         >
-          <div aria-hidden="true" data-slot={Slots.ThumbText}>
+          <div
+            aria-hidden="true"
+            data-slot={Slots.ThumbText}
+          >
             {
               renderThumbValueText?.(
                 thumbs.right.value,
@@ -1075,6 +993,6 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const InputSlider = componentWithForwardedRef(InputSliderBase);
+const InputSlider = componentWithForwardedRef(InputSliderBase, "InputSlider");
 
 export default InputSlider;

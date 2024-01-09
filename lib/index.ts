@@ -38,6 +38,7 @@ export { default as Popper, type PopperProps } from "./Popper";
 export { default as Portal, type PortalProps } from "./Portal";
 export {
   default as PortalConfigProvider,
+  usePortalConfig,
   type PortalConfigProviderProps,
 } from "./PortalConfigProvider";
 export {

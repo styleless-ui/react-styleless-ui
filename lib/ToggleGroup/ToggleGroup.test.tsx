@@ -33,7 +33,10 @@ describe("CheckGroup", () => {
           root: "toggle-group",
         }}
       >
-        <Toggle value="0" disabled>
+        <Toggle
+          value="0"
+          disabled
+        >
           Item 0
         </Toggle>
         <Toggle value="1">Item 1</Toggle>
@@ -70,8 +73,14 @@ describe("CheckGroup", () => {
 
     userEvent.setup();
     const { unmount } = render(
-      <ToggleGroup label={labelText} onChange={handleChange}>
-        <Toggle value="0" disabled>
+      <ToggleGroup
+        label={labelText}
+        onChange={handleChange}
+      >
+        <Toggle
+          value="0"
+          disabled
+        >
           Item 0
         </Toggle>
         <Toggle value="1">Item 1</Toggle>
@@ -118,8 +127,15 @@ describe("CheckGroup", () => {
     handleChange.mockReset();
     userEvent.setup();
     render(
-      <ToggleGroup multiple label={labelText} onChange={handleChange}>
-        <Toggle value="0" disabled>
+      <ToggleGroup
+        multiple
+        label={labelText}
+        onChange={handleChange}
+      >
+        <Toggle
+          value="0"
+          disabled
+        >
           Item 0
         </Toggle>
         <Toggle value="1">Item 1</Toggle>
@@ -162,8 +178,14 @@ describe("CheckGroup", () => {
 
     userEvent.setup();
     const { unmount } = render(
-      <ToggleGroup label={labelText} onChange={handleChange}>
-        <Toggle value="0" disabled>
+      <ToggleGroup
+        label={labelText}
+        onChange={handleChange}
+      >
+        <Toggle
+          value="0"
+          disabled
+        >
           Item 0
         </Toggle>
         <Toggle value="1">Item 1</Toggle>
@@ -213,8 +235,15 @@ describe("CheckGroup", () => {
     handleChange.mockReset();
     userEvent.setup();
     render(
-      <ToggleGroup multiple label={labelText} onChange={handleChange}>
-        <Toggle value="0" disabled>
+      <ToggleGroup
+        multiple
+        label={labelText}
+        onChange={handleChange}
+      >
+        <Toggle
+          value="0"
+          disabled
+        >
           Item 0
         </Toggle>
         <Toggle value="1">Item 1</Toggle>

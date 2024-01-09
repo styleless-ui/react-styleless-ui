@@ -1,6 +1,6 @@
 import * as React from "react";
 
-export interface ITabGroupContext {
+interface ContextValue {
   activeTab: number;
   tabs: React.RefObject<HTMLButtonElement>[];
   panels: React.RefObject<HTMLDivElement>[];
@@ -10,10 +10,13 @@ export interface ITabGroupContext {
   register: (ref: React.RefObject<HTMLButtonElement | HTMLDivElement>) => void;
 }
 
-const TabGroupContext = React.createContext<ITabGroupContext | null>(null);
+const Context = React.createContext<ContextValue | null>(null);
 
 if (process.env.NODE_ENV !== "production") {
-  TabGroupContext.displayName = "TabGroupContext";
+  Context.displayName = "TabGroupContext";
 }
 
-export default TabGroupContext;
+export {
+  Context as TabGroupContext,
+  type ContextValue as TabGroupContextValue,
+};

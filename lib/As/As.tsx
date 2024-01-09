@@ -24,6 +24,6 @@ const AsBase = (props: Props, ref: React.Ref<HTMLElement>) => {
   );
 };
 
-const As = componentWithForwardedRef(AsBase);
+const As = componentWithForwardedRef(AsBase, "As");
 
 export default As;

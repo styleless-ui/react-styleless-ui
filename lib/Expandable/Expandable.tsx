@@ -1,7 +1,7 @@
 import * as React from "react";
 import type { MergeElementProps } from "../typings";
 import { componentWithForwardedRef, useControlledProp } from "../utils";
-import ExpandableContext from "./context";
+import { ExpandableContext } from "./context";
 import { Root as RootSlot } from "./slots";
 
 interface OwnProps {
@@ -85,6 +85,6 @@ const ExpandableBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const Expandable = componentWithForwardedRef(ExpandableBase);
+const Expandable = componentWithForwardedRef(ExpandableBase, "Expandable");
 
 export default Expandable;

@@ -38,12 +38,18 @@ describe("Toast", () => {
         data-testid="toast-root"
         className={({ openState }) => cls("root", { "root--open": openState })}
       >
-        <Toast.Content className="content" data-testid="toast-content">
+        <Toast.Content
+          className="content"
+          data-testid="toast-content"
+        >
           Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nostrum
           dolorum quod voluptas! Necessitatibus, velit perspiciatis odit
           laudantium impedit quos, non vitae id magnam sed dolore, aliquid
           aliquam dolor corporis assumenda.
-          <Toast.Action data-testid="toast-action" className="action">
+          <Toast.Action
+            data-testid="toast-action"
+            className="action"
+          >
             Action
           </Toast.Action>
         </Toast.Content>

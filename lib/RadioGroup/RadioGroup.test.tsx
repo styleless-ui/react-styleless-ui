@@ -56,7 +56,10 @@ describe("RadioGroup", () => {
 
   it("should have `aria-labelledby='identifier'` property when `label={{ labelledBy: 'identifier' }}`", () => {
     render(
-      <RadioGroup {...REQUIRED_PROPS} label={{ labelledBy: "identifier" }} />,
+      <RadioGroup
+        {...REQUIRED_PROPS}
+        label={{ labelledBy: "identifier" }}
+      />,
     );
 
     expect(screen.getByRole("radiogroup")).toHaveAttribute(
@@ -70,11 +73,27 @@ describe("RadioGroup", () => {
 
     userEvent.setup();
     render(
-      <RadioGroup {...REQUIRED_PROPS} onChange={handleChange}>
-        <Radio label="item 0" value="0" disabled />
-        <Radio label="item 1" value="1" />
-        <Radio label="item 2" value="2" />
-        <Radio label="item 3" value="3" />
+      <RadioGroup
+        {...REQUIRED_PROPS}
+        onChange={handleChange}
+      >
+        <Radio
+          label="item 0"
+          value="0"
+          disabled
+        />
+        <Radio
+          label="item 1"
+          value="1"
+        />
+        <Radio
+          label="item 2"
+          value="2"
+        />
+        <Radio
+          label="item 3"
+          value="3"
+        />
       </RadioGroup>,
     );
 
@@ -107,11 +126,27 @@ describe("RadioGroup", () => {
 
     userEvent.setup();
     render(
-      <RadioGroup {...REQUIRED_PROPS} onChange={handleChange}>
-        <Radio label="item 0" value="0" disabled />
-        <Radio label="item 1" value="1" />
-        <Radio label="item 2" value="2" />
-        <Radio label="item 3" value="3" />
+      <RadioGroup
+        {...REQUIRED_PROPS}
+        onChange={handleChange}
+      >
+        <Radio
+          label="item 0"
+          value="0"
+          disabled
+        />
+        <Radio
+          label="item 1"
+          value="1"
+        />
+        <Radio
+          label="item 2"
+          value="2"
+        />
+        <Radio
+          label="item 3"
+          value="3"
+        />
       </RadioGroup>,
     );
 

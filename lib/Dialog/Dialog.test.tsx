@@ -41,7 +41,10 @@ describe("Dialog", () => {
           backdrop: "backdrop",
         })}
       >
-        <Dialog.Content className="content" data-testid="dialog-content">
+        <Dialog.Content
+          className="content"
+          data-testid="dialog-content"
+        >
           <Dialog.Title
             as="strong"
             className="title"
@@ -76,12 +79,22 @@ describe("Dialog", () => {
 
   it("should have `aria-labelledby` and `aria-describedby` attributes", () => {
     render(
-      <Dialog.Root open role="dialog" data-testid="dialog-root">
+      <Dialog.Root
+        open
+        role="dialog"
+        data-testid="dialog-root"
+      >
         <Dialog.Content data-testid="dialog-content">
-          <Dialog.Title as="strong" data-testid="dialog-title">
+          <Dialog.Title
+            as="strong"
+            data-testid="dialog-title"
+          >
             Title
           </Dialog.Title>
-          <Dialog.Description as="p" data-testid="dialog-description">
+          <Dialog.Description
+            as="p"
+            data-testid="dialog-description"
+          >
             Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nostrum
             dolorum quod voluptas! Necessitatibus, velit perspiciatis odit
             laudantium impedit quos, non vitae id magnam sed dolore, aliquid
@@ -110,14 +123,20 @@ describe("Dialog", () => {
     const { rerender } = render(
       <>
         <button id="focus-btn">Button</button>
-        <Dialog.Root {...props} open={true}></Dialog.Root>
+        <Dialog.Root
+          {...props}
+          open={true}
+        ></Dialog.Root>
       </>,
     );
 
     rerender(
       <>
         <button id="focus-btn">Button</button>
-        <Dialog.Root {...props} open={false}></Dialog.Root>
+        <Dialog.Root
+          {...props}
+          open={false}
+        ></Dialog.Root>
       </>,
     );
 
@@ -134,7 +153,11 @@ describe("Dialog", () => {
 
     userEvent.setup();
     render(
-      <Dialog.Root open role="dialog" onBackdropClick={handleBackdropClick} />,
+      <Dialog.Root
+        open
+        role="dialog"
+        onBackdropClick={handleBackdropClick}
+      />,
     );
 
     const portal = screen.getByRole("presentation");

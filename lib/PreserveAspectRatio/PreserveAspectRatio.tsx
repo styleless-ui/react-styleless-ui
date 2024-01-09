@@ -30,8 +30,14 @@ const PreserveAspectRatio = (props: Props) => {
   };
 
   return (
-    <div data-slot={Slots.Root} style={rootStyles}>
-      <div data-slot={Slots.Container} style={containerStyles}>
+    <div
+      data-slot={Slots.Root}
+      style={rootStyles}
+    >
+      <div
+        data-slot={Slots.Container}
+        style={containerStyles}
+      >
         {children}
       </div>
     </div>

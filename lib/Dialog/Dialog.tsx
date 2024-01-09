@@ -9,7 +9,7 @@ import {
   usePreviousValue,
   useScrollGuard,
 } from "../utils";
-import DialogContext from "./context";
+import { DialogContext, type DialogContextValue } from "./context";
 import { Backdrop as BackdropSlot, Root as RootSlot } from "./slots";
 
 type DialogClassesMap = Classes<"root" | "backdrop">;
@@ -117,9 +117,14 @@ const DialogBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       ? classesProp({ openState: open })
       : classesProp;
 
-  const context = React.useMemo(() => ({ open, role }), [role, open]);
+  const context = React.useMemo<DialogContextValue>(
+    () => ({ open, role }),
+    [role, open],
+  );
 
-  return keepMounted || (!keepMounted && open) ? (
+  if (!keepMounted && !open) return null;
+
+  return (
     <Portal>
       <div
         data-slot="Portal:Root"
@@ -148,9 +153,9 @@ const DialogBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         </div>
       </div>
     </Portal>
-  ) : null;
+  );
 };
 
-const Dialog = componentWithForwardedRef(DialogBase);
+const Dialog = componentWithForwardedRef(DialogBase, "Dialog");
 
 export default Dialog;

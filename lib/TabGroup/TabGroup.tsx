@@ -6,7 +6,7 @@ import {
   useForkedRefs,
   useIsMounted,
 } from "../utils";
-import TabGroupContext, { type ITabGroupContext } from "./context";
+import { TabGroupContext, type TabGroupContextValue } from "./context";
 import { Root as RootSlot } from "./slots";
 
 interface OwnProps {
@@ -83,10 +83,10 @@ const TabGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     onChange?.(tabIndex);
   };
 
-  const tabs: ITabGroupContext["tabs"] = [];
-  const panels: ITabGroupContext["panels"] = [];
+  const tabs: TabGroupContextValue["tabs"] = [];
+  const panels: TabGroupContextValue["panels"] = [];
 
-  const register: ITabGroupContext["register"] = ref => {
+  const register: TabGroupContextValue["register"] = ref => {
     if (!ref.current) return;
 
     if (ref.current instanceof HTMLDivElement) {
@@ -142,6 +142,6 @@ const TabGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const TabGroup = componentWithForwardedRef(TabGroupBase);
+const TabGroup = componentWithForwardedRef(TabGroupBase, "TabGroup");
 
 export default TabGroup;

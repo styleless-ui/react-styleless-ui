@@ -34,7 +34,12 @@ describe("Switch", () => {
   itSupportsDataSetProps(Switch, REQUIRED_PROPS, "[role='switch']");
 
   it("should have the required classNames", () => {
-    render(<Switch {...REQUIRED_PROPS} checked />);
+    render(
+      <Switch
+        {...REQUIRED_PROPS}
+        checked
+      />,
+    );
 
     const sw = screen.getByRole("switch");
     const label = sw.previousElementSibling;
@@ -49,14 +54,22 @@ describe("Switch", () => {
 
   it("should have `aria-label='label'` property when `label={{ screenReaderLabel: 'label' }}`", () => {
     render(
-      <Switch {...REQUIRED_PROPS} label={{ screenReaderLabel: labelText }} />,
+      <Switch
+        {...REQUIRED_PROPS}
+        label={{ screenReaderLabel: labelText }}
+      />,
     );
 
     expect(screen.getByRole("switch")).toHaveAttribute("aria-label", labelText);
   });
 
   it("should have `aria-labelledby='identifier'` property when `label={{ labelledBy: 'identifier' }}`", () => {
-    render(<Switch {...REQUIRED_PROPS} label={{ labelledBy: "identifier" }} />);
+    render(
+      <Switch
+        {...REQUIRED_PROPS}
+        label={{ labelledBy: "identifier" }}
+      />,
+    );
 
     expect(screen.getByRole("switch")).toHaveAttribute(
       "aria-labelledby",
@@ -71,7 +84,12 @@ describe("Switch", () => {
   });
 
   it("renders a checked switch when `checked={true}`", () => {
-    render(<Switch {...REQUIRED_PROPS} checked />);
+    render(
+      <Switch
+        {...REQUIRED_PROPS}
+        checked
+      />,
+    );
 
     expect(screen.getByRole("switch")).toBeChecked();
   });
@@ -80,7 +98,12 @@ describe("Switch", () => {
     const handleChange = jest.fn<void, [checkedState: boolean]>();
 
     userEvent.setup();
-    render(<Switch {...REQUIRED_PROPS} onChange={handleChange} />);
+    render(
+      <Switch
+        {...REQUIRED_PROPS}
+        onChange={handleChange}
+      />,
+    );
 
     const sw = screen.getByRole("switch");
 
@@ -126,7 +149,10 @@ describe("Switch", () => {
     expect(screen.getByTestId("t1").tagName).toBe("DIV");
 
     const ThumbComponent = ({ className }: { className?: string }) => (
-      <div data-testid="t2" className={className}></div>
+      <div
+        data-testid="t2"
+        className={className}
+      ></div>
     );
 
     render(
@@ -152,7 +178,10 @@ describe("Switch", () => {
     expect(screen.getByTestId("t1").tagName).toBe("DIV");
 
     const TrackComponent = ({ className }: { className?: string }) => (
-      <div data-testid="t2" className={className}></div>
+      <div
+        data-testid="t2"
+        className={className}
+      ></div>
     );
 
     render(

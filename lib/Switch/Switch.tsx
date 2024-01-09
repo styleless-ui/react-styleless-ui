@@ -5,8 +5,10 @@ import {
   useCheckBase,
   useDeterministicId,
   useForkedRefs,
+  useHandleTargetLabelClick,
 } from "../utils";
 import * as Slots from "./slots";
+import { getLabelInfo } from "./utils";
 
 type SwitchClassesMap = Classes<"root" | "label" | "thumb" | "track">;
 
@@ -86,34 +88,6 @@ export type Props = Omit<
   "defaultValue" | "className"
 >;
 
-const getLabelInfo = (labelInput: Props["label"]) => {
-  const props: {
-    visibleLabel?: string;
-    srOnlyLabel?: string;
-    labelledBy?: string;
-  } = {};
-
-  if (typeof labelInput === "string") {
-    props.visibleLabel = labelInput;
-  } else {
-    if ("screenReaderLabel" in labelInput) {
-      props.srOnlyLabel = labelInput.screenReaderLabel;
-    } else if ("labelledBy" in labelInput) {
-      props.labelledBy = labelInput.labelledBy;
-    } else {
-      throw new Error(
-        [
-          "[StylelessUI][Switch]: Invalid `label` property.",
-          "The `label` property must be either a `string` or in shape of " +
-            "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
-        ].join("\n"),
-      );
-    }
-  }
-
-  return props;
-};
-
 const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   const {
     label,
@@ -134,6 +108,7 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   } = props;
 
   const checkBase = useCheckBase({
+    groupCtx: null,
     autoFocus,
     disabled,
     checked: checkedProp,
@@ -161,29 +136,19 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   const classes =
     typeof classesMap === "function" ? classesMap(classesCtx) : classesMap;
 
-  React.useEffect(() => {
-    const labelTarget =
-      labelProps.visibleLabel && visibleLabelId
-        ? document.getElementById(visibleLabelId)
-        : labelProps.labelledBy
-        ? document.getElementById(labelProps.labelledBy)
-        : null;
+  const renderLabel = () => {
+    if (!labelProps.visibleLabel) return null;
 
-    if (!labelTarget) return;
-
-    const handleTargetClick = () => checkBase.controllerRef.current?.click();
-
-    labelTarget.addEventListener("click", handleTargetClick);
-
-    return () => {
-      labelTarget.removeEventListener("click", handleTargetClick);
-    };
-  }, [
-    checkBase.controllerRef,
-    labelProps.labelledBy,
-    labelProps.visibleLabel,
-    visibleLabelId,
-  ]);
+    return (
+      <span
+        id={visibleLabelId}
+        data-slot={Slots.Label}
+        className={classes?.label}
+      >
+        {labelProps.visibleLabel}
+      </span>
+    );
+  };
 
   const dataAttrs = {
     "data-slot": Slots.Root,
@@ -192,17 +157,15 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     "data-checked": classesCtx.checked ? "" : undefined,
   };
 
+  useHandleTargetLabelClick({
+    visibleLabelId,
+    labelInfo: labelProps,
+    onClick: () => checkBase.controllerRef.current?.click(),
+  });
+
   return (
     <>
-      {labelProps.visibleLabel && (
-        <span
-          id={visibleLabelId}
-          data-slot={Slots.Label}
-          className={classes?.label}
-        >
-          {labelProps.visibleLabel}
-        </span>
-      )}
+      {renderLabel()}
       <button
         {...otherProps}
         id={id}
@@ -243,6 +206,6 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   );
 };
 
-const Switch = componentWithForwardedRef(SwitchBase);
+const Switch = componentWithForwardedRef(SwitchBase, "Switch");
 
 export default Switch;

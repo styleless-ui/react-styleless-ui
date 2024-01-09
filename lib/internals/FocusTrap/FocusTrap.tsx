@@ -1,6 +1,7 @@
 import * as React from "react";
 import { visuallyHiddenCSSProperties } from "..";
 import {
+  SystemError,
   contains,
   isFocusable,
   useEventListener,
@@ -29,8 +30,9 @@ const FocusTrap = (props: Props) => {
         children,
       ) as React.FunctionComponentElement<unknown>;
     } catch {
-      throw new Error(
-        "[StylelessUI][FocusTrap]: The `children` prop has to be a single valid element.",
+      throw new SystemError(
+        "The `children` prop has to be a single valid element.",
+        "FocusTrap",
       );
     }
   })();

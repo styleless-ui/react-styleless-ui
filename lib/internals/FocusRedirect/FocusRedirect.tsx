@@ -1,5 +1,6 @@
 import * as React from "react";
 import {
+  SystemError,
   contains,
   isFocusable,
   useEventCallback,
@@ -30,8 +31,9 @@ const FocusRedirect = (props: Props) => {
         children,
       ) as React.FunctionComponentElement<unknown>;
     } catch {
-      throw new Error(
-        "[StylelessUI][FocusTrap]: The `children` prop has to be a single valid element.",
+      throw new SystemError(
+        "The `children` prop has to be a single valid element.",
+        "FocusRedirect",
       );
     }
   })();

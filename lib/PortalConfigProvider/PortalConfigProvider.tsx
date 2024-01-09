@@ -1,7 +1,5 @@
 import * as React from "react";
-import PortalConfigContext, {
-  type PortalConfigContextValue,
-} from "./PortalConfigContext";
+import { PortalConfigContext, type PortalConfigContextValue } from "./context";
 
 export interface Props {
   children: React.ReactNode;
