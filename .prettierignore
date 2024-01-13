@@ -1,6 +1,5 @@
 node_modules
 dist
 .swc
-.dev
 .github
 .next
