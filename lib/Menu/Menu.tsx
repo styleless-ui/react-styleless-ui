@@ -142,6 +142,8 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     setActiveSubTrigger,
     registerItem,
     setIsMenuActive,
+    onEscape,
+    onOutsideClick,
     setActiveElement: node => {
       menuCtx?.setIsMenuActive(false);
 
@@ -192,7 +194,7 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           setActiveElement(null);
           setActiveSubTrigger(null);
 
-          onOutsideClick?.(event);
+          onOutsideClick?.(event) ?? menuCtx?.onOutsideClick?.(event);
         }),
       },
       open && isMenuActive,
@@ -211,7 +213,7 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         handler: useEventCallback<KeyboardEvent>(event => {
           if (event.key === SystemKeys.ESCAPE) {
             event.preventDefault();
-            onEscape?.(event);
+            onEscape?.(event) ?? menuCtx?.onEscape?.(event);
           }
         }),
       },
@@ -231,8 +233,9 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           if (select && activeElement) {
             activeElement.click();
 
-            if (activeElement.hasAttribute("aria-haspopup"))
+            if (activeElement.hasAttribute("aria-haspopup")) {
               openSubMenu(activeElement);
+            }
           }
         }),
       },
@@ -282,8 +285,9 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           if (goNext || goPrev) {
             event.preventDefault();
 
-            if (menuCtx && menuCtx.isMenuActive)
+            if (menuCtx && menuCtx.isMenuActive) {
               return menuCtx.setActiveSubTrigger(null);
+            }
 
             const currentIdx = items.findIndex(
               itemRef => itemRef.current === nextActive,
@@ -346,9 +350,9 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
               let nextIdx: number | undefined = undefined;
 
-              if (idx >= 0)
+              if (idx >= 0) {
                 nextIdx = occurrences[(idx + 1) % occurrences.length]?.[1];
-              else nextIdx = occurrences[0]?.[1];
+              } else nextIdx = occurrences[0]?.[1];
 
               setActiveElement(
                 typeof nextIdx !== "undefined"
@@ -452,42 +456,39 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       ? classNameProp({ open })
       : classNameProp;
 
-  const createPopper = () => {
-    if (!anchorElement) return null;
+  if (!anchorElement) return null;
 
-    return (
-      <Popper
-        autoPlacement
-        keepMounted={keepMounted}
-        open={open}
-        anchorElement={anchorElement}
-        computationMiddlewareOrder="afterAutoPlacement"
-        computationMiddleware={popperComputationMiddleware}
-        offset={0}
-        alignment={alignment}
-      >
-        <FocusTrap enabled={open}>
-          <div
-            {...otherProps}
-            // @ts-expect-error React hasn't added `inert` yet
-            inert={!open ? "" : undefined}
-            ref={refCallback}
-            id={id}
-            data-slot={RootSlot}
-            className={className}
-            tabIndex={-1}
-            data-open={open ? "" : undefined}
-          >
-            <MenuContext.Provider value={context}>
-              {children}
-            </MenuContext.Provider>
-          </div>
-        </FocusTrap>
-      </Popper>
-    );
-  };
-
-  return createPopper();
+  return (
+    <Popper
+      autoPlacement
+      keepMounted={keepMounted}
+      open={open}
+      anchorElement={anchorElement}
+      computationMiddlewareOrder="afterAutoPlacement"
+      computationMiddleware={popperComputationMiddleware}
+      offset={0}
+      alignment={alignment}
+    >
+      <FocusTrap enabled={open}>
+        <div
+          {...otherProps}
+          // @ts-expect-error React hasn't added `inert` yet
+          inert={!open ? "" : undefined}
+          ref={refCallback}
+          id={id}
+          role="menu"
+          data-slot={RootSlot}
+          className={className}
+          tabIndex={-1}
+          data-open={open ? "" : undefined}
+        >
+          <MenuContext.Provider value={context}>
+            {children}
+          </MenuContext.Provider>
+        </div>
+      </FocusTrap>
+    </Popper>
+  );
 };
 
 const Menu = componentWithForwardedRef(MenuBase, "Menu");
