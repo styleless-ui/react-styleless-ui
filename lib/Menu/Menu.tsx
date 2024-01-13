@@ -129,8 +129,8 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     Array<[React.RefObject<HTMLDivElement>, number]>
   >([]);
 
-  const items: React.RefObject<HTMLDivElement>[] = [];
-  const registerItem = makeRegisterItem(items);
+  const itemsRegistry: React.RefObject<HTMLDivElement>[] = [];
+  const registerItem = makeRegisterItem(itemsRegistry);
 
   const context: MenuContextValue = {
     ref: rootRef,
@@ -265,14 +265,15 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
             forward: boolean,
             prevIdxs: number[] = [],
           ): React.RefObject<HTMLDivElement> | null => {
-            const itemRef = items[idx];
+            const itemRef = itemsRegistry[idx];
 
             if (!itemRef) return null;
             if (prevIdxs.includes(idx)) return null;
 
             if (itemRef.current?.getAttribute("aria-disabled") === "true") {
               const newIdx =
-                (forward ? idx + 1 : idx - 1 + items.length) % items.length;
+                (forward ? idx + 1 : idx - 1 + itemsRegistry.length) %
+                itemsRegistry.length;
 
               return getAvailableItem(newIdx, forward, [...prevIdxs, idx]);
             }
@@ -289,19 +290,21 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
               return menuCtx.setActiveSubTrigger(null);
             }
 
-            const currentIdx = items.findIndex(
+            const currentIdx = itemsRegistry.findIndex(
               itemRef => itemRef.current === nextActive,
             );
 
             if (goNext) {
               nextActive =
-                getAvailableItem((currentIdx + 1) % items.length, true)
+                getAvailableItem((currentIdx + 1) % itemsRegistry.length, true)
                   ?.current ?? null;
             } else if (goPrev) {
               nextActive =
                 getAvailableItem(
-                  ((currentIdx === -1 ? 0 : currentIdx) - 1 + items.length) %
-                    items.length,
+                  ((currentIdx === -1 ? 0 : currentIdx) -
+                    1 +
+                    itemsRegistry.length) %
+                    itemsRegistry.length,
                   false,
                 )?.current ?? null;
             }
@@ -323,7 +326,7 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
             const occurrences =
               query.current === event.key
                 ? queryResults.current
-                : items.reduce((result, item, idx) => {
+                : itemsRegistry.reduce((result, item, idx) => {
                     if (item.current?.getAttribute("aria-disabled") === "true")
                       return result;
 
@@ -356,7 +359,7 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
               setActiveElement(
                 typeof nextIdx !== "undefined"
-                  ? items[nextIdx]?.current ?? null
+                  ? itemsRegistry[nextIdx]?.current ?? null
                   : null,
               );
             }
