@@ -44,10 +44,12 @@ type OwnProps = {
   open?: boolean;
   /**
    * Callback fired when a click interaction happens outside the component.
+   * This callback also will be used on `Menu.Sub`.
    */
   onOutsideClick?: (event: MouseEvent) => void;
   /**
    * Callback fired when the `Escape` key is pressed.
+   * This callback also will be used on `Menu.Sub`.
    */
   onEscape?: (event: KeyboardEvent) => void;
   /**
