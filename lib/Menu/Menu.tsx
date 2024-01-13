@@ -74,11 +74,6 @@ export type Props = Omit<
   "defaultValue" | "defaultChecked"
 >;
 
-type QueryRecord = {
-  index: number;
-  ref: React.RefObject<HTMLDivElement>;
-};
-
 const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     id: idProp,
