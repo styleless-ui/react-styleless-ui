@@ -14,7 +14,7 @@ import {
 } from "../utils";
 import { MenuContext, type MenuContextValue } from "./context";
 import { Root as RootSlot } from "./slots";
-import { makeRegisterItem } from "./utils";
+import { makeRegisterItem, useSearchQuery } from "./utils";
 
 type OwnProps = {
   /**
@@ -126,12 +126,10 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const shouldActivateFirstSubItemRef = React.useRef(false);
   const initialFocusRef = React.useRef(false);
 
-  const queryCacheTimeoutRef = React.useRef(-1);
-  const cachedQueryRef = React.useRef<Set<string>>(new Set());
-  const cachedQueryRecordsRef = React.useRef<QueryRecord[]>([]);
-
   const itemsRegistry: React.RefObject<HTMLDivElement>[] = [];
   const registerItem = makeRegisterItem(itemsRegistry);
+
+  const searchQuery = useSearchQuery(itemsRegistry);
 
   const context: MenuContextValue = {
     ref: rootRef,
@@ -212,20 +210,6 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         target: document,
         eventType: "keydown",
         handler: useEventCallback<KeyboardEvent>(event => {
-          if (event.key === SystemKeys.ESCAPE) {
-            event.preventDefault();
-            onEscape?.(event) ?? menuCtx?.onEscape?.(event);
-          }
-        }),
-      },
-      open && isMenuActive,
-    );
-
-    useEventListener(
-      {
-        target: document,
-        eventType: "keydown",
-        handler: useEventCallback<KeyboardEvent>(event => {
           const shouldAllowKeyboardNavigation =
             shouldActivateKeyboardNavigation ?? true;
 
@@ -233,6 +217,8 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
           const goPrevCase = SystemKeys.UP === event.key;
           const goNextCase = SystemKeys.DOWN === event.key;
+
+          const escapeCase = SystemKeys.ESCAPE === event.key;
 
           const selectCase = [SystemKeys.ENTER, SystemKeys.SPACE].includes(
             event.key,
@@ -246,6 +232,31 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
           const searchCase =
             !goPrevCase && !goNextCase && !openSubCase && !closeSubCase;
+
+          if (escapeCase) {
+            event.preventDefault();
+            onEscape?.(event) ?? menuCtx?.onEscape?.(event);
+
+            return;
+          }
+
+          if (selectCase) {
+            if (!activeElement) return;
+
+            activeElement.click();
+
+            if (activeElement.hasAttribute("aria-haspopup")) {
+              openSubMenu(activeElement);
+            }
+
+            return;
+          }
+
+          if (searchCase && !disabledKeySearch) {
+            searchQuery(event, { value: activeElement, set: setActiveElement });
+
+            return;
+          }
 
           const getAvailableItem = (
             idx: number,
@@ -270,14 +281,6 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           };
 
           let nextActive: HTMLDivElement | null = activeElement ?? null;
-
-          if (selectCase && activeElement) {
-            activeElement.click();
-
-            if (activeElement.hasAttribute("aria-haspopup")) {
-              openSubMenu(activeElement);
-            }
-          }
 
           if (goNextCase || goPrevCase) {
             event.preventDefault();
@@ -316,91 +319,6 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
             menuCtx.setActiveElement(menuCtx.activeSubTrigger);
             menuCtx.setIsMenuActive(true);
             menuCtx.setActiveSubTrigger(null);
-          }
-
-          if (searchCase && !disabledKeySearch) {
-            const isModifier = [
-              SystemKeys.ALT,
-              SystemKeys.SHIFT,
-              SystemKeys.CONTROL,
-              SystemKeys.META,
-            ].includes(event.key);
-
-            const cacheCleanup = () => {
-              window.clearTimeout(queryCacheTimeoutRef.current);
-              queryCacheTimeoutRef.current = window.setTimeout(() => {
-                cachedQueryRef.current.clear();
-                cachedQueryRecordsRef.current = [];
-              }, 2000);
-            };
-
-            if (isModifier) {
-              cacheCleanup();
-
-              return;
-            }
-
-            const queryChar = event.key.toLowerCase();
-            const cachedString = Array.from(cachedQueryRef.current).join("");
-
-            const shouldUseCachedRecords = queryChar === cachedString;
-
-            cachedQueryRef.current.add(queryChar);
-
-            if (cachedQueryRef.current.size > 1) {
-              cacheCleanup();
-
-              return;
-            }
-
-            const queryRecords = shouldUseCachedRecords
-              ? cachedQueryRecordsRef.current
-              : itemsRegistry.reduce((result, itemRef, idx) => {
-                  const item = itemRef.current;
-
-                  if (!item) return result;
-
-                  if (item.getAttribute("aria-disabled") === "true") {
-                    return result;
-                  }
-
-                  const text = item?.textContent;
-                  const queryMatched =
-                    text?.toLowerCase().trim()[0] === queryChar.toLowerCase();
-
-                  if (queryMatched) {
-                    const newRecord: QueryRecord = {
-                      ref: itemRef,
-                      index: idx,
-                    };
-
-                    return [...result, newRecord];
-                  }
-
-                  return result;
-                }, [] as Array<QueryRecord>);
-
-            if (queryRecords.length) {
-              const idx = queryRecords.findIndex(
-                record => record.ref.current === nextActive,
-              );
-
-              let nextIdx: number | undefined = undefined;
-
-              if (idx >= 0) {
-                nextIdx = queryRecords[(idx + 1) % queryRecords.length]?.index;
-              } else nextIdx = queryRecords[0]?.index;
-
-              setActiveElement(
-                typeof nextIdx !== "undefined"
-                  ? itemsRegistry[nextIdx]?.current ?? null
-                  : null,
-              );
-            }
-
-            cachedQueryRecordsRef.current = queryRecords;
-
-            cacheCleanup();
           }
         }),
       },
