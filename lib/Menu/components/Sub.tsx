@@ -9,7 +9,10 @@ import Menu, { type Props as MenuRootProps } from "../Menu";
 import { SubRoot as SubRootSlot } from "../slots";
 import { MenuItemContext } from "./Item/context";
 
-type OwnProps = Omit<MenuRootProps, "anchorElement" | "open">;
+type OwnProps = Omit<
+  MenuRootProps,
+  "anchorElement" | "open" | "onEscape" | "onOutsideClick"
+>;
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,
