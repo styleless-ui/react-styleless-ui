@@ -7,7 +7,7 @@ import {
   useEventCallback,
   useForkedRefs,
 } from "../../../utils";
-import { MenuContext, type MenuContextValue } from "../../context";
+import { MenuContext } from "../../context";
 import { ItemRoot as ItemRootSlot } from "../../slots";
 import useMenuItem from "../../useMenuItem";
 import { MenuItemContext } from "./context";
@@ -99,29 +99,27 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       ? classNameProp(renderCtx)
       : classNameProp;
 
-  const subMenuRef = React.useRef<{
+  const subMenuRegistryRef = React.useRef<{
     ref: React.RefObject<HTMLDivElement>;
     id: string | undefined;
-    ctx: MenuContextValue | null;
   }>();
 
-  const registerSubMenu = makeRegisterSubMenu(subMenuRef);
+  const registerSubMenu = makeRegisterSubMenu(subMenuRegistryRef);
 
   const menuItem = useMenuItem({
     disabled,
     isActive,
     onClick,
     onMouseEnter: useEventCallback<React.MouseEvent<HTMLDivElement>>(event => {
-      if (event.currentTarget !== rootRef.current || !menuCtx)
-        return onMouseEnter?.(event);
+      if (event.currentTarget !== rootRef.current) return onMouseEnter?.(event);
 
-      menuCtx.setActiveElement(rootRef.current);
-      menuCtx.shouldActivateFirstSubItemRef.current = false;
-      menuCtx.setIsMenuActive(true);
+      menuCtx?.setActiveElement(rootRef.current);
+      menuCtx?.setIsMenuActive(true);
+      if (menuCtx) menuCtx.shouldActivateFirstSubItemRef.current = false;
 
-      if (subMenuRef.current) {
-        menuCtx.setActiveSubTrigger(rootRef.current);
-        subMenuRef.current.ctx?.setIsMenuActive(false);
+      if (subMenuRegistryRef.current) {
+        menuCtx?.setActiveSubTrigger(rootRef.current);
+        menuCtx?.setIsMenuActive(false);
       }
 
       onMouseEnter?.(event);
@@ -129,9 +127,9 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     onMouseLeave: useEventCallback<React.MouseEvent<HTMLDivElement>>(event => {
       menuCtx?.setActiveElement(null);
 
-      if (subMenuRef.current) {
+      if (subMenuRegistryRef.current) {
         menuCtx?.setActiveSubTrigger(null);
-        subMenuRef.current.ctx?.setIsMenuActive(true);
+        menuCtx?.setIsMenuActive(true);
       }
 
       onMouseLeave?.(event);
@@ -149,9 +147,9 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     if (!node) return;
     menuCtx?.registerItem(rootRef);
 
-    if (!subMenuRef.current) return;
+    if (!subMenuRegistryRef.current) return;
 
-    const { id: subMenuId } = subMenuRef.current;
+    const { id: subMenuId } = subMenuRegistryRef.current;
 
     node.setAttribute("aria-haspopup", "menu");
     node.setAttribute("aria-expanded", String(isSubMenuOpen()));

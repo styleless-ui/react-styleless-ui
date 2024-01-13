@@ -18,7 +18,7 @@ const logger = (message: string, options?: Partial<Options>) => {
     error: console.error,
     warn: console.warn,
     default: console.log,
-  } satisfies Record<Exclude<Type, "throw-error">, AnyFunction>;
+  } satisfies Record<Type, AnyFunction>;
 
   const loggerFn = mapTypeToLoggerFn[type];
 

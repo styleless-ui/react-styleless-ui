@@ -1,4 +1,5 @@
 import * as React from "react";
+import { type Props } from "./Menu";
 
 type ContextValue = {
   ref: React.RefObject<HTMLDivElement>;
@@ -7,6 +8,8 @@ type ContextValue = {
   shouldActivateFirstSubItemRef: React.MutableRefObject<boolean>;
   isMenuActive: boolean;
   keepMounted: boolean;
+  onEscape: Props["onEscape"];
+  onOutsideClick: Props["onOutsideClick"];
   setIsMenuActive: React.Dispatch<React.SetStateAction<boolean>>;
   setActiveSubTrigger: React.Dispatch<
     React.SetStateAction<HTMLDivElement | null>

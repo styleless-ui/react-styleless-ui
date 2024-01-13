@@ -14,7 +14,7 @@ import {
 } from "../utils";
 import { MenuContext, type MenuContextValue } from "./context";
 import { Root as RootSlot } from "./slots";
-import { makeRegisterItem } from "./utils";
+import { getAvailableItem, makeRegisterItem, useSearchQuery } from "./utils";
 
 type OwnProps = {
   /**
@@ -44,10 +44,12 @@ type OwnProps = {
   open?: boolean;
   /**
    * Callback fired when a click interaction happens outside the component.
+   * This callback also will be used on `Menu.Sub`.
    */
   onOutsideClick?: (event: MouseEvent) => void;
   /**
    * Callback fired when the `Escape` key is pressed.
+   * This callback also will be used on `Menu.Sub`.
    */
   onEscape?: (event: KeyboardEvent) => void;
   /**
@@ -106,31 +108,25 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const id = useDeterministicId(idProp, "styleless-ui__menu");
 
+  // The element which is active and you can control with keyboard.
   const [activeElement, setActiveElement] =
     React.useState<HTMLDivElement | null>(null);
 
+  // The active item which is going to trigger a sub menu.
   const [activeSubTrigger, setActiveSubTrigger] =
     React.useState<HTMLDivElement | null>(null);
 
   const [isMenuActive, setIsMenuActive] = React.useState(open);
 
-  const shouldAllowKeyboardNavigation = () =>
-    shouldActivateKeyboardNavigation ?? true;
-
   const dir = useDirection(rootRef) ?? "ltr";
 
-  const shouldActivateFirstSubItem = React.useRef(false);
-  const initialFocus = React.useRef(false);
+  const shouldActivateFirstSubItemRef = React.useRef(false);
+  const initialFocusRef = React.useRef(false);
 
-  const isQueryingAllowed = React.useRef(true);
-  const queryCacheTimeoutRef = React.useRef(-1);
-  const query = React.useRef<string>();
-  const queryResults = React.useRef<
-    Array<[React.RefObject<HTMLDivElement>, number]>
-  >([]);
+  const itemsRegistry: React.RefObject<HTMLDivElement>[] = [];
+  const registerItem = makeRegisterItem(itemsRegistry);
 
-  const items: React.RefObject<HTMLDivElement>[] = [];
-  const registerItem = makeRegisterItem(items);
+  const searchQuery = useSearchQuery(itemsRegistry);
 
   const context: MenuContextValue = {
     ref: rootRef,
@@ -138,10 +134,12 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     activeSubTrigger,
     isMenuActive,
     keepMounted,
-    shouldActivateFirstSubItemRef: shouldActivateFirstSubItem,
+    shouldActivateFirstSubItemRef,
     setActiveSubTrigger,
     registerItem,
     setIsMenuActive,
+    onEscape,
+    onOutsideClick,
     setActiveElement: node => {
       menuCtx?.setIsMenuActive(false);
 
@@ -164,7 +162,7 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       setIsMenuActive(false);
 
       previouslyFocusedElement.current = null;
-      initialFocus.current = false;
+      initialFocusRef.current = false;
     } else {
       setIsMenuActive(true);
 
@@ -192,7 +190,7 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           setActiveElement(null);
           setActiveSubTrigger(null);
 
-          onOutsideClick?.(event);
+          onOutsideClick?.(event) ?? menuCtx?.onOutsideClick?.(event);
         }),
       },
       open && isMenuActive,
@@ -201,7 +199,7 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     const openSubMenu = (element?: HTMLDivElement | null) => {
       setActiveSubTrigger(element ?? activeElement);
       setIsMenuActive(false);
-      shouldActivateFirstSubItem.current = true;
+      shouldActivateFirstSubItemRef.current = true;
     };
 
     useEventListener(
@@ -209,164 +207,94 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         target: document,
         eventType: "keydown",
         handler: useEventCallback<KeyboardEvent>(event => {
-          if (event.key === SystemKeys.ESCAPE) {
-            event.preventDefault();
-            onEscape?.(event);
-          }
-        }),
-      },
-      open && isMenuActive,
-    );
+          const shouldAllowKeyboardNavigation =
+            shouldActivateKeyboardNavigation ?? true;
 
-    useEventListener(
-      {
-        target: document,
-        eventType: "keydown",
-        handler: useEventCallback<KeyboardEvent>(event => {
-          const select = [SystemKeys.ENTER, SystemKeys.SPACE].includes(
+          if (!shouldAllowKeyboardNavigation) return;
+
+          const goPrevCase = SystemKeys.UP === event.key;
+          const goNextCase = SystemKeys.DOWN === event.key;
+
+          const escapeCase = SystemKeys.ESCAPE === event.key;
+
+          const selectCase = [SystemKeys.ENTER, SystemKeys.SPACE].includes(
             event.key,
           );
 
-          if (event.key === query.current) isQueryingAllowed.current = true;
-          if (select && activeElement) {
-            activeElement.click();
-
-            if (activeElement.hasAttribute("aria-haspopup"))
-              openSubMenu(activeElement);
-          }
-        }),
-      },
-      open && isMenuActive,
-    );
-
-    useEventListener(
-      {
-        target: document,
-        eventType: "keydown",
-        handler: useEventCallback<KeyboardEvent>(event => {
-          if (!shouldAllowKeyboardNavigation()) return;
-
-          const goPrev = SystemKeys.UP === event.key;
-          const goNext = SystemKeys.DOWN === event.key;
-
-          const openSub =
+          const openSubCase =
             (dir === "rtl" ? SystemKeys.LEFT : SystemKeys.RIGHT) === event.key;
 
-          const closeSub =
+          const closeSubCase =
             (dir === "rtl" ? SystemKeys.RIGHT : SystemKeys.LEFT) === event.key;
 
-          const doSearch = !goPrev && !goNext && !openSub && !closeSub;
+          const searchCase =
+            !goPrevCase && !goNextCase && !openSubCase && !closeSubCase;
 
-          const getAvailableItem = (
-            idx: number,
-            forward: boolean,
-            prevIdxs: number[] = [],
-          ): React.RefObject<HTMLDivElement> | null => {
-            const itemRef = items[idx];
+          if (escapeCase) {
+            event.preventDefault();
+            onEscape?.(event) ?? menuCtx?.onEscape?.(event);
 
-            if (!itemRef) return null;
-            if (prevIdxs.includes(idx)) return null;
+            return;
+          }
 
-            if (itemRef.current?.getAttribute("aria-disabled") === "true") {
-              const newIdx =
-                (forward ? idx + 1 : idx - 1 + items.length) % items.length;
+          if (selectCase) {
+            if (!activeElement) return;
 
-              return getAvailableItem(newIdx, forward, [...prevIdxs, idx]);
+            activeElement.click();
+
+            if (activeElement.hasAttribute("aria-haspopup")) {
+              openSubMenu(activeElement);
             }
 
-            return itemRef;
-          };
+            return;
+          }
+
+          if (searchCase && !disabledKeySearch) {
+            searchQuery(event, { value: activeElement, set: setActiveElement });
+
+            return;
+          }
 
           let nextActive: HTMLDivElement | null = activeElement ?? null;
 
-          if (goNext || goPrev) {
+          if (goNextCase || goPrevCase) {
             event.preventDefault();
 
-            if (menuCtx && menuCtx.isMenuActive)
+            if (menuCtx && menuCtx.isMenuActive) {
               return menuCtx.setActiveSubTrigger(null);
+            }
 
-            const currentIdx = items.findIndex(
+            const currentIdx = itemsRegistry.findIndex(
               itemRef => itemRef.current === nextActive,
             );
 
-            if (goNext) {
-              nextActive =
-                getAvailableItem((currentIdx + 1) % items.length, true)
-                  ?.current ?? null;
-            } else if (goPrev) {
-              nextActive =
-                getAvailableItem(
-                  ((currentIdx === -1 ? 0 : currentIdx) - 1 + items.length) %
-                    items.length,
-                  false,
-                )?.current ?? null;
+            const items = itemsRegistry.map(itemRef => itemRef.current);
+
+            if (goNextCase) {
+              const nextIdx = (currentIdx + 1) % itemsRegistry.length;
+
+              nextActive = getAvailableItem(items, nextIdx, true) ?? null;
+            } else if (goPrevCase) {
+              const nextIdx =
+                ((currentIdx === -1 ? 0 : currentIdx) -
+                  1 +
+                  itemsRegistry.length) %
+                itemsRegistry.length;
+
+              nextActive = getAvailableItem(items, nextIdx, false) ?? null;
             }
           }
 
           nextActive?.scrollIntoView(false);
           setActiveElement(nextActive);
 
-          if (nextActive?.hasAttribute("aria-haspopup") && openSub) {
+          if (nextActive?.hasAttribute("aria-haspopup") && openSubCase) {
             openSubMenu(nextActive);
-          } else if (menuCtx && closeSub) {
+          } else if (menuCtx && closeSubCase) {
             menuCtx.shouldActivateFirstSubItemRef.current = false;
             menuCtx.setActiveElement(menuCtx.activeSubTrigger);
             menuCtx.setIsMenuActive(true);
             menuCtx.setActiveSubTrigger(null);
-          }
-
-          if (doSearch && !disabledKeySearch && isQueryingAllowed.current) {
-            const occurrences =
-              query.current === event.key
-                ? queryResults.current
-                : items.reduce((result, item, idx) => {
-                    if (item.current?.getAttribute("aria-disabled") === "true")
-                      return result;
-
-                    const text = item.current?.textContent;
-
-                    if (
-                      text?.toLowerCase().trim()[0] === event.key.toLowerCase()
-                    ) {
-                      const newRecord: [
-                        React.RefObject<HTMLDivElement>,
-                        number,
-                      ] = [item, idx];
-
-                      return [...result, newRecord];
-                    }
-
-                    return result;
-                  }, [] as Array<[React.RefObject<HTMLDivElement>, number]>);
-
-            if (occurrences.length) {
-              const idx = occurrences.findIndex(
-                occ => occ[0].current === nextActive,
-              );
-
-              let nextIdx: number | undefined = undefined;
-
-              if (idx >= 0)
-                nextIdx = occurrences[(idx + 1) % occurrences.length]?.[1];
-              else nextIdx = occurrences[0]?.[1];
-
-              setActiveElement(
-                typeof nextIdx !== "undefined"
-                  ? items[nextIdx]?.current ?? null
-                  : null,
-              );
-            }
-
-            isQueryingAllowed.current = false;
-
-            query.current = event.key;
-            queryResults.current = occurrences;
-
-            window.clearTimeout(queryCacheTimeoutRef.current);
-            queryCacheTimeoutRef.current = window.setTimeout(() => {
-              query.current = undefined;
-              queryResults.current = [];
-            }, 2000);
           }
         }),
       },
@@ -382,36 +310,18 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     if (!open) return;
     if (!menuCtx) return;
     if (!menuCtx.shouldActivateFirstSubItemRef.current) return;
-    if (initialFocus.current) return;
+    if (initialFocusRef.current) return;
 
-    const items = node.querySelectorAll<HTMLDivElement>("[role*='menuitem']");
+    const items = Array.from(
+      node.querySelectorAll<HTMLDivElement>("[role*='menuitem']"),
+    );
 
-    const getAvailableItem = (
-      idx: number,
-      forward: boolean,
-      prevIdxs: number[] = [],
-    ): HTMLDivElement | null => {
-      const item = items[idx];
-
-      if (!item) return null;
-      if (prevIdxs.includes(idx)) return null;
-
-      if (item.getAttribute("aria-disabled") === "true") {
-        const newIdx =
-          (forward ? idx + 1 : idx - 1 + items.length) % items.length;
-
-        return getAvailableItem(newIdx, forward, [...prevIdxs, idx]);
-      }
-
-      return item;
-    };
-
-    const item = getAvailableItem(0, true);
+    const item = getAvailableItem(items, 0, true);
 
     if (!item) return;
 
     setActiveElement(item);
-    initialFocus.current = true;
+    initialFocusRef.current = true;
   };
 
   const popperComputationMiddleware: PopperProps["computationMiddleware"] = ({
@@ -452,42 +362,39 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       ? classNameProp({ open })
       : classNameProp;
 
-  const createPopper = () => {
-    if (!anchorElement) return null;
+  if (!anchorElement) return null;
 
-    return (
-      <Popper
-        autoPlacement
-        keepMounted={keepMounted}
-        open={open}
-        anchorElement={anchorElement}
-        computationMiddlewareOrder="afterAutoPlacement"
-        computationMiddleware={popperComputationMiddleware}
-        offset={0}
-        alignment={alignment}
-      >
-        <FocusTrap enabled={open}>
-          <div
-            {...otherProps}
-            // @ts-expect-error React hasn't added `inert` yet
-            inert={!open ? "" : undefined}
-            ref={refCallback}
-            id={id}
-            data-slot={RootSlot}
-            className={className}
-            tabIndex={-1}
-            data-open={open ? "" : undefined}
-          >
-            <MenuContext.Provider value={context}>
-              {children}
-            </MenuContext.Provider>
-          </div>
-        </FocusTrap>
-      </Popper>
-    );
-  };
-
-  return createPopper();
+  return (
+    <Popper
+      autoPlacement
+      keepMounted={keepMounted}
+      open={open}
+      anchorElement={anchorElement}
+      computationMiddlewareOrder="afterAutoPlacement"
+      computationMiddleware={popperComputationMiddleware}
+      offset={0}
+      alignment={alignment}
+    >
+      <FocusTrap enabled={open}>
+        <div
+          {...otherProps}
+          // @ts-expect-error React hasn't added `inert` yet
+          inert={!open ? "" : undefined}
+          ref={refCallback}
+          id={id}
+          role="menu"
+          data-slot={RootSlot}
+          className={className}
+          tabIndex={-1}
+          data-open={open ? "" : undefined}
+        >
+          <MenuContext.Provider value={context}>
+            {children}
+          </MenuContext.Provider>
+        </div>
+      </FocusTrap>
+    </Popper>
+  );
 };
 
 const Menu = componentWithForwardedRef(MenuBase, "Menu");
