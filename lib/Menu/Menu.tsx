@@ -74,6 +74,11 @@ export type Props = Omit<
   "defaultValue" | "defaultChecked"
 >;
 
+type QueryRecord = {
+  index: number;
+  ref: React.RefObject<HTMLDivElement>;
+};
+
 const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     id: idProp,
@@ -106,28 +111,24 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const id = useDeterministicId(idProp, "styleless-ui__menu");
 
+  // The element which is active and you can control with keyboard.
   const [activeElement, setActiveElement] =
     React.useState<HTMLDivElement | null>(null);
 
+  // The active item which is going to trigger a sub menu.
   const [activeSubTrigger, setActiveSubTrigger] =
     React.useState<HTMLDivElement | null>(null);
 
   const [isMenuActive, setIsMenuActive] = React.useState(open);
 
-  const shouldAllowKeyboardNavigation = () =>
-    shouldActivateKeyboardNavigation ?? true;
-
   const dir = useDirection(rootRef) ?? "ltr";
 
-  const shouldActivateFirstSubItem = React.useRef(false);
-  const initialFocus = React.useRef(false);
+  const shouldActivateFirstSubItemRef = React.useRef(false);
+  const initialFocusRef = React.useRef(false);
 
-  const isQueryingAllowed = React.useRef(true);
   const queryCacheTimeoutRef = React.useRef(-1);
-  const query = React.useRef<string>();
-  const queryResults = React.useRef<
-    Array<[React.RefObject<HTMLDivElement>, number]>
-  >([]);
+  const cachedQueryRef = React.useRef<Set<string>>(new Set());
+  const cachedQueryRecordsRef = React.useRef<QueryRecord[]>([]);
 
   const itemsRegistry: React.RefObject<HTMLDivElement>[] = [];
   const registerItem = makeRegisterItem(itemsRegistry);
@@ -138,7 +139,7 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     activeSubTrigger,
     isMenuActive,
     keepMounted,
-    shouldActivateFirstSubItemRef: shouldActivateFirstSubItem,
+    shouldActivateFirstSubItemRef,
     setActiveSubTrigger,
     registerItem,
     setIsMenuActive,
@@ -166,7 +167,7 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       setIsMenuActive(false);
 
       previouslyFocusedElement.current = null;
-      initialFocus.current = false;
+      initialFocusRef.current = false;
     } else {
       setIsMenuActive(true);
 
@@ -203,7 +204,7 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     const openSubMenu = (element?: HTMLDivElement | null) => {
       setActiveSubTrigger(element ?? activeElement);
       setIsMenuActive(false);
-      shouldActivateFirstSubItem.current = true;
+      shouldActivateFirstSubItemRef.current = true;
     };
 
     useEventListener(
@@ -225,40 +226,26 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         target: document,
         eventType: "keydown",
         handler: useEventCallback<KeyboardEvent>(event => {
-          const select = [SystemKeys.ENTER, SystemKeys.SPACE].includes(
+          const shouldAllowKeyboardNavigation =
+            shouldActivateKeyboardNavigation ?? true;
+
+          if (!shouldAllowKeyboardNavigation) return;
+
+          const goPrevCase = SystemKeys.UP === event.key;
+          const goNextCase = SystemKeys.DOWN === event.key;
+
+          const selectCase = [SystemKeys.ENTER, SystemKeys.SPACE].includes(
             event.key,
           );
 
-          if (event.key === query.current) isQueryingAllowed.current = true;
-          if (select && activeElement) {
-            activeElement.click();
-
-            if (activeElement.hasAttribute("aria-haspopup")) {
-              openSubMenu(activeElement);
-            }
-          }
-        }),
-      },
-      open && isMenuActive,
-    );
-
-    useEventListener(
-      {
-        target: document,
-        eventType: "keydown",
-        handler: useEventCallback<KeyboardEvent>(event => {
-          if (!shouldAllowKeyboardNavigation()) return;
-
-          const goPrev = SystemKeys.UP === event.key;
-          const goNext = SystemKeys.DOWN === event.key;
-
-          const openSub =
+          const openSubCase =
             (dir === "rtl" ? SystemKeys.LEFT : SystemKeys.RIGHT) === event.key;
 
-          const closeSub =
+          const closeSubCase =
             (dir === "rtl" ? SystemKeys.RIGHT : SystemKeys.LEFT) === event.key;
 
-          const doSearch = !goPrev && !goNext && !openSub && !closeSub;
+          const searchCase =
+            !goPrevCase && !goNextCase && !openSubCase && !closeSubCase;
 
           const getAvailableItem = (
             idx: number,
@@ -266,11 +253,12 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
             prevIdxs: number[] = [],
           ): React.RefObject<HTMLDivElement> | null => {
             const itemRef = itemsRegistry[idx];
+            const item = itemRef?.current;
 
-            if (!itemRef) return null;
+            if (!item) return null;
             if (prevIdxs.includes(idx)) return null;
 
-            if (itemRef.current?.getAttribute("aria-disabled") === "true") {
+            if (item.getAttribute("aria-disabled") === "true") {
               const newIdx =
                 (forward ? idx + 1 : idx - 1 + itemsRegistry.length) %
                 itemsRegistry.length;
@@ -283,7 +271,15 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
           let nextActive: HTMLDivElement | null = activeElement ?? null;
 
-          if (goNext || goPrev) {
+          if (selectCase && activeElement) {
+            activeElement.click();
+
+            if (activeElement.hasAttribute("aria-haspopup")) {
+              openSubMenu(activeElement);
+            }
+          }
+
+          if (goNextCase || goPrevCase) {
             event.preventDefault();
 
             if (menuCtx && menuCtx.isMenuActive) {
@@ -294,11 +290,11 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
               itemRef => itemRef.current === nextActive,
             );
 
-            if (goNext) {
+            if (goNextCase) {
               nextActive =
                 getAvailableItem((currentIdx + 1) % itemsRegistry.length, true)
                   ?.current ?? null;
-            } else if (goPrev) {
+            } else if (goPrevCase) {
               nextActive =
                 getAvailableItem(
                   ((currentIdx === -1 ? 0 : currentIdx) -
@@ -313,49 +309,87 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           nextActive?.scrollIntoView(false);
           setActiveElement(nextActive);
 
-          if (nextActive?.hasAttribute("aria-haspopup") && openSub) {
+          if (nextActive?.hasAttribute("aria-haspopup") && openSubCase) {
             openSubMenu(nextActive);
-          } else if (menuCtx && closeSub) {
+          } else if (menuCtx && closeSubCase) {
             menuCtx.shouldActivateFirstSubItemRef.current = false;
             menuCtx.setActiveElement(menuCtx.activeSubTrigger);
             menuCtx.setIsMenuActive(true);
             menuCtx.setActiveSubTrigger(null);
           }
 
-          if (doSearch && !disabledKeySearch && isQueryingAllowed.current) {
-            const occurrences =
-              query.current === event.key
-                ? queryResults.current
-                : itemsRegistry.reduce((result, item, idx) => {
-                    if (item.current?.getAttribute("aria-disabled") === "true")
-                      return result;
+          if (searchCase && !disabledKeySearch) {
+            const isModifier = [
+              SystemKeys.ALT,
+              SystemKeys.SHIFT,
+              SystemKeys.CONTROL,
+              SystemKeys.META,
+            ].includes(event.key);
 
-                    const text = item.current?.textContent;
+            const cacheCleanup = () => {
+              window.clearTimeout(queryCacheTimeoutRef.current);
+              queryCacheTimeoutRef.current = window.setTimeout(() => {
+                cachedQueryRef.current.clear();
+                cachedQueryRecordsRef.current = [];
+              }, 2000);
+            };
 
-                    if (
-                      text?.toLowerCase().trim()[0] === event.key.toLowerCase()
-                    ) {
-                      const newRecord: [
-                        React.RefObject<HTMLDivElement>,
-                        number,
-                      ] = [item, idx];
+            if (isModifier) {
+              cacheCleanup();
 
-                      return [...result, newRecord];
-                    }
+              return;
+            }
 
+            const queryChar = event.key.toLowerCase();
+            const cachedString = Array.from(cachedQueryRef.current).join("");
+
+            const shouldUseCachedRecords = queryChar === cachedString;
+
+            cachedQueryRef.current.add(queryChar);
+
+            if (cachedQueryRef.current.size > 1) {
+              cacheCleanup();
+
+              return;
+            }
+
+            const queryRecords = shouldUseCachedRecords
+              ? cachedQueryRecordsRef.current
+              : itemsRegistry.reduce((result, itemRef, idx) => {
+                  const item = itemRef.current;
+
+                  if (!item) return result;
+
+                  if (item.getAttribute("aria-disabled") === "true") {
                     return result;
-                  }, [] as Array<[React.RefObject<HTMLDivElement>, number]>);
+                  }
 
-            if (occurrences.length) {
-              const idx = occurrences.findIndex(
-                occ => occ[0].current === nextActive,
+                  const text = item?.textContent;
+                  const queryMatched =
+                    text?.toLowerCase().trim()[0] === queryChar.toLowerCase();
+
+                  if (queryMatched) {
+                    const newRecord: QueryRecord = {
+                      ref: itemRef,
+                      index: idx,
+                    };
+
+                    return [...result, newRecord];
+                  }
+
+                  return result;
+                }, [] as Array<QueryRecord>);
+
+            if (queryRecords.length) {
+              const idx = queryRecords.findIndex(
+                record => record.ref.current === nextActive,
               );
 
               let nextIdx: number | undefined = undefined;
 
               if (idx >= 0) {
-                nextIdx = occurrences[(idx + 1) % occurrences.length]?.[1];
-              } else nextIdx = occurrences[0]?.[1];
+                nextIdx = queryRecords[(idx + 1) % queryRecords.length]?.index;
+              } else nextIdx = queryRecords[0]?.index;
 
               setActiveElement(
                 typeof nextIdx !== "undefined"
@@ -364,16 +398,9 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
               );
             }
 
-            isQueryingAllowed.current = false;
+            cachedQueryRecordsRef.current = queryRecords;
 
-            query.current = event.key;
-            queryResults.current = occurrences;
-
-            window.clearTimeout(queryCacheTimeoutRef.current);
-            queryCacheTimeoutRef.current = window.setTimeout(() => {
-              query.current = undefined;
-              queryResults.current = [];
-            }, 2000);
+            cacheCleanup();
           }
         }),
       },
@@ -389,7 +416,7 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     if (!open) return;
     if (!menuCtx) return;
     if (!menuCtx.shouldActivateFirstSubItemRef.current) return;
-    if (initialFocus.current) return;
+    if (initialFocusRef.current) return;
 
     const items = node.querySelectorAll<HTMLDivElement>("[role*='menuitem']");
 
@@ -418,7 +445,7 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     if (!item) return;
 
     setActiveElement(item);
-    initialFocus.current = true;
+    initialFocusRef.current = true;
   };
 
   const popperComputationMiddleware: PopperProps["computationMiddleware"] = ({
