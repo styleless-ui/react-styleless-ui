@@ -14,6 +14,26 @@ export const makeRegisterItem =
     registry.push(itemRef);
   };
 
+export const getAvailableItem = (
+  items: (HTMLDivElement | null)[],
+  idx: number,
+  forward: boolean,
+  prevIdxs: number[] = [],
+): HTMLDivElement | null => {
+  const item = items[idx];
+
+  if (!item) return null;
+  if (prevIdxs.includes(idx)) return null;
+
+  if (item.getAttribute("aria-disabled") === "true") {
+    const newIdx = (forward ? idx + 1 : idx - 1 + items.length) % items.length;
+
+    return getAvailableItem(items, newIdx, forward, [...prevIdxs, idx]);
+  }
+
+  return item;
+};
+
 export const useSearchQuery = (itemsRegistry: ItemsRegistry) => {
   type QueryRecord = {
     index: number;

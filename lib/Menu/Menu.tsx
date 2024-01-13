@@ -14,7 +14,7 @@ import {
 } from "../utils";
 import { MenuContext, type MenuContextValue } from "./context";
 import { Root as RootSlot } from "./slots";
-import { makeRegisterItem, useSearchQuery } from "./utils";
+import { getAvailableItem, makeRegisterItem, useSearchQuery } from "./utils";
 
 type OwnProps = {
   /**
@@ -253,28 +253,6 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
             return;
           }
 
-          const getAvailableItem = (
-            idx: number,
-            forward: boolean,
-            prevIdxs: number[] = [],
-          ): React.RefObject<HTMLDivElement> | null => {
-            const itemRef = itemsRegistry[idx];
-            const item = itemRef?.current;
-
-            if (!item) return null;
-            if (prevIdxs.includes(idx)) return null;
-
-            if (item.getAttribute("aria-disabled") === "true") {
-              const newIdx =
-                (forward ? idx + 1 : idx - 1 + itemsRegistry.length) %
-                itemsRegistry.length;
-
-              return getAvailableItem(newIdx, forward, [...prevIdxs, idx]);
-            }
-
-            return itemRef;
-          };
-
           let nextActive: HTMLDivElement | null = activeElement ?? null;
 
           if (goNextCase || goPrevCase) {
@@ -288,19 +266,20 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
               itemRef => itemRef.current === nextActive,
             );
 
+            const items = itemsRegistry.map(itemRef => itemRef.current);
+
             if (goNextCase) {
-              nextActive =
-                getAvailableItem((currentIdx + 1) % itemsRegistry.length, true)
-                  ?.current ?? null;
+              const nextIdx = (currentIdx + 1) % itemsRegistry.length;
+
+              nextActive = getAvailableItem(items, nextIdx, true) ?? null;
             } else if (goPrevCase) {
-              nextActive =
-                getAvailableItem(
-                  ((currentIdx === -1 ? 0 : currentIdx) -
-                    1 +
-                    itemsRegistry.length) %
-                    itemsRegistry.length,
-                  false,
-                )?.current ?? null;
+              const nextIdx =
+                ((currentIdx === -1 ? 0 : currentIdx) -
+                  1 +
+                  itemsRegistry.length) %
+                itemsRegistry.length;
+
+              nextActive = getAvailableItem(items, nextIdx, false) ?? null;
             }
           }
 
@@ -331,29 +310,11 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     if (!menuCtx.shouldActivateFirstSubItemRef.current) return;
     if (initialFocusRef.current) return;
 
-    const items = node.querySelectorAll<HTMLDivElement>("[role*='menuitem']");
+    const items = Array.from(
+      node.querySelectorAll<HTMLDivElement>("[role*='menuitem']"),
+    );
 
-    const getAvailableItem = (
-      idx: number,
-      forward: boolean,
-      prevIdxs: number[] = [],
-    ): HTMLDivElement | null => {
-      const item = items[idx];
-
-      if (!item) return null;
-      if (prevIdxs.includes(idx)) return null;
-
-      if (item.getAttribute("aria-disabled") === "true") {
-        const newIdx =
-          (forward ? idx + 1 : idx - 1 + items.length) % items.length;
-
-        return getAvailableItem(newIdx, forward, [...prevIdxs, idx]);
-      }
-
-      return item;
-    };
-
-    const item = getAvailableItem(0, true);
+    const item = getAvailableItem(items, 0, true);
 
     if (!item) return;
 
