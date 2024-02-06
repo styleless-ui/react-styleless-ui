@@ -47,6 +47,14 @@ export {
 } from "./PreserveAspectRatio";
 export { default as Radio, type RadioProps } from "./Radio";
 export { default as RadioGroup, type RadioGroupProps } from "./RadioGroup";
+export * as Select from "./Select";
+export type {
+  GroupProps as SelectGroupProps,
+  ListProps as SelectListProps,
+  OptionProps as SelectOptionProps,
+  RootProps as SelectRootProps,
+  TriggerProps as SelectTriggerProps,
+} from "./Select";
 export { default as Switch, type SwitchProps } from "./Switch";
 export * as TabGroup from "./TabGroup";
 export type {
