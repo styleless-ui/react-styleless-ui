@@ -49,6 +49,7 @@ export { default as Radio, type RadioProps } from "./Radio";
 export { default as RadioGroup, type RadioGroupProps } from "./RadioGroup";
 export * as Select from "./Select";
 export type {
+  EmptyStatementProps as SelectEmptyStatementProps,
   GroupProps as SelectGroupProps,
   ListProps as SelectListProps,
   OptionProps as SelectOptionProps,
