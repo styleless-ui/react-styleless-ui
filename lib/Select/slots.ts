@@ -8,3 +8,4 @@ export const GroupRoot = "Select:Group:Root";
 export const GroupLabel = "Select:Group:Label";
 export const ListRoot = "Select:List:Root";
 export const OptionRoot = "Select:Option:Root";
+export const EmptyStatementRoot = "Select:EmptyStatement:Root";

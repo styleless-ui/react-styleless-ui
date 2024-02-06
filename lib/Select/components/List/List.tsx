@@ -8,6 +8,7 @@ import {
 } from "../../../utils";
 import { SelectContext } from "../../context";
 import { ListRoot as ListRootSlot } from "../../slots";
+import EmptyStatement from "../EmptyStatement";
 import Group from "../Group";
 import Option from "../Option";
 import { calcSidePlacement } from "./utils";
@@ -116,11 +117,12 @@ const ListBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
     if (
       (child as React.ReactElement).type !== Option &&
-      (child as React.ReactElement).type !== Group
+      (child as React.ReactElement).type !== Group &&
+      (child as React.ReactElement).type !== EmptyStatement
     ) {
       logger(
         "The `<Select.List>` component only accepts " +
-          "`<Select.Option>` and `<Select.Group>` as children.",
+          "`<Select.Option>`, `<Select.Group>`, and `<Select.EmptyStatement>` as children.",
         { scope: "Select.List", type: "error" },
       );
 
@@ -131,7 +133,7 @@ const ListBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   });
 
   const renderCtx: ClassNameProps = {
-    open: ctx?.isListOpen ?? false,
+    open: ctx.isListOpen ?? false,
   };
 
   const className =
@@ -141,7 +143,7 @@ const ListBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const dataAttrs = {
     "data-slot": ListRootSlot,
-    "data-open": ctx?.isListOpen,
+    "data-open": ctx.isListOpen,
   };
 
   return (
@@ -154,6 +156,7 @@ const ListBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       ref={refCallback}
       tabIndex={-1}
       role="listbox"
+      aria-multiselectable={ctx.multiple}
       className={className}
       {...dataAttrs}
     >
