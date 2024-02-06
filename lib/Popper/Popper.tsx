@@ -29,7 +29,7 @@ export type ElementRects = { anchorRect: Rect; popperRect: Rect };
 export type VirtualElement = { getBoundingClientRect(): ClientRect };
 export type Elements = {
   anchorElement: HTMLElement | VirtualElement;
-  popperElement: HTMLDivElement;
+  popperElement: HTMLElement;
 };
 
 export type OffsetMiddleware =
@@ -212,8 +212,9 @@ const PopperBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       [
         "Invalid `anchorElement` property.",
         "The `anchorElement` property must be either a `id (string)`, " +
-          "`HTMLElement`, `RefObject<HTMLElement>`, or in shape of " +
-          "`{ getBoundingClientRect(): ClientRect }`",
+          "`HTMLElement`, " +
+          "`RefObject<HTMLElement>`, or in shape of " +
+          "`VirtualElement { getBoundingClientRect(): ClientRect }`",
       ].join("\n"),
       "Popper",
     );
@@ -269,8 +270,9 @@ const PopperBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     const anchor = getAnchor(anchorElement);
 
     if (!anchor) return;
-    if (id && anchor instanceof HTMLElement)
+    if (id && anchor instanceof HTMLElement) {
       anchor.setAttribute("aria-describedby", id);
+    }
   });
 
   const renderCtx = { placement, openState: open };

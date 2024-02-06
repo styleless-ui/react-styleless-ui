@@ -87,4 +87,15 @@ export type RequireOnlyOne<T, Keys extends keyof T = keyof T> = Pick<
       Partial<Record<Diff<Keys, K>, undefined>>;
   }[Keys];
 
-export type Classes<StringUnion> = Partial<Record<StringUnion, string>>;
+export type Classes<StringUnion extends string> = Partial<
+  Record<StringUnion, string>
+>;
+
+export type PropWithRenderContext<Prop, RenderContext> =
+  | Prop
+  | ((ctx: RenderContext) => Prop);
+
+export type ClassesWithRenderContext<
+  StringUnion extends string,
+  RenderContext extends AnyObject,
+> = PropWithRenderContext<Classes<StringUnion>, RenderContext>;

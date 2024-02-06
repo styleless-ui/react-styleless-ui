@@ -272,10 +272,11 @@ const getOffsetParentRectRelativeToViewport = (args: {
     if (
       getNodeName(offsetParent) !== "body" ||
       isOverflowElement(documentElement)
-    )
+    ) {
       scroll = getScrollProps(offsetParent);
+    }
 
-    if (isHTMLElement(offsetParent)) {
+    if (isOffsetParentAHTMLElement) {
       const offsetRect = getBoundingClientRect(offsetParent, true);
 
       offset.x = offsetRect.x + offsetParent.clientLeft;
@@ -361,7 +362,7 @@ const getRectRelativeToOffsetParent = (
   };
 };
 
-const getElementRects = (
+export const getElementRects = (
   elements: Elements,
   strategy: Strategy,
 ): ElementRects => ({
@@ -388,7 +389,7 @@ const getElementRects = (
  *
  * @see https://floating-ui.com/docs/detectOverflow
  */
-const detectBoundaryOverflow = (args: {
+export const detectBoundaryOverflow = (args: {
   coordinates: Coordinates;
   elements: Elements;
   elementRects: ElementRects;
@@ -538,7 +539,7 @@ const calcCoordinatesFromPlacement = (args: {
   return { x, y };
 };
 
-const suppressViewportOverflow = (
+export const suppressViewportOverflow = (
   excludeSides: Side[],
   args: {
     placement: Placement;
@@ -647,7 +648,7 @@ const suppressViewportOverflow = (
  */
 export const computePosition = (
   anchorElement: HTMLElement | VirtualElement,
-  popperElement: HTMLDivElement,
+  popperElement: HTMLElement,
   config: ComputationConfig,
 ): ComputationResult => {
   const {
@@ -762,11 +763,16 @@ export const translate = ({ x, y }: Coordinates) => {
   };
 };
 
-export const getAnchor = (anchorElement: Props["anchorElement"]) =>
-  typeof anchorElement === "string"
-    ? typeof document !== "undefined"
-      ? document.getElementById(anchorElement)
-      : null
-    : "current" in anchorElement
-    ? anchorElement.current
-    : anchorElement;
+export const getAnchor = (anchorElement: Props["anchorElement"]) => {
+  const isServer = typeof document !== "undefined";
+
+  if (typeof anchorElement === "string") {
+    if (isServer) return null;
+
+    return document.getElementById(anchorElement);
+  }
+
+  if ("current" in anchorElement) return anchorElement.current;
+
+  return anchorElement;
+};

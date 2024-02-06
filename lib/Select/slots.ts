@@ -1,0 +1,10 @@
+export const Root = "Select:Root";
+export const Label = "Select:Label";
+export const TriggerRoot = "Trigger:Root";
+export const TriggerPlaceholder = "Trigger:Placeholder";
+export const TriggerInputSearch = "Trigger:InputSearch";
+export const TriggerValues = "Trigger:Values";
+export const GroupRoot = "Group:Root";
+export const GroupLabel = "Group:Label";
+export const ListRoot = "List:Root";
+export const OptionRoot = "Option:Root";

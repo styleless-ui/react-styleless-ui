@@ -84,4 +84,6 @@ export const isFocusable = (node: Node): boolean => {
   }
 };
 
+export const isPrintableKey = (key: string) => key.length === 1;
+
 export { isFragment } from "react-is";
