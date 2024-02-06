@@ -1,8 +1,9 @@
-export * from "./FocusRedirect";
+export type * from "./FocusRedirect";
 export { default as FocusRedirect } from "./FocusRedirect";
-export * from "./FocusTrap";
+export type * from "./FocusTrap";
 export { default as FocusTrap } from "./FocusTrap";
 export { default as SystemError } from "./SystemError";
+export * from "./get-label-info";
 export { default as getLabelInfo } from "./get-label-info";
 export * from "./keys";
 export { default as logger } from "./logger";

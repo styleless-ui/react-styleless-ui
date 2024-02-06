@@ -22,11 +22,17 @@ type Options = {
   customErrorMessage: string;
 };
 
+export type LabelInfo = {
+  visibleLabel?: string;
+  srOnlyLabel?: string;
+  labelledBy?: string;
+};
+
 const getLabelInfo = (
   labelInput: Label,
   scope: string,
   options?: Partial<Options>,
-) => {
+): LabelInfo => {
   const { customErrorMessage } = options ?? {};
 
   const props: {
