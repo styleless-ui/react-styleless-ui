@@ -37,7 +37,7 @@ const SeparatorItemBase = (props: Props, ref: React.Ref<HTMLLIElement>) => {
 
 const SeparatorItem = componentWithForwardedRef(
   SeparatorItemBase,
-  "BreadcrumbSeparatorItem",
+  "Breadcrumb.SeparatorItem",
 );
 
 export default SeparatorItem;

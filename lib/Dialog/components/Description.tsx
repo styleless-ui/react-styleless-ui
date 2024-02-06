@@ -75,7 +75,7 @@ const DescriptionBase = <E extends React.ElementType, R extends HTMLElement>(
 
 const Description = componentWithForwardedRef(
   DescriptionBase,
-  "DialogDescription",
+  "Dialog.Description",
 );
 
 export default Description;

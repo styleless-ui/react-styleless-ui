@@ -45,6 +45,6 @@ const ContentBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const Content = componentWithForwardedRef(ContentBase, "DialogContent");
+const Content = componentWithForwardedRef(ContentBase, "Dialog.Content");
 
 export default Content;

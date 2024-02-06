@@ -61,7 +61,15 @@ const ListBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     };
   }, [ctx?.elementsRegistry, id]);
 
-  if (!ctx) return null;
+  if (!ctx) {
+    logger("You have to use this component as a descendant of <Select.Root>.", {
+      scope: "Select.List",
+      type: "error",
+    });
+
+    return null;
+  }
+
   if (!ctx.keepMounted && !ctx.isListOpen) return null;
 
   const makeStyle = () => {
@@ -154,6 +162,6 @@ const ListBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const List = componentWithForwardedRef(ListBase, "SelectList");
+const List = componentWithForwardedRef(ListBase, "Select.List");
 
 export default List;

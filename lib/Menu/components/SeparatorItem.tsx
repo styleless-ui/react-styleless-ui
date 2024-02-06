@@ -31,7 +31,7 @@ const SeparatorItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
 const SeparatorItem = componentWithForwardedRef(
   SeparatorItemBase,
-  "MenuSeparatorItem",
+  "Menu.SeparatorItem",
 );
 
 export default SeparatorItem;

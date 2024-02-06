@@ -1,3 +1,3 @@
 export const Root = "Expandable:Root";
-export const TriggerRoot = "ExpandableTrigger:Root";
-export const ContentRoot = "ExpandableContent:Root";
+export const TriggerRoot = "Expandable:Trigger:Root";
+export const ContentRoot = "Expandable:Content:Root";

@@ -166,6 +166,6 @@ const CheckItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const CheckItem = componentWithForwardedRef(CheckItemBase, "MenuCheckItem");
+const CheckItem = componentWithForwardedRef(CheckItemBase, "Menu.CheckItem");
 
 export default CheckItem;

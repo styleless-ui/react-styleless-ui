@@ -1,4 +1,5 @@
 import * as React from "react";
+import { logger } from "../../internals";
 import type { MergeElementProps, PropWithRenderContext } from "../../types";
 import {
   componentWithForwardedRef,
@@ -65,16 +66,12 @@ const OptionBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     labelsMap.set(value, valueLabel);
   }, [ctx?.valueLabelsMapRef, value, valueLabel]);
 
-  const maintainFocus = () => {
-    const comboboxId = ctx?.elementsRegistry.getElementId("combobox");
-    const comboboxNode = document.getElementById(comboboxId ?? "");
-
-    comboboxNode?.focus();
-  };
-
   const handleClick = useEventCallback<React.MouseEvent<HTMLDivElement>>(
     event => {
-      maintainFocus();
+      const comboboxId = ctx?.elementsRegistry.getElementId("combobox");
+      const comboboxNode = document.getElementById(comboboxId ?? "");
+
+      comboboxNode?.focus();
       ctx?.handleOptionClick(value);
       onClick?.(event);
     },
@@ -97,6 +94,15 @@ const OptionBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       onMouseLeave?.(event);
     },
   );
+
+  if (!ctx) {
+    logger("You have to use this component as a descendant of <Select.Root>.", {
+      scope: "Select.Option",
+      type: "error",
+    });
+
+    return null;
+  }
 
   const values = normalizeValues(ctx?.selectedValues);
 
@@ -164,6 +170,6 @@ const OptionBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const Option = componentWithForwardedRef(OptionBase, "SelectOption");
+const Option = componentWithForwardedRef(OptionBase, "Select.Option");
 
 export default Option;

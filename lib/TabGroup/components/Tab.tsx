@@ -209,6 +209,6 @@ const TabBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   );
 };
 
-const Tab = componentWithForwardedRef(TabBase, "Tab");
+const Tab = componentWithForwardedRef(TabBase, "TabGroup.Tab");
 
 export default Tab;

@@ -65,6 +65,6 @@ const PanelBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   ) : null;
 };
 
-const Panel = componentWithForwardedRef(PanelBase, "TabPanel");
+const Panel = componentWithForwardedRef(PanelBase, "TabGroup.Panel");
 
 export default Panel;

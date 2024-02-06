@@ -52,6 +52,6 @@ const ContentBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const Content = componentWithForwardedRef(ContentBase, "ToastContent");
+const Content = componentWithForwardedRef(ContentBase, "Toast.Content");
 
 export default Content;

@@ -190,6 +190,6 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const Item = componentWithForwardedRef(ItemBase, "MenuItem");
+const Item = componentWithForwardedRef(ItemBase, "Menu.Item");
 
 export default Item;
