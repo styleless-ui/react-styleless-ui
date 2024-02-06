@@ -1,5 +1,5 @@
 import * as React from "react";
-import type { MergeElementProps } from "../typings";
+import type { MergeElementProps } from "../types";
 import { componentWithForwardedRef, useControlledProp } from "../utils";
 import { ExpandableContext } from "./context";
 import { Root as RootSlot } from "./slots";

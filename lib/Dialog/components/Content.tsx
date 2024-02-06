@@ -1,6 +1,6 @@
 import * as React from "react";
 import FocusTrap from "../../internals/FocusTrap";
-import type { MergeElementProps } from "../../typings";
+import type { MergeElementProps } from "../../types";
 import { componentWithForwardedRef, useDeterministicId } from "../../utils";
 import { DialogContext } from "../context";
 import { ContentRoot as ContentRootSlot } from "../slots";

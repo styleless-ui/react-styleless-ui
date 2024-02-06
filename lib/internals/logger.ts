@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import type { AnyFunction } from "../typings";
+import type { AnyFunction } from "../types";
 import prefixMessage from "./prefix-message";
 
 type Type = "error" | "warn" | "default";

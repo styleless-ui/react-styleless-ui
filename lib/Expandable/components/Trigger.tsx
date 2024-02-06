@@ -1,6 +1,6 @@
 import * as React from "react";
 import Button, { type ButtonProps } from "../../Button";
-import type { PolymorphicProps } from "../../typings";
+import type { PolymorphicProps } from "../../types";
 import {
   componentWithForwardedRef,
   setRef,

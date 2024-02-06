@@ -1,9 +1,6 @@
 import * as React from "react";
 import { logger } from "../../../internals";
-import type {
-  MergeElementProps,
-  PropWithRenderContext,
-} from "../../../typings";
+import type { MergeElementProps, PropWithRenderContext } from "../../../types";
 import {
   componentWithForwardedRef,
   setRef,

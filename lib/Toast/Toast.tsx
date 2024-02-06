@@ -1,6 +1,6 @@
 import * as React from "react";
 import Portal from "../Portal";
-import type { MergeElementProps } from "../typings";
+import type { MergeElementProps } from "../types";
 import {
   componentWithForwardedRef,
   useDeterministicId,

@@ -5,7 +5,7 @@ import {
   disableUserSelectCSSProperties,
   getLabelInfo,
 } from "../internals";
-import type { Classes, MergeElementProps } from "../typings";
+import type { Classes, MergeElementProps } from "../types";
 import {
   clamp,
   componentWithForwardedRef,
