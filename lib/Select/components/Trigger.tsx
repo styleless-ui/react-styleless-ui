@@ -1,9 +1,6 @@
 import * as React from "react";
 import { disableUserSelectCSSProperties, logger } from "../../internals";
-import type {
-  ClassesWithRenderContext,
-  MergeElementProps,
-} from "../../typings";
+import type { ClassesWithRenderContext, MergeElementProps } from "../../types";
 import {
   componentWithForwardedRef,
   useComboboxBase,

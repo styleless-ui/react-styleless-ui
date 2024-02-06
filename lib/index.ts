@@ -73,4 +73,4 @@ export type {
 export { default as Toggle, type ToggleProps } from "./Toggle";
 export { default as ToggleGroup, type ToggleGroupProps } from "./ToggleGroup";
 export { default as Tooltip, type TooltipProps } from "./Tooltip";
-export type { MergeElementProps, PolymorphicProps } from "./typings.d";
+export type { MergeElementProps, PolymorphicProps } from "./types";

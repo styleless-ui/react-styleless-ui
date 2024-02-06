@@ -1,5 +1,5 @@
 import * as React from "react";
-import type { MergeElementProps } from "../../typings";
+import type { MergeElementProps } from "../../types";
 import { componentWithForwardedRef } from "../../utils";
 import { PanelsRoot as PanelsRootSlot } from "../slots";
 import Panel from "./Panel";

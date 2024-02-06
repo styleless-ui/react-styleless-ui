@@ -1,6 +1,6 @@
 import * as React from "react";
 import { FocusRedirect } from "../../internals";
-import type { MergeElementProps } from "../../typings";
+import type { MergeElementProps } from "../../types";
 import { componentWithForwardedRef, useDeterministicId } from "../../utils";
 import { ToastContext } from "../context";
 import { ContentRoot as ContentRootSlot } from "../slots";

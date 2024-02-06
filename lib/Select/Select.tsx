@@ -4,7 +4,7 @@ import type {
   ClassesWithRenderContext,
   MergeElementProps,
   PropWithRenderContext,
-} from "../typings";
+} from "../types";
 import {
   componentWithForwardedRef,
   contains,

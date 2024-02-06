@@ -5,7 +5,7 @@ import Popper, {
   type VirtualElement,
 } from "../Popper";
 import { SystemError, SystemKeys } from "../internals";
-import type { MergeElementProps } from "../typings";
+import type { MergeElementProps } from "../types";
 import {
   componentWithForwardedRef,
   contains,

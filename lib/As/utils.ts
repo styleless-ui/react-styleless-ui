@@ -1,4 +1,4 @@
-import type { AnyObject } from "../typings";
+import type { AnyObject } from "../types";
 
 export const mergeProps = (slotProps: AnyObject, childProps: AnyObject) => {
   const overrideProps = Object.keys(childProps).reduce(

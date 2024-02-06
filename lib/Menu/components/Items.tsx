@@ -1,6 +1,6 @@
 import * as React from "react";
 import { getLabelInfo } from "../../internals";
-import type { MergeElementProps } from "../../typings";
+import type { MergeElementProps } from "../../types";
 import { componentWithForwardedRef } from "../../utils";
 import { MenuContext } from "../context";
 import { ItemsRoot as ItemsRootSlot } from "../slots";

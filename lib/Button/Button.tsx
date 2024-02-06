@@ -1,6 +1,6 @@
 import * as React from "react";
 import { logger } from "../internals";
-import type { PolymorphicProps } from "../typings";
+import type { PolymorphicProps } from "../types";
 import {
   componentWithForwardedRef,
   computeAccessibleName,

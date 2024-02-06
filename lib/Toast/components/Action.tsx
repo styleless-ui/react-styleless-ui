@@ -1,6 +1,6 @@
 import * as React from "react";
 import Button from "../../Button";
-import type { MergeElementProps } from "../../typings";
+import type { MergeElementProps } from "../../types";
 import { componentWithForwardedRef, useDeterministicId } from "../../utils";
 import { ActionRoot as ActionRootSlot } from "../slots";
 
