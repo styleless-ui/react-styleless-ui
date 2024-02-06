@@ -65,6 +65,6 @@ const ActionBase = <
   );
 };
 
-const Action = componentWithForwardedRef(ActionBase, "ToastAction");
+const Action = componentWithForwardedRef(ActionBase, "Toast.Action");
 
 export default Action;

@@ -48,6 +48,6 @@ const PanelsBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const Panels = componentWithForwardedRef(PanelsBase, "TabPanels");
+const Panels = componentWithForwardedRef(PanelsBase, "TabGroup.Panels");
 
 export default Panels;

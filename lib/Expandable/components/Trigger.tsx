@@ -77,6 +77,6 @@ const TriggerBase = <E extends React.ElementType, R extends HTMLElement>(
   );
 };
 
-const Trigger = componentWithForwardedRef(TriggerBase, "ExpandableTrigger");
+const Trigger = componentWithForwardedRef(TriggerBase, "Expandable.Trigger");
 
 export default Trigger;

@@ -73,6 +73,6 @@ const ContentBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const Content = componentWithForwardedRef(ContentBase, "ExpandableContent");
+const Content = componentWithForwardedRef(ContentBase, "Expandable.Content");
 
 export default Content;

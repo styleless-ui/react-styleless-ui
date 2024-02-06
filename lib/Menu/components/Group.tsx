@@ -81,6 +81,6 @@ const GroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const Group = componentWithForwardedRef(GroupBase, "MenuGroup");
+const Group = componentWithForwardedRef(GroupBase, "Menu.Group");
 
 export default Group;

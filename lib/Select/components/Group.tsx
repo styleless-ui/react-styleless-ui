@@ -58,6 +58,15 @@ const GroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const ctx = React.useContext(SelectContext);
 
+  if (!ctx) {
+    logger("You have to use this component as a descendant of <Select.Root>.", {
+      scope: "Select.Group",
+      type: "error",
+    });
+
+    return null;
+  }
+
   const children = React.Children.map(childrenProp, child => {
     if (!React.isValidElement(child)) {
       logger(
@@ -83,7 +92,7 @@ const GroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   if (React.Children.count(children) === 0) return null;
 
   let isHidden = false;
-  const filteredEntities = ctx?.filteredEntities;
+  const filteredEntities = ctx.filteredEntities;
 
   if (filteredEntities != null) {
     if (filteredEntities.length === 0) isHidden = true;
@@ -140,6 +149,6 @@ const GroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const Group = componentWithForwardedRef(GroupBase, "SelectGroup");
+const Group = componentWithForwardedRef(GroupBase, "Select.Group");
 
 export default Group;

@@ -73,6 +73,6 @@ const TitleBase = <E extends React.ElementType, R extends HTMLElement>(
   );
 };
 
-const Title = componentWithForwardedRef(TitleBase, "DialogTitle");
+const Title = componentWithForwardedRef(TitleBase, "Dialog.Title");
 
 export default Title;

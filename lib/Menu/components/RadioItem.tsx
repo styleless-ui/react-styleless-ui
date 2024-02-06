@@ -162,6 +162,6 @@ const RadioItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const RadioItem = componentWithForwardedRef(RadioItemBase, "MenuRadioItem");
+const RadioItem = componentWithForwardedRef(RadioItemBase, "Menu.RadioItem");
 
 export default RadioItem;

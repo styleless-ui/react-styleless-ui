@@ -34,6 +34,6 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLLIElement>) => {
   );
 };
 
-const Item = componentWithForwardedRef(ItemBase, "BreadcrumbItem");
+const Item = componentWithForwardedRef(ItemBase, "Breadcrumb.Item");
 
 export default Item;

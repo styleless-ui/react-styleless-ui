@@ -118,6 +118,6 @@ const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const RadioGroup = componentWithForwardedRef(RadioGroupBase, "MenuRadioGroup");
+const RadioGroup = componentWithForwardedRef(RadioGroupBase, "Menu.RadioGroup");
 
 export default RadioGroup;

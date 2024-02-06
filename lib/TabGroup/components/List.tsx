@@ -106,6 +106,6 @@ const ListBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const List = componentWithForwardedRef(ListBase, "TabList");
+const List = componentWithForwardedRef(ListBase, "TabGroup.List");
 
 export default List;

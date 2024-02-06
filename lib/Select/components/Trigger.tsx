@@ -76,8 +76,6 @@ const TriggerBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const listOpenState = ctx?.isListOpen ?? false;
 
-  const hasSelectedValue = ctx?.isAnyOptionSelected;
-
   const getListItems = () => {
     const listNode = document.getElementById(listId ?? "");
 
@@ -194,13 +192,15 @@ const TriggerBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   );
 
   if (!ctx) {
-    logger("You have to use this component in a sub-tree of <Select.Root>.", {
+    logger("You have to use this component as a descendant of <Select.Root>.", {
       scope: "Select.Trigger",
       type: "error",
     });
 
     return null;
   }
+
+  const hasSelectedValue = ctx.isAnyOptionSelected;
 
   const placeholder =
     placeholderProp ?? (ctx.multiple ? "Select options" : "Select an option");
@@ -346,6 +346,6 @@ const TriggerBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const Trigger = componentWithForwardedRef(TriggerBase, "SelectTrigger");
+const Trigger = componentWithForwardedRef(TriggerBase, "Select.Trigger");
 
 export default Trigger;

@@ -69,6 +69,6 @@ const ItemsBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const Items = componentWithForwardedRef(ItemsBase, "MenuItems");
+const Items = componentWithForwardedRef(ItemsBase, "Menu.Items");
 
 export default Items;
