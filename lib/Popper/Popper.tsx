@@ -1,6 +1,5 @@
 import * as React from "react";
 import Portal from "../Portal";
-import { SystemError } from "../internals";
 import type { MergeElementProps, RequireOnlyOne } from "../types";
 import {
   componentWithForwardedRef,
@@ -8,11 +7,12 @@ import {
   useDirection,
   useForkedRefs,
   useIsomorphicLayoutEffect,
+  useIsomorphicValue,
   useRegisterNodeRef,
   type ClientRect,
 } from "../utils";
 import * as Slots from "./slots";
-import { computePosition, getAnchor, translate } from "./utils";
+import { computePosition, translate } from "./utils";
 
 export type Alignment = "start" | "end";
 export type Side = "top" | "right" | "bottom" | "left";
@@ -162,14 +162,16 @@ type OwnProps = {
     recompute: () => void;
   }>;
   /**
-   * Works as an anchor for the popper.\
-   * This enables things like positioning context menus or following the cursor.
+   * A function that will resolve the anchor element for the popper.
+   *
+   * It has to return `HTMLElement`, or a `VirtualElement`, or `null`.
+   * A VirtualElement is an object that implements `getBoundingClientRect(): ClientRect`.
+   *
+   * If nothing is resolved, the popper won't show up.
+   *
+   * Please note that this function is only called on the client-side.
    */
-  anchorElement:
-    | React.RefObject<HTMLElement>
-    | HTMLElement
-    | VirtualElement
-    | string;
+  resolveAnchor: () => HTMLElement | VirtualElement | null;
   /**
    * Used to keep mounting when more control is needed.\
    * Useful when controlling animation with React animation libraries.
@@ -189,14 +191,14 @@ export type Props = Omit<
 
 const PopperBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
-    open,
+    open: openProp,
     actions,
     style: styleProp,
     id: idProp,
     className: classNameProp,
     children: childrenProp,
     computationMiddleware,
-    anchorElement,
+    resolveAnchor,
     offset = 8,
     side = "top",
     keepMounted = false,
@@ -207,18 +209,7 @@ const PopperBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     ...otherProps
   } = props;
 
-  if (!anchorElement) {
-    throw new SystemError(
-      [
-        "Invalid `anchorElement` property.",
-        "The `anchorElement` property must be either a `id (string)`, " +
-          "`HTMLElement`, " +
-          "`RefObject<HTMLElement>`, or in shape of " +
-          "`VirtualElement { getBoundingClientRect(): ClientRect }`",
-      ].join("\n"),
-      "Popper",
-    );
-  }
+  const open = useIsomorphicValue(openProp, false);
 
   const isRtl = useDirection() === "rtl";
   const id = useDeterministicId(idProp, "styleless-ui__popper");
@@ -248,7 +239,7 @@ const PopperBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   };
 
   const updatePosition = () => {
-    const anchor = getAnchor(anchorElement);
+    const anchor = resolveAnchor();
 
     if (anchor && popperRef.current) {
       const position = computePosition(anchor, popperRef.current, config);
@@ -267,9 +258,8 @@ const PopperBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   }));
 
   useIsomorphicLayoutEffect(() => {
-    const anchor = getAnchor(anchorElement);
+    const anchor = resolveAnchor();
 
-    if (!anchor) return;
     if (id && anchor instanceof HTMLElement) {
       anchor.setAttribute("aria-describedby", id);
     }
@@ -312,12 +302,12 @@ const PopperBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       >
         <div
           {...otherProps}
-          tabIndex={-1}
-          data-slot={Slots.Root}
           id={id}
-          className={className}
           ref={registerRef}
           style={style}
+          className={className}
+          tabIndex={-1}
+          data-slot={Slots.Root}
           data-open={open ? "" : undefined}
         >
           {children}

@@ -1,16 +1,15 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { usePortalConfig } from "../PortalConfigProvider";
-import { useIsServerHandoffComplete } from "../utils";
-import { getContainer } from "./utils";
+import { useIsomorphicValue } from "../utils";
 
 export type Props = {
   /**
-   * A string containing one selector to match.
-   * This string must be a valid CSS selector string;
-   * if it isn't, a `SyntaxError` exception is thrown.
+   * A function that will resolve the container element for the portal.
+   *
+   * Please note that this function is only called on the client-side.
    */
-  containerQuerySelector?: string;
+  resolveContainer?: () => HTMLElement | null;
   /**
    * The children to render into the container.
    */
@@ -23,17 +22,14 @@ export type Props = {
 };
 
 const Portal = (props: Props) => {
-  const { containerQuerySelector, children, disabled = false } = props;
+  const { resolveContainer, children, disabled = false } = props;
 
-  const { destinationQuery } = usePortalConfig();
-  const isServerHandoffComplete = useIsServerHandoffComplete();
+  const portalConfig = usePortalConfig();
 
-  const containerQuery = containerQuerySelector || destinationQuery;
+  const containerResolver =
+    resolveContainer ?? portalConfig?.resolveContainer ?? (() => document.body);
 
-  const container: HTMLElement | null = React.useMemo(
-    () => (isServerHandoffComplete ? getContainer(containerQuery) : null),
-    [containerQuery, isServerHandoffComplete],
-  );
+  const container = useIsomorphicValue(containerResolver, null);
 
   if (disabled) return <>{children}</>;
   if (!container) return null;

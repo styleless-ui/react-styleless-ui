@@ -28,7 +28,6 @@ import {
   type MiddlewareResult,
   type OffsetMiddleware,
   type Placement,
-  type Props,
   type Rect,
   type Side,
   type Strategy,
@@ -761,18 +760,4 @@ export const translate = ({ x, y }: Coordinates) => {
     MozTransform: transformValue,
     msTransform: transformValue,
   };
-};
-
-export const getAnchor = (anchorElement: Props["anchorElement"]) => {
-  const isServer = typeof document !== "undefined";
-
-  if (typeof anchorElement === "string") {
-    if (isServer) return null;
-
-    return document.getElementById(anchorElement);
-  }
-
-  if ("current" in anchorElement) return anchorElement.current;
-
-  return anchorElement;
 };

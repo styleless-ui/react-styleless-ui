@@ -26,13 +26,16 @@ type OwnProps = {
    */
   className?: string | ((ctx: { open: boolean }) => string);
   /**
-   * The anchor element for the menu.
+   * A function that will resolve the anchor element for the menu.
+   *
+   * It has to return `HTMLElement`, or a `VirtualElement`, or `null`.
+   * A VirtualElement is an object that implements `getBoundingClientRect(): ClientRect`.
+   *
+   * If nothing is resolved, the menu won't show up.
+   *
+   * Please note that this function is only called on the client-side.
    */
-  anchorElement:
-    | React.RefObject<HTMLElement>
-    | HTMLElement
-    | VirtualElement
-    | string;
+  resolveAnchor: () => HTMLElement | VirtualElement | null;
   /**
    * The menu positioning alignment.
    * @default "start"
@@ -82,7 +85,7 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     className: classNameProp,
     children: childrenProp,
     alignment = "start",
-    anchorElement,
+    resolveAnchor,
     keepMounted: keepMountedProp,
     disabledKeySearch = false,
     open = false,
@@ -362,14 +365,12 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       ? classNameProp({ open })
       : classNameProp;
 
-  if (!anchorElement) return null;
-
   return (
     <Popper
       autoPlacement
       keepMounted={keepMounted}
       open={open}
-      anchorElement={anchorElement}
+      resolveAnchor={resolveAnchor}
       computationMiddlewareOrder="afterAutoPlacement"
       computationMiddleware={popperComputationMiddleware}
       offset={0}
