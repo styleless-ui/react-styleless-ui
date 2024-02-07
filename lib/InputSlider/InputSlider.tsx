@@ -5,7 +5,7 @@ import {
   disableUserSelectCSSProperties,
   getLabelInfo,
 } from "../internals";
-import type { Classes, MergeElementProps } from "../types";
+import type { ClassesWithRenderContext, MergeElementProps } from "../types";
 import {
   clamp,
   componentWithForwardedRef,
@@ -23,22 +23,15 @@ import {
 import * as Slots from "./slots";
 import { getNearestThumb, getRelativeValue } from "./utils";
 
-type InputSliderClassesMap = Classes<
-  | "root"
-  | "track"
-  | "range"
-  | "thumb"
-  | "leadingThumb"
-  | "trailingThumb"
-  | "segments"
-  | "segment"
-  | "segmentMark"
-  | "segmentLabel"
->;
+type ActiveThumb = { index: 0 | 1; element: HTMLDivElement };
+
+type ThumbState = {
+  active: boolean;
+  zIndex: number;
+};
 
 export type Segment = { length: number; label?: string | React.ReactNode };
 
-type ActiveThumb = { index: 0 | 1; element: HTMLDivElement };
 export type ThumbInfo = {
   value: number;
   minValue: number;
@@ -48,9 +41,23 @@ export type ThumbInfo = {
   label: { srOnlyLabel?: string; labelledBy?: string };
 };
 
-type ThumbState = {
-  active: boolean;
-  zIndex: number;
+export type ClassNameProps = {
+  /**
+   * The `disabled` state of the component.
+   */
+  disabled: boolean;
+  /**
+   * The orientation of the component.
+   */
+  orientation: "horizontal" | "vertical";
+  /**
+   * The state of the leading thumb component.
+   */
+  leadingThumbState: { active: boolean; focusedVisible: boolean };
+  /**
+   * The state of the trailing thumb component.
+   */
+  trailingThumbState: { active: boolean; focusedVisible: boolean };
 };
 
 type Label =
@@ -73,14 +80,19 @@ type OwnProps = {
   /**
    * Map of sub-components and their correlated classNames.
    */
-  classes?:
-    | InputSliderClassesMap
-    | ((ctx: {
-        disabled: boolean;
-        orientation: "horizontal" | "vertical";
-        leadingThumbState: { active: boolean; focusedVisible: boolean };
-        trailingThumbState: { active: boolean; focusedVisible: boolean };
-      }) => InputSliderClassesMap);
+  classes?: ClassesWithRenderContext<
+    | "root"
+    | "track"
+    | "range"
+    | "thumb"
+    | "leadingThumb"
+    | "trailingThumb"
+    | "segments"
+    | "segment"
+    | "segmentMark"
+    | "segmentLabel",
+    ClassNameProps
+  >;
   /**
    * The label of the slider(s).
    */
@@ -836,20 +848,22 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       }
     : null;
 
+  const classNameProps: ClassNameProps = {
+    disabled,
+    orientation,
+    leadingThumbState: {
+      active: activeThumbRef.current?.index === 0,
+      focusedVisible: isLeftFocusedVisible,
+    },
+    trailingThumbState: {
+      active: activeThumbRef.current?.index === 1,
+      focusedVisible: isRightFocusedVisible,
+    },
+  };
+
   const classes =
     typeof classesProp === "function"
-      ? classesProp({
-          disabled,
-          orientation,
-          leadingThumbState: {
-            active: activeThumbRef.current?.index === 0,
-            focusedVisible: isLeftFocusedVisible,
-          },
-          trailingThumbState: {
-            active: activeThumbRef.current?.index === 1,
-            focusedVisible: isRightFocusedVisible,
-          },
-        })
+      ? classesProp(classNameProps)
       : classesProp;
 
   if (typeof document !== "undefined") {

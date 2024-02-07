@@ -1,6 +1,7 @@
 import * as React from "react";
+import { logger } from "../../internals";
 import type { MergeElementProps } from "../../types";
-import { componentWithForwardedRef } from "../../utils";
+import { componentWithForwardedRef, isFragment } from "../../utils";
 import { PanelsRoot as PanelsRootSlot } from "../slots";
 import Panel from "./Panel";
 
@@ -25,15 +26,28 @@ const PanelsBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   let panelIdx = 0;
   const children = React.Children.map(childrenProp, child => {
-    if (!React.isValidElement(child)) return null;
+    if (!React.isValidElement(child) || isFragment(child)) {
+      logger(
+        "The <TabGroup.Panels> component doesn't accept `Fragment` or any invalid element as children.",
+        { scope: "TabGroup.Panels", type: "error" },
+      );
 
-    if ((child as React.ReactElement).type === Panel) {
-      const props = { "data-index": panelIdx++ };
-
-      return React.cloneElement(child, props);
+      return null;
     }
 
-    return child;
+    if ((child as React.ReactElement).type !== Panel) {
+      logger(
+        "The <TabGroup.Panels> component only accepts " +
+          "<TabGroup.Panel> as children.",
+        { scope: "TabGroup.Panels", type: "error" },
+      );
+
+      return null;
+    }
+
+    const props = { "data-index": panelIdx++ };
+
+    return React.cloneElement(child, props);
   });
 
   return (

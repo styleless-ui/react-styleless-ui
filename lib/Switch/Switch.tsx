@@ -1,6 +1,6 @@
 import * as React from "react";
 import { getLabelInfo } from "../internals";
-import type { Classes, MergeElementProps } from "../types";
+import type { ClassesWithRenderContext, MergeElementProps } from "../types";
 import {
   componentWithForwardedRef,
   useCheckBase,
@@ -10,14 +10,18 @@ import {
 } from "../utils";
 import * as Slots from "./slots";
 
-type SwitchClassesMap = Classes<"root" | "label" | "thumb" | "track">;
-
-type ClassesContext = {
-  /** The `checked` state of the switch. */
+export type ClassNameProps = {
+  /**
+   * The `checked` state of the switch.
+   */
   checked: boolean;
-  /** The `disabled` state of the switch. */
+  /**
+   * The `disabled` state of the switch.
+   */
   disabled: boolean;
-  /** The `:focus-visible` of the switch. */
+  /**
+   * The `:focus-visible` of the switch.
+   */
   focusedVisible: boolean;
 };
 
@@ -25,7 +29,10 @@ type OwnProps = {
   /**
    * Map of sub-components and their correlated classNames.
    */
-  classes?: ((ctx: ClassesContext) => SwitchClassesMap) | SwitchClassesMap;
+  classes?: ClassesWithRenderContext<
+    "root" | "label" | "thumb" | "track",
+    ClassNameProps
+  >;
   /**
    * The label of the switch.
    */
@@ -127,14 +134,14 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const labelProps = getLabelInfo(label, "Switch");
 
-  const classesCtx: ClassesContext = {
+  const classNameProps: ClassNameProps = {
     disabled,
     checked: checkBase.checked,
     focusedVisible: checkBase.isFocusedVisible,
   };
 
   const classes =
-    typeof classesMap === "function" ? classesMap(classesCtx) : classesMap;
+    typeof classesMap === "function" ? classesMap(classNameProps) : classesMap;
 
   const renderLabel = () => {
     if (!labelProps.visibleLabel) return null;
@@ -152,9 +159,9 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const dataAttrs = {
     "data-slot": Slots.Root,
-    "data-disabled": classesCtx.disabled ? "" : undefined,
-    "data-focus-visible": classesCtx.focusedVisible ? "" : undefined,
-    "data-checked": classesCtx.checked ? "" : undefined,
+    "data-disabled": classNameProps.disabled ? "" : undefined,
+    "data-focus-visible": classNameProps.focusedVisible ? "" : undefined,
+    "data-checked": classNameProps.checked ? "" : undefined,
   };
 
   useHandleTargetLabelClick({

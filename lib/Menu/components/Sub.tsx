@@ -1,4 +1,5 @@
 import * as React from "react";
+import { logger } from "../../internals";
 import type { MergeElementProps } from "../../types";
 import {
   componentWithForwardedRef,
@@ -29,7 +30,14 @@ const SubBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const rootRef = React.useRef<HTMLDivElement>(null);
   const handleRootRef = useForkedRefs(ref, rootRef);
 
-  if (!menuItemCtx) return null;
+  if (!menuItemCtx) {
+    logger("You have to use this component as a child of <Menu.Item>.", {
+      scope: "Menu.Sub",
+      type: "error",
+    });
+
+    return null;
+  }
 
   const resolveAnchor = () => document.getElementById(menuItemCtx.id);
 

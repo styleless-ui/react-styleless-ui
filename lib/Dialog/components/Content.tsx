@@ -1,4 +1,5 @@
 import * as React from "react";
+import { logger } from "../../internals";
 import FocusTrap from "../../internals/FocusTrap";
 import type { MergeElementProps } from "../../types";
 import { componentWithForwardedRef, useDeterministicId } from "../../utils";
@@ -24,18 +25,27 @@ export type Props = Omit<
 const ContentBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const { className, children, id: idProp, ...otherProps } = props;
 
-  const dialogCtx = React.useContext(DialogContext);
+  const ctx = React.useContext(DialogContext);
 
   const id = useDeterministicId(idProp, "styleless-ui__dialog-content");
 
+  if (!ctx) {
+    logger("You have to use this component as a descendant of <Dialog.Root>.", {
+      scope: "Dialog.Content",
+      type: "error",
+    });
+
+    return null;
+  }
+
   return (
-    <FocusTrap enabled={dialogCtx?.open}>
+    <FocusTrap enabled={ctx.open}>
       <div
         {...otherProps}
         id={id}
         ref={ref}
         className={className}
-        role={dialogCtx?.role}
+        role={ctx.role}
         data-slot={ContentRootSlot}
         aria-modal="true"
       >

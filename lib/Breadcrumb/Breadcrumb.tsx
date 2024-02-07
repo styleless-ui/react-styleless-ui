@@ -1,7 +1,11 @@
 import * as React from "react";
 import { getLabelInfo, logger } from "../internals";
 import type { Classes, MergeElementProps } from "../types";
-import { componentWithForwardedRef, useDeterministicId } from "../utils";
+import {
+  componentWithForwardedRef,
+  isFragment,
+  useDeterministicId,
+} from "../utils";
 import { Item, SeparatorItem, type ItemProps } from "./components";
 import {
   Label as LabelSlot,
@@ -84,14 +88,21 @@ const BreadcrumbBase = (props: Props, ref: React.Ref<HTMLElement>) => {
   const labelProps = getLabelInfo(label, "Breadcrumb");
 
   const children = React.Children.map(childrenProp, child => {
-    if (!React.isValidElement(child)) return null;
+    if (!React.isValidElement(child) || isFragment(child)) {
+      logger(
+        "The <Breadcrumb.Root> component doesn't accept `Fragment` or any invalid element as children.",
+        { scope: "Breadcrumb", type: "error" },
+      );
+
+      return null;
+    }
 
     if (
       (child as React.ReactElement).type !== Item &&
       (child as React.ReactElement).type !== SeparatorItem
     ) {
       logger(
-        "The Breadcrumb component only accepts <Breadcrumb.Item> and " +
+        "The <Breadcrumb.Root> component only accepts <Breadcrumb.Item> and " +
           "<Breadcrumb.Separator> as a children",
         { scope: "Breadcrumb", type: "error" },
       );

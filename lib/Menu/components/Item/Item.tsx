@@ -1,6 +1,6 @@
 import * as React from "react";
-import { disableUserSelectCSSProperties } from "../../../internals";
-import type { MergeElementProps } from "../../../types";
+import { disableUserSelectCSSProperties, logger } from "../../../internals";
+import type { MergeElementProps, PropWithRenderContext } from "../../../types";
 import {
   componentWithForwardedRef,
   useDeterministicId,
@@ -13,27 +13,34 @@ import useMenuItem from "../../useMenuItem";
 import { MenuItemContext } from "./context";
 import { makeRegisterSubMenu } from "./utils";
 
+export type RenderProps = {
+  /**
+   * The `active` state of the component.
+   * An item is active if it's hovered by a pointer or visually
+   * focused by keyboard interactions.
+   */
+  active: boolean;
+  /**
+   * The `disabled` state of the component.
+   */
+  disabled: boolean;
+  /**
+   * Determines whether it's submenu is open or not.
+   */
+  isSubMenuOpen: boolean;
+};
+
+export type ClassNameProps = RenderProps;
+
 type OwnProps = {
   /**
    * The content of the component.
    */
-  children?:
-    | React.ReactNode
-    | ((ctx: {
-        active: boolean;
-        disabled: boolean;
-        isSubMenuOpen: boolean;
-      }) => React.ReactNode);
+  children?: PropWithRenderContext<React.ReactNode, RenderProps>;
   /**
    * The className applied to the component.
    */
-  className?:
-    | string
-    | ((ctx: {
-        active: boolean;
-        disabled: boolean;
-        isSubMenuOpen: boolean;
-      }) => string);
+  className?: PropWithRenderContext<string, ClassNameProps>;
   /**
    * If `true`, the item will be disabled.
    * @default false
@@ -58,12 +65,12 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     children: childrenProp,
     className: classNameProp,
+    style: styleProp,
     disabled = false,
     onClick,
     onMouseEnter,
     onMouseLeave,
     onSelect,
-    style,
     ...otherProps
   } = props;
 
@@ -74,30 +81,10 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const rootRef = React.useRef<HTMLDivElement>(null);
   const handleRootRef = useForkedRefs(ref, rootRef);
 
-  const isSubMenuOpen = () => {
-    if (rootRef.current == null) return false;
-
-    return menuCtx?.activeSubTrigger === rootRef.current;
-  };
-
   const isActive =
     menuCtx && rootRef.current
       ? menuCtx.activeElement === rootRef.current
       : false;
-
-  const renderCtx = {
-    disabled,
-    active: isActive,
-    isSubMenuOpen: isSubMenuOpen(),
-  };
-
-  const children =
-    typeof childrenProp === "function" ? childrenProp(renderCtx) : childrenProp;
-
-  const className =
-    typeof classNameProp === "function"
-      ? classNameProp(renderCtx)
-      : classNameProp;
 
   const subMenuRegistryRef = React.useRef<{
     ref: React.RefObject<HTMLDivElement>;
@@ -141,11 +128,26 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     }),
   });
 
+  if (!menuCtx) {
+    logger("You have to use this component as a descendant of <Menu.Root>.", {
+      scope: "Menu.Item",
+      type: "error",
+    });
+
+    return null;
+  }
+
+  const isSubMenuOpen = () => {
+    if (rootRef.current == null) return false;
+
+    return menuCtx.activeSubTrigger === rootRef.current;
+  };
+
   const refCallback = (node: HTMLDivElement | null) => {
     handleRootRef(node);
 
     if (!node) return;
-    menuCtx?.registerItem(rootRef);
+    menuCtx.registerItem(rootRef);
 
     if (!subMenuRegistryRef.current) return;
 
@@ -157,6 +159,29 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     subMenuId && node.setAttribute("aria-controls", subMenuId);
   };
 
+  const renderProps: RenderProps = {
+    disabled,
+    active: isActive,
+    isSubMenuOpen: isSubMenuOpen(),
+  };
+
+  const classNameProps: ClassNameProps = renderProps;
+
+  const style: React.CSSProperties = {
+    ...(styleProp ?? {}),
+    ...disableUserSelectCSSProperties,
+  };
+
+  const children =
+    typeof childrenProp === "function"
+      ? childrenProp(renderProps)
+      : childrenProp;
+
+  const className =
+    typeof classNameProp === "function"
+      ? classNameProp(classNameProps)
+      : classNameProp;
+
   return (
     <div
       {...otherProps}
@@ -166,11 +191,7 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       onClick={menuItem.handleClick}
       onMouseEnter={menuItem.handleMouseEnter}
       onMouseLeave={menuItem.handleMouseLeave}
-      style={
-        style
-          ? { ...style, ...disableUserSelectCSSProperties }
-          : disableUserSelectCSSProperties
-      }
+      style={style}
       tabIndex={-1}
       role="menuitem"
       data-slot={ItemRootSlot}

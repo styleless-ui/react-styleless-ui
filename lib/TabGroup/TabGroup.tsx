@@ -1,8 +1,9 @@
 import * as React from "react";
-import { SystemError } from "../internals";
+import { SystemError, logger } from "../internals";
 import type { MergeElementProps } from "../types";
 import {
   componentWithForwardedRef,
+  isFragment,
   useControlledProp,
   useForkedRefs,
   useIsMounted,
@@ -73,9 +74,18 @@ const TabGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     0,
   );
 
-  const children = React.Children.map(childrenProp, child =>
-    React.isValidElement(child) ? child : null,
-  );
+  const children = React.Children.map(childrenProp, child => {
+    if (!React.isValidElement(child) || isFragment(child)) {
+      logger(
+        "The <TabGroup.Root> component doesn't accept `Fragment` or any invalid element as children.",
+        { scope: "TabGroup", type: "error" },
+      );
+
+      return null;
+    }
+
+    return child as React.ReactElement;
+  });
 
   const handleChange = (tabIndex: number) => {
     if (!isMounted()) return;

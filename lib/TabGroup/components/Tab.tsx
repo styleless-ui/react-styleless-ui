@@ -1,6 +1,6 @@
 import * as React from "react";
 import { SystemKeys } from "../../internals";
-import type { MergeElementProps } from "../../types";
+import type { MergeElementProps, PropWithRenderContext } from "../../types";
 import {
   componentWithForwardedRef,
   useButtonBase,
@@ -11,33 +11,32 @@ import {
 import { TabGroupContext } from "../context";
 import { TabRoot as TabRootSlot } from "../slots";
 
+export type RenderProps = {
+  /**
+   * The `selected` state of the tab.
+   */
+  selected: boolean;
+  /**
+   * The `disabled` state of the tab.
+   */
+  disabled: boolean;
+  /**
+   * The `:focus-visible` state of the tab.
+   */
+  focusedVisible: boolean;
+};
+
+export type ClassNameProps = RenderProps;
+
 type OwnProps = {
   /**
    * The content of the component.
    */
-  children?:
-    | React.ReactNode
-    | ((ctx: {
-        /** The `selected` state of the tab. */
-        selected: boolean;
-        /** The `disabled` state of the tab. */
-        disabled: boolean;
-        /** The `:focus-visible` state of the tab. */
-        focusedVisible: boolean;
-      }) => React.ReactNode);
+  children?: PropWithRenderContext<React.ReactNode, RenderProps>;
   /**
    * The className applied to the component.
    */
-  className?:
-    | string
-    | ((ctx: {
-        /** The `selected` state of the tab. */
-        selected: boolean;
-        /** The `disabled` state of the tab. */
-        disabled: boolean;
-        /** The `:focus-visible` state of the tab. */
-        focusedVisible: boolean;
-      }) => string);
+  className?: PropWithRenderContext<string, ClassNameProps>;
   /**
    * If `true`, the tab will be disabled.
    * @default false
@@ -164,17 +163,23 @@ const TabBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const selected = tabGroupCtx ? tabGroupCtx.activeTab === index : false;
 
-  const ctx = {
+  const renderProps: RenderProps = {
     selected,
     disabled,
     focusedVisible: buttonBase.isFocusedVisible,
   };
 
+  const classNameProps: ClassNameProps = renderProps;
+
   const children =
-    typeof childrenProp === "function" ? childrenProp(ctx) : childrenProp;
+    typeof childrenProp === "function"
+      ? childrenProp(renderProps)
+      : childrenProp;
 
   const className =
-    typeof classNameProp === "function" ? classNameProp(ctx) : classNameProp;
+    typeof classNameProp === "function"
+      ? classNameProp(classNameProps)
+      : classNameProp;
 
   const refCallback = (node: HTMLButtonElement | null) => {
     handleRef(node);

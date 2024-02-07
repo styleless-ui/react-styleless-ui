@@ -1,6 +1,10 @@
 import * as React from "react";
 import Portal from "../Portal";
-import type { MergeElementProps, RequireOnlyOne } from "../types";
+import type {
+  MergeElementProps,
+  PropWithRenderContext,
+  VirtualElement,
+} from "../types";
 import {
   componentWithForwardedRef,
   useDeterministicId,
@@ -9,89 +13,44 @@ import {
   useIsomorphicLayoutEffect,
   useIsomorphicValue,
   useRegisterNodeRef,
-  type ClientRect,
 } from "../utils";
 import * as Slots from "./slots";
+import type {
+  Alignment,
+  AutoPlacementMiddleware,
+  ComputationConfig,
+  ComputationMiddleware,
+  ComputationMiddlewareOrder,
+  Coordinates,
+  OffsetMiddleware,
+  Placement,
+  Side,
+  Strategy,
+} from "./types";
 import { computePosition, translate } from "./utils";
 
-export type Alignment = "start" | "end";
-export type Side = "top" | "right" | "bottom" | "left";
-export type AlignedPlacement = `${Side}-${Alignment}`;
-export type Placement = Side | AlignedPlacement;
-
-export type Strategy = "absolute" | "fixed";
-
-export type Coordinates = { x: number; y: number };
-export type Dimensions = { width: number; height: number };
-
-export type Rect = Coordinates & Dimensions;
-export type ElementRects = { anchorRect: Rect; popperRect: Rect };
-export type VirtualElement = { getBoundingClientRect(): ClientRect };
-export type Elements = {
-  anchorElement: HTMLElement | VirtualElement;
-  popperElement: HTMLElement;
+export type RenderProps = {
+  /**
+   * The placement of the component.
+   */
+  placement: Placement;
+  /**
+   * The `open` state of the component.
+   */
+  openState: boolean;
 };
 
-export type OffsetMiddleware =
-  | number
-  | {
-      /**
-       * The axis that runs along the side of the popper element.
-       */
-      mainAxis?: number;
-      /**
-       * The axis that runs along the alignment of the popper element.
-       */
-      crossAxis?: number;
-    };
-
-export type AutoPlacementMiddleware = boolean | { excludeSides: Side[] };
-
-export type MiddlewareResult = RequireOnlyOne<{
-  coordinates: Partial<Coordinates>;
-  placement: Placement;
-}>;
-
-export type ComputationMiddlewareArgs = {
-  elementRects: ElementRects;
-  elements: Elements;
-  coordinates: Coordinates;
-  placement: Placement;
-  strategy: Strategy;
-  overflow: Record<Side, number>;
-};
-export type ComputationMiddlewareResult = MiddlewareResult;
-export type ComputationMiddlewareOrder =
-  | "beforeAutoPlacement"
-  | "afterAutoPlacement";
-export type ComputationMiddleware = (
-  args: ComputationMiddlewareArgs,
-) => ComputationMiddlewareResult;
-
-export type ComputationResult = Coordinates & { placement: Placement };
-export type ComputationConfig = {
-  placement: Placement;
-  strategy: Strategy;
-  isRtl: boolean;
-  autoPlacement: AutoPlacementMiddleware;
-  offset: OffsetMiddleware;
-  computationMiddleware?: ComputationMiddleware;
-  computationMiddlewareOrder: ComputationMiddlewareOrder;
-};
+export type ClassNameProps = RenderProps;
 
 type OwnProps = {
   /**
    * The className applied to the component.
    */
-  className?:
-    | string
-    | ((ctx: { placement: Placement; openState: boolean }) => string);
+  className?: PropWithRenderContext<string, ClassNameProps>;
   /**
    * The content of the component.
    */
-  children?:
-    | React.ReactNode
-    | ((ctx: { placement: Placement; openState: boolean }) => React.ReactNode);
+  children?: PropWithRenderContext<React.ReactNode, RenderProps>;
   /**
    * If `true`, the popper will be open.
    */
@@ -265,14 +224,21 @@ const PopperBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     }
   });
 
-  const renderCtx = { placement, openState: open };
+  const renderProps: RenderProps = {
+    placement,
+    openState: open,
+  };
+
+  const classNameProps: ClassNameProps = renderProps;
 
   const children =
-    typeof childrenProp === "function" ? childrenProp(renderCtx) : childrenProp;
+    typeof childrenProp === "function"
+      ? childrenProp(renderProps)
+      : childrenProp;
 
   const className =
     typeof classNameProp === "function"
-      ? classNameProp(renderCtx)
+      ? classNameProp(classNameProps)
       : classNameProp;
 
   const registerRef = useRegisterNodeRef(node => {

@@ -1,15 +1,5 @@
+import type { ClientRect } from "../types";
 import { isContainingBlock, isHTMLElement, isShadowRoot, isWindow } from "./is";
-
-export type ClientRect = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  left: number;
-  right: number;
-  top: number;
-  bottom: number;
-};
 
 export const getWindow = (node: Node | Window): Window => {
   if (!node) return window;

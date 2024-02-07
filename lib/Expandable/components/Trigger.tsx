@@ -1,6 +1,7 @@
 import * as React from "react";
 import Button, { type ButtonProps } from "../../Button";
-import type { PolymorphicProps } from "../../types";
+import { logger } from "../../internals";
+import type { PolymorphicProps, PropWithRenderContext } from "../../types";
 import {
   componentWithForwardedRef,
   setRef,
@@ -13,22 +14,22 @@ import {
   TriggerRoot as TriggerRootSlot,
 } from "../slots";
 
+export type RenderProps = {
+  disabled: boolean;
+  focusedVisible: boolean;
+};
+
+export type ClassNameProps = RenderProps;
+
 type OwnProps = {
   /**
    * The content of the component.
    */
-  children?:
-    | React.ReactNode
-    | ((ctx: {
-        disabled: boolean;
-        focusedVisible: boolean;
-      }) => React.ReactNode);
+  children?: PropWithRenderContext<React.ReactNode, RenderProps>;
   /**
    * The className applied to the component.
    */
-  className?:
-    | string
-    | ((ctx: { disabled: boolean; focusedVisible: boolean }) => string);
+  className?: PropWithRenderContext<string, ClassNameProps>;
 };
 
 export type Props<E extends React.ElementType> = PolymorphicProps<E, OwnProps>;
@@ -39,12 +40,24 @@ const TriggerBase = <E extends React.ElementType, R extends HTMLElement>(
 ) => {
   const { id: idProp, onClick, ...otherProps } = props;
 
-  const expandableCtx = React.useContext(ExpandableContext);
+  const ctx = React.useContext(ExpandableContext);
 
   const id = useDeterministicId(idProp, "styleless-ui__expandable-trigger");
 
+  if (!ctx) {
+    logger(
+      "You have to use this component as a descendant of <Expandable.Root>.",
+      {
+        scope: "Expandable.Trigger",
+        type: "error",
+      },
+    );
+
+    return null;
+  }
+
   const handleClick = (event: React.MouseEvent<R>) => {
-    expandableCtx?.handleExpandChange(!expandableCtx.isExpanded);
+    ctx.handleExpandChange(!ctx.isExpanded);
     (onClick as React.MouseEventHandler<R>)?.(event);
   };
 
@@ -72,7 +85,7 @@ const TriggerBase = <E extends React.ElementType, R extends HTMLElement>(
       onClick={handleClick}
       ref={refCallback}
       data-slot={TriggerRootSlot}
-      aria-expanded={expandableCtx?.isExpanded}
+      aria-expanded={ctx.isExpanded}
     />
   );
 };

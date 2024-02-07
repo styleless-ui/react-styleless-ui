@@ -1,4 +1,5 @@
 // This file is cherry-picked from https://floating-ui.com/
+import type { ClientRect, VirtualElement } from "../types";
 import {
   clamp,
   contains,
@@ -13,26 +14,24 @@ import {
   isHTMLElement,
   isOverflowElement,
   isWindow,
-  type ClientRect,
 } from "../utils";
-import {
-  type Alignment,
-  type ComputationConfig,
-  type ComputationMiddlewareArgs,
-  type ComputationMiddlewareResult,
-  type ComputationResult,
-  type Coordinates,
-  type Dimensions,
-  type ElementRects,
-  type Elements,
-  type MiddlewareResult,
-  type OffsetMiddleware,
-  type Placement,
-  type Rect,
-  type Side,
-  type Strategy,
-  type VirtualElement,
-} from "./Popper";
+import type {
+  Alignment,
+  ComputationConfig,
+  ComputationMiddlewareArgs,
+  ComputationMiddlewareResult,
+  ComputationResult,
+  Coordinates,
+  Dimensions,
+  ElementRects,
+  Elements,
+  MiddlewareResult,
+  OffsetMiddleware,
+  Placement,
+  Rect,
+  Side,
+  Strategy,
+} from "./types";
 
 export const sides = ["top", "right", "bottom", "left"] as const;
 export const alignments = ["end", "start"] as const;

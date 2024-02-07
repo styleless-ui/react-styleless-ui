@@ -1,1 +1,5 @@
-export { default, type Props as CheckboxProps } from "./Checkbox";
+export {
+  default,
+  type ClassNameProps as CheckboxClassNameProps,
+  type Props as CheckboxProps,
+} from "./Checkbox";

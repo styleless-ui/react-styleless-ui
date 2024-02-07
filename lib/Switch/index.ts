@@ -1,1 +1,5 @@
-export { default, type Props as SwitchProps } from "./Switch";
+export {
+  default,
+  type ClassNameProps as SwitchClassNameProps,
+  type Props as SwitchProps,
+} from "./Switch";

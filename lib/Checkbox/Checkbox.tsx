@@ -1,7 +1,7 @@
 import * as React from "react";
 import { CheckGroupContext } from "../CheckGroup/context";
 import { SystemError, getLabelInfo, logger } from "../internals";
-import type { Classes, MergeElementProps } from "../types";
+import type { ClassesWithRenderContext, MergeElementProps } from "../types";
 import {
   componentWithForwardedRef,
   useCheckBase,
@@ -12,16 +12,22 @@ import {
 import { CheckIcon, IndeterminateIcon } from "./components";
 import * as Slots from "./slots";
 
-type CheckboxClassesMap = Classes<"root" | "label" | "check">;
-
-type ClassesContext = {
-  /** The `checked` state of the checkbox. */
+export type ClassNameProps = {
+  /**
+   * The `checked` state of the checkbox.
+   */
   checked: boolean;
-  /** The `disabled` state of the checkbox. */
+  /**
+   * The `disabled` state of the checkbox.
+   */
   disabled: boolean;
-  /** The `indeterminated` state of the checkbox. */
+  /**
+   * The `indeterminated` state of the checkbox.
+   */
   indeterminated: boolean;
-  /** The `:focus-visible` of the checkbox. */
+  /**
+   * The `:focus-visible` of the checkbox.
+   */
   focusedVisible: boolean;
 };
 
@@ -29,7 +35,10 @@ type OwnProps = {
   /**
    * Map of sub-components and their correlated classNames.
    */
-  classes?: ((ctx: ClassesContext) => CheckboxClassesMap) | CheckboxClassesMap;
+  classes?: ClassesWithRenderContext<
+    "root" | "label" | "check",
+    ClassNameProps
+  >;
   /**
    * The label of the checkbox.
    */
@@ -152,7 +161,7 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const labelProps = getLabelInfo(label, "Checkbox");
 
-  const classesCtx: ClassesContext = {
+  const classesCtx: ClassNameProps = {
     disabled,
     indeterminated,
     checked: checkBase.checked,
