@@ -16,7 +16,6 @@ import {
   useEventListener,
   useForkedRefs,
 } from "../utils";
-import { getExactAnchorElement } from "./utils";
 
 type OwnProps = {
   /**
@@ -28,13 +27,16 @@ type OwnProps = {
    */
   className?: PopperProps["className"];
   /**
-   * The anchor element for the tooltip.
+   * A function that will resolve the anchor element for the tooltip.
+   *
+   * It has to return `HTMLElement`, or a `VirtualElement`, or `null`.
+   * A VirtualElement is an object that implements `getBoundingClientRect(): ClientRect`.
+   *
+   * If nothing is resolved, the tooltip won't show up.
+   *
+   * Please note that this function is only called on the client-side.
    */
-  anchorElement:
-    | React.RefObject<HTMLElement>
-    | HTMLElement
-    | VirtualElement
-    | string;
+  resolveAnchor: () => HTMLElement | VirtualElement | null;
   /**
    * Tooltip placement. It will be auto updated when `autoPlacement={true}`.
    *
@@ -88,8 +90,8 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     children,
     className,
-    anchorElement,
     defaultOpen,
+    resolveAnchor,
     onOutsideClick,
     id: idProp,
     open: openProp,
@@ -99,18 +101,6 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     behavior = "full-controlled",
     ...otherProps
   } = props;
-
-  if (!anchorElement) {
-    throw new SystemError(
-      [
-        "Invalid `anchorElement` property.",
-        "The `anchorElement` property must be either a `id (string)`, " +
-          "`HTMLElement`, `RefObject<HTMLElement>`, or in shape of " +
-          "`{ getBoundingClientRect(): ClientRect }`",
-      ].join("\n"),
-      "Tooltip",
-    );
-  }
 
   if (behavior !== "full-controlled" && typeof openProp !== "undefined") {
     throw new SystemError(
@@ -126,10 +116,6 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const handleTooltipRef = useForkedRefs(ref, tooltipRef);
 
   const [open, setOpen] = useControlledProp(openProp, defaultOpen, false);
-
-  const [anchor, setAnchor] = React.useState(() =>
-    getExactAnchorElement(anchorElement),
-  );
 
   const [coordinates, setCoordinates] = React.useState<Coordinates>({
     x: 0,
@@ -152,6 +138,8 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   });
 
   const outsideClickHandler = useEventCallback<MouseEvent>(event => {
+    const anchor = resolveAnchor();
+
     if (!event.target) return;
     if (!anchor) return;
     if (anchor === event.target) return;
@@ -164,12 +152,10 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     onOutsideClick?.(event);
   });
 
-  React.useEffect(() => {
-    setAnchor(getExactAnchorElement(anchorElement));
-  }, [anchorElement]);
-
   if (typeof document !== "undefined") {
     /* eslint-disable react-hooks/rules-of-hooks */
+    const anchor = resolveAnchor();
+
     const eventTarget = React.useMemo(
       () => (isHTMLElement(anchor) ? anchor : null),
       [anchor],
@@ -254,8 +240,8 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       keepMounted={keepMounted}
       autoPlacement={behavior === "follow-mouse" ? false : autoPlacement}
       offset={behavior === "follow-mouse" ? 32 : undefined}
-      anchorElement={
-        behavior === "follow-mouse" ? createVirtualElement() : anchorElement
+      resolveAnchor={
+        behavior === "follow-mouse" ? createVirtualElement : resolveAnchor
       }
     >
       {children}

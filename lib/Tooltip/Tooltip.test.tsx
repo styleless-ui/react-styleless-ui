@@ -7,11 +7,13 @@ import Tooltip from "./Tooltip";
 describe("Tooltip", () => {
   afterEach(jest.clearAllMocks);
 
+  const anchorResolver = () => document.getElementById("anchor");
+
   it(`component could be updated and unmounted without errors`, () => {
     const Component = (
       <>
         <div id="anchor">Anchor</div>
-        <Tooltip anchorElement="anchor">
+        <Tooltip resolveAnchor={anchorResolver}>
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia
           magnam ad excepturi ipsa exercitationem cum?
         </Tooltip>
@@ -30,7 +32,7 @@ describe("Tooltip", () => {
       <>
         <div id="anchor">Anchor</div>
         <Tooltip
-          anchorElement="anchor"
+          resolveAnchor={anchorResolver}
           defaultOpen={true}
           ref={ref}
         >
@@ -64,7 +66,7 @@ describe("Tooltip", () => {
       <>
         <div id="anchor">Anchor</div>
         <Tooltip
-          anchorElement="anchor"
+          resolveAnchor={anchorResolver}
           defaultOpen={true}
           style={style}
         >
@@ -96,7 +98,7 @@ describe("Tooltip", () => {
       <>
         <div id="anchor">Anchor</div>
         <Tooltip
-          anchorElement="anchor"
+          resolveAnchor={anchorResolver}
           defaultOpen={true}
           data-other-attribute="test"
         >
@@ -117,7 +119,7 @@ describe("Tooltip", () => {
       <>
         <div id="anchor">Anchor</div>
         <Tooltip
-          anchorElement="anchor"
+          resolveAnchor={anchorResolver}
           defaultOpen={true}
           data-other-attribute="test"
           className={({ placement, openState }) =>
@@ -145,7 +147,7 @@ describe("Tooltip", () => {
           Anchor
         </div>
         <Tooltip
-          anchorElement="anchor"
+          resolveAnchor={anchorResolver}
           defaultOpen={true}
           data-other-attribute="test"
           className={({ placement, openState }) =>

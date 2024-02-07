@@ -31,6 +31,8 @@ const SubBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   if (!menuItemCtx) return null;
 
+  const resolveAnchor = () => document.getElementById(menuItemCtx.id);
+
   menuItemCtx.registerSubMenu(rootRef, id);
 
   return (
@@ -40,7 +42,7 @@ const SubBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       id={id}
       ref={handleRootRef}
       className={className}
-      anchorElement={menuItemCtx.id}
+      resolveAnchor={resolveAnchor}
       data-slot={SubRootSlot}
       data-submenu
     >
