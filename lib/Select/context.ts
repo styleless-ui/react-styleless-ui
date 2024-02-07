@@ -1,7 +1,7 @@
 import * as React from "react";
 import { type LabelInfo } from "../internals";
 import { type ElementsRegistry } from "../utils";
-import type { Props, RegisteredElementsKeys } from "./Select";
+import type { RegisteredElementsKeys } from "./Select";
 
 type ContextValue = {
   isListOpen: boolean;
@@ -25,7 +25,6 @@ type ContextValue = {
   clearOptions: () => void;
   handleOptionClick: (value: string) => void;
   handleOptionRemove: (value: string) => void;
-  onOutsideClick: Props["onOutsideClick"];
 };
 
 const Context = React.createContext<ContextValue | null>(null);

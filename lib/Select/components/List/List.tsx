@@ -14,11 +14,20 @@ import Option from "../Option";
 import { calcSidePlacement } from "./utils";
 
 export type ClassNameProps = {
+  /**
+   * The `open` state of the component.
+   */
   open: boolean;
 };
 
 type OwnProps = {
+  /**
+   * The className applied to the component.
+   */
   className?: PropWithRenderContext<string, ClassNameProps>;
+  /**
+   * The content of the component.
+   */
   children?: React.ReactNode;
 };
 

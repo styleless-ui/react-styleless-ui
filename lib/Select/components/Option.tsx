@@ -12,17 +12,43 @@ import { OptionRoot as OptionRootSlot } from "../slots";
 import { normalizeValues } from "../utils";
 
 export type RenderProps = {
+  /**
+   * The `active` state of the component.
+   * An option is active if it's hovered by a pointer or visually
+   * focused by keyboard interactions.
+   */
   active: boolean;
+  /**
+   * The `disabled` state of the component.
+   */
   disabled: boolean;
+  /**
+   * The `selected` state of the component.
+   */
   selected: boolean;
 };
 
 export type ClassNameProps = RenderProps;
 
 type OwnProps = {
+  /**
+   * The className applied to the component.
+   */
   className?: PropWithRenderContext<string, ClassNameProps>;
+  /**
+   * The content of the component.
+   */
   children?: PropWithRenderContext<React.ReactNode, RenderProps>;
+  /**
+   * The value of option when submitted.
+   * Works as an unique identifier for the option.
+   */
   value: string;
+  /**
+   * If `true`, the option will be disabled.
+   *
+   * @default false
+   */
   disabled?: boolean;
   /**
    * Text used for screen readers and typeahead purposes.
