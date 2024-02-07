@@ -18,16 +18,32 @@ import {
 import { normalizeValues } from "../utils";
 
 export type ClassNameProps = {
+  /**
+   * Determines whether it is focused or not.
+   */
   hasFocus: boolean;
 };
 
 export type ValueEntity = {
+  /**
+   * The unique value identifier of the selected option.
+   */
   value: string;
+  /**
+   * The label of the selected option's value.
+   */
   valueLabel: string;
+  /**
+   * A helper function exposed to remove a selected option.
+   * Should be used as a `onClick` event callback.
+   */
   remove: <T extends HTMLElement>(event: React.MouseEvent<T>) => void;
 };
 
 type OwnProps = {
+  /**
+   * Map of sub-components and their correlated classNames.
+   */
   classes?: ClassesWithRenderContext<
     "root" | "searchInput" | "placeholder" | "values",
     ClassNameProps
@@ -36,8 +52,26 @@ type OwnProps = {
    * The content of the component.
    */
   children?: React.ReactNode;
+  /**
+   * The placeholder of the component.
+   * Will be visible if no option is selected.
+   *
+   * Please note that when `searchable={true}` this will be passed to the input's
+   * `placeholder` property.
+   */
   placeholder?: string;
+  /**
+   * If `true`, the component will be focused automatically.
+   *
+   * @default false
+   */
   autoFocus?: boolean;
+  /**
+   * Transforms the display of selected values.
+   * It should be used to alter the display of values.
+   *
+   * By default, we are displaying comma-separated values.
+   */
   transformValues?: (valueEntities: ValueEntity[]) => React.ReactNode;
 };
 

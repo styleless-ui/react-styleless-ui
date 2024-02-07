@@ -6,7 +6,13 @@ import { SelectContext } from "../context";
 import { EmptyStatementRoot as EmptyStatementRootSlot } from "../slots";
 
 type OwnProps = {
+  /**
+   * The className applied to the component.
+   */
   className?: string;
+  /**
+   * The content of the component.
+   */
   children?: React.ReactNode;
 };
 

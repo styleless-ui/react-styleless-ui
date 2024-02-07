@@ -21,16 +21,26 @@ import { Label as LabelSlot, Root as RootSlot } from "./slots";
 import { noValueSelected } from "./utils";
 
 export type RenderProps = {
+  /**
+   * The `open` state of the component.
+   */
   openState: boolean;
+  /**
+   * The `disabled` state of the component.
+   */
   disabled: boolean;
+  /**
+   * Determines whether an option is selected or not.
+   */
   hasSelectedValues: boolean;
+  /**
+   * A helper function exposed for clear button (A button to clear selected values).
+   * Should be used as a `onClick` event callback.
+   */
   clearValues: <T extends HTMLElement>(event: React.MouseEvent<T>) => void;
 };
 
-export type ClassNameProps = {
-  openState: boolean;
-  disabled: boolean;
-};
+export type ClassNameProps = Pick<RenderProps, "openState" | "disabled">;
 
 export type RegisteredElementsKeys =
   | "root"
@@ -44,6 +54,9 @@ type OwnProps = {
    * The content of the component.
    */
   children?: PropWithRenderContext<React.ReactNode, RenderProps>;
+  /**
+   * Map of sub-components and their correlated classNames.
+   */
   classes?: ClassesWithRenderContext<"root" | "label", ClassNameProps>;
   /**
    * The label of the component.
@@ -66,26 +79,68 @@ type OwnProps = {
       };
   /**
    * Used to keep mounting when more control is needed.\
-   * Useful when controlling animation with React animation libraries.\
-   * It will be inherited by any descendant submenus respectively.
+   * Useful when controlling animation with React animation libraries.
+   *
    * @default false
    */
   keepMounted?: boolean;
+  /**
+   * If `true`, the select will be disabled.
+   *
+   * @default false
+   */
   disabled?: boolean;
+  /**
+   * If `true`, the select will have a searchbox.
+   *
+   * @default false
+   */
   searchable?: boolean;
+  /**
+   * If `true`, the select dropdown menu will open.
+   *
+   * @default false
+   */
   open?: boolean;
+  /**
+   * The default state of `open`. Use when the component's `open` state is not controlled.
+   *
+   * @default false
+   */
   defaultOpen?: boolean;
+  /**
+   * Callback is called when the dropdown menu is about to be opened.
+   */
   onOpen?: () => void;
+  /**
+   * Callback is called when the dropdown menu is about to be closed.
+   */
   onClose?: () => void;
   /**
-   * Callback fired when a click interaction happens outside the component.
+   * Callback is called when a click interaction occurs outside of the component.
+   * Tries to close the dropdown menu as the default behavior when not provided.
    */
   onOutsideClick?: (event: MouseEvent) => void;
+  /**
+   * If `true`, you would be able to select multiple options.
+   *
+   * @default false
+   */
+  multiple: boolean;
 } & (
   | {
       multiple: false;
+      /**
+       * The default value. Use when the component's `value` state is not controlled.
+       */
       defaultValue?: string;
+      /**
+       * The value of the select. It should be an array if `multiple={true}`.
+       */
       value?: string;
+      /**
+       * Callback is called when the value changes.
+       */
       onValueChange?: (currentValue: string) => void;
     }
   | {
@@ -322,7 +377,6 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     clearOptions,
     handleOptionClick,
     handleOptionRemove,
-    onOutsideClick,
   };
 
   React.useEffect(() => {
@@ -362,7 +416,8 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           if (rootRef.current === event.target) return;
           if (contains(rootRef.current, event.target as HTMLElement)) return;
 
-          closeList();
+          if (onOutsideClick) onOutsideClick(event);
+          else closeList();
         }),
       },
       isListOpen,

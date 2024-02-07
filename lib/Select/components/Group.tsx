@@ -18,6 +18,9 @@ type OwnProps = {
    * Map of sub-components and their correlated classNames.
    */
   classes?: Classes<"root" | "label">;
+  /**
+   * The label of the component.
+   */
   label:
     | string
     | {
@@ -28,7 +31,7 @@ type OwnProps = {
       }
     | {
         /**
-         * Identifies the element (or elements) that labels the group.
+         * Identifies the element (or elements) that labels the component.
          *
          * @see {@link https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-labelledby MDN Web Docs} for more information.
          */
