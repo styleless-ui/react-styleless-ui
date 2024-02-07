@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-types */
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type KeyofBase = keyof any;
 
@@ -99,3 +100,16 @@ export type ClassesWithRenderContext<
   StringUnion extends string,
   RenderContext extends AnyObject,
 > = PropWithRenderContext<Classes<StringUnion>, RenderContext>;
+
+export type ClientRect = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
+};
+
+export type VirtualElement = { getBoundingClientRect(): ClientRect };

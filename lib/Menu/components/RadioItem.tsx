@@ -1,6 +1,6 @@
 import * as React from "react";
 import { disableUserSelectCSSProperties, logger } from "../../internals";
-import type { MergeElementProps } from "../../types";
+import type { MergeElementProps, PropWithRenderContext } from "../../types";
 import {
   componentWithForwardedRef,
   useDeterministicId,
@@ -12,27 +12,34 @@ import { RadioItemRoot as RadioItemRootSlot } from "../slots";
 import useMenuItem from "../useMenuItem";
 import { RadioGroupContext } from "./RadioGroup/context";
 
+export type RenderProps = {
+  /**
+   * The `active` state of the component.
+   * An item is active if it's hovered by a pointer or visually
+   * focused by keyboard interactions.
+   */
+  active: boolean;
+  /**
+   * The `disabled` state of the component.
+   */
+  disabled: boolean;
+  /**
+   * The `selected` state of the component.
+   */
+  selected: boolean;
+};
+
+export type ClassNameProps = RenderProps;
+
 type OwnProps = {
   /**
    * The content of the component.
    */
-  children?:
-    | React.ReactNode
-    | ((ctx: {
-        active: boolean;
-        disabled: boolean;
-        selected: boolean;
-      }) => React.ReactNode);
+  children?: PropWithRenderContext<React.ReactNode, RenderProps>;
   /**
    * The className applied to the component.
    */
-  className?:
-    | string
-    | ((ctx: {
-        active: boolean;
-        disabled: boolean;
-        selected: boolean;
-      }) => string);
+  className?: PropWithRenderContext<string, ClassNameProps>;
   /**
    * The value of the radio.
    */
@@ -61,13 +68,13 @@ const RadioItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     children: childrenProp,
     className: classNameProp,
-    disabled = false,
+    style: styleProp,
     value,
     onSelect,
     onClick,
     onMouseEnter,
     onMouseLeave,
-    style,
+    disabled = false,
     ...otherProps
   } = props;
 
@@ -76,15 +83,6 @@ const RadioItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const menuCtx = React.useContext(MenuContext);
   const radioGroupCtx = React.useContext(RadioGroupContext);
 
-  if (process.env.NODE_ENV !== "production") {
-    if (!radioGroupCtx) {
-      logger(
-        "You can't use `<Menu.RadioItem>` outside of the `<Menu.RadioGroup>`.",
-        { scope: "Menu.RadioItem", type: "error" },
-      );
-    }
-  }
-
   const rootRef = React.useRef<HTMLDivElement>(null);
   const handleRootRef = useForkedRefs(ref, rootRef);
 
@@ -92,22 +90,6 @@ const RadioItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     menuCtx && rootRef.current
       ? menuCtx.activeElement === rootRef.current
       : false;
-
-  const isSelected = radioGroupCtx?.value === value;
-
-  const renderCtx = {
-    disabled,
-    active: isActive,
-    selected: isSelected,
-  };
-
-  const children =
-    typeof childrenProp === "function" ? childrenProp(renderCtx) : childrenProp;
-
-  const className =
-    typeof classNameProp === "function"
-      ? classNameProp(renderCtx)
-      : classNameProp;
 
   const menuItem = useMenuItem({
     disabled,
@@ -129,33 +111,72 @@ const RadioItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     }),
   });
 
+  if (!radioGroupCtx) {
+    logger("You can't use this component outside of the <Menu.RadioGroup>.", {
+      scope: "Menu.RadioItem",
+      type: "error",
+    });
+
+    return null;
+  }
+
+  if (!menuCtx) {
+    logger("You have to use this component as a descendant of <Menu.Root>.", {
+      scope: "Menu.RadioItem",
+      type: "error",
+    });
+
+    return null;
+  }
+
+  const isSelected = radioGroupCtx.value === value;
+
+  const renderProps: RenderProps = {
+    disabled,
+    active: isActive,
+    selected: isSelected,
+  };
+
+  const classNameProps: ClassNameProps = renderProps;
+
+  const style: React.CSSProperties = {
+    ...(styleProp ?? {}),
+    ...disableUserSelectCSSProperties,
+  };
+
+  const children =
+    typeof childrenProp === "function"
+      ? childrenProp(renderProps)
+      : childrenProp;
+
+  const className =
+    typeof classNameProp === "function"
+      ? classNameProp(classNameProps)
+      : classNameProp;
+
   const refCallback = (node: HTMLDivElement | null) => {
     handleRootRef(node);
 
     if (!node) return;
-    menuCtx?.registerItem(rootRef);
+    menuCtx.registerItem(rootRef);
   };
 
   return (
     <div
       {...otherProps}
       id={id}
-      role="menuitemradio"
       ref={refCallback}
-      data-slot={RadioItemRootSlot}
+      style={style}
       className={className}
       tabIndex={-1}
       onClick={menuItem.handleClick}
       onMouseEnter={menuItem.handleMouseEnter}
       onMouseLeave={menuItem.handleMouseLeave}
+      role="menuitemradio"
       aria-checked={isSelected}
       aria-disabled={disabled}
+      data-slot={RadioItemRootSlot}
       data-active={isActive ? "" : undefined}
-      style={
-        style
-          ? { ...style, ...disableUserSelectCSSProperties }
-          : disableUserSelectCSSProperties
-      }
     >
       {children}
     </div>

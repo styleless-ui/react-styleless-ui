@@ -1,1 +1,6 @@
-export { default, type Props as TooltipProps } from "./Tooltip";
+export {
+  default,
+  type ClassNameProps as TooltipClassNameProps,
+  type Props as TooltipProps,
+  type RenderProps as TooltipRenderProps,
+} from "./Tooltip";

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { logger } from "../internals";
-import type { PolymorphicProps } from "../types";
+import type { PolymorphicProps, PropWithRenderContext } from "../types";
 import {
   componentWithForwardedRef,
   computeAccessibleName,
@@ -11,22 +11,28 @@ import {
 } from "../utils";
 import * as Slots from "./slots";
 
+export type RenderProps = {
+  /**
+   * The `disabled` state of the component.
+   */
+  disabled: boolean;
+  /**
+   * Determines whether it is focused-visible or not.
+   */
+  focusedVisible: boolean;
+};
+
+export type ClassNameProps = RenderProps;
+
 type OwnProps = {
   /**
    * The content of the component.
    */
-  children?:
-    | React.ReactNode
-    | ((ctx: {
-        disabled: boolean;
-        focusedVisible: boolean;
-      }) => React.ReactNode);
+  children?: PropWithRenderContext<React.ReactNode, RenderProps>;
   /**
    * The className applied to the component.
    */
-  className?:
-    | string
-    | ((ctx: { disabled: boolean; focusedVisible: boolean }) => string);
+  className?: PropWithRenderContext<string, ClassNameProps>;
   /**
    * If `true`, the component will be disabled.
    * @default false
@@ -70,10 +76,12 @@ const ButtonBase = <E extends React.ElementType, R extends HTMLElement>(
   const rootRef = React.useRef<HTMLElement>(null);
   const handleRef = useForkedRefs(ref, rootRef, buttonBase.handleButtonRef);
 
-  const renderCtx = {
+  const renderProps: RenderProps = {
     disabled,
     focusedVisible: buttonBase.isFocusedVisible,
   };
+
+  const classNameProps = renderProps;
 
   const refCallback = (node: HTMLElement | null) => {
     handleRef(node);
@@ -110,11 +118,13 @@ const ButtonBase = <E extends React.ElementType, R extends HTMLElement>(
 
   const className =
     typeof classNameProp === "function"
-      ? classNameProp(renderCtx)
+      ? classNameProp(classNameProps)
       : classNameProp;
 
   const children =
-    typeof childrenProp === "function" ? childrenProp(renderCtx) : childrenProp;
+    typeof childrenProp === "function"
+      ? childrenProp(renderProps)
+      : childrenProp;
 
   return (
     <RootNode

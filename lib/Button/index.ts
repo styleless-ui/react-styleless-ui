@@ -1,1 +1,6 @@
-export { default, type Props as ButtonProps } from "./Button";
+export {
+  default,
+  type ClassNameProps as ButtonClassNameProps,
+  type Props as ButtonProps,
+  type RenderProps as ButtonRenderProps,
+} from "./Button";

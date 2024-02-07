@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ToggleGroupContext } from "../ToggleGroup/context";
 import { SystemError, logger } from "../internals";
-import type { MergeElementProps } from "../types";
+import type { MergeElementProps, PropWithRenderContext } from "../types";
 import {
   componentWithForwardedRef,
   computeAccessibleName,
@@ -10,27 +10,23 @@ import {
 } from "../utils";
 import * as Slots from "./slots";
 
+export type RenderProps = {
+  disabled: boolean;
+  active: boolean;
+  focusedVisible: boolean;
+};
+
+export type ClassNameProps = RenderProps;
+
 type OwnProps = {
   /**
    * The content of the component.
    */
-  children?:
-    | React.ReactNode
-    | ((ctx: {
-        disabled: boolean;
-        active: boolean;
-        focusedVisible: boolean;
-      }) => React.ReactNode);
+  children?: PropWithRenderContext<React.ReactNode, RenderProps>;
   /**
    * The className applied to the component.
    */
-  className?:
-    | string
-    | ((ctx: {
-        disabled: boolean;
-        active: boolean;
-        focusedVisible: boolean;
-      }) => string);
+  className?: PropWithRenderContext<string, ClassNameProps>;
   /**
    * The value of the toggle. Use when it is a ToggleGroup's child.
    */
@@ -125,19 +121,23 @@ const ToggleBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   const rootRef = React.useRef<HTMLButtonElement>(null);
   const handleRef = useForkedRefs(ref, rootRef, checkBase.handleControllerRef);
 
-  const renderCtx = {
+  const renderProps: RenderProps = {
     disabled,
     active: checkBase.checked,
     focusedVisible: checkBase.isFocusedVisible,
   };
 
+  const classNameProps: ClassNameProps = renderProps;
+
   const className =
     typeof classNameProp === "function"
-      ? classNameProp(renderCtx)
+      ? classNameProp(classNameProps)
       : classNameProp;
 
   const children =
-    typeof childrenProp === "function" ? childrenProp(renderCtx) : childrenProp;
+    typeof childrenProp === "function"
+      ? childrenProp(renderProps)
+      : childrenProp;
 
   const refCallback = (node: HTMLButtonElement | null) => {
     handleRef(node);
@@ -169,9 +169,9 @@ const ToggleBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const dataAttrs = {
     "data-slot": Slots.Root,
-    "data-active": renderCtx.active ? "" : undefined,
-    "data-disable": renderCtx.disabled ? "" : undefined,
-    "data-focus-visible": renderCtx.focusedVisible ? "" : undefined,
+    "data-active": renderProps.active ? "" : undefined,
+    "data-disable": renderProps.disabled ? "" : undefined,
+    "data-focus-visible": renderProps.focusedVisible ? "" : undefined,
   };
 
   return (

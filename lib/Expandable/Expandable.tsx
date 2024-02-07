@@ -1,20 +1,27 @@
 import * as React from "react";
-import type { MergeElementProps } from "../types";
+import type { MergeElementProps, PropWithRenderContext } from "../types";
 import { componentWithForwardedRef, useControlledProp } from "../utils";
 import { ExpandableContext } from "./context";
 import { Root as RootSlot } from "./slots";
+
+export type RenderProps = {
+  /**
+   * Determines whether it is expanded or not.
+   */
+  expanded: boolean;
+};
+
+export type ClassNameProps = RenderProps;
 
 type OwnProps = {
   /**
    * The content of the component.
    */
-  children?:
-    | React.ReactNode
-    | ((ctx: { expanded: boolean }) => React.ReactNode);
+  children?: PropWithRenderContext<React.ReactNode, RenderProps>;
   /**
    * The className applied to the component.
    */
-  className?: string | ((ctx: { expanded: boolean }) => string);
+  className?: PropWithRenderContext<string, ClassNameProps>;
   /**
    * If `true`, the panel will be opened.
    */
@@ -52,14 +59,20 @@ const ExpandableBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     false,
   );
 
+  const renderProps: RenderProps = {
+    expanded: isExpanded,
+  };
+
+  const classNameProps = renderProps;
+
   const className =
     typeof classNameProp === "function"
-      ? classNameProp({ expanded: isExpanded })
+      ? classNameProp(classNameProps)
       : classNameProp;
 
   const children =
     typeof childrenProp === "function"
-      ? childrenProp({ expanded: isExpanded })
+      ? childrenProp(renderProps)
       : childrenProp;
 
   const handleExpandChange = (expandState: boolean) => {

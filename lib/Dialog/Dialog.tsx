@@ -1,6 +1,6 @@
 import * as React from "react";
 import Portal from "../Portal";
-import type { Classes, MergeElementProps } from "../types";
+import type { ClassesWithRenderContext, MergeElementProps } from "../types";
 import {
   componentWithForwardedRef,
   useDeterministicId,
@@ -12,7 +12,12 @@ import {
 import { DialogContext, type DialogContextValue } from "./context";
 import { Backdrop as BackdropSlot, Root as RootSlot } from "./slots";
 
-type DialogClassesMap = Classes<"root" | "backdrop">;
+export type ClassNameProps = {
+  /**
+   * The `open` state of the component.
+   */
+  openState: boolean;
+};
 
 type OwnProps = {
   /**
@@ -22,9 +27,7 @@ type OwnProps = {
   /**
    * Map of sub-components and their correlated classNames.
    */
-  classes?:
-    | DialogClassesMap
-    | ((ctx: { openState: boolean }) => DialogClassesMap);
+  classes?: ClassesWithRenderContext<"root" | "backdrop", ClassNameProps>;
   /**
    * If `true`, the dialog will be opened.
    */
@@ -112,9 +115,13 @@ const DialogBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     else enablePageScroll();
   });
 
+  const classNameProps: ClassNameProps = {
+    openState: open,
+  };
+
   const classes =
     typeof classesProp === "function"
-      ? classesProp({ openState: open })
+      ? classesProp(classNameProps)
       : classesProp;
 
   const context = React.useMemo<DialogContextValue>(

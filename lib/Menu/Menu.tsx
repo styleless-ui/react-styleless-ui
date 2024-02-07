@@ -1,7 +1,11 @@
 import * as React from "react";
-import Popper, { type PopperProps, type VirtualElement } from "../Popper";
+import Popper, { type PopperProps } from "../Popper";
 import { FocusTrap, SystemKeys } from "../internals";
-import type { MergeElementProps } from "../types";
+import type {
+  MergeElementProps,
+  PropWithRenderContext,
+  VirtualElement,
+} from "../types";
 import {
   componentWithForwardedRef,
   contains,
@@ -16,15 +20,24 @@ import { MenuContext, type MenuContextValue } from "./context";
 import { Root as RootSlot } from "./slots";
 import { getAvailableItem, makeRegisterItem, useSearchQuery } from "./utils";
 
+export type RenderProps = {
+  /**
+   * The `open` state of the component.
+   */
+  open: boolean;
+};
+
+export type ClassNameProps = RenderProps;
+
 type OwnProps = {
   /**
    * The content of the component.
    */
-  children?: React.ReactNode | ((ctx: { open: boolean }) => React.ReactNode);
+  children?: PropWithRenderContext<React.ReactNode, RenderProps>;
   /**
    * The className applied to the component.
    */
-  className?: string | ((ctx: { open: boolean }) => string);
+  className?: PropWithRenderContext<string, ClassNameProps>;
   /**
    * A function that will resolve the anchor element for the menu.
    *
@@ -357,12 +370,18 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     }
   };
 
+  const renderProps: RenderProps = { open };
+
+  const classNameProps = renderProps;
+
   const children =
-    typeof childrenProp === "function" ? childrenProp({ open }) : childrenProp;
+    typeof childrenProp === "function"
+      ? childrenProp(renderProps)
+      : childrenProp;
 
   const className =
     typeof classNameProp === "function"
-      ? classNameProp({ open })
+      ? classNameProp(classNameProps)
       : classNameProp;
 
   return (

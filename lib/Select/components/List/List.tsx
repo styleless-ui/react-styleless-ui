@@ -3,6 +3,7 @@ import { logger } from "../../../internals";
 import type { MergeElementProps, PropWithRenderContext } from "../../../types";
 import {
   componentWithForwardedRef,
+  isFragment,
   setRef,
   useDeterministicId,
 } from "../../../utils";
@@ -115,9 +116,9 @@ const ListBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   };
 
   const children = React.Children.map(childrenProp, child => {
-    if (!React.isValidElement(child)) {
+    if (!React.isValidElement(child) || isFragment(child)) {
       logger(
-        "The `<Select.List>` component doesn't accept `Fragment` as children.",
+        "The <Select.List> component doesn't accept `Fragment` or any invalid element as children.",
         { scope: "Select.List", type: "error" },
       );
 
@@ -130,8 +131,8 @@ const ListBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       (child as React.ReactElement).type !== EmptyStatement
     ) {
       logger(
-        "The `<Select.List>` component only accepts " +
-          "`<Select.Option>`, `<Select.Group>`, and `<Select.EmptyStatement>` as children.",
+        "The <Select.List> component only accepts " +
+          "<Select.Option>, <Select.Group>, and <Select.EmptyStatement> as children.",
         { scope: "Select.List", type: "error" },
       );
 

@@ -1,25 +1,31 @@
 import * as React from "react";
 import Button from "../../Button";
-import type { MergeElementProps } from "../../types";
+import type { MergeElementProps, PropWithRenderContext } from "../../types";
 import { componentWithForwardedRef, useDeterministicId } from "../../utils";
 import { ActionRoot as ActionRootSlot } from "../slots";
+
+export type RenderProps = {
+  /**
+   * The `disabled` state of the component.
+   */
+  disabled: boolean;
+  /**
+   * Determines whether it is focused-visible or not.
+   */
+  focusedVisible: boolean;
+};
+
+export type ClassNameProps = RenderProps;
 
 type OwnProps = {
   /**
    * The content of the component.
    */
-  children?:
-    | React.ReactNode
-    | ((ctx: {
-        disabled: boolean;
-        focusedVisible: boolean;
-      }) => React.ReactNode);
+  children?: PropWithRenderContext<React.ReactNode, RenderProps>;
   /**
    * The className applied to the component.
    */
-  className?:
-    | string
-    | ((ctx: { disabled: boolean; focusedVisible: boolean }) => string);
+  className?: PropWithRenderContext<string, ClassNameProps>;
 };
 
 export type Props<T extends React.ElementType = typeof Button> =

@@ -1,11 +1,12 @@
 import * as React from "react";
 import Popper, {
-  type Coordinates,
+  type PopperClassNameProps,
   type PopperProps,
-  type VirtualElement,
+  type PopperRenderProps,
 } from "../Popper";
+import type { Coordinates } from "../Popper/types";
 import { SystemError, SystemKeys } from "../internals";
-import type { MergeElementProps } from "../types";
+import type { MergeElementProps, VirtualElement } from "../types";
 import {
   componentWithForwardedRef,
   contains,
@@ -16,6 +17,9 @@ import {
   useEventListener,
   useForkedRefs,
 } from "../utils";
+
+export type RenderProps = PopperRenderProps;
+export type ClassNameProps = PopperClassNameProps;
 
 type OwnProps = {
   /**

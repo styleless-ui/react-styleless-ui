@@ -1,5 +1,5 @@
 import * as React from "react";
-import { getLabelInfo } from "../../internals";
+import { getLabelInfo, logger } from "../../internals";
 import type { MergeElementProps } from "../../types";
 import { componentWithForwardedRef } from "../../utils";
 import { MenuContext } from "../context";
@@ -44,6 +44,15 @@ const ItemsBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const menuCtx = React.useContext(MenuContext);
 
+  if (!menuCtx) {
+    logger("You have to use this component as a descendant of <Menu.Root>.", {
+      scope: "Menu.Items",
+      type: "error",
+    });
+
+    return null;
+  }
+
   const labelProps = getLabelInfo(label, "Menu.Items", {
     customErrorMessage: [
       "Invalid `label` property.",
@@ -62,7 +71,7 @@ const ItemsBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       data-slot={ItemsRootSlot}
       aria-label={labelProps.srOnlyLabel}
       aria-labelledby={labelProps.labelledBy}
-      aria-activedescendant={menuCtx?.activeElement?.id ?? undefined}
+      aria-activedescendant={menuCtx.activeElement?.id ?? undefined}
     >
       {children}
     </div>

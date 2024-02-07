@@ -1,6 +1,6 @@
 import * as React from "react";
 import Portal from "../Portal";
-import type { MergeElementProps } from "../types";
+import type { MergeElementProps, PropWithRenderContext } from "../types";
 import {
   componentWithForwardedRef,
   useDeterministicId,
@@ -11,6 +11,13 @@ import {
 import { ToastContext } from "./context";
 import { Root as ToastRootSlot } from "./slots";
 
+export type ClassNameProps = {
+  /**
+   * The `open` state of the component.
+   */
+  openState: boolean;
+};
+
 type OwnProps = {
   /**
    * The content of the toast.
@@ -19,7 +26,7 @@ type OwnProps = {
   /**
    * The className applied to the toast.
    */
-  className?: string | ((ctx: { openState: boolean }) => string);
+  className?: PropWithRenderContext<string, ClassNameProps>;
   /**
    * If `true`, the toast will be opened.
    */
@@ -60,16 +67,16 @@ export type Props = Omit<
 
 const ToastBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
+    style: styleProp,
+    className: classNameProp,
+    id: idProp,
     open,
     duration,
-    style,
-    onDurationEnd,
-    id: idProp,
-    focusAfterClosed,
     role,
-    keepMounted = false,
     children,
-    className: classNameProp,
+    focusAfterClosed,
+    onDurationEnd,
+    keepMounted = false,
     ...otherProps
   } = props;
 
@@ -108,10 +115,17 @@ const ToastBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     } else window.clearTimeout(timeoutRef.current);
   });
 
+  const classNameProps: ClassNameProps = { openState: open };
+
   const className =
     typeof classNameProp === "function"
-      ? classNameProp({ openState: open })
+      ? classNameProp(classNameProps)
       : classNameProp;
+
+  const style: React.CSSProperties = {
+    ...(styleProp ?? {}),
+    position: "fixed",
+  };
 
   const context = React.useMemo(() => ({ role, open }), [role, open]);
 
@@ -128,7 +142,7 @@ const ToastBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       >
         <div
           {...otherProps}
-          style={{ ...(style ?? {}), position: "fixed" }}
+          style={style}
           id={id}
           ref={ref}
           className={className}

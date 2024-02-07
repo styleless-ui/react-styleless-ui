@@ -1,7 +1,11 @@
 import * as React from "react";
-import { getLabelInfo } from "../../internals";
+import { getLabelInfo, logger } from "../../internals";
 import type { Classes, MergeElementProps } from "../../types";
-import { componentWithForwardedRef, useDeterministicId } from "../../utils";
+import {
+  componentWithForwardedRef,
+  isFragment,
+  useDeterministicId,
+} from "../../utils";
 import { TabGroupContext } from "../context";
 import { ListLabel as ListLabelSlot, ListRoot as ListRootSlot } from "../slots";
 import Tab from "./Tab";
@@ -50,7 +54,7 @@ const ListBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     ...otherProps
   } = props;
 
-  const tabGroupCtx = React.useContext(TabGroupContext);
+  const ctx = React.useContext(TabGroupContext);
 
   const id = useDeterministicId(idProp, "styleless-ui__tablist");
   const visibleLabelId = id ? `${id}__label` : undefined;
@@ -59,7 +63,14 @@ const ListBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   let tabIdx = 0;
   const children = React.Children.map(childrenProp, child => {
-    if (!React.isValidElement(child)) return null;
+    if (!React.isValidElement(child) || isFragment(child)) {
+      logger(
+        "The <TabGroup.List> component doesn't accept `Fragment` or any invalid element as children.",
+        { scope: "TabGroup.List", type: "error" },
+      );
+
+      return null;
+    }
 
     if ((child as React.ReactElement).type === Tab) {
       const props = { "data-index": tabIdx++ };
@@ -67,7 +78,7 @@ const ListBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       return React.cloneElement(child, props);
     }
 
-    return child;
+    return child as React.ReactElement;
   });
 
   const renderLabel = () => {
@@ -98,7 +109,7 @@ const ListBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         aria-labelledby={
           labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
         }
-        aria-orientation={tabGroupCtx?.orientation}
+        aria-orientation={ctx?.orientation}
       >
         {children}
       </div>

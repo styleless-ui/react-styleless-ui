@@ -1,4 +1,5 @@
 import * as React from "react";
+import { logger } from "../../internals";
 import type { MergeElementProps } from "../../types";
 import {
   componentWithForwardedRef,
@@ -31,9 +32,21 @@ export type Props = Omit<
 const ContentBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const { children, className, id: idProp, ...otherProps } = props;
 
-  const expandableCtx = React.useContext(ExpandableContext);
+  const ctx = React.useContext(ExpandableContext);
 
   const id = useDeterministicId(idProp, "styleless-ui__expandable-content");
+
+  if (!ctx) {
+    logger(
+      "You have to use this component as a descendant of <Expandable.Root>.",
+      {
+        scope: "Expandable.Content",
+        type: "error",
+      },
+    );
+
+    return null;
+  }
 
   const refCallback = (node: HTMLDivElement | null) => {
     setRef(ref, node);
@@ -62,11 +75,11 @@ const ContentBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       ref={refCallback}
       className={className}
       role="region"
-      aria-hidden={!expandableCtx?.isExpanded}
+      aria-hidden={!ctx.isExpanded}
       // @ts-expect-error React hasn't added `inert` yet
-      inert={!expandableCtx?.isExpanded ? undefined : ""}
+      inert={!ctx.isExpanded ? undefined : ""}
       data-slot={ContentRootSlot}
-      data-expanded={!expandableCtx?.isExpanded ? "" : undefined}
+      data-expanded={!ctx.isExpanded ? "" : undefined}
     >
       {children}
     </div>

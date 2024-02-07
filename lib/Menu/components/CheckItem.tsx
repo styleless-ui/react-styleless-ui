@@ -1,6 +1,6 @@
 import * as React from "react";
-import { disableUserSelectCSSProperties } from "../../internals";
-import type { MergeElementProps } from "../../types";
+import { disableUserSelectCSSProperties, logger } from "../../internals";
+import type { MergeElementProps, PropWithRenderContext } from "../../types";
 import {
   componentWithForwardedRef,
   useControlledProp,
@@ -12,27 +12,34 @@ import { MenuContext } from "../context";
 import { CheckItemRoot as CheckItemRootSlot } from "../slots";
 import useMenuItem from "../useMenuItem";
 
+export type RenderProps = {
+  /**
+   * The `active` state of the component.
+   * An item is active if it's hovered by a pointer or visually
+   * focused by keyboard interactions.
+   */
+  active: boolean;
+  /**
+   * The `disabled` state of the component.
+   */
+  disabled: boolean;
+  /**
+   * The `selected` state of the component.
+   */
+  selected: boolean;
+};
+
+export type ClassNameProps = RenderProps;
+
 type OwnProps = {
   /**
    * The content of the component.
    */
-  children?:
-    | React.ReactNode
-    | ((ctx: {
-        active: boolean;
-        disabled: boolean;
-        selected: boolean;
-      }) => React.ReactNode);
+  children?: PropWithRenderContext<React.ReactNode, RenderProps>;
   /**
    * The className applied to the component.
    */
-  className?:
-    | string
-    | ((ctx: {
-        active: boolean;
-        disabled: boolean;
-        selected: boolean;
-      }) => string);
+  className?: PropWithRenderContext<string, ClassNameProps>;
   /**
    * If `true`, the item will be checked.
    * @default false
@@ -98,20 +105,6 @@ const CheckItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       ? menuCtx.activeElement === rootRef.current
       : false;
 
-  const renderCtx = {
-    disabled,
-    active: isActive,
-    selected: isSelected,
-  };
-
-  const children =
-    typeof childrenProp === "function" ? childrenProp(renderCtx) : childrenProp;
-
-  const className =
-    typeof classNameProp === "function"
-      ? classNameProp(renderCtx)
-      : classNameProp;
-
   const menuItem = useMenuItem({
     disabled,
     isActive,
@@ -133,11 +126,38 @@ const CheckItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     }),
   });
 
+  if (!menuCtx) {
+    logger("You have to use this component as a descendant of <Menu.Root>.", {
+      scope: "Menu.CheckItem",
+      type: "error",
+    });
+
+    return null;
+  }
+
+  const renderProps: RenderProps = {
+    disabled,
+    active: isActive,
+    selected: isSelected,
+  };
+
+  const classNameProps: ClassNameProps = renderProps;
+
+  const children =
+    typeof childrenProp === "function"
+      ? childrenProp(renderProps)
+      : childrenProp;
+
+  const className =
+    typeof classNameProp === "function"
+      ? classNameProp(classNameProps)
+      : classNameProp;
+
   const refCallback = (node: HTMLDivElement | null) => {
     handleRootRef(node);
 
     if (!node) return;
-    menuCtx?.registerItem(rootRef);
+    menuCtx.registerItem(rootRef);
   };
 
   return (

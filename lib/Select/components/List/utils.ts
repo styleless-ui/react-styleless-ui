@@ -1,4 +1,4 @@
-import { type Strategy } from "../../../Popper";
+import type { Strategy } from "../../../Popper/types";
 import { detectBoundaryOverflow, getElementRects } from "../../../Popper/utils";
 
 const calcBoundaryOverflow = (

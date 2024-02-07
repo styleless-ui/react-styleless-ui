@@ -1,7 +1,11 @@
 import * as React from "react";
 import { getLabelInfo, logger } from "../../internals";
 import type { Classes, MergeElementProps } from "../../types";
-import { componentWithForwardedRef, useDeterministicId } from "../../utils";
+import {
+  componentWithForwardedRef,
+  isFragment,
+  useDeterministicId,
+} from "../../utils";
 import { SelectContext } from "../context";
 import {
   GroupLabel as GroupLabelSlot,
@@ -71,9 +75,9 @@ const GroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   }
 
   const children = React.Children.map(childrenProp, child => {
-    if (!React.isValidElement(child)) {
+    if (!React.isValidElement(child) || isFragment(child)) {
       logger(
-        "The `<Select.Group>` component doesn't accept `Fragment` as children.",
+        "The <Select.Group> component doesn't accept `Fragment` or any invalid element as children.",
         { scope: "Select.Group", type: "error" },
       );
 
