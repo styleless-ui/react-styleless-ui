@@ -23,9 +23,9 @@ describe("CheckGroup", () => {
   afterEach(jest.clearAllMocks);
 
   itShouldMount(CheckGroup, REQUIRED_PROPS);
-  itSupportsStyle(CheckGroup, REQUIRED_PROPS);
+  itSupportsStyle(CheckGroup, REQUIRED_PROPS, "[role='group']");
   itSupportsRef(CheckGroup, REQUIRED_PROPS, HTMLDivElement);
-  itSupportsDataSetProps(CheckGroup, REQUIRED_PROPS);
+  itSupportsDataSetProps(CheckGroup, REQUIRED_PROPS, "[role='group']");
 
   it("should have the required classNames", () => {
     render(<CheckGroup {...REQUIRED_PROPS} />);

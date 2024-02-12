@@ -23,9 +23,9 @@ describe("RadioGroup", () => {
   afterEach(jest.clearAllMocks);
 
   itShouldMount(RadioGroup, REQUIRED_PROPS);
-  itSupportsStyle(RadioGroup, REQUIRED_PROPS);
+  itSupportsStyle(RadioGroup, REQUIRED_PROPS, "[role='radiogroup']");
   itSupportsRef(RadioGroup, REQUIRED_PROPS, HTMLDivElement);
-  itSupportsDataSetProps(RadioGroup, REQUIRED_PROPS);
+  itSupportsDataSetProps(RadioGroup, REQUIRED_PROPS, "[role='radiogroup']");
 
   it("should have the required classNames", () => {
     render(<RadioGroup {...REQUIRED_PROPS} />);
