@@ -8,7 +8,7 @@ import {
   useForkedRefs,
   useIsMounted,
 } from "../utils";
-import { TabGroupContext, type TabGroupContextValue } from "./context";
+import { TabGroupContext } from "./context";
 import { Root as RootSlot } from "./slots";
 
 type OwnProps = {
@@ -23,15 +23,15 @@ type OwnProps = {
   /**
    * The currently selected tab.
    */
-  activeTab?: number;
+  activeTab?: string;
   /**
    * The default selected tab. Use when the component is not controlled.
    */
-  defaultActiveTab?: number;
+  defaultActiveTab?: string;
   /**
    * The Callback is fired when the state changes.
    */
-  onChange?: (tabIndex: number) => void;
+  onChange?: (tabValue: string) => void;
   /**
    * Indicates whether the element's orientation is horizontal or vertical.
    * This effects the keyboard interactions.
@@ -71,7 +71,11 @@ const TabGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const [activeTab, setActiveTab] = useControlledProp(
     activeTabProp,
     defaultActiveTab,
-    0,
+    "",
+  );
+
+  const [forcedTabability, setForcedTabability] = React.useState<string | null>(
+    null,
   );
 
   const children = React.Children.map(childrenProp, child => {
@@ -87,45 +91,61 @@ const TabGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     return child as React.ReactElement;
   });
 
-  const handleChange = (tabIndex: number) => {
+  const handleChange = (tabValue: string) => {
     if (!isMounted()) return;
 
-    setActiveTab(tabIndex);
-    onChange?.(tabIndex);
-  };
-
-  const tabs: TabGroupContextValue["tabs"] = [];
-  const panels: TabGroupContextValue["panels"] = [];
-
-  const register: TabGroupContextValue["register"] = ref => {
-    if (!ref.current) return;
-
-    if (ref.current instanceof HTMLDivElement) {
-      const idx = panels.findIndex(r => r.current === ref.current);
-
-      if (idx < 0) panels.push(ref as (typeof panels)[number]);
-    } else {
-      const idx = tabs.findIndex(r => r.current === ref.current);
-
-      if (idx < 0) tabs.push(ref as (typeof tabs)[number]);
-    }
+    setActiveTab(tabValue);
+    onChange?.(tabValue);
   };
 
   React.useEffect(() => {
-    const tabs =
-      rootRef.current?.querySelectorAll<HTMLButtonElement>('[role="tab"]');
+    if (!rootRef.current) return;
 
-    if (!tabs) return;
+    const tabs = Array.from(
+      rootRef.current.querySelectorAll<HTMLButtonElement>('[role="tab"]'),
+    );
 
-    const tabElement = tabs[activeTab];
+    const activeTabElement = tabs.find(
+      tab => tab.getAttribute("data-entityname") === activeTab,
+    );
 
-    if (!tabElement) return;
+    if (!activeTabElement) return;
 
-    if (tabElement.disabled || tabElement.hasAttribute("disabled")) {
+    const isActiveTabDisabled =
+      activeTabElement.hasAttribute("disabled") ||
+      activeTabElement.getAttribute("aria-disabled") === "true";
+
+    if (isActiveTabDisabled) {
       throw new SystemError("The selected tab is `disabled`.", "TabGroup.Root");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  React.useEffect(() => {
+    if (!rootRef.current) return;
+
+    if (activeTab) {
+      setForcedTabability(prev => (prev ? null : prev));
+
+      return;
+    }
+
+    const tabs = Array.from(
+      rootRef.current.querySelectorAll<HTMLElement>('[role="tab"]'),
+    );
+
+    const validTabs = tabs.filter(tab => {
+      const isDisabled =
+        tab.hasAttribute("disabled") ||
+        tab.getAttribute("aria-disabled") === "true";
+
+      return !isDisabled;
+    });
+
+    setForcedTabability(
+      validTabs?.[0]?.getAttribute("data-entityname") ?? null,
+    );
+  }, [activeTab]);
 
   return (
     <div
@@ -133,14 +153,13 @@ const TabGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       className={className}
       ref={handleRootRef}
       data-slot={RootSlot}
+      data-orientation={orientation}
     >
       <TabGroupContext.Provider
         value={{
           activeTab,
-          tabs,
-          panels,
-          register,
           orientation,
+          forcedTabability,
           keyboardActivationBehavior,
           onChange: handleChange,
         }}

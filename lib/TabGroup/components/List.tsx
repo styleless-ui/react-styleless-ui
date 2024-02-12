@@ -1,14 +1,9 @@
 import * as React from "react";
 import { getLabelInfo, logger } from "../../internals";
 import type { Classes, MergeElementProps } from "../../types";
-import {
-  componentWithForwardedRef,
-  isFragment,
-  useDeterministicId,
-} from "../../utils";
+import { componentWithForwardedRef, useDeterministicId } from "../../utils";
 import { TabGroupContext } from "../context";
 import { ListLabel as ListLabelSlot, ListRoot as ListRootSlot } from "../slots";
-import Tab from "./Tab";
 
 type OwnProps = {
   /**
@@ -46,40 +41,26 @@ export type Props = Omit<
 >;
 
 const ListBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
-  const {
-    label,
-    children: childrenProp,
-    id: idProp,
-    classes,
-    ...otherProps
-  } = props;
+  const { label, children, id: idProp, classes, ...otherProps } = props;
 
   const ctx = React.useContext(TabGroupContext);
 
   const id = useDeterministicId(idProp, "styleless-ui__tablist");
   const visibleLabelId = id ? `${id}__label` : undefined;
 
+  if (!ctx) {
+    logger(
+      "You have to use this component as a descendant of <TabGroup.Root>.",
+      {
+        scope: "TabGroup.List",
+        type: "error",
+      },
+    );
+
+    return null;
+  }
+
   const labelProps = getLabelInfo(label, "TabGroup.List");
-
-  let tabIdx = 0;
-  const children = React.Children.map(childrenProp, child => {
-    if (!React.isValidElement(child) || isFragment(child)) {
-      logger(
-        "The <TabGroup.List> component doesn't accept `Fragment` or any invalid element as children.",
-        { scope: "TabGroup.List", type: "error" },
-      );
-
-      return null;
-    }
-
-    if ((child as React.ReactElement).type === Tab) {
-      const props = { "data-index": tabIdx++ };
-
-      return React.cloneElement(child, props);
-    }
-
-    return child as React.ReactElement;
-  });
 
   const renderLabel = () => {
     if (!labelProps.visibleLabel) return null;
@@ -109,7 +90,7 @@ const ListBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         aria-labelledby={
           labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
         }
-        aria-orientation={ctx?.orientation}
+        aria-orientation={ctx.orientation}
       >
         {children}
       </div>

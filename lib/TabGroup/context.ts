@@ -1,13 +1,11 @@
 import * as React from "react";
 
 type ContextValue = {
-  activeTab: number;
-  tabs: React.RefObject<HTMLButtonElement>[];
-  panels: React.RefObject<HTMLDivElement>[];
+  activeTab: string;
   orientation: "horizontal" | "vertical";
+  forcedTabability: string | null;
   keyboardActivationBehavior: "manual" | "automatic";
-  onChange: (tabIndex: number) => void;
-  register: (ref: React.RefObject<HTMLButtonElement | HTMLDivElement>) => void;
+  onChange: (tabValue: string) => void;
 };
 
 const Context = React.createContext<ContextValue | null>(null);
