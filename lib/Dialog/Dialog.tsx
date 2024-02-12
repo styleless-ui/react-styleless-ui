@@ -33,11 +33,11 @@ type OwnProps = {
    */
   open: boolean;
   /**
-   * The DOM node reference or selector to focus when the dialog closes.
+   * The DOM node reference to focus when the dialog closes.
    *
    * If not provided, the previously focused element will be focused.
    */
-  focusAfterClosed?: React.RefObject<HTMLElement> | string;
+  focusAfterClosed?: React.RefObject<HTMLElement>;
   /**
    * `alertdialog`: An alert dialog is a modal dialog that
    * interrupts the user's workflow to communicate an
@@ -89,13 +89,19 @@ const DialogBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   React.useEffect(() => {
     if (!open && typeof prevOpen === "boolean" && open !== prevOpen) {
-      typeof focusAfterClosed === "string"
-        ? document.querySelector<HTMLElement>(focusAfterClosed)?.focus()
-        : typeof focusAfterClosed === "object"
-        ? focusAfterClosed.current?.focus()
-        : previouslyFocusedElement.current
-        ? previouslyFocusedElement.current.focus()
-        : document.body.focus();
+      if (focusAfterClosed) {
+        focusAfterClosed.current?.focus();
+
+        return;
+      }
+
+      if (previouslyFocusedElement.current) {
+        previouslyFocusedElement.current.focus();
+
+        return;
+      }
+
+      document.body.focus();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, prevOpen]);

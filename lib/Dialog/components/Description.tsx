@@ -45,7 +45,6 @@ const DescriptionBase = <E extends React.ElementType, R extends HTMLElement>(
     handleRef(node);
 
     if (!node) return;
-    if (!id) return;
 
     const content = node.closest(`[data-slot='${ContentRootSlot}']`);
 
@@ -53,7 +52,7 @@ const DescriptionBase = <E extends React.ElementType, R extends HTMLElement>(
       content.setAttribute("aria-describedby", id);
     } else {
       logger(
-        "You should always wrap your content with `<Dialog.Content>` to provide " +
+        "You should always wrap your content with <Dialog.Content> to provide " +
           "accessibility features.",
         { scope: "Dialog", type: "error" },
       );

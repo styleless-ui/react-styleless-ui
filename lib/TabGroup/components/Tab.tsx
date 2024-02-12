@@ -1,5 +1,5 @@
 import * as React from "react";
-import { SystemKeys } from "../../internals";
+import { SystemKeys, logger } from "../../internals";
 import type { MergeElementProps, PropWithRenderContext } from "../../types";
 import {
   componentWithForwardedRef,
@@ -9,7 +9,7 @@ import {
   useForkedRefs,
 } from "../../utils";
 import { TabGroupContext } from "../context";
-import { TabRoot as TabRootSlot } from "../slots";
+import { Root as RootSlot, TabRoot as TabRootSlot } from "../slots";
 
 export type RenderProps = {
   /**
@@ -39,9 +39,14 @@ type OwnProps = {
   className?: PropWithRenderContext<string, ClassNameProps>;
   /**
    * If `true`, the tab will be disabled.
+   *
    * @default false
    */
   disabled?: boolean;
+  /**
+   * A unique value that associates the tab with a panel(content).
+   */
+  value: string;
 };
 
 export type Props = Omit<
@@ -55,6 +60,7 @@ const TabBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     children: childrenProp,
     className: classNameProp,
     disabled = false,
+    value,
     onBlur,
     onFocus,
     onKeyDown,
@@ -62,13 +68,9 @@ const TabBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     ...otherProps
   } = props;
 
-  const tabGroupCtx = React.useContext(TabGroupContext);
+  const ctx = React.useContext(TabGroupContext);
 
   const id = useDeterministicId(idProp, "styleless-ui__tab");
-
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  const index = Number(otherProps["data-index"] as string);
 
   const buttonBase = useButtonBase({
     disabled,
@@ -77,12 +79,21 @@ const TabBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     onKeyUp,
     onKeyDown: useEventCallback<React.KeyboardEvent<HTMLButtonElement>>(
       event => {
-        if (tabGroupCtx) {
-          const { tabs, keyboardActivationBehavior, orientation } = tabGroupCtx;
-          const currentTab = tabs[index]?.current;
+        if (ctx) {
+          const { keyboardActivationBehavior, orientation } = ctx;
 
-          if (!currentTab || document.activeElement !== currentTab)
-            return onKeyDown?.(event);
+          const list =
+            event.currentTarget.closest<HTMLElement>("[role='tablist']");
+
+          const tabs = Array.from(
+            list?.querySelectorAll<HTMLElement>("[role='tab']") ?? [],
+          );
+
+          const currentTabIdx = tabs.findIndex(
+            tab => tab.getAttribute("data-entityname") === value,
+          );
+
+          const currentTab = tabs[currentTabIdx];
 
           const dir = currentTab
             ? window.getComputedStyle(currentTab).direction
@@ -107,61 +118,75 @@ const TabBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
           const goFirst = event.key === SystemKeys.HOME;
           const goLast = event.key === SystemKeys.END;
 
-          let focusTabRef: React.RefObject<HTMLButtonElement> | null = null;
+          let activeTab: HTMLElement | null = null;
 
           const getAvailableTab = (
             idx: number,
             forward: boolean,
             prevIdxs: number[] = [],
-          ): typeof focusTabRef => {
-            const tabRef = tabs[idx];
+          ): HTMLElement | null => {
+            const tab = tabs[idx];
 
             if (prevIdxs.includes(idx)) return null;
+            if (!tab) return null;
 
-            if (!tabRef?.current || tabRef.current.disabled) {
-              const newIdx =
-                (forward ? idx + 1 : idx - 1 + tabs.length) % tabs.length;
+            const newIdx =
+              (forward ? idx + 1 : idx - 1 + tabs.length) % tabs.length;
 
-              return getAvailableTab(newIdx, forward, [...prevIdxs, idx]);
-            }
+            const isDisabled =
+              tab.hasAttribute("disabled") ||
+              tab.getAttribute("aria-disabled") === "true";
 
-            return tabRef;
+            if (!isDisabled) return tab;
+
+            return getAvailableTab(newIdx, forward, [...prevIdxs, idx]);
           };
 
           if (goPrev) {
-            focusTabRef = getAvailableTab(
-              (index - 1 + tabs.length) % tabs.length,
+            activeTab = getAvailableTab(
+              (currentTabIdx - 1 + tabs.length) % tabs.length,
               false,
             );
           } else if (goNext) {
-            focusTabRef = getAvailableTab((index + 1) % tabs.length, true);
+            activeTab = getAvailableTab(
+              (currentTabIdx + 1) % tabs.length,
+              true,
+            );
           } else if (goFirst) {
-            focusTabRef = getAvailableTab(0, true);
+            activeTab = getAvailableTab(0, true);
           } else if (goLast) {
-            focusTabRef = getAvailableTab(tabs.length - 1, false);
+            activeTab = getAvailableTab(tabs.length - 1, false);
           }
 
-          if (focusTabRef) {
+          if (activeTab) {
             event.preventDefault();
 
-            focusTabRef.current?.focus();
-            keyboardActivationBehavior === "automatic" &&
-              focusTabRef.current?.click();
+            activeTab.focus();
+            keyboardActivationBehavior === "automatic" && activeTab.click();
           }
         }
 
         onKeyDown?.(event);
       },
     ),
-    onClick: useEventCallback(() => void tabGroupCtx?.onChange(index)),
+    onClick: useEventCallback(() => void ctx?.onChange(value)),
   });
 
-  const rootRef = React.useRef<HTMLButtonElement>(null);
-  const handleRef = useForkedRefs(ref, rootRef, buttonBase.handleButtonRef);
+  const handleRef = useForkedRefs(ref, buttonBase.handleButtonRef);
 
-  tabGroupCtx?.register(rootRef);
+  if (!ctx) {
+    logger(
+      "You have to use this component as a descendant of <TabGroup.Root>.",
+      {
+        scope: "TabGroup.Tab",
+        type: "error",
+      },
+    );
 
-  const selected = tabGroupCtx ? tabGroupCtx.activeTab === index : false;
+    return null;
+  }
+
+  const selected = ctx.activeTab === value;
 
   const renderProps: RenderProps = {
     selected,
@@ -181,13 +206,57 @@ const TabBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
       ? classNameProp(classNameProps)
       : classNameProp;
 
+  const dataAttrs = {
+    "data-slot": TabRootSlot,
+    "data-entityname": value,
+    "data-selected": selected ? "" : undefined,
+    "data-disabled": disabled ? "" : undefined,
+    "data-focus-visible": buttonBase.isFocusedVisible ? "" : undefined,
+  };
+
+  const calcTabIndex = () => {
+    if (disabled) return -1;
+    if (!ctx) return 0;
+
+    const forcedTabableItem = ctx.forcedTabability;
+
+    if (forcedTabableItem && forcedTabableItem === value) return 0;
+
+    const isSelected = ctx.activeTab === value;
+
+    if (!isSelected) return -1;
+
+    return 0;
+  };
+
   const refCallback = (node: HTMLButtonElement | null) => {
     handleRef(node);
+
+    if (!selected) return;
     if (!node) return;
 
-    const panelId = tabGroupCtx?.panels[index]?.current?.id;
+    const root = node.closest<HTMLElement>(`[data-slot="${RootSlot}"]`);
 
-    panelId && node.setAttribute("aria-controls", panelId);
+    if (!root) return;
+
+    const panels = Array.from(
+      root.querySelectorAll<HTMLElement>("[role='tabpanel']"),
+    );
+
+    const correspondedPanel = panels.find(
+      panel => panel.getAttribute("data-entityname") === value,
+    );
+
+    if (!correspondedPanel) {
+      logger(
+        `Couldn't find a corresponding <TabGroup.Panel> with \`value={${value}}\`.`,
+        { scope: "TabGroup.Tab", type: "error" },
+      );
+
+      return;
+    }
+
+    node.setAttribute("aria-controls", correspondedPanel.id);
   };
 
   return (
@@ -195,7 +264,6 @@ const TabBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
       {...otherProps}
       id={id}
       role="tab"
-      data-slot={TabRootSlot}
       type="button"
       ref={refCallback}
       onClick={buttonBase.handleClick}
@@ -204,10 +272,10 @@ const TabBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
       onKeyDown={buttonBase.handleKeyDown}
       onKeyUp={buttonBase.handleKeyUp}
       disabled={disabled}
-      tabIndex={disabled ? -1 : selected ? 0 : -1}
+      tabIndex={calcTabIndex()}
       className={className}
       aria-selected={selected}
-      data-selected={selected ? "" : undefined}
+      {...dataAttrs}
     >
       {children}
     </button>

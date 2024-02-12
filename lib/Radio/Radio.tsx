@@ -129,21 +129,13 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     );
   }
 
-  const groupCtx = radioGroupCtx
-    ? {
-        value: radioGroupCtx.value,
-        onChange: radioGroupCtx.onChange,
-        items: radioGroupCtx.radios,
-      }
-    : null;
-
   const checkBase = useCheckBase({
     value,
-    groupCtx,
+    groupCtx: radioGroupCtx,
+    checked: checkedProp,
     strategy: "radio-control",
     autoFocus,
     disabled,
-    checked: checkedProp,
     defaultChecked,
     onChange,
     onBlur,
@@ -161,6 +153,12 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const labelProps = getLabelInfo(label, "Radio");
 
+  useHandleTargetLabelClick({
+    visibleLabelId,
+    labelInfo: labelProps,
+    onClick: () => checkBase.controllerRef.current?.click(),
+  });
+
   const classNameProps: ClassNameProps = {
     disabled,
     checked: checkBase.checked,
@@ -169,16 +167,6 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const classes =
     typeof classesMap === "function" ? classesMap(classNameProps) : classesMap;
-
-  const refCallback = (node: HTMLButtonElement | null) => {
-    handleRef(node);
-
-    if (!node) return;
-
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    radioGroupCtx?.registerRadio(value!, rootRef);
-    if (!radioGroupCtx) node.tabIndex = disabled ? -1 : 0;
-  };
 
   const renderIcon = () => {
     if (!checkBase.checked) return null;
@@ -206,28 +194,39 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     );
   };
 
+  const calcTabIndex = () => {
+    if (disabled) return -1;
+    if (!radioGroupCtx) return 0;
+
+    const forcedTabableItem = radioGroupCtx.forcedTabability;
+
+    if (forcedTabableItem && forcedTabableItem === value) return 0;
+
+    const isSelected = radioGroupCtx.value === value;
+
+    if (!isSelected) return -1;
+
+    return 0;
+  };
+
   const dataAttrs = {
     "data-slot": Slots.Root,
     "data-disabled": classNameProps.disabled ? "" : undefined,
     "data-focus-visible": classNameProps.focusedVisible ? "" : undefined,
     "data-checked": classNameProps.checked ? "" : undefined,
+    "data-entityname": value,
   };
-
-  useHandleTargetLabelClick({
-    visibleLabelId,
-    labelInfo: labelProps,
-    onClick: () => checkBase.controllerRef.current?.click(),
-  });
 
   return (
     <>
       <button
         {...otherProps}
         id={id}
+        tabIndex={calcTabIndex()}
         role="radio"
         className={classes?.root}
         type="button"
-        ref={refCallback}
+        ref={handleRef}
         disabled={disabled}
         onFocus={checkBase.handleFocus}
         onBlur={checkBase.handleBlur}

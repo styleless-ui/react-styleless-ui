@@ -11,32 +11,29 @@ import {
 } from "../../tests/utils";
 import Checkbox from "../Checkbox";
 import CheckGroup, { type Props } from "./CheckGroup";
-import * as Slots from "./slots";
 
 const labelText = "Label";
 
 const REQUIRED_PROPS: Props = {
   label: labelText,
-  classes: { label: "label", root: "root", group: "group" },
+  classes: { label: "label", root: "root" },
 };
 
 describe("CheckGroup", () => {
   afterEach(jest.clearAllMocks);
 
   itShouldMount(CheckGroup, REQUIRED_PROPS);
-  itSupportsStyle(CheckGroup, REQUIRED_PROPS);
+  itSupportsStyle(CheckGroup, REQUIRED_PROPS, "[role='group']");
   itSupportsRef(CheckGroup, REQUIRED_PROPS, HTMLDivElement);
-  itSupportsDataSetProps(CheckGroup, REQUIRED_PROPS);
+  itSupportsDataSetProps(CheckGroup, REQUIRED_PROPS, "[role='group']");
 
   it("should have the required classNames", () => {
     render(<CheckGroup {...REQUIRED_PROPS} />);
 
-    const group = screen.getByRole("group");
-    const root = group.parentElement;
-    const label = root?.querySelector(`[data-slot='${Slots.Label}']`);
+    const root = screen.getByRole("group");
+    const label = root.previousElementSibling;
 
     expect(root).toHaveClass("root");
-    expect(group).toHaveClass("group");
     expect(label).toHaveClass("label");
   });
 

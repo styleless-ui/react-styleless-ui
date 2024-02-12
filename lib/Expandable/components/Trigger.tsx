@@ -73,9 +73,7 @@ const TriggerBase = <E extends React.ElementType, R extends HTMLElement>(
 
     if (!content) return;
 
-    const contentId = content.id;
-
-    contentId && node.setAttribute("aria-controls", contentId);
+    node.setAttribute("aria-controls", content.id);
   };
 
   return (

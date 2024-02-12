@@ -29,7 +29,10 @@ const itSupportsStyle = <T,>(
     const style = { border: "1px solid red", backgroundColor: "black" };
 
     const { container } = render(
-      <Component {...requiredProps} style={style} />,
+      <Component
+        {...requiredProps}
+        style={style}
+      />,
     );
 
     expect(getTarget(container)).toHaveStyle(style);

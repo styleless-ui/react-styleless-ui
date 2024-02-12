@@ -113,16 +113,18 @@ describe("Dialog", () => {
   });
 
   it("closes the dialog and focuses the specified `focusAfterClosed` element", () => {
+    const focusRef = React.createRef<HTMLButtonElement>();
+
     const props: Dialog.RootProps = {
       role: "dialog",
       open: false,
-      focusAfterClosed: "#focus-btn",
+      focusAfterClosed: focusRef,
     };
 
     userEvent.setup();
     const { rerender } = render(
       <>
-        <button id="focus-btn">Button</button>
+        <button ref={focusRef}>Button</button>
         <Dialog.Root
           {...props}
           open={true}
@@ -132,7 +134,7 @@ describe("Dialog", () => {
 
     rerender(
       <>
-        <button id="focus-btn">Button</button>
+        <button ref={focusRef}>Button</button>
         <Dialog.Root
           {...props}
           open={false}

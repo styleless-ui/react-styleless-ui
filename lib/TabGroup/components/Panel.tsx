@@ -1,4 +1,5 @@
 import * as React from "react";
+import { logger } from "../../internals";
 import type { MergeElementProps } from "../../types";
 import {
   componentWithForwardedRef,
@@ -6,7 +7,7 @@ import {
   useForkedRefs,
 } from "../../utils";
 import { TabGroupContext } from "../context";
-import { PanelRoot as PanelRootSlot } from "../slots";
+import { PanelRoot as PanelRootSlot, Root as RootSlot } from "../slots";
 
 type OwnProps = {
   /**
@@ -17,6 +18,17 @@ type OwnProps = {
    * The className applied to the component.
    */
   className?: string;
+  /**
+   * A unique value that associates the panel(content) with a tab.
+   */
+  value: string;
+  /**
+   * Used to keep mounting when more control is needed.\
+   * Useful when controlling animation with React animation libraries.
+   *
+   * @default false
+   */
+  keepMounted?: boolean;
 };
 
 export type Props = Omit<
@@ -25,44 +37,83 @@ export type Props = Omit<
 >;
 
 const PanelBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
-  const { children, id: idProp, className, ...otherProps } = props;
+  const {
+    children,
+    id: idProp,
+    className,
+    value,
+    keepMounted = false,
+    ...otherProps
+  } = props;
 
-  const tabGroupCtx = React.useContext(TabGroupContext);
+  const ctx = React.useContext(TabGroupContext);
 
   const id = useDeterministicId(idProp, "styleless-ui__panel");
 
   const rootRef = React.useRef<HTMLDivElement>(null);
   const handleRef = useForkedRefs(ref, rootRef);
 
-  tabGroupCtx?.register(rootRef);
+  if (!ctx) {
+    logger(
+      "You have to use this component as a descendant of <TabGroup.Root>.",
+      {
+        scope: "TabGroup.Panel",
+        type: "error",
+      },
+    );
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  const index = Number(otherProps["data-index"] as string);
+    return null;
+  }
 
-  const visible = tabGroupCtx ? tabGroupCtx.activeTab === index : false;
+  const active = ctx.activeTab === value;
+
+  if (!keepMounted && !active) return null;
+
+  const dataAttrs = {
+    "data-slot": PanelRootSlot,
+    "data-active": active ? "" : undefined,
+    "data-entityname": value,
+  };
 
   const refCallback = (node: HTMLDivElement | null) => {
     handleRef(node);
+
     if (!node) return;
 
-    const tabId = tabGroupCtx?.tabs[index]?.current?.id;
+    const root = node.closest<HTMLElement>(`[data-slot="${RootSlot}"]`);
 
-    tabId && node.setAttribute("aria-labelledby", tabId);
+    if (!root) return;
+
+    const tabs = Array.from(root.querySelectorAll<HTMLElement>("[role='tab']"));
+
+    const associatedTab = tabs.find(
+      tab => tab.getAttribute("data-entityname") === value,
+    );
+
+    if (!associatedTab) {
+      logger(
+        `Couldn't find an associated <TabGroup.Tab> with \`value={${value}}\`.`,
+        { scope: "TabGroup.Panel", type: "error" },
+      );
+
+      return;
+    }
+
+    node.setAttribute("aria-labelledby", associatedTab.id);
   };
 
-  return visible ? (
+  return (
     <div
       {...otherProps}
       id={id}
       ref={refCallback}
       className={className}
       role="tabpanel"
-      data-slot={PanelRootSlot}
+      {...dataAttrs}
     >
       {children}
     </div>
-  ) : null;
+  );
 };
 
 const Panel = componentWithForwardedRef(PanelBase, "TabGroup.Panel");

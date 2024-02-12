@@ -11,7 +11,12 @@ const itSupportsRef = <T,>(
   it(`supports forwarding ref`, () => {
     const ref = React.createRef<typeof refType>();
 
-    render(<Component {...requiredProps} {...{ ref }} />);
+    render(
+      <Component
+        {...requiredProps}
+        {...{ ref }}
+      />,
+    );
     expect(ref.current).toBeInstanceOf(refType);
   });
 };

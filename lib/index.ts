@@ -85,7 +85,6 @@ export * as TabGroup from "./TabGroup";
 export type {
   ListProps as TabGroupListProps,
   PanelProps as TabGroupPanelProps,
-  PanelsProps as TabGroupPanelsProps,
   RootProps as TabGroupRootProps,
   TabClassNameProps as TabGroupTabClassNameProps,
   TabProps as TabGroupTabProps,

@@ -27,7 +27,10 @@ const itSupportsDataSetProps = <T,>(
     };
 
     const { container } = render(
-      <Component {...requiredProps} data-other-attribute="test" />,
+      <Component
+        {...requiredProps}
+        data-other-attribute="test"
+      />,
     );
 
     expect(getTarget(container)).toHaveAttribute(

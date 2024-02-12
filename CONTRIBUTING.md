@@ -147,8 +147,8 @@ Please follow the coding style of the project. StylelessUI uses prettier and esl
   - 💄 when improving UI
   - ⚰️ when removing dead code
   - 🗑️ when deprecating code
-  - 💚 when fixing the CI build
-  - ✅ when adding tests
+  - 🏗️ when fixing the CI build
+  - 🧪 when adding tests
   - 🔒 when dealing with security
   - ⬆️ when upgrading dependencies
   - ⬇️ when downgrading dependencies

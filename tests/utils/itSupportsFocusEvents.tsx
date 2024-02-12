@@ -14,7 +14,11 @@ const itSupportsFocusEvents = <T,>(
     const onBlurSpy = jest.fn();
 
     const { container } = render(
-      <Component {...requiredProps} onFocus={onFocusSpy} onBlur={onBlurSpy} />,
+      <Component
+        {...requiredProps}
+        onFocus={onFocusSpy}
+        onBlur={onBlurSpy}
+      />,
     );
 
     fireEvent.focus(container.querySelector(selector) as Element);

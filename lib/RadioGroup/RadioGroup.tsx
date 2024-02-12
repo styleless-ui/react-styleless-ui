@@ -18,7 +18,7 @@ type OwnProps = {
   /**
    * Map of sub-components and their correlated classNames.
    */
-  classes?: Classes<"root" | "label" | "group">;
+  classes?: Classes<"root" | "label">;
   /**
    * The label of the group.
    */
@@ -84,6 +84,9 @@ const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const labelProps = getLabelInfo(label, "RadioGroup");
 
   const [value, setValue] = useControlledProp(valueProp, defaultValue, "");
+  const [forcedTabability, setForcedTabability] = React.useState<string | null>(
+    null,
+  );
 
   const handleChange = (newCheckedState: boolean, inputValue: string) => {
     if (!newCheckedState) return;
@@ -92,43 +95,31 @@ const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     onChange?.(inputValue);
   };
 
-  const radios: [string, React.RefObject<HTMLButtonElement>][] = [];
-
-  const registerRadio = (
-    inputValue: (typeof radios)[number][0],
-    radioRef: (typeof radios)[number][1],
-  ) => {
-    if (!radios.some(r => r[0] === inputValue))
-      radios.push([inputValue, radioRef]);
-  };
-
   React.useEffect(() => {
     if (!rootRef.current) return;
 
-    radios.forEach(([v, rRef]) => {
-      if (!rRef.current) return;
+    if (value) {
+      setForcedTabability(prev => (prev ? null : prev));
 
-      const isSelected = Array.isArray(value) ? value.includes(v) : value === v;
-      const isDisabled = rRef.current.hasAttribute("disabled");
+      return;
+    }
 
-      rRef.current.tabIndex = isDisabled ? -1 : isSelected ? 0 : -1;
-    });
-
-    const notTabable = radios.filter(
-      ([_, rRef]) => rRef.current?.getAttribute("tabindex") !== "0",
+    const radios = Array.from(
+      rootRef.current.querySelectorAll<HTMLElement>('[role="radio"]'),
     );
 
-    if (notTabable.length !== radios.length) return;
+    const validRadios = radios.filter(radio => {
+      const isDisabled =
+        radio.hasAttribute("disabled") ||
+        radio.getAttribute("aria-disabled") === "true";
 
-    const radio =
-      radios.find(([_, rRef]) => !rRef.current?.hasAttribute("disabled")) ??
-      null;
+      return !isDisabled;
+    });
 
-    if (!radio) return;
-    const [_, rRef] = radio;
-
-    rRef.current?.setAttribute("tabindex", "0");
-  });
+    setForcedTabability(
+      validRadios?.[0]?.getAttribute("data-entityname") ?? null,
+    );
+  }, [value]);
 
   const renderLabel = () => {
     if (!labelProps.visibleLabel) return null;
@@ -145,31 +136,28 @@ const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   };
 
   return (
-    <div
-      {...otherProps}
-      id={id}
-      ref={handleRootRef}
-      className={classes?.root}
-      data-slot={Slots.Root}
-    >
-      <RadioGroupContext.Provider
-        value={{ value, onChange: handleChange, registerRadio, radios }}
+    <>
+      {renderLabel()}
+      <div
+        {...otherProps}
+        id={id}
+        ref={handleRootRef}
+        className={classes?.root}
+        data-slot={Slots.Root}
+        role="radiogroup"
+        aria-label={labelProps.srOnlyLabel}
+        aria-orientation={orientation}
+        aria-labelledby={
+          labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
+        }
       >
-        {renderLabel()}
-        <div
-          role="radiogroup"
-          data-slot={Slots.Group}
-          className={classes?.group}
-          aria-label={labelProps.srOnlyLabel}
-          aria-orientation={orientation}
-          aria-labelledby={
-            labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
-          }
+        <RadioGroupContext.Provider
+          value={{ value, onChange: handleChange, forcedTabability }}
         >
           {children}
-        </div>
-      </RadioGroupContext.Provider>
-    </div>
+        </RadioGroupContext.Provider>
+      </div>
+    </>
   );
 };
 

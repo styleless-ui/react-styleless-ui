@@ -63,7 +63,7 @@ const ExpandableBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     expanded: isExpanded,
   };
 
-  const classNameProps = renderProps;
+  const classNameProps: ClassNameProps = renderProps;
 
   const className =
     typeof classNameProp === "function"
