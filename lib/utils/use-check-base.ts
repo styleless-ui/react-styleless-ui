@@ -198,7 +198,7 @@ const useCheckBase = (props: CheckBaseProps) => {
           idx: number,
           forward: boolean,
           prevIdxs: number[] = [],
-        ): typeof activeItem => {
+        ): HTMLElement | null => {
           const item = items[idx];
 
           if (!item) return null;
