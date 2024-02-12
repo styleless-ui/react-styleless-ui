@@ -63,9 +63,7 @@ const ContentBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
     if (!trigger) return;
 
-    const triggerId = trigger.id;
-
-    triggerId && node.setAttribute("aria-labelledby", triggerId);
+    node.setAttribute("aria-labelledby", trigger.id);
   };
 
   return (
