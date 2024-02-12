@@ -13,7 +13,6 @@ import { SystemKeys } from "../internals";
 type GenericGroupContextValue = {
   value: string | string[];
   onChange: (newState: boolean, itemValue: string) => void;
-  items?: [string, React.RefObject<HTMLButtonElement>][];
 };
 
 type CheckBaseProps = {
@@ -61,8 +60,10 @@ const useCheckBase = (props: CheckBaseProps) => {
     false,
   );
 
+  const isRadioControl = strategy === "radio-control";
+
   const checkedState = groupCtx
-    ? strategy === "check-control"
+    ? !isRadioControl
       ? groupCtx.value.includes(value)
       : groupCtx.value === value
     : checked;
@@ -97,7 +98,7 @@ const useCheckBase = (props: CheckBaseProps) => {
 
   const emitChange = (newChecked: boolean) => {
     if (disabled || !isMounted()) return;
-    if (strategy === "radio-control" && checkedState && !toggle) return;
+    if (isRadioControl && checkedState && !toggle) return;
 
     setChecked(newChecked);
     groupCtx?.onChange(newChecked, value);
@@ -158,16 +159,28 @@ const useCheckBase = (props: CheckBaseProps) => {
       }
 
       if (groupCtx && isFocusedVisible) {
-        const { items } = groupCtx;
+        if (!isRadioControl) return;
+        if (!controllerRef.current) return;
 
-        if (!items) return;
+        const group = controllerRef.current.closest<HTMLElement>(
+          '[role="radiogroup"]',
+        );
 
-        const currentItemIdx = items.findIndex(r => r[0] === value);
-        const currentItem = items[currentItemIdx]?.[1].current;
+        if (!group) return;
 
-        const dir = currentItem
-          ? window.getComputedStyle(currentItem).direction
-          : "ltr";
+        const items = Array.from(
+          group.querySelectorAll<HTMLElement>('[role="radio"]'),
+        );
+
+        const currentItemIdx = items.findIndex(
+          item => item.getAttribute("data-entityname") === value,
+        );
+
+        const currentItem = items[currentItemIdx];
+
+        if (!currentItem) return;
+
+        const dir = window.getComputedStyle(currentItem).direction;
 
         const goPrev = [
           SystemKeys.UP,
@@ -179,7 +192,7 @@ const useCheckBase = (props: CheckBaseProps) => {
           dir === "ltr" ? SystemKeys.RIGHT : SystemKeys.LEFT,
         ].includes(event.key);
 
-        let activeItem: (typeof items)[number] | null = null;
+        let activeItem: HTMLElement | null = null;
 
         const getAvailableItem = (
           idx: number,
@@ -188,16 +201,19 @@ const useCheckBase = (props: CheckBaseProps) => {
         ): typeof activeItem => {
           const item = items[idx];
 
+          if (!item) return null;
           if (prevIdxs.includes(idx)) return null;
 
-          if (!item || !item[1].current || item[1].current.disabled) {
-            const newIdx =
-              (forward ? idx + 1 : idx - 1 + items.length) % items.length;
+          const newIdx =
+            (forward ? idx + 1 : idx - 1 + items.length) % items.length;
 
-            return getAvailableItem(newIdx, forward, [...prevIdxs, idx]);
-          }
+          const isDisabled =
+            item.hasAttribute("disabled") ||
+            item.getAttribute("aria-disabled") === "true";
 
-          return item;
+          if (!isDisabled) return item;
+
+          return getAvailableItem(newIdx, forward, [...prevIdxs, idx]);
         };
 
         if (goPrev) {
@@ -215,9 +231,8 @@ const useCheckBase = (props: CheckBaseProps) => {
         if (activeItem) {
           event.preventDefault();
 
-          activeItem[1].current?.focus();
-          if (keyboardActivationBehavior === "automatic")
-            activeItem[1].current?.click();
+          activeItem?.focus();
+          if (keyboardActivationBehavior === "automatic") activeItem?.click();
         }
       }
     }

@@ -3,12 +3,8 @@ import { type Props } from "./RadioGroup";
 
 type ContextValue = {
   value: Exclude<Props["value"], undefined>;
-  radios: [string, React.RefObject<HTMLButtonElement>][];
+  forcedTabability: string | null;
   onChange: (newCheckedState: boolean, inputValue: string) => void;
-  registerRadio: (
-    value: string,
-    ref: React.RefObject<HTMLButtonElement>,
-  ) => void;
 };
 
 const Context = React.createContext<ContextValue | null>(null);
