@@ -11,13 +11,12 @@ import {
 } from "../../tests/utils";
 import Radio from "../Radio";
 import RadioGroup, { type Props } from "./RadioGroup";
-import * as Slots from "./slots";
 
 const labelText = "Label";
 
 const REQUIRED_PROPS: Props = {
   label: labelText,
-  classes: { label: "label", root: "root", group: "group" },
+  classes: { label: "label", root: "root" },
 };
 
 describe("RadioGroup", () => {
@@ -31,12 +30,10 @@ describe("RadioGroup", () => {
   it("should have the required classNames", () => {
     render(<RadioGroup {...REQUIRED_PROPS} />);
 
-    const group = screen.getByRole("radiogroup");
-    const root = group.parentElement;
-    const label = root?.querySelector(`[data-slot='${Slots.Label}']`);
+    const root = screen.getByRole("radiogroup");
+    const label = root.previousElementSibling;
 
     expect(root).toHaveClass("root");
-    expect(group).toHaveClass("group");
     expect(label).toHaveClass("label");
   });
 

@@ -18,7 +18,7 @@ type OwnProps = {
   /**
    * Map of sub-components and their correlated classNames.
    */
-  classes?: Classes<"root" | "label" | "group">;
+  classes?: Classes<"root" | "label">;
   /**
    * The label of the group.
    */
@@ -98,8 +98,9 @@ const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     inputValue: (typeof radios)[number][0],
     radioRef: (typeof radios)[number][1],
   ) => {
-    if (!radios.some(r => r[0] === inputValue))
+    if (!radios.some(r => r[0] === inputValue)) {
       radios.push([inputValue, radioRef]);
+    }
   };
 
   React.useEffect(() => {
@@ -145,31 +146,28 @@ const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   };
 
   return (
-    <div
-      {...otherProps}
-      id={id}
-      ref={handleRootRef}
-      className={classes?.root}
-      data-slot={Slots.Root}
-    >
-      <RadioGroupContext.Provider
-        value={{ value, onChange: handleChange, registerRadio, radios }}
+    <>
+      {renderLabel()}
+      <div
+        {...otherProps}
+        id={id}
+        ref={handleRootRef}
+        className={classes?.root}
+        data-slot={Slots.Root}
+        role="radiogroup"
+        aria-label={labelProps.srOnlyLabel}
+        aria-orientation={orientation}
+        aria-labelledby={
+          labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
+        }
       >
-        {renderLabel()}
-        <div
-          role="radiogroup"
-          data-slot={Slots.Group}
-          className={classes?.group}
-          aria-label={labelProps.srOnlyLabel}
-          aria-orientation={orientation}
-          aria-labelledby={
-            labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
-          }
+        <RadioGroupContext.Provider
+          value={{ value, onChange: handleChange, registerRadio, radios }}
         >
           {children}
-        </div>
-      </RadioGroupContext.Provider>
-    </div>
+        </RadioGroupContext.Provider>
+      </div>
+    </>
   );
 };
 

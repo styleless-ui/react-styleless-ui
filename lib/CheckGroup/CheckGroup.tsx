@@ -17,7 +17,7 @@ type OwnProps = {
   /**
    * Map of sub-components and their correlated classNames.
    */
-  classes?: Classes<"root" | "label" | "group">;
+  classes?: Classes<"root" | "label">;
   /**
    * The label of the group.
    */
@@ -105,29 +105,26 @@ const CheckGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   };
 
   return (
-    <div
-      {...otherProps}
-      id={id}
-      ref={ref}
-      className={classes?.root}
-      data-slot={Slots.Root}
-    >
-      <CheckGroupContext.Provider value={{ value, onChange: handleChange }}>
-        {renderLabel()}
-        <div
-          role="group"
-          data-slot={Slots.Group}
-          className={classes?.group}
-          aria-label={labelProps.srOnlyLabel}
-          aria-orientation={orientation}
-          aria-labelledby={
-            labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
-          }
-        >
+    <>
+      {renderLabel()}
+      <div
+        {...otherProps}
+        role="group"
+        id={id}
+        ref={ref}
+        className={classes?.root}
+        data-slot={Slots.Root}
+        aria-label={labelProps.srOnlyLabel}
+        aria-orientation={orientation}
+        aria-labelledby={
+          labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
+        }
+      >
+        <CheckGroupContext.Provider value={{ value, onChange: handleChange }}>
           {children}
-        </div>
-      </CheckGroupContext.Provider>
-    </div>
+        </CheckGroupContext.Provider>
+      </div>
+    </>
   );
 };
 
