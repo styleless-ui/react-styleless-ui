@@ -11,7 +11,10 @@ const itSupportsClassName = <T,>(
 ): void => {
   it("supports className prop", () => {
     const { container } = render(
-      <Component {...requiredProps} className={cls} />,
+      <Component
+        {...requiredProps}
+        className={cls}
+      />,
     );
 
     expect(container.firstChild).toHaveClass(cls);

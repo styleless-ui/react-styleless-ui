@@ -16,18 +16,29 @@ const itIsPolymorphic = <T,>(
 
     const TestComponent = React.forwardRef(
       (props: Record<string, unknown> = {}, ref: React.Ref<HTMLElement>) => (
-        <span data-test-prop ref={ref} {...props} />
+        <span
+          data-test-prop
+          ref={ref}
+          {...props}
+        />
       ),
     );
 
     TestComponent.displayName = "@styleless-ui/TestComponent";
 
     const { container: withTag } = render(
-      <Component as="a" href="https://styleless-ui.io" {...requiredProps} />,
+      <Component
+        as="a"
+        href="https://styleless-ui.io"
+        {...requiredProps}
+      />,
     );
 
     const { container: withComponent } = render(
-      <Component as={TestComponent} {...requiredProps} />,
+      <Component
+        as={TestComponent}
+        {...requiredProps}
+      />,
     );
 
     expect(getTarget(withTag).tagName).toBe("A");
