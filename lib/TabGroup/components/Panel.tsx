@@ -72,6 +72,7 @@ const PanelBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const dataAttrs = {
     "data-slot": PanelRootSlot,
     "data-active": active ? "" : undefined,
+    "data-entityname": value,
   };
 
   const refCallback = (node: HTMLDivElement | null) => {
@@ -108,7 +109,6 @@ const PanelBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       ref={refCallback}
       className={className}
       role="tabpanel"
-      data-entityname={value}
       {...dataAttrs}
     >
       {children}

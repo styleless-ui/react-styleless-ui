@@ -206,6 +206,14 @@ const TabBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
       ? classNameProp(classNameProps)
       : classNameProp;
 
+  const dataAttrs = {
+    "data-slot": TabRootSlot,
+    "data-entityname": value,
+    "data-selected": selected ? "" : undefined,
+    "data-disabled": disabled ? "" : undefined,
+    "data-focus-visible": buttonBase.isFocusedVisible ? "" : undefined,
+  };
+
   const calcTabIndex = () => {
     if (disabled) return -1;
     if (!ctx) return 0;
@@ -267,11 +275,7 @@ const TabBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
       tabIndex={calcTabIndex()}
       className={className}
       aria-selected={selected}
-      data-slot={TabRootSlot}
-      data-entityname={value}
-      data-selected={selected ? "" : undefined}
-      data-disabled={disabled ? "" : undefined}
-      data-focus-visible={buttonBase.isFocusedVisible ? "" : undefined}
+      {...dataAttrs}
     >
       {children}
     </button>
