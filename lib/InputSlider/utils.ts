@@ -61,14 +61,16 @@ export const getRelativeValue = (
 
 export const getNearestThumb = (
   value: number,
-  thumbInfos: { left: ThumbInfo; right: ThumbInfo | null },
-): ThumbInfo & { index: 0 | 1 } => {
-  const { left, right } = thumbInfos;
+  thumbInfos: { infimum: ThumbInfo | null; supremum: ThumbInfo },
+): ThumbInfo => {
+  const { infimum, supremum } = thumbInfos;
 
-  const leftDiff = Math.abs(left.value - value);
+  if (!infimum) return { ...supremum, index: 1 };
 
-  if (!right) return { ...left, index: 0 };
-  const rightDiff = Math.abs(right.value - value);
+  const infDiff = Math.abs(infimum.value - value);
+  const supDiff = Math.abs(supremum.value - value);
 
-  return leftDiff <= rightDiff ? { ...left, index: 0 } : { ...right, index: 1 };
+  return infDiff <= supDiff
+    ? { ...infimum, index: 0 }
+    : { ...supremum, index: 1 };
 };

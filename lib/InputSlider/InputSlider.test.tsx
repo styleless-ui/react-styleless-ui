@@ -11,16 +11,18 @@ import {
 import InputSlider, { type Props } from "./InputSlider";
 
 const requiredMockProps: Props = {
+  multiThumb: false,
   label: { screenReaderLabel: "Infimum value" },
   min: 0,
   max: 100,
+  setThumbValueText: v => String(v),
 };
 
 const classNames: Props["classes"] = ({
   disabled,
   orientation,
-  leadingThumbState,
-  trailingThumbState,
+  infimumThumbState,
+  supremumThumbState,
 }) => ({
   root: cls("root", `root--${orientation}`, {
     "root--disabled": disabled,
@@ -32,13 +34,13 @@ const classNames: Props["classes"] = ({
   segments: "segments",
   track: "track",
   thumb: "thumb",
-  leadingThumb: cls("thumb--leading", {
-    "thumb--active": leadingThumbState.active,
-    "thumb--focus-visible": leadingThumbState.focusedVisible,
+  infimumThumb: cls("thumb--infimum", {
+    "thumb--active": infimumThumbState.active,
+    "thumb--focus-visible": infimumThumbState.focusedVisible,
   }),
-  trailingThumb: cls("thumb--trailing", {
-    "thumb--active": trailingThumbState.active,
-    "thumb--focus-visible": trailingThumbState.focusedVisible,
+  supremumThumb: cls("thumb--supremum", {
+    "thumb--active": supremumThumbState.active,
+    "thumb--focus-visible": supremumThumbState.focusedVisible,
   }),
 });
 
@@ -88,7 +90,7 @@ describe("InputSlider", () => {
     expect(segmentLabel).toHaveClass("segment-label");
     expect(track).toHaveClass("track");
     expect(range).toHaveClass("range");
-    expect(thumb).toHaveClass("thumb", "thumb--leading");
+    expect(thumb).toHaveClass("thumb", "thumb--supremum");
     expect(thumbTooltip).toHaveClass("tooltip");
   });
 
@@ -131,9 +133,9 @@ describe("InputSlider", () => {
     expect(thumb).toHaveAttribute("role", "slider");
     expect(thumb).toHaveAttribute("aria-orientation", "horizontal");
     expect(thumb).toHaveAttribute("aria-label", "Infimum value");
-    expect(thumb).toHaveAttribute("aria-valuenow", "0");
+    expect(thumb).toHaveAttribute("aria-valuenow", "100");
     expect(thumb).toHaveAttribute("aria-valuemin", "0");
-    expect(thumb).toHaveAttribute("aria-valuetext", "0.0 percent");
+    expect(thumb).toHaveAttribute("aria-valuetext", "100.0 percent");
   });
 
   it("changes `value` state with mouse/keyboard interactions and calls `onChange` callback", async () => {
