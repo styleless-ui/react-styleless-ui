@@ -8,8 +8,9 @@ const getDirection = <T extends HTMLElement = HTMLElement>(
 ): Direction => {
   const _window = getWindow(targetRef?.current ?? window);
 
-  if (targetRef && targetRef.current)
+  if (targetRef && targetRef.current) {
     return _window.getComputedStyle(targetRef.current).direction as Direction;
+  }
 
   return _window.getComputedStyle(document.body).direction as Direction;
 };
@@ -24,10 +25,11 @@ const useDirection = <T extends HTMLElement = HTMLElement>(
   );
 
   React.useEffect(() => {
-    const newDirection = getDirection(targetRef);
+    const newDir = getDirection(targetRef);
 
-    if (direction === newDirection) return;
-    setDirection(newDirection);
+    if (newDir === direction) return;
+
+    setDirection(newDir);
   }, [direction, targetRef]);
 
   return direction;
