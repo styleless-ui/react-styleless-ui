@@ -17,7 +17,12 @@ import {
   type TreeViewContextValue,
 } from "./contexts";
 import { Root as RootSlot } from "./slots";
-import { getCurrentFocusedElement, getValidChildren } from "./utils";
+import {
+  getAvailableItem,
+  getCurrentFocusedElement,
+  getListItems,
+  getValidChildren,
+} from "./utils";
 
 export type RenderProps = {
   /**
@@ -154,16 +159,8 @@ const TreeViewBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     null,
   );
 
-  const getListItems = () => {
-    const root = document.getElementById(id);
-
-    if (!root) return [];
-
-    return Array.from(root.querySelectorAll<HTMLElement>("[role='treeitem']"));
-  };
-
   const jumpToChar = useJumpToChar({
-    getListItems,
+    getListItems: () => getListItems(id),
     activeDescendantElement: activeElement,
     onActiveDescendantElementChange: setActiveElement,
   });
@@ -246,28 +243,27 @@ const TreeViewBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   };
 
   const handleKeyDown = useEventCallback<React.KeyboardEvent>(event => {
-    const items = getListItems();
+    const items = getListItems(id);
 
     const currentFocusedElement = getCurrentFocusedElement(
       items,
       activeElement,
-      selectedDescendants,
     );
 
-    if (currentFocusedElement) {
+    if (currentFocusedElement?.item) {
       switch (event.key) {
         case SystemKeys.HOME: {
-          const item = items[0];
+          const { item } = getAvailableItem(items, 0, true);
 
-          setActiveElement(item ?? null);
+          setActiveElement(item);
 
           break;
         }
 
         case SystemKeys.END: {
-          const item = items[items.length - 1];
+          const { item } = getAvailableItem(items, items.length - 1, true);
 
-          setActiveElement(item ?? null);
+          setActiveElement(item);
 
           break;
         }
@@ -276,9 +272,9 @@ const TreeViewBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           const { index } = currentFocusedElement;
 
           const nextIdx = (index - 1 + items.length) % items.length;
-          const item = items[nextIdx];
+          const { item } = getAvailableItem(items, nextIdx, false);
 
-          setActiveElement(item ?? null);
+          setActiveElement(item);
 
           break;
         }
@@ -287,9 +283,9 @@ const TreeViewBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           const { index } = currentFocusedElement;
 
           const nextIdx = (index + 1) % items.length;
-          const item = items[nextIdx];
+          const { item } = getAvailableItem(items, nextIdx, true);
 
-          setActiveElement(item ?? null);
+          setActiveElement(item);
 
           break;
         }
@@ -311,12 +307,17 @@ const TreeViewBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
             break;
           }
 
-          const firstDescendant =
-            item.querySelector<HTMLElement>("[role='treeitem']");
+          const descendants = Array.from(
+            item.querySelectorAll<HTMLElement>("[role='treeitem']"),
+          );
 
-          if (!firstDescendant) break;
+          const { item: nextActiveElement } = getAvailableItem(
+            descendants,
+            0,
+            true,
+          );
 
-          setActiveElement(firstDescendant);
+          if (nextActiveElement) setActiveElement(nextActiveElement);
 
           break;
         }
@@ -334,7 +335,14 @@ const TreeViewBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
             const parent =
               item.parentElement?.closest<HTMLElement>("[role='treeitem']");
 
-            if (parent) setActiveElement(parent);
+            if (parent) {
+              const isDisabled =
+                parent.getAttribute("aria-disabled") === "true" ||
+                parent.hasAttribute("data-hidden") ||
+                parent.getAttribute("aria-hidden") === "true";
+
+              if (!isDisabled) setActiveElement(parent);
+            }
 
             break;
           }
@@ -404,15 +412,10 @@ const TreeViewBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     }
 
     if (event.target === rootRef.current && !activeElement) {
-      const items = getListItems();
+      const items = getListItems(id);
+      const currentFocusedElement = getCurrentFocusedElement(items, null);
 
-      const currentFocusedElement = getCurrentFocusedElement(
-        items,
-        null,
-        selectedDescendants,
-      );
-
-      if (currentFocusedElement) setActiveElement(currentFocusedElement.item);
+      setActiveElement(currentFocusedElement?.item ?? null);
     }
 
     onFocus?.(event as React.FocusEvent<HTMLDivElement>);

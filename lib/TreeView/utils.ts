@@ -3,6 +3,14 @@ import { isFragment } from "react-is";
 import { logger } from "../internals";
 import { Item, type ItemProps } from "./components";
 
+export const getListItems = (id: string) => {
+  const root = document.getElementById(id);
+
+  if (!root) return [];
+
+  return Array.from(root.querySelectorAll<HTMLElement>("[role='treeitem']"));
+};
+
 export const getValidChildren = (children: React.ReactNode, scope: string) => {
   let sizeOfSet = 0;
   let position = 1;
@@ -36,18 +44,41 @@ export const getValidChildren = (children: React.ReactNode, scope: string) => {
   return { validChildren, sizeOfSet };
 };
 
+export const getAvailableItem = (
+  items: (HTMLElement | null)[],
+  idx: number,
+  forward: boolean,
+  prevIdxs: number[] = [],
+): { item: HTMLElement | null; index: number } => {
+  const item = items[idx];
+
+  if (!item) return { item: null, index: idx };
+  if (prevIdxs.includes(idx)) return { item: null, index: idx };
+
+  if (
+    item.getAttribute("aria-disabled") === "true" ||
+    item.hasAttribute("data-hidden") ||
+    item.getAttribute("aria-hidden") === "true"
+  ) {
+    const newIdx = (forward ? idx + 1 : idx - 1 + items.length) % items.length;
+
+    return getAvailableItem(items, newIdx, forward, [...prevIdxs, idx]);
+  }
+
+  return { item, index: idx };
+};
+
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 export const getCurrentFocusedElement = (
   items: HTMLElement[],
   activeElement: HTMLElement | null,
-  selectedEntities: string | string[] | null,
 ) => {
   if (items.length === 0) return null;
 
   if (activeElement) {
     const itemIdx = items.findIndex(item => item === activeElement);
 
-    if (itemIdx > -1) {
+    if (itemIdx !== -1) {
       return {
         item: items[itemIdx]!,
         index: itemIdx,
@@ -55,30 +86,12 @@ export const getCurrentFocusedElement = (
     }
   }
 
-  const hasSelectedEntities =
-    selectedEntities == null ? false : selectedEntities.length > 0;
-
-  if (!hasSelectedEntities) {
-    return {
-      item: items[0]!,
-      index: 0,
-    };
-  }
-
   const selectedItemIdx = items.findIndex(item =>
     item.hasAttribute("data-selected"),
   );
 
-  if (selectedItemIdx === -1) {
-    return {
-      item: items[0]!,
-      index: 0,
-    };
-  }
+  const idx = selectedItemIdx === -1 ? 0 : selectedItemIdx;
 
-  return {
-    item: items[selectedItemIdx]!,
-    index: selectedItemIdx,
-  };
+  return getAvailableItem(items, idx, true);
 };
 /* eslint-enable @typescript-eslint/no-non-null-assertion */

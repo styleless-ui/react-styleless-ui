@@ -31,6 +31,10 @@ export type RenderProps = {
    */
   expanded: boolean;
   /**
+   * The `disabled` state of the component.
+   */
+  disabled: boolean;
+  /**
    * Determines whether it is expandable or not.
    */
   expandable: boolean;
@@ -58,6 +62,12 @@ type OwnProps = {
    * Works as an unique identifier for the item.
    */
   value: string;
+  /**
+   * If `true`, the item will be disabled.
+   *
+   * @default false
+   */
+  disabled?: boolean;
 };
 
 export type Props = Omit<
@@ -71,6 +81,7 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     className: classNameProp,
     triggerContent,
     value,
+    disabled = false,
     subTree = null,
     ...otherProps
   } = props;
@@ -126,6 +137,7 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const selectedState = ctx.isSelectable ? isSelected : undefined;
 
   const renderProps: RenderProps = {
+    disabled,
     active: isActive,
     expandable: isParentNode,
     selected: selectedState ?? false,
@@ -164,14 +176,20 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
       const augmentedProps: React.ComponentPropsWithoutRef<"div"> = {
         onClick: event => {
+          if (disabled) return;
+
           handleClick(event);
           childProps.onClick?.(event);
         },
         onMouseEnter: event => {
+          if (disabled) return;
+
           handleMouseEnter(event);
           childProps.onMouseEnter?.(event);
         },
         onMouseLeave: event => {
+          if (disabled) return;
+
           handleMouseLeave(event);
           childProps.onMouseLeave?.(event);
         },
@@ -215,11 +233,13 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       ref={ref}
       role="treeitem"
       tabIndex={-1}
+      aria-disabled={disabled}
       aria-expanded={expandedState}
       aria-selected={selectedState}
       aria-level={currentLevel}
       aria-setsize={sizeOfSet}
       data-active={isActive ? "" : undefined}
+      data-disabled={disabled ? "" : undefined}
       data-expandable={String(isParentNode)}
       data-expanded={expandedState ? "" : undefined}
       data-selected={selectedState ? "" : undefined}
