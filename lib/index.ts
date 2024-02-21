@@ -105,4 +105,14 @@ export * from "./ToggleGroup";
 export { default as ToggleGroup } from "./ToggleGroup";
 export * from "./Tooltip";
 export { default as Tooltip } from "./Tooltip";
+export * as TreeView from "./TreeView";
+export type {
+  ItemClassNameProps as TreeViewItemClassNameProps,
+  ItemProps as TreeViewItemProps,
+  ItemRenderProps as TreeViewItemRenderProps,
+  RootClassNameProps as TreeViewRootClassNameProps,
+  RootProps as TreeViewRootProps,
+  RootRenderProps as TreeViewRootRenderProps,
+  SubTreeProps as TreeViewSubTreeProps,
+} from "./TreeView";
 export type { MergeElementProps, PolymorphicProps } from "./types";
