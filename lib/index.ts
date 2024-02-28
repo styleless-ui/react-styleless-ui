@@ -41,7 +41,6 @@ export type {
   ItemClassNameProps as MenuItemClassNameProps,
   ItemProps as MenuItemProps,
   ItemRenderProps as MenuItemRenderProps,
-  ItemsProps as MenuItemsProps,
   RadioGroupProps as MenuRadioGroupProps,
   RadioItemClassNameProps as MenuRadioItemClassNameProps,
   RadioItemProps as MenuRadioItemProps,
@@ -50,7 +49,7 @@ export type {
   RootProps as MenuRootProps,
   RootRenderProps as MenuRootRenderProps,
   SeparatorItemProps as MenuSeparatorItemProps,
-  SubProps as MenuSubProps,
+  SubMenuProps as MenuSubMenuProps,
 } from "./Menu";
 export * from "./Popper";
 export { default as Popper } from "./Popper";

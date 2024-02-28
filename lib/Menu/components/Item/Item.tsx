@@ -3,15 +3,15 @@ import { disableUserSelectCSSProperties, logger } from "../../../internals";
 import type { MergeElementProps, PropWithRenderContext } from "../../../types";
 import {
   componentWithForwardedRef,
+  computeAccessibleName,
   useDeterministicId,
-  useEventCallback,
   useForkedRefs,
 } from "../../../utils";
-import { MenuContext } from "../../context";
+import { CollapseSubMenuEvent, ExpandSubMenuEvent } from "../../constants";
 import { ItemRoot as ItemRootSlot } from "../../slots";
-import useMenuItem from "../../useMenuItem";
+import { useBaseItem } from "../../utils";
+import type { Props as SubMenuProps } from "../SubMenu";
 import { MenuItemContext } from "./context";
-import { makeRegisterSubMenu } from "./utils";
 
 export type RenderProps = {
   /**
@@ -25,9 +25,13 @@ export type RenderProps = {
    */
   disabled: boolean;
   /**
-   * Determines whether it's submenu is open or not.
+   * Determines whether it is expandable or not.
    */
-  isSubMenuOpen: boolean;
+  expandable: boolean;
+  /**
+   * The `expanded` state of the component.
+   */
+  expanded: boolean;
 };
 
 export type ClassNameProps = RenderProps;
@@ -42,27 +46,31 @@ type OwnProps = {
    */
   className?: PropWithRenderContext<string, ClassNameProps>;
   /**
+   * The sub-tree of the component.
+   * If provided, this item will be expandable.
+   */
+  subMenu?: React.ReactElement<SubMenuProps>;
+  /**
    * If `true`, the item will be disabled.
+   *
    * @default false
    */
   disabled?: boolean;
   /**
    * The Callback is fired when the item is selected.
    */
-  onSelect?: (
-    event:
-      | React.MouseEvent<HTMLDivElement>
-      | React.KeyboardEvent<HTMLDivElement>,
-  ) => void;
+  onSelect?: (event: React.MouseEvent<HTMLDivElement>) => void;
 };
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,
-  "defaultValue" | "defaultChecked" | "id"
+  "defaultValue" | "defaultChecked"
 >;
 
 const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
+    subMenu,
+    id: idProp,
     children: childrenProp,
     className: classNameProp,
     style: styleProp,
@@ -74,95 +82,93 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     ...otherProps
   } = props;
 
-  const id = useDeterministicId(undefined, "styleless-ui__menu-item");
-
-  const menuCtx = React.useContext(MenuContext);
+  const id = useDeterministicId(idProp, "styleless-ui__menu-item");
+  const value = id;
 
   const rootRef = React.useRef<HTMLDivElement>(null);
   const handleRootRef = useForkedRefs(ref, rootRef);
 
-  const isActive =
-    menuCtx && rootRef.current
-      ? menuCtx.activeElement === rootRef.current
-      : false;
+  const [isExpanded, setIsExpanded] = React.useState(false);
 
-  const subMenuRegistryRef = React.useRef<{
-    ref: React.RefObject<HTMLDivElement>;
-    id: string | undefined;
-  }>();
+  const isExpandable = Boolean(subMenu);
+  const expanded = isExpandable && isExpanded;
 
-  const registerSubMenu = makeRegisterSubMenu(subMenuRegistryRef);
-
-  const menuItem = useMenuItem({
+  const baseItem = useBaseItem({
     disabled,
-    isActive,
-    onClick,
-    onMouseEnter: useEventCallback<React.MouseEvent<HTMLDivElement>>(event => {
-      if (event.currentTarget !== rootRef.current) return onMouseEnter?.(event);
-
-      menuCtx?.setActiveElement(rootRef.current);
-      menuCtx?.setIsMenuActive(true);
-      if (menuCtx) menuCtx.shouldActivateFirstSubItemRef.current = false;
-
-      if (subMenuRegistryRef.current) {
-        menuCtx?.setActiveSubTrigger(rootRef.current);
-        menuCtx?.setIsMenuActive(false);
-      }
+    entityName: value,
+    type: isExpandable ? "expandable-item" : "non-expandable-item",
+    onClick: event => {
+      onSelect?.(event);
+      onClick?.(event);
+    },
+    onMouseEnter: event => {
+      if (isExpandable && !expanded) setIsExpanded(true);
 
       onMouseEnter?.(event);
-    }),
-    onMouseLeave: useEventCallback<React.MouseEvent<HTMLDivElement>>(event => {
-      menuCtx?.setActiveElement(null);
-
-      if (subMenuRegistryRef.current) {
-        menuCtx?.setActiveSubTrigger(null);
-        menuCtx?.setIsMenuActive(true);
-      }
+    },
+    onMouseLeave: event => {
+      if (isExpandable && expanded) setIsExpanded(false);
 
       onMouseLeave?.(event);
-    }),
-    changeEmitter: useEventCallback<
-      React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>
-    >(event => {
-      onSelect?.(event);
-    }),
+    },
   });
 
-  if (!menuCtx) {
-    logger("You have to use this component as a descendant of <Menu.Root>.", {
-      scope: "Menu.Item",
-      type: "error",
-    });
-
-    return null;
-  }
-
-  const isSubMenuOpen = () => {
-    if (rootRef.current == null) return false;
-
-    return menuCtx.activeSubTrigger === rootRef.current;
-  };
-
-  const refCallback = (node: HTMLDivElement | null) => {
+  const refCallback = React.useCallback((node: HTMLDivElement | null) => {
     handleRootRef(node);
 
     if (!node) return;
-    menuCtx.registerItem(rootRef);
 
-    if (!subMenuRegistryRef.current) return;
+    const accessibleName = computeAccessibleName(node);
 
-    const { id: subMenuId } = subMenuRegistryRef.current;
+    if (!accessibleName) {
+      logger(
+        [
+          "Can't determine an accessible name.",
+          "It's mandatory to provide an accessible name for the component. " +
+            "Possible accessible names:",
+          ". Set `aria-label` attribute.",
+          ". Set `title` attribute.",
+          ". Use an informative content.",
+        ].join("\n"),
+        { scope: "Menu.Item", type: "error" },
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    node.setAttribute("aria-haspopup", "menu");
-    node.setAttribute("aria-expanded", String(isSubMenuOpen()));
+  React.useEffect(() => {
+    if (baseItem.isInvalid) return;
+    if (!rootRef.current) return;
 
-    subMenuId && node.setAttribute("aria-controls", subMenuId);
-  };
+    const handleExpandSubMenu = () => {
+      setIsExpanded(true);
+    };
+
+    const handleCollapseSubMenu = () => {
+      setIsExpanded(false);
+    };
+
+    const node = rootRef.current;
+
+    node.addEventListener(ExpandSubMenuEvent.type, handleExpandSubMenu);
+    node.addEventListener(CollapseSubMenuEvent.type, handleCollapseSubMenu);
+
+    return () => {
+      node.removeEventListener(ExpandSubMenuEvent.type, handleExpandSubMenu);
+      node.removeEventListener(
+        CollapseSubMenuEvent.type,
+        handleCollapseSubMenu,
+      );
+    };
+  }, [baseItem.isInvalid]);
+
+  if (baseItem.isInvalid) return null;
 
   const renderProps: RenderProps = {
     disabled,
-    active: isActive,
-    isSubMenuOpen: isSubMenuOpen(),
+    active: baseItem.isActive,
+    expanded: isExpanded,
+    expandable: isExpandable,
   };
 
   const classNameProps: ClassNameProps = renderProps;
@@ -188,24 +194,25 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       id={id}
       ref={refCallback}
       className={className}
-      onClick={menuItem.handleClick}
-      onMouseEnter={menuItem.handleMouseEnter}
-      onMouseLeave={menuItem.handleMouseLeave}
+      onClick={baseItem.handleClick}
+      onMouseEnter={baseItem.handleMouseEnter}
+      onMouseLeave={baseItem.handleMouseLeave}
       style={style}
       tabIndex={-1}
       role="menuitem"
-      data-slot={ItemRootSlot}
-      data-active={isActive ? "" : undefined}
       aria-disabled={disabled}
+      aria-expanded={isExpandable ? expanded : undefined}
+      aria-haspopup={isExpandable ? "menu" : undefined}
+      data-slot={ItemRootSlot}
+      data-entityname={value}
+      data-expandable={String(isExpandable)}
+      data-active={baseItem.isActive ? "" : undefined}
+      data-expanded={expanded ? "" : undefined}
+      data-disabled={disabled ? "" : undefined}
     >
-      <MenuItemContext.Provider
-        value={{
-          id,
-          isSubMenuOpen,
-          registerSubMenu,
-        }}
-      >
+      <MenuItemContext.Provider value={{ id, isExpanded: expanded }}>
         {children}
+        {subMenu}
       </MenuItemContext.Provider>
     </div>
   );

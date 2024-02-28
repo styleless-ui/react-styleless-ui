@@ -3,13 +3,12 @@ import { disableUserSelectCSSProperties, logger } from "../../internals";
 import type { MergeElementProps, PropWithRenderContext } from "../../types";
 import {
   componentWithForwardedRef,
+  computeAccessibleName,
   useDeterministicId,
-  useEventCallback,
   useForkedRefs,
 } from "../../utils";
-import { MenuContext } from "../context";
-import { RadioItemRoot as RadioItemRootSlot } from "../slots";
-import useMenuItem from "../useMenuItem";
+import { ItemRoot as ItemRootSlot } from "../slots";
+import { useBaseItem } from "../utils";
 import { RadioGroupContext } from "./RadioGroup/context";
 
 export type RenderProps = {
@@ -24,9 +23,9 @@ export type RenderProps = {
    */
   disabled: boolean;
   /**
-   * The `selected` state of the component.
+   * The `checked` state of the component.
    */
-  selected: boolean;
+  checked: boolean;
 };
 
 export type ClassNameProps = RenderProps;
@@ -41,22 +40,20 @@ type OwnProps = {
    */
   className?: PropWithRenderContext<string, ClassNameProps>;
   /**
-   * The value of the radio.
-   */
-  value: string;
-  /**
-   * If `true`, the radio will be disabled.
+   * If `true`, the item will be disabled.
+   *
    * @default false
    */
   disabled?: boolean;
   /**
+   * The value of item when checked.
+   * Works as an unique identifier for the item.
+   */
+  value: string;
+  /**
    * The Callback is fired when the item is selected.
    */
-  onSelect?: (
-    event:
-      | React.MouseEvent<HTMLDivElement>
-      | React.KeyboardEvent<HTMLDivElement>,
-  ) => void;
+  onSelect?: (event: React.MouseEvent<HTMLDivElement>) => void;
 };
 
 export type Props = Omit<
@@ -66,50 +63,64 @@ export type Props = Omit<
 
 const RadioItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
+    id: idProp,
     children: childrenProp,
     className: classNameProp,
     style: styleProp,
     value,
-    onSelect,
+    disabled = false,
     onClick,
+    onSelect,
     onMouseEnter,
     onMouseLeave,
-    disabled = false,
     ...otherProps
   } = props;
 
-  const id = useDeterministicId(undefined, "styleless-ui__menu-item");
-
-  const menuCtx = React.useContext(MenuContext);
-  const radioGroupCtx = React.useContext(RadioGroupContext);
+  const id = useDeterministicId(idProp, "styleless-ui__menu-radio-item");
 
   const rootRef = React.useRef<HTMLDivElement>(null);
   const handleRootRef = useForkedRefs(ref, rootRef);
 
-  const isActive =
-    menuCtx && rootRef.current
-      ? menuCtx.activeElement === rootRef.current
-      : false;
+  const radioGroupCtx = React.useContext(RadioGroupContext);
 
-  const menuItem = useMenuItem({
+  const baseItem = useBaseItem({
     disabled,
-    isActive,
-    onClick,
-    onMouseEnter: useEventCallback<React.MouseEvent<HTMLDivElement>>(event => {
-      menuCtx?.setActiveElement(rootRef.current);
-      onMouseEnter?.(event);
-    }),
-    onMouseLeave: useEventCallback<React.MouseEvent<HTMLDivElement>>(event => {
-      menuCtx?.setActiveElement(null);
-      onMouseLeave?.(event);
-    }),
-    changeEmitter: useEventCallback<
-      React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>
-    >(event => {
-      onSelect?.(event);
+    entityName: value,
+    type: "radio-item",
+    onClick: event => {
       radioGroupCtx?.onValueChange(value);
-    }),
+
+      onSelect?.(event);
+      onClick?.(event);
+    },
+    onMouseEnter,
+    onMouseLeave,
   });
+
+  const refCallback = React.useCallback((node: HTMLDivElement | null) => {
+    handleRootRef(node);
+
+    if (!node) return;
+
+    const accessibleName = computeAccessibleName(node);
+
+    if (!accessibleName) {
+      logger(
+        [
+          "Can't determine an accessible name.",
+          "It's mandatory to provide an accessible name for the component. " +
+            "Possible accessible names:",
+          ". Set `aria-label` attribute.",
+          ". Set `title` attribute.",
+          ". Use an informative content.",
+        ].join("\n"),
+        { scope: "Menu.Item", type: "error" },
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (baseItem.isInvalid) return null;
 
   if (!radioGroupCtx) {
     logger("You can't use this component outside of the <Menu.RadioGroup>.", {
@@ -120,21 +131,12 @@ const RadioItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     return null;
   }
 
-  if (!menuCtx) {
-    logger("You have to use this component as a descendant of <Menu.Root>.", {
-      scope: "Menu.RadioItem",
-      type: "error",
-    });
-
-    return null;
-  }
-
-  const isSelected = radioGroupCtx.value === value;
+  const isChecked = radioGroupCtx.value === value;
 
   const renderProps: RenderProps = {
     disabled,
-    active: isActive,
-    selected: isSelected,
+    active: baseItem.isActive,
+    checked: isChecked,
   };
 
   const classNameProps: ClassNameProps = renderProps;
@@ -154,29 +156,25 @@ const RadioItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       ? classNameProp(classNameProps)
       : classNameProp;
 
-  const refCallback = (node: HTMLDivElement | null) => {
-    handleRootRef(node);
-
-    if (!node) return;
-    menuCtx.registerItem(rootRef);
-  };
-
   return (
     <div
       {...otherProps}
       id={id}
       ref={refCallback}
-      style={style}
       className={className}
+      onClick={baseItem.handleClick}
+      onMouseEnter={baseItem.handleMouseEnter}
+      onMouseLeave={baseItem.handleMouseLeave}
+      style={style}
       tabIndex={-1}
-      onClick={menuItem.handleClick}
-      onMouseEnter={menuItem.handleMouseEnter}
-      onMouseLeave={menuItem.handleMouseLeave}
       role="menuitemradio"
-      aria-checked={isSelected}
       aria-disabled={disabled}
-      data-slot={RadioItemRootSlot}
-      data-active={isActive ? "" : undefined}
+      aria-checked={isChecked}
+      data-slot={ItemRootSlot}
+      data-entityname={value}
+      data-active={baseItem.isActive ? "" : undefined}
+      data-checked={isChecked ? "" : undefined}
+      data-disabled={disabled ? "" : undefined}
     >
       {children}
     </div>

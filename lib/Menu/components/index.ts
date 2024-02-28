@@ -11,7 +11,6 @@ export {
   type ItemProps,
   type ItemRenderProps,
 } from "./Item";
-export { default as Items, type Props as ItemsProps } from "./Items";
 export { default as RadioGroup, type RadioGroupProps } from "./RadioGroup";
 export {
   default as RadioItem,
@@ -23,4 +22,4 @@ export {
   default as SeparatorItem,
   type Props as SeparatorItemProps,
 } from "./SeparatorItem";
-export { default as Sub, type Props as SubProps } from "./Sub";
+export { default as SubMenu, type Props as SubMenuProps } from "./SubMenu";

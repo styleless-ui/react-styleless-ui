@@ -1,27 +1,20 @@
 import * as React from "react";
-import { type Props } from "./Menu";
+import type { PopperProps } from "../Popper";
 
 type ContextValue = {
-  ref: React.RefObject<HTMLDivElement>;
-  activeElement: HTMLDivElement | null;
-  activeSubTrigger: HTMLDivElement | null;
-  shouldActivateFirstSubItemRef: React.MutableRefObject<boolean>;
-  isMenuActive: boolean;
+  id: string;
+  activeElement: HTMLElement | null;
   keepMounted: boolean;
-  onEscape: Props["onEscape"];
-  onOutsideClick: Props["onOutsideClick"];
-  setIsMenuActive: React.Dispatch<React.SetStateAction<boolean>>;
-  setActiveSubTrigger: React.Dispatch<
-    React.SetStateAction<HTMLDivElement | null>
-  >;
-  setActiveElement: React.Dispatch<React.SetStateAction<HTMLDivElement | null>>;
-  registerItem: (itemRef: React.RefObject<HTMLDivElement>) => void;
+  alignment: NonNullable<PopperProps["alignment"]>;
+  emitClose: () => void;
+  emitActiveElementChange: (newActiveElement: HTMLElement | null) => void;
+  computationMiddleware: NonNullable<PopperProps["computationMiddleware"]>;
 };
 
 const Context = React.createContext<ContextValue | null>(null);
 
 if (process.env.NODE_ENV !== "production") {
-  Context.displayName = "MenuContext";
+  Context.displayName = "Menu.Context";
 }
 
 export { Context as MenuContext, type ContextValue as MenuContextValue };
