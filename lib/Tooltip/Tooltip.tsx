@@ -10,6 +10,7 @@ import type { MergeElementProps, VirtualElement } from "../types";
 import {
   componentWithForwardedRef,
   contains,
+  createVirtualElement,
   isHTMLElement,
   useControlledProp,
   useDeterministicId,
@@ -34,7 +35,7 @@ type OwnProps = {
    * A function that will resolve the anchor element for the tooltip.
    *
    * It has to return `HTMLElement`, or a `VirtualElement`, or `null`.
-   * A VirtualElement is an object that implements `getBoundingClientRect(): ClientRect`.
+   * A VirtualElement is an object that implements `getBoundingClientRect(): BoundingClientRect`.
    *
    * If nothing is resolved, the tooltip won't show up.
    *
@@ -95,7 +96,7 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     children,
     className,
     defaultOpen,
-    resolveAnchor,
+    resolveAnchor: resolveAnchorProp,
     onOutsideClick,
     id: idProp,
     open: openProp,
@@ -128,18 +129,10 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const popperActions: PopperProps["actions"] = React.useRef(null);
 
-  const createVirtualElement = (): VirtualElement => ({
-    getBoundingClientRect: () => ({
-      width: 0,
-      height: 0,
-      x: coordinates.x,
-      y: coordinates.y,
-      top: coordinates.y,
-      left: coordinates.x,
-      right: coordinates.x,
-      bottom: coordinates.y,
-    }),
-  });
+  const resolveAnchor =
+    behavior === "follow-mouse"
+      ? () => createVirtualElement(0, 0, coordinates.x, coordinates.y)
+      : resolveAnchorProp;
 
   const outsideClickHandler = useEventCallback<MouseEvent>(event => {
     const anchor = resolveAnchor();
@@ -244,9 +237,7 @@ const TooltipBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       keepMounted={keepMounted}
       autoPlacement={behavior === "follow-mouse" ? false : autoPlacement}
       offset={behavior === "follow-mouse" ? 32 : undefined}
-      resolveAnchor={
-        behavior === "follow-mouse" ? createVirtualElement : resolveAnchor
-      }
+      resolveAnchor={resolveAnchor}
     >
       {children}
     </Popper>
