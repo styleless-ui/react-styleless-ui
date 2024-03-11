@@ -101,7 +101,7 @@ export type ClassesWithRenderContext<
   RenderContext extends AnyObject,
 > = PropWithRenderContext<Classes<StringUnion>, RenderContext>;
 
-export type ClientRect = {
+export type BoundingClientRect = {
   x: number;
   y: number;
   width: number;
@@ -112,4 +112,4 @@ export type ClientRect = {
   bottom: number;
 };
 
-export type VirtualElement = { getBoundingClientRect(): ClientRect };
+export type VirtualElement = { getBoundingClientRect(): BoundingClientRect };
