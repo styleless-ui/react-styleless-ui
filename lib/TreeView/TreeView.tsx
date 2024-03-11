@@ -7,6 +7,7 @@ import {
   useControlledProp,
   useDeterministicId,
   useEventCallback,
+  useEventListener,
   useForkedRefs,
   useJumpToChar,
 } from "../utils";
@@ -253,6 +254,8 @@ const TreeViewBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     if (currentFocusedElement?.item) {
       switch (event.key) {
         case SystemKeys.HOME: {
+          event.preventDefault();
+
           const { item } = getAvailableItem(items, 0, true);
 
           setActiveElement(item);
@@ -261,6 +264,8 @@ const TreeViewBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         }
 
         case SystemKeys.END: {
+          event.preventDefault();
+
           const { item } = getAvailableItem(items, items.length - 1, true);
 
           setActiveElement(item);
@@ -269,7 +274,17 @@ const TreeViewBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         }
 
         case SystemKeys.UP: {
+          event.preventDefault();
+
           const { index } = currentFocusedElement;
+
+          if (index === -1) {
+            const { item } = getAvailableItem(items, items.length - 1, false);
+
+            setActiveElement(item);
+
+            break;
+          }
 
           const nextIdx = (index - 1 + items.length) % items.length;
           const { item } = getAvailableItem(items, nextIdx, false);
@@ -280,7 +295,17 @@ const TreeViewBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         }
 
         case SystemKeys.DOWN: {
+          event.preventDefault();
+
           const { index } = currentFocusedElement;
+
+          if (index === -1) {
+            const { item } = getAvailableItem(items, 0, true);
+
+            setActiveElement(item);
+
+            break;
+          }
 
           const nextIdx = (index + 1) % items.length;
           const { item } = getAvailableItem(items, nextIdx, true);
@@ -291,6 +316,8 @@ const TreeViewBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         }
 
         case SystemKeys.RIGHT: {
+          event.preventDefault();
+
           const { item } = currentFocusedElement;
 
           const isExpandable = item.getAttribute("data-expandable") === "true";
@@ -323,6 +350,8 @@ const TreeViewBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         }
 
         case SystemKeys.LEFT: {
+          event.preventDefault();
+
           const { item } = currentFocusedElement;
 
           const isExpandable = item.getAttribute("data-expandable") === "true";
@@ -353,6 +382,8 @@ const TreeViewBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         }
 
         case SystemKeys.SPACE: {
+          event.preventDefault();
+
           if (!isSelectable) break;
 
           const { item } = currentFocusedElement;
@@ -367,6 +398,8 @@ const TreeViewBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         }
 
         case SystemKeys.ENTER: {
+          event.preventDefault();
+
           const { item } = currentFocusedElement;
 
           const isExpandable = item.getAttribute("data-expandable") === "true";
@@ -411,7 +444,9 @@ const TreeViewBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       rootRef.current = event.currentTarget as HTMLDivElement;
     }
 
-    if (event.target === rootRef.current && !activeElement) {
+    if (event.target !== event.currentTarget) rootRef.current?.focus();
+
+    if (!activeElement) {
       const items = getListItems(id);
       const currentFocusedElement = getCurrentFocusedElement(items, null);
 
@@ -419,6 +454,21 @@ const TreeViewBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     }
 
     onFocus?.(event as React.FocusEvent<HTMLDivElement>);
+  });
+
+  const handleOutsideClick = useEventCallback<MouseEvent>(event => {
+    if (!event.target) return;
+    if (!rootRef.current) return;
+
+    const target = event.target as HTMLElement;
+
+    if (rootRef.current === target) return;
+
+    const root = target.closest<HTMLElement>(`[data-slot='${RootSlot}']`);
+
+    if (root) return;
+
+    setActiveElement(null);
   });
 
   const context: TreeViewContextValue = {
@@ -456,6 +506,16 @@ const TreeViewBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       : classNameProp;
 
   const { validChildren, sizeOfSet } = getValidChildren(children, "TreeView");
+
+  if (typeof document !== "undefined") {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useEventListener({
+      target: document,
+      eventType: "click",
+      handler: handleOutsideClick,
+      options: { capture: true },
+    });
+  }
 
   return (
     <div
