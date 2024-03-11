@@ -92,6 +92,8 @@ export const getCurrentFocusedElement = (
 
   const idx = selectedItemIdx === -1 ? 0 : selectedItemIdx;
 
-  return getAvailableItem(items, idx, true);
+  const availableItem = getAvailableItem(items, idx, true);
+
+  return { item: availableItem.item, index: availableItem.index || -1 };
 };
 /* eslint-enable @typescript-eslint/no-non-null-assertion */
