@@ -1,4 +1,4 @@
-import type { ClientRect } from "../types";
+import type { VirtualElement } from "../types";
 import { isContainingBlock, isHTMLElement, isShadowRoot, isWindow } from "./is";
 
 export const getWindow = (node: Node | Window): Window => {
@@ -91,7 +91,7 @@ export const getOffsetParent = (element: Element) => {
 };
 
 export const getBoundingClientRect = (
-  element: Element | { getBoundingClientRect: () => ClientRect },
+  element: Element | VirtualElement,
   includeScale = false,
 ) => {
   const clientRect = element.getBoundingClientRect();

@@ -2,17 +2,13 @@ import * as React from "react";
 
 type ContextValue = {
   id: string;
-  isSubMenuOpen: () => boolean;
-  registerSubMenu: (
-    menuRef: React.RefObject<HTMLDivElement>,
-    id: string | undefined,
-  ) => void;
+  isExpanded: boolean;
 };
 
 const Context = React.createContext<ContextValue | null>(null);
 
 if (process.env.NODE_ENV !== "production") {
-  Context.displayName = "MenuItemContext";
+  Context.displayName = "Menu.Item.Context";
 }
 
 export {

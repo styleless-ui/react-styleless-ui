@@ -14,13 +14,18 @@ export type Props = {
   children: JSX.Element;
   /**
    * If `true`, the focus will be trapped.
+   *
    * @default false
    */
   enabled?: boolean;
+  /**
+   * Callback is called when focus is about to exit the trap.
+   */
+  onExit?: (event: FocusEvent) => void;
 };
 
 const FocusTrap = (props: Props) => {
-  const { children, enabled = false } = props;
+  const { children, enabled = false, onExit } = props;
 
   const child = (() => {
     try {
@@ -99,14 +104,18 @@ const FocusTrap = (props: Props) => {
             lastFocus.current = event.target as Element;
           } else {
             focusFirstDescendant();
-            if (document.activeElement === lastFocus.current)
+
+            if (document.activeElement === lastFocus.current) {
               focusLastDescendant();
+            }
 
             if (
               document.activeElement &&
               !contains(rootRef.current, document.activeElement)
             ) {
               (document.activeElement as HTMLElement)?.blur();
+
+              onExit?.(event);
             }
 
             lastFocus.current = document.activeElement;

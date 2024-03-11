@@ -1,6 +1,7 @@
 import * as React from "react";
-import Popper, { type PopperProps } from "../Popper";
-import { FocusTrap, SystemKeys } from "../internals";
+import { type PopperProps } from "../Popper";
+import { Root as PopperRootSlot } from "../Popper/slots";
+import { SystemError, SystemKeys, getLabelInfo } from "../internals";
 import type {
   MergeElementProps,
   PropWithRenderContext,
@@ -8,17 +9,28 @@ import type {
 } from "../types";
 import {
   componentWithForwardedRef,
-  contains,
+  dispatchDiscreteCustomEvent,
   useDeterministicId,
   useDirection,
   useEventCallback,
   useEventListener,
   useForkedRefs,
-  usePreviousValue,
+  useJumpToChar,
+  useOnChange,
 } from "../utils";
+import BaseMenu from "./BaseMenu";
+import { CollapseSubMenuEvent, ExpandSubMenuEvent } from "./constants";
 import { MenuContext, type MenuContextValue } from "./context";
 import { Root as RootSlot } from "./slots";
-import { getAvailableItem, makeRegisterItem, useSearchQuery } from "./utils";
+import {
+  createComputationMiddleware,
+  getAvailableItem,
+  getCurrentFocusedElement,
+  getCurrentMenuControllerItem,
+  getInactiveExpandedDescendant,
+  getListItems,
+  getOwnControlledMenu,
+} from "./utils";
 
 export type RenderProps = {
   /**
@@ -51,40 +63,45 @@ type OwnProps = {
   resolveAnchor: () => HTMLElement | VirtualElement | null;
   /**
    * The menu positioning alignment.
+   *
    * @default "start"
    */
   alignment?: PopperProps["alignment"];
   /**
    * 	If `true`, the menu will be open.
    */
-  open?: boolean;
+  open: boolean;
   /**
-   * Callback fired when a click interaction happens outside the component.
-   * This callback also will be used on `Menu.Sub`.
+   * Callback is called when the menu is about to be closed.
+   * This function is required because it will be called when certain interactions occur.
    */
-  onOutsideClick?: (event: MouseEvent) => void;
-  /**
-   * Callback fired when the `Escape` key is pressed.
-   * This callback also will be used on `Menu.Sub`.
-   */
-  onEscape?: (event: KeyboardEvent) => void;
-  /**
-   * Used to prevent/allow keyboard navigation when more control is needed.
-   * @default true
-   */
-  shouldActivateKeyboardNavigation?: boolean;
+  onClose: () => void;
   /**
    * Used to keep mounting when more control is needed.\
    * Useful when controlling animation with React animation libraries.\
-   * It will be inherited by any descendant submenus respectively.
+   * It will be inherited by any descendant sub-menus respectively.
+   *
    * @default false
    */
   keepMounted?: boolean;
   /**
-   * Used to prevent/allow item selection with typed character.
-   * @default false
+   * The label of the menu.
    */
-  disabledKeySearch?: boolean;
+  label:
+    | {
+        /**
+         * The label to use as `aria-label` property.
+         */
+        screenReaderLabel: string;
+      }
+    | {
+        /**
+         * Identifies the element (or elements) that labels the menu.
+         *
+         * @see {@link https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-labelledby MDN Web Docs} for more information.
+         */
+        labelledBy: string;
+      };
 };
 
 export type Props = Omit<
@@ -97,277 +114,342 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     id: idProp,
     className: classNameProp,
     children: childrenProp,
+    label,
     alignment = "start",
-    resolveAnchor,
-    keepMounted: keepMountedProp,
-    disabledKeySearch = false,
     open = false,
-    onOutsideClick,
-    onEscape,
-    shouldActivateKeyboardNavigation,
+    keepMounted = false,
+    resolveAnchor,
+    onClose: emitClose,
+    onFocus,
+    onKeyDown,
     ...otherProps
   } = props;
 
-  const menuCtx = React.useContext(MenuContext);
+  if (!emitClose) {
+    throw new SystemError("The `onClose` prop needs to be provided.", "Menu");
+  }
+
+  const id = useDeterministicId(idProp, "styleless-ui__menu");
 
   const rootRef = React.useRef<HTMLDivElement>(null);
   const handleRootRef = useForkedRefs(ref, rootRef);
 
-  const prevOpen = usePreviousValue(open);
-
   const previouslyFocusedElement = React.useRef<HTMLElement | null>(null);
 
-  const keepMounted =
-    typeof keepMountedProp === "undefined"
-      ? menuCtx?.keepMounted ?? false
-      : keepMountedProp;
+  const [activeElement, setActiveElement] = React.useState<HTMLElement | null>(
+    null,
+  );
 
-  const id = useDeterministicId(idProp, "styleless-ui__menu");
-
-  // The element which is active and you can control with keyboard.
-  const [activeElement, setActiveElement] =
-    React.useState<HTMLDivElement | null>(null);
-
-  // The active item which is going to trigger a sub menu.
-  const [activeSubTrigger, setActiveSubTrigger] =
-    React.useState<HTMLDivElement | null>(null);
-
-  const [isMenuActive, setIsMenuActive] = React.useState(open);
+  const [activeExpandedDescendant, setActiveExpandedDescendant] =
+    React.useState<HTMLElement | null>(null);
 
   const dir = useDirection(rootRef) ?? "ltr";
 
-  const shouldActivateFirstSubItemRef = React.useRef(false);
-  const initialFocusRef = React.useRef(false);
+  const emitActiveElementChange = React.useCallback(
+    (newActiveItem: HTMLElement | null) => {
+      setActiveElement(newActiveItem);
 
-  const itemsRegistry: React.RefObject<HTMLDivElement>[] = [];
-  const registerItem = makeRegisterItem(itemsRegistry);
-
-  const searchQuery = useSearchQuery(itemsRegistry);
-
-  const context: MenuContextValue = {
-    ref: rootRef,
-    activeElement,
-    activeSubTrigger,
-    isMenuActive,
-    keepMounted,
-    shouldActivateFirstSubItemRef,
-    setActiveSubTrigger,
-    registerItem,
-    setIsMenuActive,
-    onEscape,
-    onOutsideClick,
-    setActiveElement: node => {
-      menuCtx?.setIsMenuActive(false);
-
-      setActiveElement(node);
-      setActiveSubTrigger(null);
+      if (!newActiveItem) setActiveExpandedDescendant(null);
+      else {
+        setActiveExpandedDescendant(
+          getCurrentMenuControllerItem(newActiveItem),
+        );
+      }
     },
+    [],
+  );
+
+  const jumpToChar = useJumpToChar({
+    getListItems: () => getListItems(id, activeExpandedDescendant),
+    activeDescendantElement: activeElement,
+    onActiveDescendantElementChange: emitActiveElementChange,
+  });
+
+  const computationMiddleware = React.useMemo(
+    () => createComputationMiddleware(dir, alignment),
+    [dir, alignment],
+  );
+
+  useOnChange(open, currentOpen => {
+    if (currentOpen) {
+      previouslyFocusedElement.current = document.activeElement as HTMLElement;
+      rootRef.current?.focus();
+    } else {
+      previouslyFocusedElement.current?.focus();
+      previouslyFocusedElement.current = null;
+
+      emitActiveElementChange(null);
+    }
+  });
+
+  const labelProps = getLabelInfo(label, "Menu", {
+    customErrorMessage: [
+      "Invalid `label` property.",
+      "The `label` property must be in shape of " +
+        "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
+    ].join("\n"),
+  });
+
+  const collapseInactiveExpandedDescendants = () => {
+    const inactiveEntities = activeExpandedDescendant
+      ? null
+      : getInactiveExpandedDescendant(id);
+
+    if (!inactiveEntities) return;
+
+    inactiveEntities.forEach(inactiveEntity => {
+      const item = document.getElementById(inactiveEntity);
+
+      if (!item) return;
+
+      dispatchDiscreteCustomEvent(item, CollapseSubMenuEvent);
+    });
   };
 
-  React.useEffect(() => {
-    if (!open && typeof prevOpen === "boolean" && open !== prevOpen) {
-      previouslyFocusedElement.current
-        ? previouslyFocusedElement.current.focus()
-        : document.body.focus();
-    }
-  }, [open, prevOpen]);
+  const handleFocus = useEventCallback<React.FocusEvent>(event => {
+    if (event.target === event.currentTarget) return;
 
-  React.useEffect(() => {
-    if (!open) {
-      setActiveElement(null);
-      setIsMenuActive(false);
+    rootRef.current?.focus();
 
-      previouslyFocusedElement.current = null;
-      initialFocusRef.current = false;
-    } else {
-      setIsMenuActive(true);
+    onFocus?.(event as React.FocusEvent<HTMLDivElement>);
+  });
 
-      if (menuCtx) return;
+  const handleExitTrap = useEventCallback(() => {
+    rootRef.current?.focus();
+  });
 
-      previouslyFocusedElement.current =
-        document.activeElement as HTMLElement | null;
+  const handleOutsideClick = useEventCallback<MouseEvent>(event => {
+    const anchor = resolveAnchor();
 
-      (document.activeElement as HTMLDivElement | null)?.blur();
-    }
-  }, [open, menuCtx]);
+    if (!anchor) return;
+    if (!event.target) return;
+    if (!rootRef.current) return;
 
-  if (typeof document !== "undefined") {
-    /* eslint-disable react-hooks/rules-of-hooks */
-    useEventListener(
-      {
-        target: document,
-        eventType: "click",
-        handler: useEventCallback<MouseEvent>(event => {
-          if (!event.target) return;
-          if (!rootRef.current) return;
-          if (rootRef.current === event.target) return;
-          if (contains(rootRef.current, event.target as HTMLElement)) return;
+    const target = event.target as HTMLElement;
 
-          setActiveElement(null);
-          setActiveSubTrigger(null);
+    if (rootRef.current === target) return;
+    if (anchor === target) return;
 
-          onOutsideClick?.(event) ?? menuCtx?.onOutsideClick?.(event);
-        }),
-      },
-      open && isMenuActive,
+    const popper = target.closest<HTMLElement>(
+      `[data-slot='${PopperRootSlot}']`,
     );
 
-    const openSubMenu = (element?: HTMLDivElement | null) => {
-      setActiveSubTrigger(element ?? activeElement);
-      setIsMenuActive(false);
-      shouldActivateFirstSubItemRef.current = true;
-    };
+    if (popper) return;
 
-    useEventListener(
-      {
-        target: document,
-        eventType: "keydown",
-        handler: useEventCallback<KeyboardEvent>(event => {
-          const shouldAllowKeyboardNavigation =
-            shouldActivateKeyboardNavigation ?? true;
+    emitClose();
+  });
 
-          if (!shouldAllowKeyboardNavigation) return;
+  const handleKeyDown = useEventCallback<React.KeyboardEvent>(event => {
+    const items = getListItems(id, activeExpandedDescendant);
 
-          const goPrevCase = SystemKeys.UP === event.key;
-          const goNextCase = SystemKeys.DOWN === event.key;
+    const currentFocusedElement = getCurrentFocusedElement(
+      items,
+      activeElement,
+    );
 
-          const escapeCase = SystemKeys.ESCAPE === event.key;
+    if (currentFocusedElement) {
+      switch (event.key) {
+        case SystemKeys.ESCAPE: {
+          event.preventDefault();
 
-          const selectCase = [SystemKeys.ENTER, SystemKeys.SPACE].includes(
-            event.key,
+          emitClose();
+
+          break;
+        }
+
+        case SystemKeys.HOME: {
+          event.preventDefault();
+
+          const { item } = getAvailableItem(items, 0, true);
+
+          emitActiveElementChange(item);
+          collapseInactiveExpandedDescendants();
+
+          break;
+        }
+
+        case SystemKeys.END: {
+          event.preventDefault();
+
+          const { item } = getAvailableItem(items, items.length - 1, false);
+
+          emitActiveElementChange(item);
+          collapseInactiveExpandedDescendants();
+
+          break;
+        }
+
+        case SystemKeys.UP: {
+          event.preventDefault();
+
+          const { index } = currentFocusedElement;
+
+          collapseInactiveExpandedDescendants();
+
+          if (index === -1) {
+            const { item } = getAvailableItem(items, items.length - 1, false);
+
+            emitActiveElementChange(item);
+
+            break;
+          }
+
+          const nextIdx = (index - 1 + items.length) % items.length;
+          const { item } = getAvailableItem(items, nextIdx, false);
+
+          emitActiveElementChange(item);
+
+          break;
+        }
+
+        case SystemKeys.DOWN: {
+          event.preventDefault();
+
+          const { index } = currentFocusedElement;
+
+          collapseInactiveExpandedDescendants();
+
+          if (index === -1) {
+            const { item } = getAvailableItem(items, 0, true);
+
+            emitActiveElementChange(item);
+
+            break;
+          }
+
+          const nextIdx = (index + 1) % items.length;
+          const { item } = getAvailableItem(items, nextIdx, true);
+
+          emitActiveElementChange(item);
+
+          break;
+        }
+
+        case SystemKeys.LEFT: {
+          event.preventDefault();
+
+          const { item } = currentFocusedElement;
+
+          if (!item) break;
+
+          const parent = getCurrentMenuControllerItem(item);
+
+          if (!parent) break;
+
+          const isDisabled =
+            parent.getAttribute("aria-disabled") === "true" ||
+            parent.hasAttribute("data-disabled") ||
+            parent.hasAttribute("data-hidden") ||
+            parent.getAttribute("aria-hidden") === "true";
+
+          if (!isDisabled) emitActiveElementChange(parent);
+
+          dispatchDiscreteCustomEvent(parent, CollapseSubMenuEvent);
+
+          break;
+        }
+
+        case SystemKeys.RIGHT: {
+          event.preventDefault();
+
+          const { item } = currentFocusedElement;
+
+          if (!item) break;
+
+          const isExpandable = item.getAttribute("data-expandable") === "true";
+
+          if (!isExpandable) break;
+
+          dispatchDiscreteCustomEvent(item, ExpandSubMenuEvent);
+
+          const submenu = getOwnControlledMenu(item);
+
+          if (!submenu) break;
+
+          const descendants = Array.from(
+            submenu.querySelectorAll<HTMLElement>("[role*='menuitem']"),
           );
 
-          const openSubCase =
-            (dir === "rtl" ? SystemKeys.LEFT : SystemKeys.RIGHT) === event.key;
+          const { item: nextActiveElement } = getAvailableItem(
+            descendants,
+            0,
+            true,
+          );
 
-          const closeSubCase =
-            (dir === "rtl" ? SystemKeys.RIGHT : SystemKeys.LEFT) === event.key;
+          if (!nextActiveElement) break;
 
-          const searchCase =
-            !goPrevCase && !goNextCase && !openSubCase && !closeSubCase;
+          emitActiveElementChange(nextActiveElement);
 
-          if (escapeCase) {
-            event.preventDefault();
-            onEscape?.(event) ?? menuCtx?.onEscape?.(event);
+          break;
+        }
 
-            return;
+        case SystemKeys.SPACE:
+        case SystemKeys.ENTER: {
+          event.preventDefault();
+
+          const { item } = currentFocusedElement;
+
+          if (!item) break;
+
+          const isExpandable = item.getAttribute("data-expandable") === "true";
+
+          if (!isExpandable) {
+            item.click();
+
+            break;
           }
 
-          if (selectCase) {
-            if (!activeElement) return;
+          dispatchDiscreteCustomEvent(item, ExpandSubMenuEvent);
 
-            activeElement.click();
+          const submenu = getOwnControlledMenu(item);
 
-            if (activeElement.hasAttribute("aria-haspopup")) {
-              openSubMenu(activeElement);
-            }
+          if (!submenu) break;
 
-            return;
-          }
+          const descendants = Array.from(
+            submenu.querySelectorAll<HTMLElement>("[role*='menuitem']"),
+          );
 
-          if (searchCase && !disabledKeySearch) {
-            searchQuery(event, { value: activeElement, set: setActiveElement });
+          const { item: nextActiveElement } = getAvailableItem(
+            descendants,
+            0,
+            true,
+          );
 
-            return;
-          }
+          if (!nextActiveElement) break;
 
-          let nextActive: HTMLDivElement | null = activeElement ?? null;
+          emitActiveElementChange(nextActiveElement);
 
-          if (goNextCase || goPrevCase) {
-            event.preventDefault();
+          break;
+        }
 
-            if (menuCtx && menuCtx.isMenuActive) {
-              return menuCtx.setActiveSubTrigger(null);
-            }
+        default: {
+          jumpToChar(event as React.KeyboardEvent<HTMLElement>);
 
-            const currentIdx = itemsRegistry.findIndex(
-              itemRef => itemRef.current === nextActive,
-            );
-
-            const items = itemsRegistry.map(itemRef => itemRef.current);
-
-            if (goNextCase) {
-              const nextIdx = (currentIdx + 1) % itemsRegistry.length;
-
-              nextActive = getAvailableItem(items, nextIdx, true) ?? null;
-            } else if (goPrevCase) {
-              const nextIdx =
-                ((currentIdx === -1 ? 0 : currentIdx) -
-                  1 +
-                  itemsRegistry.length) %
-                itemsRegistry.length;
-
-              nextActive = getAvailableItem(items, nextIdx, false) ?? null;
-            }
-          }
-
-          nextActive?.scrollIntoView(false);
-          setActiveElement(nextActive);
-
-          if (nextActive?.hasAttribute("aria-haspopup") && openSubCase) {
-            openSubMenu(nextActive);
-          } else if (menuCtx && closeSubCase) {
-            menuCtx.shouldActivateFirstSubItemRef.current = false;
-            menuCtx.setActiveElement(menuCtx.activeSubTrigger);
-            menuCtx.setIsMenuActive(true);
-            menuCtx.setActiveSubTrigger(null);
-          }
-        }),
-      },
-      open && isMenuActive,
-    );
-    /* eslint-enable react-hooks/rules-of-hooks */
-  }
-
-  const refCallback = (node: HTMLDivElement | null) => {
-    handleRootRef(node);
-
-    if (!node) return;
-    if (!open) return;
-    if (!menuCtx) return;
-    if (!menuCtx.shouldActivateFirstSubItemRef.current) return;
-    if (initialFocusRef.current) return;
-
-    const items = Array.from(
-      node.querySelectorAll<HTMLDivElement>("[role*='menuitem']"),
-    );
-
-    const item = getAvailableItem(items, 0, true);
-
-    if (!item) return;
-
-    setActiveElement(item);
-    initialFocusRef.current = true;
-  };
-
-  const popperComputationMiddleware: PopperProps["computationMiddleware"] = ({
-    overflow,
-    elementRects,
-    placement,
-  }) => {
-    if (dir === "rtl") {
-      const desiredPlacement: typeof placement =
-        alignment === "middle" ? "left" : `left-${alignment}`;
-
-      const oppOfDesiredPlacement: typeof placement =
-        alignment === "middle" ? "right" : `right-${alignment}`;
-
-      if (placement === desiredPlacement) return { placement };
-      if (overflow.left + elementRects.popperRect.width <= 0) {
-        return { placement: desiredPlacement };
-      } else return { placement: oppOfDesiredPlacement };
-    } else {
-      const desiredPlacement: typeof placement =
-        alignment === "middle" ? "right" : `right-${alignment}`;
-
-      const oppOfDesiredPlacement: typeof placement =
-        alignment === "middle" ? "left" : `left-${alignment}`;
-
-      if (placement === desiredPlacement) return { placement };
-      if (overflow.right + elementRects.popperRect.width <= 0) {
-        return { placement: desiredPlacement };
-      } else return { placement: oppOfDesiredPlacement };
+          break;
+        }
+      }
     }
+
+    onKeyDown?.(event as React.KeyboardEvent<HTMLDivElement>);
+  });
+
+  const refCallback = React.useCallback(
+    (node: HTMLDivElement | null) => {
+      handleRootRef(node);
+
+      if (!node) return;
+      if (!open) return;
+      if (document.activeElement === node) return;
+
+      node.focus();
+    },
+    [handleRootRef, open],
+  );
+
+  const getActiveDescendant = () => {
+    if (!activeElement) return undefined;
+
+    return activeElement.id;
   };
 
   const renderProps: RenderProps = { open };
@@ -384,36 +466,50 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       ? classNameProp(classNameProps)
       : classNameProp;
 
+  const context: MenuContextValue = {
+    id,
+    activeElement,
+    keepMounted,
+    alignment,
+    emitClose,
+    emitActiveElementChange,
+    computationMiddleware,
+  };
+
+  if (typeof document !== "undefined") {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useEventListener(
+      {
+        target: document,
+        eventType: "click",
+        handler: handleOutsideClick,
+        options: { capture: true },
+      },
+      open,
+    );
+  }
+
   return (
-    <Popper
-      autoPlacement
+    <BaseMenu
+      {...otherProps}
+      id={id}
+      trapFocus
+      ref={refCallback}
+      onKeyDown={handleKeyDown}
+      onExitTrap={handleExitTrap}
+      onFocus={handleFocus}
+      activeDescendantId={getActiveDescendant()}
+      resolveAnchor={resolveAnchor}
+      alignment={alignment}
+      computationMiddleware={computationMiddleware}
       keepMounted={keepMounted}
       open={open}
-      resolveAnchor={resolveAnchor}
-      computationMiddlewareOrder="afterAutoPlacement"
-      computationMiddleware={popperComputationMiddleware}
-      offset={0}
-      alignment={alignment}
+      label={labelProps}
+      className={className}
+      data-slot={RootSlot}
     >
-      <FocusTrap enabled={open}>
-        <div
-          {...otherProps}
-          // @ts-expect-error React hasn't added `inert` yet
-          inert={!open ? "" : undefined}
-          ref={refCallback}
-          id={id}
-          role="menu"
-          data-slot={RootSlot}
-          className={className}
-          tabIndex={-1}
-          data-open={open ? "" : undefined}
-        >
-          <MenuContext.Provider value={context}>
-            {children}
-          </MenuContext.Provider>
-        </div>
-      </FocusTrap>
-    </Popper>
+      <MenuContext.Provider value={context}>{children}</MenuContext.Provider>
+    </BaseMenu>
   );
 };
 

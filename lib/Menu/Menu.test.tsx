@@ -1,7 +1,4 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-import cls from "classnames";
-import * as React from "react";
-import * as Menu from ".";
+import classNames from "classnames";
 import {
   itShouldMount,
   itSupportsDataSetProps,
@@ -11,494 +8,866 @@ import {
   screen,
   userEvent,
 } from "../../tests/utils";
-import * as Slots from "./slots";
+import { createVirtualElement } from "../utils";
+import * as Menu from "./index";
+import {
+  GroupLabel as GroupLabelSlot,
+  RadioGroupLabel as RadioGroupLabelSlot,
+} from "./slots";
 
 describe("Menu", () => {
   afterEach(jest.clearAllMocks);
 
-  itShouldMount(Menu.Root, { open: true });
-  itSupportsRef(Menu.Root, { open: true }, HTMLDivElement);
-  itSupportsStyle(Menu.Root, { open: true }, `[data-slot='${Slots.Root}']`);
-  itSupportsDataSetProps(
-    Menu.Root,
-    { open: true },
-    `[data-slot='${Slots.Root}']`,
-  );
+  const requiredProps: Menu.RootProps = {
+    open: true,
+    label: { screenReaderLabel: "label" },
+    onClose: () => void 0,
+    resolveAnchor: () => createVirtualElement(0, 0, 0, 0),
+  };
 
-  it("should have the required classNames", () => {
-    render(
-      <Menu.Root
-        open
-        className={({ open }) => (open ? "menu menu--open" : "menu")}
-      >
-        <Menu.Items
-          className="menu__items"
-          label={{ screenReaderLabel: "Menu 0" }}
-        >
-          <Menu.Group
-            classes={{ label: "menu__group__label", root: "menu__group" }}
-            label="Group 0"
-          >
-            <Menu.Item
-              disabled
-              className={({ disabled }) =>
-                disabled ? "menu__item menu__item--disabled" : "menu__item"
-              }
-            >
-              Item 0
-            </Menu.Item>
-            <Menu.Item
-              className={({ disabled }) =>
-                disabled ? "menu__item menu__item--disabled" : "menu__item"
-              }
-            >
-              Item 1
-            </Menu.Item>
-            <Menu.Item
-              className={({ disabled }) =>
-                disabled ? "menu__item menu__item--disabled" : "menu__item"
-              }
-            >
-              <span>Item 2</span>
-              <Menu.Sub
-                className={({ open }) =>
-                  open
-                    ? "menu menu--sub-menu menu--open"
-                    : "menu menu--sub-menu"
-                }
-              >
-                <Menu.Items
-                  className="menu__items"
-                  label={{ screenReaderLabel: "Item 2" }}
-                >
-                  <Menu.Item
-                    className={({ disabled }) =>
-                      disabled
-                        ? "menu__item menu__item--disabled"
-                        : "menu__item"
-                    }
-                  >
-                    Item 2.0
-                  </Menu.Item>
-                  <Menu.Item
-                    disabled
-                    className={({ disabled }) =>
-                      disabled
-                        ? "menu__item menu__item--disabled"
-                        : "menu__item"
-                    }
-                  >
-                    Item 2.1
-                  </Menu.Item>
-                  <Menu.Item
-                    className={({ disabled }) =>
-                      disabled
-                        ? "menu__item menu__item--disabled"
-                        : "menu__item"
-                    }
-                  >
-                    Item 2.3
-                  </Menu.Item>
-                </Menu.Items>
-              </Menu.Sub>
-            </Menu.Item>
-          </Menu.Group>
-          <Menu.SeparatorItem className="menu__separator" />
-          <Menu.Group
-            classes={{ label: "menu__group__label", root: "menu__group" }}
-            label="Group 1"
-          >
-            <Menu.CheckItem
-              defaultChecked
-              className={({ disabled, selected }) =>
-                cls("menu__check-item", {
-                  "menu__check-item--disabled": disabled,
-                  "menu__check-item--selected": selected,
-                })
-              }
-            >
-              Item 3
-            </Menu.CheckItem>
-            <Menu.CheckItem
-              disabled
-              className={({ disabled, selected }) =>
-                cls("menu__check-item", {
-                  "menu__check-item--disabled": disabled,
-                  "menu__check-item--selected": selected,
-                })
-              }
-            >
-              Item 4
-            </Menu.CheckItem>
-            <Menu.CheckItem
-              className={({ disabled, selected }) =>
-                cls("menu__check-item", {
-                  "menu__check-item--disabled": disabled,
-                  "menu__check-item--selected": selected,
-                })
-              }
-            >
-              Item 5
-            </Menu.CheckItem>
-          </Menu.Group>
-          <Menu.RadioGroup
-            classes={{
-              label: "menu__group__label",
-              root: "menu__group",
-            }}
-            label="Group 2"
-            defaultValue="6"
-          >
-            <Menu.RadioItem
-              value="6"
-              className={({ disabled, selected }) =>
-                cls("menu__radio-item", {
-                  "menu__radio-item--disabled": disabled,
-                  "menu__radio-item--selected": selected,
-                })
-              }
-            >
-              Item 6
-            </Menu.RadioItem>
-            <Menu.RadioItem
-              value="7"
-              disabled
-              className={({ disabled, selected }) =>
-                cls("menu__radio-item", {
-                  "menu__radio-item--disabled": disabled,
-                  "menu__radio-item--selected": selected,
-                })
-              }
-            >
-              Item 7
-            </Menu.RadioItem>
-            <Menu.RadioItem
-              value="8"
-              className={({ disabled, selected }) =>
-                cls("menu__radio-item", {
-                  "menu__radio-item--disabled": disabled,
-                  "menu__radio-item--selected": selected,
-                })
-              }
-            >
-              Item 8
-            </Menu.RadioItem>
-          </Menu.RadioGroup>
-        </Menu.Items>
-      </Menu.Root>,
-    );
-
-    const menuItemWrappers = screen.getAllByRole("menu");
-    const menuGroups = screen.getAllByRole("group");
-    const menuSeparators = screen.getAllByRole("separator");
-    const menuItems = screen.getAllByRole("menuitem");
-    const menuCheckItems = screen.getAllByRole("menuitemcheckbox");
-    const menuRadioItems = screen.getAllByRole("menuitemradio");
-
-    menuItemWrappers.forEach((menuItemWrapper, idx) => {
-      expect(menuItemWrapper.parentElement).toHaveClass(
-        "menu",
-        idx === 0 ? "menu--open" : "menu--sub-menu",
-      );
-
-      expect(menuItemWrapper).toHaveClass("menu__items");
-    });
-
-    menuGroups.forEach(menuGroup => {
-      expect(menuGroup).toHaveClass("menu__group");
-      expect(menuGroup.firstElementChild).toHaveClass("menu__group__label");
-    });
-
-    menuSeparators.forEach(menuSeparator => {
-      expect(menuSeparator).toHaveClass("menu__separator");
-    });
-
-    menuItems.forEach(menuItem => {
-      const isDisabled = menuItem.getAttribute("aria-disabled") === "true";
-
-      expect(menuItem).toHaveClass(
-        "menu__item",
-        isDisabled ? "menu__item--disabled" : "",
-      );
-    });
-
-    menuCheckItems.forEach(menuCheckItem => {
-      const isDisabled = menuCheckItem.getAttribute("aria-disabled") === "true";
-      const isChecked = menuCheckItem.getAttribute("aria-checked") === "true";
-
-      expect(menuCheckItem).toHaveClass(
-        "menu__check-item",
-        isDisabled ? "menu__check-item--disabled" : "",
-        isChecked ? "menu__check-item--selected" : "",
-      );
-    });
-
-    menuRadioItems.forEach(menuRadioItem => {
-      const isDisabled = menuRadioItem.getAttribute("aria-disabled") === "true";
-      const isChecked = menuRadioItem.getAttribute("aria-checked") === "true";
-
-      expect(menuRadioItem).toHaveClass("menu__radio-item");
-
-      expect(menuRadioItem).toHaveClass(
-        "menu__radio-item",
-        isDisabled ? "menu__radio-item--disabled" : "",
-        isChecked ? "menu__radio-item--selected" : "",
-      );
-    });
+  itShouldMount(Menu.Root, requiredProps);
+  itSupportsStyle(Menu.Root, requiredProps, "[role='menu']", {
+    withPortal: true,
+  });
+  itSupportsRef(Menu.Root, requiredProps, HTMLDivElement);
+  itSupportsDataSetProps(Menu.Root, requiredProps, "[role='menu']", {
+    withPortal: true,
   });
 
-  it("the anchor of the submenu should have the required aria attributes", () => {
-    render(
-      <Menu.Root open>
-        <Menu.Items label={{ screenReaderLabel: "Menu 0" }}>
-          <Menu.Group label="Group 0">
-            <Menu.Item disabled>Item 0</Menu.Item>
-            <Menu.Item>Item 1</Menu.Item>
-            <Menu.Item data-testid="item:2">
-              <span>Item 2</span>
-              <Menu.Sub id="submenu:0">
-                <Menu.Items label={{ screenReaderLabel: "Item 2" }}>
-                  <Menu.Item>Item 2.0</Menu.Item>
-                  <Menu.Item disabled>Item 2.1</Menu.Item>
-                  <Menu.Item>Item 2.3</Menu.Item>
-                </Menu.Items>
-              </Menu.Sub>
-            </Menu.Item>
-          </Menu.Group>
-        </Menu.Items>
-      </Menu.Root>,
-    );
+  it("should have the required classNames", async () => {
+    const itemClassName: Menu.ItemProps["className"] = ({
+      active,
+      disabled,
+      expandable,
+      expanded,
+    }) =>
+      classNames("menu__item", {
+        "menu__item--active": active,
+        "menu__item--disabled": disabled,
+        "menu__item--expandable": expandable,
+        "menu__item--expanded": expanded,
+      });
 
-    const triggerItem = screen.getByTestId("item:2");
+    const radioClassName: Menu.RadioItemProps["className"] = ({
+      active,
+      disabled,
+      checked,
+    }) =>
+      classNames("menu__radio-item", {
+        "menu__radio-item--active": active,
+        "menu__radio-item--disabled": disabled,
+        "menu__radio-item--checked": checked,
+      });
 
-    expect(triggerItem).toHaveAttribute("aria-controls", "submenu:0");
-    expect(triggerItem).toHaveAttribute("aria-expanded", "false");
-    expect(triggerItem).toHaveAttribute("aria-haspopup", "menu");
-  });
+    const checkClassName: Menu.CheckItemProps["className"] = ({
+      active,
+      disabled,
+      checked,
+    }) =>
+      classNames("menu__check-item", {
+        "menu__check-item--active": active,
+        "menu__check-item--disabled": disabled,
+        "menu__check-item--checked": checked,
+      });
 
-  it("selects a `menuitem` and calls `onSelect` callback", async () => {
-    const handleOnSelect = jest.fn<
-      void,
-      [event: React.MouseEvent | React.KeyboardEvent]
-    >();
+    const subMenuClassName: Menu.SubMenuProps["className"] = ({ open }) =>
+      classNames("menu__submenu", {
+        "menu__submenu--open": open,
+      });
 
-    userEvent.setup();
-    render(
-      <Menu.Root open>
-        <Menu.Items label={{ screenReaderLabel: "Menu 0" }}>
-          <Menu.Item
-            disabled
-            onSelect={handleOnSelect}
-          >
-            Item 0
-          </Menu.Item>
-          <Menu.Item onSelect={handleOnSelect}>Item 1</Menu.Item>
-          <Menu.Item onSelect={handleOnSelect}>Item 2</Menu.Item>
-        </Menu.Items>
-      </Menu.Root>,
-    );
+    const groupClasses: Menu.GroupProps["classes"] = {
+      root: "menu__group",
+      label: "menu__group__label",
+    };
 
-    const items = screen.getAllByRole("menuitem");
+    const radioGroupClasses: Menu.RadioGroupProps["classes"] = groupClasses;
 
-    let calls = 0;
+    const separatorClassName = "menu__separator-item";
 
-    for (const item of items) {
-      const isDisabled = item.getAttribute("aria-disabled") === "true";
-
-      await userEvent.click(item);
-      if (!isDisabled) {
-        calls++;
-        // eslint-disable-next-line jest/no-conditional-expect
-        expect(handleOnSelect.mock.calls[0]?.[0]).not.toBeFalsy();
-      }
-
-      expect(handleOnSelect.mock.calls.length).toBe(calls);
-    }
-  });
-
-  it("selects a `menuitemcheckbox` and calls `onSelect` and `onCheckChange` callbacks", async () => {
-    const handleOnSelect = jest.fn<
-      void,
-      [event: React.MouseEvent | React.KeyboardEvent]
-    >();
-
-    const handleOnCheckChange = jest.fn<void, [checked: boolean]>();
-
-    userEvent.setup();
-    render(
-      <Menu.Root open>
-        <Menu.Items label={{ screenReaderLabel: "Menu 0" }}>
-          <Menu.CheckItem
-            disabled
-            onSelect={handleOnSelect}
-            onCheckChange={handleOnCheckChange}
-          >
-            Item 0
-          </Menu.CheckItem>
-          <Menu.CheckItem
-            onSelect={handleOnSelect}
-            onCheckChange={handleOnCheckChange}
-          >
-            Item 1
-          </Menu.CheckItem>
-          <Menu.CheckItem
-            onSelect={handleOnSelect}
-            onCheckChange={handleOnCheckChange}
-          >
-            Item 2
-          </Menu.CheckItem>
-        </Menu.Items>
-      </Menu.Root>,
-    );
-
-    const items = screen.getAllByRole("menuitemcheckbox");
-
-    let calls = 0;
-
-    for (const item of items) {
-      const isDisabled = item.getAttribute("aria-disabled") === "true";
-
-      await userEvent.click(item);
-      if (!isDisabled) {
-        calls++;
-        /* eslint-disable jest/no-conditional-expect */
-        expect(handleOnSelect.mock.calls[0]?.[0]).not.toBeFalsy();
-        expect(handleOnCheckChange.mock.calls[0]?.[0]).toBe(true);
-        /* eslint-enable jest/no-conditional-expect */
-      }
-
-      expect(handleOnSelect.mock.calls.length).toBe(calls);
-      expect(handleOnCheckChange.mock.calls.length).toBe(calls);
-    }
-  });
-
-  it("selects a `menuitemradio` and calls `onSelect` callback", async () => {
-    const handleOnSelect = jest.fn<
-      void,
-      [event: React.MouseEvent | React.KeyboardEvent]
-    >();
-
-    userEvent.setup();
-    render(
-      <Menu.Root open>
-        <Menu.Items label={{ screenReaderLabel: "Menu 0" }}>
-          <Menu.RadioGroup label="Group 0">
-            <Menu.RadioItem
-              disabled
-              value="0"
-              onSelect={handleOnSelect}
-            >
-              Item 0
-            </Menu.RadioItem>
-            <Menu.RadioItem
-              value="1"
-              onSelect={handleOnSelect}
-            >
-              Item 1
-            </Menu.RadioItem>
-            <Menu.RadioItem
-              value="2"
-              onSelect={handleOnSelect}
-            >
-              Item 2
-            </Menu.RadioItem>
-          </Menu.RadioGroup>
-        </Menu.Items>
-      </Menu.Root>,
-    );
-
-    const items = screen.getAllByRole("menuitemradio");
-
-    let calls = 0;
-
-    for (const item of items) {
-      const isDisabled = item.getAttribute("aria-disabled") === "true";
-
-      await userEvent.click(item);
-      if (!isDisabled) {
-        calls++;
-        // eslint-disable-next-line jest/no-conditional-expect
-        expect(handleOnSelect.mock.calls[0]?.[0]).not.toBeFalsy();
-      }
-
-      expect(handleOnSelect.mock.calls.length).toBe(calls);
-    }
-  });
-
-  it("toggles `menuitemradio`s of <MenuRadioGroup> and calls `onValueChange` callback", async () => {
-    const handleOnValueChange = jest.fn<void, [value: string]>();
-
-    userEvent.setup();
-    render(
-      <Menu.Root open>
-        <Menu.Items label={{ screenReaderLabel: "Menu 0" }}>
-          <Menu.RadioGroup
-            label="Group 0"
-            onValueChange={handleOnValueChange}
-          >
-            <Menu.RadioItem
-              disabled
-              value="0"
-            >
-              Item 0
-            </Menu.RadioItem>
-            <Menu.RadioItem value="1">Item 1</Menu.RadioItem>
-            <Menu.RadioItem value="2">Item 2</Menu.RadioItem>
-          </Menu.RadioGroup>
-        </Menu.Items>
-      </Menu.Root>,
-    );
-
-    const items = screen.getAllByRole("menuitemradio");
-
-    expect(items[1]).not.toBeUndefined();
-    expect(items[2]).not.toBeUndefined();
-
-    await userEvent.click(items[1]!);
-    expect(items[1]).toBeChecked();
-    expect(handleOnValueChange.mock.calls.length).toBe(1);
-    expect(handleOnValueChange.mock.calls[0]?.[0]).toBe("1");
-
-    await userEvent.click(items[2]!);
-    expect(items[2]).toBeChecked();
-    expect(handleOnValueChange.mock.calls.length).toBe(2);
-    expect(handleOnValueChange.mock.calls[1]?.[0]).toBe("2");
-  });
-
-  it("clicks outside of the component and calls `onOutsideClick` callback", async () => {
-    const handleOutsideClick = jest.fn<void, [event: MouseEvent]>();
-
-    userEvent.setup();
     render(
       <>
-        <button data-testid="btn">Button</button>
+        <button id="anchor">anchor</button>
         <Menu.Root
-          open
-          onOutsideClick={handleOutsideClick}
-        />
+          className={({ open }) => classNames("menu", { "menu--open": open })}
+          label={{ screenReaderLabel: "Menu" }}
+          open={true}
+          onClose={() => void 0}
+          resolveAnchor={() => document.getElementById("anchor")}
+        >
+          <Menu.Group
+            classes={groupClasses}
+            label={"G1"}
+            data-testid="g1"
+          >
+            <Menu.Item
+              className={itemClassName}
+              data-testid="i1"
+              subMenu={
+                <Menu.SubMenu
+                  data-testid="m1"
+                  className={subMenuClassName}
+                >
+                  <Menu.Item
+                    data-testid="m1i1"
+                    className={itemClassName}
+                  >
+                    New Tab
+                  </Menu.Item>
+                  <Menu.Item
+                    data-testid="m1i2"
+                    className={itemClassName}
+                  >
+                    New Window
+                  </Menu.Item>
+                </Menu.SubMenu>
+              }
+            >
+              {({ expanded }) => <>More Tools {expanded ? "-" : "+"}</>}
+            </Menu.Item>
+          </Menu.Group>
+          <Menu.SeparatorItem
+            data-testid="i2"
+            className={separatorClassName}
+          />
+          <Menu.Group
+            classes={groupClasses}
+            data-testid="g2"
+            label={{ screenReaderLabel: "G2" }}
+          >
+            <Menu.CheckItem
+              className={checkClassName}
+              value="show_bookmarks"
+              data-testid="i3"
+              disabled
+              checked={true}
+            >
+              {({ checked }) => <>{checked ? "⚫️" : "⚪️"} Show Bookmarks</>}
+            </Menu.CheckItem>
+            <Menu.CheckItem
+              className={checkClassName}
+              value="show_full_urls"
+              data-testid="i4"
+              checked={false}
+            >
+              {({ checked }) => <>{checked ? "⚫️" : "⚪️"} Show Full URLs</>}
+            </Menu.CheckItem>
+          </Menu.Group>
+          <Menu.SeparatorItem
+            data-testid="i5"
+            className={separatorClassName}
+          />
+          <Menu.Item
+            data-testid="i6"
+            disabled
+            className={itemClassName}
+          >
+            New Window
+          </Menu.Item>
+          <Menu.SeparatorItem
+            data-testid="i7"
+            className={separatorClassName}
+          />
+          <Menu.RadioGroup
+            classes={radioGroupClasses}
+            label={"People"}
+            data-testid="g3"
+            defaultValue="pedro"
+          >
+            <Menu.RadioItem
+              className={radioClassName}
+              data-testid="i8"
+              value="pedro"
+            >
+              {({ checked }) => <>{checked ? "⚫️" : "⚪️"} Pedro</>}
+            </Menu.RadioItem>
+            <Menu.RadioItem
+              className={radioClassName}
+              data-testid="i9"
+              value="colm"
+              disabled
+            >
+              {({ checked }) => <>{checked ? "⚫️" : "⚪️"} Colm</>}
+            </Menu.RadioItem>
+          </Menu.RadioGroup>
+        </Menu.Root>
       </>,
     );
 
-    await userEvent.click(screen.getByTestId("btn"));
+    const root = screen.getByRole("menu");
 
-    expect(handleOutsideClick.mock.calls.length).toBe(1);
-    expect(handleOutsideClick.mock.calls[0]?.[0]).not.toBeFalsy();
+    expect(root).toHaveClass("menu", "menu--open");
+
+    expect(screen.getByTestId("g1")).toHaveClass("menu__group");
+    expect(screen.getByTestId("g2")).toHaveClass("menu__group");
+    expect(screen.getByTestId("g3")).toHaveClass("menu__group");
+
+    expect(
+      screen.getByTestId("g1").querySelector(`[data-slot="${GroupLabelSlot}"]`),
+    ).toHaveClass("menu__group__label");
+
+    expect(
+      screen
+        .getByTestId("g3")
+        .querySelector(`[data-slot="${RadioGroupLabelSlot}"]`),
+    ).toHaveClass("menu__group__label");
+
+    expect(screen.getByTestId("i1")).toHaveClass(
+      "menu__item",
+      "menu__item--expandable",
+    );
+
+    await userEvent.hover(screen.getByTestId("i1"));
+
+    expect(screen.getByTestId("i1")).toHaveClass(
+      "menu__item",
+      "menu__item--expandable",
+      "menu__item--expanded",
+      "menu__item--active",
+    );
+
+    expect(screen.getByTestId("m1")).toHaveClass(
+      "menu__submenu",
+      "menu__submenu--open",
+    );
+
+    expect(screen.getByTestId("m1i1")).toHaveClass("menu__item");
+    expect(screen.getByTestId("m1i2")).toHaveClass("menu__item");
+
+    expect(screen.getByTestId("i6")).toHaveClass(
+      "menu__item",
+      "menu__item--disabled",
+    );
+
+    expect(screen.getByTestId("i2")).toHaveClass("menu__separator-item");
+    expect(screen.getByTestId("i5")).toHaveClass("menu__separator-item");
+    expect(screen.getByTestId("i7")).toHaveClass("menu__separator-item");
+
+    expect(screen.getByTestId("i3")).toHaveClass(
+      "menu__check-item",
+      "menu__check-item--checked",
+      "menu__check-item--disabled",
+    );
+
+    expect(screen.getByTestId("i4")).toHaveClass("menu__check-item");
+
+    expect(screen.getByTestId("i8")).toHaveClass(
+      "menu__radio-item",
+      "menu__radio-item--checked",
+    );
+
+    expect(screen.getByTestId("i9")).toHaveClass(
+      "menu__radio-item",
+      "menu__radio-item--disabled",
+    );
   });
 
-  it("presses the Escape key and calls `onEscape` callback", async () => {
-    const handleEscape = jest.fn<void, [event: KeyboardEvent]>();
-
-    userEvent.setup();
+  it("should have the required aria attributes", async () => {
     render(
-      <Menu.Root
-        open
-        onEscape={handleEscape}
-      />,
+      <>
+        <button id="anchor">anchor</button>
+        <Menu.Root
+          label={{ screenReaderLabel: "Menu" }}
+          open={true}
+          onClose={() => void 0}
+          data-testid="root"
+          resolveAnchor={() => document.getElementById("anchor")}
+        >
+          <Menu.Group
+            label={"G1"}
+            data-testid="g1"
+          >
+            <Menu.Item
+              data-testid="i1"
+              subMenu={
+                <Menu.SubMenu data-testid="m1">
+                  <Menu.Item data-testid="m1i1">New Tab</Menu.Item>
+                  <Menu.Item data-testid="m1i2">New Window</Menu.Item>
+                </Menu.SubMenu>
+              }
+            >
+              {({ expanded }) => <>More Tools {expanded ? "-" : "+"}</>}
+            </Menu.Item>
+          </Menu.Group>
+          <Menu.SeparatorItem data-testid="i2" />
+          <Menu.Group
+            data-testid="g2"
+            label={{ screenReaderLabel: "G2" }}
+          >
+            <Menu.CheckItem
+              value="show_bookmarks"
+              data-testid="i3"
+              disabled
+              checked={true}
+            >
+              {({ checked }) => <>{checked ? "⚫️" : "⚪️"} Show Bookmarks</>}
+            </Menu.CheckItem>
+            <Menu.CheckItem
+              value="show_full_urls"
+              data-testid="i4"
+              checked={false}
+            >
+              {({ checked }) => <>{checked ? "⚫️" : "⚪️"} Show Full URLs</>}
+            </Menu.CheckItem>
+          </Menu.Group>
+          <Menu.SeparatorItem data-testid="i5" />
+          <Menu.Item
+            data-testid="i6"
+            disabled
+          >
+            New Window
+          </Menu.Item>
+          <Menu.SeparatorItem data-testid="i7" />
+          <Menu.RadioGroup
+            label={"People"}
+            data-testid="g3"
+            defaultValue="pedro"
+          >
+            <Menu.RadioItem
+              data-testid="i8"
+              value="pedro"
+            >
+              {({ checked }) => <>{checked ? "⚫️" : "⚪️"} Pedro</>}
+            </Menu.RadioItem>
+            <Menu.RadioItem
+              data-testid="i9"
+              value="colm"
+              disabled
+            >
+              {({ checked }) => <>{checked ? "⚫️" : "⚪️"} Colm</>}
+            </Menu.RadioItem>
+          </Menu.RadioGroup>
+        </Menu.Root>
+      </>,
     );
+
+    expect(screen.getByTestId("root")).toHaveFocus();
+    expect(screen.getByTestId("root")).toHaveAttribute("aria-label", "Menu");
+    expect(screen.getByTestId("root")).toHaveAttribute("data-open");
+
+    await userEvent.hover(screen.getByTestId("i1"));
+
+    expect(screen.getByTestId("root")).toHaveAttribute(
+      "aria-activedescendant",
+      screen.getByTestId("i1").id,
+    );
+
+    expect(screen.getByTestId("i1")).toHaveAttribute("aria-disabled", "false");
+    expect(screen.getByTestId("i1")).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByTestId("i1")).toHaveAttribute("aria-haspopup", "menu");
+    expect(screen.getByTestId("i1")).toHaveAttribute("data-active");
+    expect(screen.getByTestId("i1")).toHaveAttribute(
+      "data-entityname",
+      screen.getByTestId("i1").id,
+    );
+
+    expect(screen.getByTestId("m1")).toHaveAttribute(
+      "aria-labelledby",
+      screen.getByTestId("i1").id,
+    );
+    expect(screen.getByTestId("m1")).toHaveAttribute(
+      "data-for",
+      screen.getByTestId("i1").id,
+    );
+    expect(screen.getByTestId("m1")).toHaveAttribute(
+      "data-root-menu",
+      screen.getByTestId("root").id,
+    );
+    expect(screen.getByTestId("m1")).toHaveAttribute("data-open");
+
+    expect(screen.getByTestId("m1i1")).toHaveAttribute(
+      "aria-disabled",
+      "false",
+    );
+    expect(screen.getByTestId("m1i1")).not.toHaveAttribute("aria-expanded");
+    expect(screen.getByTestId("m1i1")).not.toHaveAttribute("aria-haspopup");
+    expect(screen.getByTestId("m1i1")).not.toHaveAttribute("aria-active");
+    expect(screen.getByTestId("m1i1")).toHaveAttribute(
+      "data-entityname",
+      screen.getByTestId("m1i1").id,
+    );
+    expect(screen.getByTestId("m1i2")).toHaveAttribute(
+      "aria-disabled",
+      "false",
+    );
+    expect(screen.getByTestId("m1i2")).not.toHaveAttribute("aria-expanded");
+    expect(screen.getByTestId("m1i2")).not.toHaveAttribute("aria-haspopup");
+    expect(screen.getByTestId("m1i2")).not.toHaveAttribute("aria-active");
+    expect(screen.getByTestId("m1i2")).toHaveAttribute(
+      "data-entityname",
+      screen.getByTestId("m1i2").id,
+    );
+
+    expect(screen.getByTestId("g2")).toHaveAttribute("aria-label", "G2");
+
+    expect(screen.getByTestId("i3")).toHaveAttribute("aria-disabled", "true");
+    expect(screen.getByTestId("i3")).toBeChecked();
+    expect(screen.getByTestId("i3")).not.toHaveAttribute("data-active");
+    expect(screen.getByTestId("i3")).toHaveAttribute(
+      "data-entityname",
+      "show_bookmarks",
+    );
+
+    expect(screen.getByTestId("i4")).toHaveAttribute("aria-disabled", "false");
+    expect(screen.getByTestId("i4")).not.toBeChecked();
+    expect(screen.getByTestId("i4")).not.toHaveAttribute("data-active");
+    expect(screen.getByTestId("i4")).toHaveAttribute(
+      "data-entityname",
+      "show_full_urls",
+    );
+
+    expect(screen.getByTestId("i6")).toHaveAttribute("aria-disabled", "true");
+    expect(screen.getByTestId("i6")).not.toHaveAttribute("aria-expanded");
+    expect(screen.getByTestId("i6")).not.toHaveAttribute("aria-haspopup");
+    expect(screen.getByTestId("i6")).not.toHaveAttribute("data-active");
+    expect(screen.getByTestId("i6")).toHaveAttribute(
+      "data-entityname",
+      screen.getByTestId("i6").id,
+    );
+
+    expect(screen.getByTestId("i8")).toHaveAttribute("aria-disabled", "false");
+    expect(screen.getByTestId("i8")).toBeChecked();
+    expect(screen.getByTestId("i8")).not.toHaveAttribute("data-active");
+    expect(screen.getByTestId("i8")).toHaveAttribute(
+      "data-entityname",
+      "pedro",
+    );
+
+    expect(screen.getByTestId("i9")).toHaveAttribute("aria-disabled", "true");
+    expect(screen.getByTestId("i9")).not.toBeChecked();
+    expect(screen.getByTestId("i9")).not.toHaveAttribute("data-active");
+    expect(screen.getByTestId("i9")).toHaveAttribute("data-entityname", "colm");
+  });
+
+  it("should properly move the active element by keyboard", async () => {
+    const handleOnClose = jest.fn<void, []>();
+
+    render(
+      <>
+        <button
+          id="anchor"
+          data-testid="anchor"
+        >
+          anchor
+        </button>
+        <Menu.Root
+          label={{ screenReaderLabel: "Menu" }}
+          open={true}
+          onClose={handleOnClose}
+          data-testid="root"
+          resolveAnchor={() => document.getElementById("anchor")}
+        >
+          <Menu.Group
+            label={"G1"}
+            data-testid="g1"
+          >
+            <Menu.Item
+              data-testid="i1"
+              subMenu={
+                <Menu.SubMenu data-testid="m1">
+                  <Menu.Item data-testid="m1i1">New Tab</Menu.Item>
+                  <Menu.Item data-testid="m1i2">New Window</Menu.Item>
+                </Menu.SubMenu>
+              }
+            >
+              {({ expanded }) => <>More Tools {expanded ? "-" : "+"}</>}
+            </Menu.Item>
+          </Menu.Group>
+          <Menu.SeparatorItem data-testid="i2" />
+          <Menu.Group
+            data-testid="g2"
+            label={{ screenReaderLabel: "G2" }}
+          >
+            <Menu.CheckItem
+              value="show_bookmarks"
+              data-testid="i3"
+              disabled
+              checked={true}
+            >
+              {({ checked }) => <>{checked ? "⚫️" : "⚪️"} Show Bookmarks</>}
+            </Menu.CheckItem>
+            <Menu.CheckItem
+              value="show_full_urls"
+              data-testid="i4"
+              checked={false}
+            >
+              {({ checked }) => <>{checked ? "⚫️" : "⚪️"} Show Full URLs</>}
+            </Menu.CheckItem>
+          </Menu.Group>
+          <Menu.SeparatorItem data-testid="i5" />
+          <Menu.Item
+            data-testid="i6"
+            disabled
+          >
+            New Window
+          </Menu.Item>
+          <Menu.SeparatorItem data-testid="i7" />
+          <Menu.RadioGroup
+            label={"People"}
+            data-testid="g3"
+            defaultValue="pedro"
+          >
+            <Menu.RadioItem
+              data-testid="i8"
+              value="pedro"
+            >
+              {({ checked }) => <>{checked ? "⚫️" : "⚪️"} Pedro</>}
+            </Menu.RadioItem>
+            <Menu.RadioItem
+              data-testid="i9"
+              value="colm"
+              disabled
+            >
+              {({ checked }) => <>{checked ? "⚫️" : "⚪️"} Colm</>}
+            </Menu.RadioItem>
+          </Menu.RadioGroup>
+        </Menu.Root>
+      </>,
+    );
+
+    expect(screen.getByTestId("root")).toHaveFocus();
+
+    await userEvent.keyboard("[ArrowDown]");
+
+    expect(screen.getByTestId("i1")).toHaveAttribute("data-active");
 
     await userEvent.keyboard("[Escape]");
 
-    expect(handleEscape.mock.calls.length).toBe(1);
-    expect(handleEscape.mock.calls[0]?.[0]).not.toBeFalsy();
+    expect(handleOnClose.mock.calls.length).toBe(1);
+
+    await userEvent.keyboard("[ArrowUp]");
+
+    expect(screen.getByTestId("i8")).toHaveAttribute("data-active");
+
+    await userEvent.keyboard("[ArrowDown]");
+    await userEvent.keyboard("[ArrowRight]");
+
+    expect(screen.getByTestId("m1")).toBeInTheDocument();
+    expect(screen.getByTestId("m1i1")).toHaveAttribute("data-active");
+
+    await userEvent.keyboard("[ArrowLeft]");
+
+    expect(screen.queryByTestId("m1")).not.toBeInTheDocument();
+    expect(screen.getByTestId("i1")).toHaveAttribute("data-active");
+
+    await userEvent.keyboard("[Space]");
+
+    expect(screen.getByTestId("m1")).toBeInTheDocument();
+    expect(screen.getByTestId("m1i1")).toHaveAttribute("data-active");
+
+    await userEvent.keyboard("[ArrowLeft]");
+
+    expect(screen.queryByTestId("m1")).not.toBeInTheDocument();
+    expect(screen.getByTestId("i1")).toHaveAttribute("data-active");
+
+    await userEvent.keyboard("[Enter]");
+
+    expect(screen.getByTestId("m1")).toBeInTheDocument();
+    expect(screen.getByTestId("m1i1")).toHaveAttribute("data-active");
+
+    await userEvent.keyboard("[ArrowUp]");
+
+    expect(screen.getByTestId("m1i2")).toHaveAttribute("data-active");
+
+    await userEvent.keyboard("[ArrowDown]");
+    await userEvent.keyboard("[ArrowDown]");
+
+    expect(screen.getByTestId("m1i2")).toHaveAttribute("data-active");
+
+    await userEvent.keyboard("[ArrowLeft]");
+    await userEvent.keyboard("[ArrowDown]");
+
+    expect(screen.getByTestId("i4")).toHaveAttribute("data-active");
+
+    await userEvent.keyboard("[ArrowDown]");
+
+    expect(screen.getByTestId("i8")).toHaveAttribute("data-active");
+  });
+
+  it("should properly select the active element by keyboard", async () => {
+    const handleOnClose = jest.fn<void, []>();
+    const handleCheckChange = jest.fn<void, [boolean]>();
+    const handleValueChange = jest.fn<void, [string]>();
+
+    render(
+      <>
+        <button
+          id="anchor"
+          data-testid="anchor"
+        >
+          anchor
+        </button>
+        <Menu.Root
+          label={{ screenReaderLabel: "Menu" }}
+          open={true}
+          onClose={handleOnClose}
+          data-testid="root"
+          resolveAnchor={() => document.getElementById("anchor")}
+        >
+          <Menu.Group
+            label={"G1"}
+            data-testid="g1"
+          >
+            <Menu.Item
+              data-testid="i1"
+              subMenu={
+                <Menu.SubMenu data-testid="m1">
+                  <Menu.Item data-testid="m1i1">New Tab</Menu.Item>
+                  <Menu.Item data-testid="m1i2">New Window</Menu.Item>
+                </Menu.SubMenu>
+              }
+            >
+              {({ expanded }) => <>More Tools {expanded ? "-" : "+"}</>}
+            </Menu.Item>
+          </Menu.Group>
+          <Menu.SeparatorItem data-testid="i2" />
+          <Menu.Group
+            data-testid="g2"
+            label={{ screenReaderLabel: "G2" }}
+          >
+            <Menu.CheckItem
+              value="show_bookmarks"
+              data-testid="i3"
+              disabled
+              checked={true}
+              onCheckedChange={handleCheckChange}
+            >
+              {({ checked }) => <>{checked ? "⚫️" : "⚪️"} Show Bookmarks</>}
+            </Menu.CheckItem>
+            <Menu.CheckItem
+              value="show_full_urls"
+              data-testid="i4"
+              checked={false}
+              onCheckedChange={handleCheckChange}
+            >
+              {({ checked }) => <>{checked ? "⚫️" : "⚪️"} Show Full URLs</>}
+            </Menu.CheckItem>
+          </Menu.Group>
+          <Menu.SeparatorItem data-testid="i5" />
+          <Menu.Item
+            data-testid="i6"
+            disabled
+          >
+            New Window
+          </Menu.Item>
+          <Menu.SeparatorItem data-testid="i7" />
+          <Menu.RadioGroup
+            label={"People"}
+            data-testid="g3"
+            defaultValue="pedro"
+            onValueChange={handleValueChange}
+          >
+            <Menu.RadioItem
+              data-testid="i8"
+              value="pedro"
+            >
+              {({ checked }) => <>{checked ? "⚫️" : "⚪️"} Pedro</>}
+            </Menu.RadioItem>
+            <Menu.RadioItem
+              data-testid="i9"
+              value="colm"
+              disabled
+            >
+              {({ checked }) => <>{checked ? "⚫️" : "⚪️"} Colm</>}
+            </Menu.RadioItem>
+          </Menu.RadioGroup>
+        </Menu.Root>
+      </>,
+    );
+
+    expect(screen.getByTestId("root")).toHaveFocus();
+
+    await userEvent.keyboard("[ArrowDown]");
+    await userEvent.keyboard("[Space]");
+    await userEvent.keyboard("[Space]");
+
+    expect(handleOnClose.mock.calls.length).toBe(1);
+
+    await userEvent.keyboard("[ArrowLeft]");
+    await userEvent.keyboard("[ArrowLeft]");
+    await userEvent.keyboard("[ArrowDown]");
+    await userEvent.keyboard("[Space]");
+
+    expect(handleCheckChange.mock.calls.length).toBe(1);
+    expect(handleCheckChange.mock.calls[0]?.[0]).toBe(true);
+    expect(handleOnClose.mock.calls.length).toBe(2);
+
+    await userEvent.keyboard("[ArrowDown]");
+    await userEvent.keyboard("[Space]");
+
+    expect(handleCheckChange.mock.calls.length).toBe(1);
+    expect(handleCheckChange.mock.calls[0]?.[0]).toBe(true);
+    expect(handleValueChange.mock.calls.length).toBe(1);
+    expect(handleValueChange.mock.calls[0]?.[0]).toBe("pedro");
+    expect(handleOnClose.mock.calls.length).toBe(3);
+  });
+
+  it("should be correctly interactive with mouse", async () => {
+    const handleOnClose = jest.fn<void, []>();
+    const handleCheckChange = jest.fn<void, [boolean]>();
+    const handleValueChange = jest.fn<void, [string]>();
+
+    render(
+      <>
+        <button
+          id="anchor"
+          data-testid="anchor"
+        >
+          anchor
+        </button>
+        <Menu.Root
+          label={{ screenReaderLabel: "Menu" }}
+          open={true}
+          onClose={handleOnClose}
+          data-testid="root"
+          resolveAnchor={() => document.getElementById("anchor")}
+        >
+          <Menu.Group
+            label={"G1"}
+            data-testid="g1"
+          >
+            <Menu.Item
+              data-testid="i1"
+              subMenu={
+                <Menu.SubMenu data-testid="m1">
+                  <Menu.Item
+                    data-testid="m1i1"
+                    subMenu={
+                      <Menu.SubMenu data-testid="m2">
+                        <Menu.Item data-testid="m2i1">New Tab</Menu.Item>
+                        <Menu.Item data-testid="m2i2">New Window</Menu.Item>
+                      </Menu.SubMenu>
+                    }
+                  >
+                    New Tab
+                  </Menu.Item>
+                  <Menu.Item data-testid="m1i2">New Window</Menu.Item>
+                </Menu.SubMenu>
+              }
+            >
+              {({ expanded }) => <>More Tools {expanded ? "-" : "+"}</>}
+            </Menu.Item>
+          </Menu.Group>
+          <Menu.SeparatorItem data-testid="i2" />
+          <Menu.Group
+            data-testid="g2"
+            label={{ screenReaderLabel: "G2" }}
+          >
+            <Menu.CheckItem
+              value="show_bookmarks"
+              data-testid="i3"
+              disabled
+              checked={true}
+              onCheckedChange={handleCheckChange}
+            >
+              {({ checked }) => <>{checked ? "⚫️" : "⚪️"} Show Bookmarks</>}
+            </Menu.CheckItem>
+            <Menu.CheckItem
+              value="show_full_urls"
+              data-testid="i4"
+              checked={false}
+              onCheckedChange={handleCheckChange}
+            >
+              {({ checked }) => <>{checked ? "⚫️" : "⚪️"} Show Full URLs</>}
+            </Menu.CheckItem>
+          </Menu.Group>
+          <Menu.SeparatorItem data-testid="i5" />
+          <Menu.Item
+            data-testid="i6"
+            disabled
+          >
+            New Window
+          </Menu.Item>
+          <Menu.SeparatorItem data-testid="i7" />
+          <Menu.RadioGroup
+            label={"People"}
+            data-testid="g3"
+            defaultValue="pedro"
+            onValueChange={handleValueChange}
+          >
+            <Menu.RadioItem
+              data-testid="i8"
+              value="pedro"
+            >
+              {({ checked }) => <>{checked ? "⚫️" : "⚪️"} Pedro</>}
+            </Menu.RadioItem>
+            <Menu.RadioItem
+              data-testid="i9"
+              value="colm"
+              disabled
+            >
+              {({ checked }) => <>{checked ? "⚫️" : "⚪️"} Colm</>}
+            </Menu.RadioItem>
+          </Menu.RadioGroup>
+        </Menu.Root>
+      </>,
+    );
+
+    expect(screen.getByTestId("root")).toHaveFocus();
+
+    await userEvent.hover(screen.getByTestId("i1"));
+
+    expect(screen.getByTestId("i1")).toHaveAttribute("data-active");
+    expect(screen.getByTestId("m1")).toBeInTheDocument();
+
+    await userEvent.hover(screen.getByTestId("m1i1"));
+
+    expect(screen.getByTestId("m1i1")).toHaveAttribute("data-active");
+    expect(screen.getByTestId("m2")).toBeInTheDocument();
+
+    await userEvent.click(screen.getByTestId("m2i1"));
+
+    expect(handleOnClose.mock.calls.length).toBe(1);
+
+    await userEvent.unhover(screen.getByTestId("i1"));
+    await userEvent.hover(screen.getByTestId("i3"));
+
+    expect(screen.queryByTestId("m1")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("m2")).not.toBeInTheDocument();
+    expect(screen.getByTestId("i3")).not.toHaveAttribute("data-active");
+
+    await userEvent.click(screen.getByTestId("i3"));
+
+    expect(handleOnClose.mock.calls.length).toBe(1);
+    expect(handleCheckChange.mock.calls.length).toBe(0);
+
+    await userEvent.hover(screen.getByTestId("i4"));
+
+    expect(screen.getByTestId("i4")).toHaveAttribute("data-active");
+
+    await userEvent.click(screen.getByTestId("i4"));
+
+    expect(handleOnClose.mock.calls.length).toBe(2);
+    expect(handleCheckChange.mock.calls.length).toBe(1);
+    expect(handleCheckChange.mock.calls[0]?.[0]).toBe(true);
+
+    await userEvent.hover(screen.getByTestId("i6"));
+
+    expect(screen.getByTestId("i6")).not.toHaveAttribute("data-active");
+
+    await userEvent.click(screen.getByTestId("i6"));
+
+    expect(handleOnClose.mock.calls.length).toBe(2);
+
+    await userEvent.click(screen.getByTestId("i8"));
+
+    expect(handleOnClose.mock.calls.length).toBe(3);
+    expect(handleCheckChange.mock.calls.length).toBe(1);
+    expect(handleCheckChange.mock.calls[0]?.[0]).toBe(true);
+    expect(handleValueChange.mock.calls.length).toBe(1);
+    expect(handleValueChange.mock.calls[0]?.[0]).toBe("pedro");
+
+    await userEvent.click(screen.getByTestId("i9"));
+
+    expect(handleOnClose.mock.calls.length).toBe(3);
+    expect(handleCheckChange.mock.calls.length).toBe(1);
+    expect(handleCheckChange.mock.calls[0]?.[0]).toBe(true);
+    expect(handleValueChange.mock.calls.length).toBe(1);
+    expect(handleValueChange.mock.calls[0]?.[0]).toBe("pedro");
+
+    await userEvent.hover(screen.getByTestId("i1"));
+    await userEvent.keyboard("[ArrowDown]");
+
+    expect(screen.queryByTestId("m1")).not.toBeInTheDocument();
+    expect(screen.getByTestId("i4")).toHaveAttribute("data-active");
   });
 });

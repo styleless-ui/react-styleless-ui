@@ -12,7 +12,6 @@ import {
   useForkedRefs,
   useIsomorphicLayoutEffect,
   useIsomorphicValue,
-  useRegisterNodeRef,
 } from "../utils";
 import * as Slots from "./slots";
 import type {
@@ -124,7 +123,7 @@ type OwnProps = {
    * A function that will resolve the anchor element for the popper.
    *
    * It has to return `HTMLElement`, or a `VirtualElement`, or `null`.
-   * A VirtualElement is an object that implements `getBoundingClientRect(): ClientRect`.
+   * A VirtualElement is an object that implements `getBoundingClientRect(): BoundingClientRect`.
    *
    * If nothing is resolved, the popper won't show up.
    *
@@ -216,6 +215,19 @@ const PopperBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     recompute: (): void => void updatePosition(),
   }));
 
+  const refCallback = React.useCallback(
+    (node: HTMLDivElement | null) => {
+      handlePopperRef(node);
+
+      if (!node) return;
+      if (!open) return;
+
+      updatePosition();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [open],
+  );
+
   useIsomorphicLayoutEffect(() => {
     const anchor = resolveAnchor();
 
@@ -241,12 +253,6 @@ const PopperBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       ? classNameProp(classNameProps)
       : classNameProp;
 
-  const registerRef = useRegisterNodeRef(node => {
-    handlePopperRef(node as unknown as HTMLDivElement);
-
-    updatePosition();
-  }, []);
-
   const style = {
     ...(styleProp ?? {}),
     ...translate(coordinates),
@@ -269,7 +275,7 @@ const PopperBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         <div
           {...otherProps}
           id={id}
-          ref={registerRef}
+          ref={refCallback}
           style={style}
           className={className}
           tabIndex={-1}

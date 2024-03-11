@@ -8,7 +8,7 @@ type ContextValue = {
 const Context = React.createContext<ContextValue | null>(null);
 
 if (process.env.NODE_ENV !== "production") {
-  Context.displayName = "MenuRadioGroupContext";
+  Context.displayName = "Menu.RadioGroup.Context";
 }
 
 export {

@@ -3,14 +3,12 @@ import { disableUserSelectCSSProperties, logger } from "../../internals";
 import type { MergeElementProps, PropWithRenderContext } from "../../types";
 import {
   componentWithForwardedRef,
-  useControlledProp,
+  computeAccessibleName,
   useDeterministicId,
-  useEventCallback,
   useForkedRefs,
 } from "../../utils";
-import { MenuContext } from "../context";
-import { CheckItemRoot as CheckItemRootSlot } from "../slots";
-import useMenuItem from "../useMenuItem";
+import { ItemRoot as ItemRootSlot } from "../slots";
+import { useBaseItem } from "../utils";
 
 export type RenderProps = {
   /**
@@ -24,9 +22,9 @@ export type RenderProps = {
    */
   disabled: boolean;
   /**
-   * The `selected` state of the component.
+   * The `checked` state of the component.
    */
-  selected: boolean;
+  checked: boolean;
 };
 
 export type ClassNameProps = RenderProps;
@@ -41,107 +39,109 @@ type OwnProps = {
    */
   className?: PropWithRenderContext<string, ClassNameProps>;
   /**
-   * If `true`, the item will be checked.
-   * @default false
-   */
-  checked?: boolean;
-  /**
-   * The default state of `checked`. Use when the component is not controlled.
-   * @default false
-   */
-  defaultChecked?: boolean;
-  /**
    * If `true`, the item will be disabled.
+   *
    * @default false
    */
   disabled?: boolean;
   /**
+   * The value of item when checked.
+   * Works as an unique identifier for the item.
+   */
+  value: string;
+  /**
+   * The controlled `checked` state of the item.
+   * If `true`, the item will be checked.
+   *
+   * @default false
+   */
+  checked?: boolean;
+  /**
    * The Callback is fired when the state changes.
    */
-  onCheckChange?: (checked: boolean) => void;
+  onCheckedChange?: (checked: boolean) => void;
   /**
    * The Callback is fired when the item is selected.
    */
-  onSelect?: (
-    event:
-      | React.MouseEvent<HTMLDivElement>
-      | React.KeyboardEvent<HTMLDivElement>,
-  ) => void;
+  onSelect?: (event: React.MouseEvent<HTMLDivElement>) => void;
 };
 
 export type Props = Omit<MergeElementProps<"div", OwnProps>, "defaultValue">;
 
 const CheckItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
+    id: idProp,
     children: childrenProp,
     className: classNameProp,
+    style: styleProp,
+    value,
+    checked = false,
     disabled = false,
-    checked,
-    defaultChecked,
-    onCheckChange,
-    onSelect,
     onClick,
+    onCheckedChange,
+    onSelect,
     onMouseEnter,
     onMouseLeave,
-    style,
     ...otherProps
   } = props;
 
-  const id = useDeterministicId(undefined, "styleless-ui__menu-item");
-
-  const menuCtx = React.useContext(MenuContext);
+  const id = useDeterministicId(idProp, "styleless-ui__menu-check-item");
 
   const rootRef = React.useRef<HTMLDivElement>(null);
   const handleRootRef = useForkedRefs(ref, rootRef);
 
-  const [isSelected, setIsSelected] = useControlledProp(
-    checked,
-    defaultChecked,
-    false,
-  );
-
-  const isActive =
-    menuCtx && rootRef.current
-      ? menuCtx.activeElement === rootRef.current
-      : false;
-
-  const menuItem = useMenuItem({
+  const baseItem = useBaseItem({
     disabled,
-    isActive,
-    onClick,
-    onMouseEnter: useEventCallback<React.MouseEvent<HTMLDivElement>>(event => {
-      menuCtx?.setActiveElement(rootRef.current);
-      onMouseEnter?.(event);
-    }),
-    onMouseLeave: useEventCallback<React.MouseEvent<HTMLDivElement>>(event => {
-      menuCtx?.setActiveElement(null);
-      onMouseLeave?.(event);
-    }),
-    changeEmitter: useEventCallback<
-      React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>
-    >(event => {
+    entityName: value,
+    type: "check-item",
+    onClick: event => {
+      const newChecked = !checked;
+
+      onCheckedChange?.(newChecked);
       onSelect?.(event);
-      onCheckChange?.(!isSelected);
-      setIsSelected(!isSelected);
-    }),
+      onClick?.(event);
+    },
+    onMouseEnter,
+    onMouseLeave,
   });
 
-  if (!menuCtx) {
-    logger("You have to use this component as a descendant of <Menu.Root>.", {
-      scope: "Menu.CheckItem",
-      type: "error",
-    });
+  const refCallback = React.useCallback((node: HTMLDivElement | null) => {
+    handleRootRef(node);
 
-    return null;
-  }
+    if (!node) return;
+
+    const accessibleName = computeAccessibleName(node);
+
+    if (!accessibleName) {
+      logger(
+        [
+          "Can't determine an accessible name.",
+          "It's mandatory to provide an accessible name for the component. " +
+            "Possible accessible names:",
+          ". Set `aria-label` attribute.",
+          ". Set `title` attribute.",
+          ". Use an informative content.",
+        ].join("\n"),
+        { scope: "Menu.Item", type: "error" },
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (baseItem.isInvalid) return null;
 
   const renderProps: RenderProps = {
     disabled,
-    active: isActive,
-    selected: isSelected,
+    checked,
+    active: baseItem.isActive,
   };
 
   const classNameProps: ClassNameProps = renderProps;
+
+  const style: React.CSSProperties = {
+    ...(styleProp ?? {}),
+    ...disableUserSelectCSSProperties,
+  };
 
   const children =
     typeof childrenProp === "function"
@@ -153,33 +153,25 @@ const CheckItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       ? classNameProp(classNameProps)
       : classNameProp;
 
-  const refCallback = (node: HTMLDivElement | null) => {
-    handleRootRef(node);
-
-    if (!node) return;
-    menuCtx.registerItem(rootRef);
-  };
-
   return (
     <div
       {...otherProps}
       id={id}
       ref={refCallback}
       className={className}
-      onClick={menuItem.handleClick}
-      onMouseEnter={menuItem.handleMouseEnter}
-      onMouseLeave={menuItem.handleMouseLeave}
-      style={
-        style
-          ? { ...style, ...disableUserSelectCSSProperties }
-          : disableUserSelectCSSProperties
-      }
+      onClick={baseItem.handleClick}
+      onMouseEnter={baseItem.handleMouseEnter}
+      onMouseLeave={baseItem.handleMouseLeave}
+      style={style}
       tabIndex={-1}
       role="menuitemcheckbox"
-      data-slot={CheckItemRootSlot}
-      data-active={isActive ? "data-active" : undefined}
-      aria-checked={isSelected}
       aria-disabled={disabled}
+      aria-checked={checked}
+      data-slot={ItemRootSlot}
+      data-entityname={value}
+      data-active={baseItem.isActive ? "" : undefined}
+      data-checked={checked ? "" : undefined}
+      data-disabled={disabled ? "" : undefined}
     >
       {children}
     </div>

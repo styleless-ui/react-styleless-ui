@@ -1,20 +1,20 @@
 import useIsServerHandoffComplete from "@utilityjs/use-is-server-handoff-complete";
 
+const getValue = <T>(valueOrFn: T | (() => T)) => {
+  if (typeof valueOrFn === "function") return (valueOrFn as () => T)();
+
+  return valueOrFn;
+};
+
 const useIsomorphicValue = <T>(
   clientValue: T | (() => T),
   serverValue: T | (() => T),
 ) => {
   const isServerHandoffComplete = useIsServerHandoffComplete();
 
-  if (isServerHandoffComplete) {
-    if (typeof clientValue === "function") return (clientValue as () => T)();
+  if (isServerHandoffComplete) return getValue(clientValue);
 
-    return clientValue;
-  }
-
-  if (typeof serverValue === "function") return (serverValue as () => T)();
-
-  return serverValue;
+  return getValue(serverValue);
 };
 
 export default useIsomorphicValue;

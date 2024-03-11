@@ -12,6 +12,9 @@ export { default as useRegisterNodeRef } from "@utilityjs/use-register-node-ref"
 export { default as useScrollGuard } from "@utilityjs/use-scroll-guard";
 export { computeAccessibleName } from "dom-accessibility-api";
 export { default as componentWithForwardedRef } from "./component-with-forwarded-ref";
+export { default as createCustomEvent } from "./create-custom-event";
+export { default as createVirtualElement } from "./create-virtual-element";
+export { default as dispatchDiscreteCustomEvent } from "./dispatch-discrete-custom-event";
 export * from "./dom";
 export { default as forkRefs } from "./fork-refs";
 export * from "./is";
@@ -30,3 +33,4 @@ export { default as useIsFocusVisible } from "./use-is-focus-visible";
 export { default as useIsomorphicLayoutEffect } from "./use-isomorphic-layout-effect";
 export { default as useIsomorphicValue } from "./use-isomorphic-value";
 export { default as useJumpToChar } from "./use-jump-to-char";
+export { default as useStateWithCallback } from "./use-state-with-callback";
