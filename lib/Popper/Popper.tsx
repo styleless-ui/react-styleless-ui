@@ -123,7 +123,7 @@ type OwnProps = {
    * A function that will resolve the anchor element for the popper.
    *
    * It has to return `HTMLElement`, or a `VirtualElement`, or `null`.
-   * A VirtualElement is an object that implements `getBoundingClientRect(): ClientRect`.
+   * A VirtualElement is an object that implements `getBoundingClientRect(): BoundingClientRect`.
    *
    * If nothing is resolved, the popper won't show up.
    *

@@ -1,5 +1,5 @@
 // This file is cherry-picked from https://floating-ui.com/
-import type { ClientRect, VirtualElement } from "../types";
+import type { BoundingClientRect, VirtualElement } from "../types";
 import {
   clamp,
   contains,
@@ -181,7 +181,9 @@ const getClippingRect = (element: Element): Rect => {
     ) as Element[];
   };
 
-  const _getInnerBoundingClientRect = (element: Element): ClientRect => {
+  const _getInnerBoundingClientRect = (
+    element: Element,
+  ): BoundingClientRect => {
     const clientRect = getBoundingClientRect(element);
 
     const top = clientRect.top + element.clientTop;
@@ -202,7 +204,7 @@ const getClippingRect = (element: Element): Rect => {
   const _getClientRectFromClippingAncestor = (
     element: Element,
     clippingParent: Element | "viewport",
-  ): ClientRect => {
+  ): BoundingClientRect => {
     if (clippingParent === "viewport")
       return rectToClientRect(getViewportRect(element));
 
@@ -239,7 +241,7 @@ const getClippingRect = (element: Element): Rect => {
   };
 };
 
-const rectToClientRect = (rect: Rect): ClientRect => ({
+const rectToClientRect = (rect: Rect): BoundingClientRect => ({
   ...rect,
   top: rect.y,
   left: rect.x,
