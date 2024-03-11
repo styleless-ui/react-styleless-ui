@@ -166,8 +166,8 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const renderProps: RenderProps = {
     disabled,
+    expanded,
     active: baseItem.isActive,
-    expanded: isExpanded,
     expandable: isExpandable,
   };
 
