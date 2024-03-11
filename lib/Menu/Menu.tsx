@@ -1,7 +1,7 @@
 import * as React from "react";
 import { type PopperProps } from "../Popper";
 import { Root as PopperRootSlot } from "../Popper/slots";
-import { SystemKeys, getLabelInfo } from "../internals";
+import { SystemError, SystemKeys, getLabelInfo } from "../internals";
 import type {
   MergeElementProps,
   PropWithRenderContext,
@@ -119,10 +119,15 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     open = false,
     keepMounted = false,
     resolveAnchor,
-    onClose,
+    onClose: emitClose,
+    onFocus,
     onKeyDown,
     ...otherProps
   } = props;
+
+  if (!emitClose) {
+    throw new SystemError("The `onClose` prop needs to be provided.", "Menu");
+  }
 
   const id = useDeterministicId(idProp, "styleless-ui__menu");
 
@@ -185,11 +190,6 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     ].join("\n"),
   });
 
-  const emitClose = () => {
-    emitActiveElementChange(null);
-    onClose();
-  };
-
   const collapseInactiveExpandedDescendants = () => {
     const inactiveEntities = activeExpandedDescendant
       ? null
@@ -210,6 +210,8 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     if (event.target === event.currentTarget) return;
 
     rootRef.current?.focus();
+
+    onFocus?.(event as React.FocusEvent<HTMLDivElement>);
   });
 
   const handleExitTrap = useEventCallback(() => {
@@ -256,6 +258,8 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         }
 
         case SystemKeys.HOME: {
+          event.preventDefault();
+
           const { item } = getAvailableItem(items, 0, true);
 
           emitActiveElementChange(item);
@@ -265,6 +269,8 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         }
 
         case SystemKeys.END: {
+          event.preventDefault();
+
           const { item } = getAvailableItem(items, items.length - 1, false);
 
           emitActiveElementChange(item);
@@ -274,6 +280,8 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         }
 
         case SystemKeys.UP: {
+          event.preventDefault();
+
           const { index } = currentFocusedElement;
 
           collapseInactiveExpandedDescendants();
@@ -295,6 +303,8 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         }
 
         case SystemKeys.DOWN: {
+          event.preventDefault();
+
           const { index } = currentFocusedElement;
 
           collapseInactiveExpandedDescendants();
@@ -315,7 +325,33 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           break;
         }
 
+        case SystemKeys.LEFT: {
+          event.preventDefault();
+
+          const { item } = currentFocusedElement;
+
+          if (!item) break;
+
+          const parent = getCurrentMenuControllerItem(item);
+
+          if (!parent) break;
+
+          const isDisabled =
+            parent.getAttribute("aria-disabled") === "true" ||
+            parent.hasAttribute("data-disabled") ||
+            parent.hasAttribute("data-hidden") ||
+            parent.getAttribute("aria-hidden") === "true";
+
+          if (!isDisabled) emitActiveElementChange(parent);
+
+          dispatchDiscreteCustomEvent(parent, CollapseSubMenuEvent);
+
+          break;
+        }
+
         case SystemKeys.RIGHT: {
+          event.preventDefault();
+
           const { item } = currentFocusedElement;
 
           if (!item) break;
@@ -343,27 +379,6 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           if (!nextActiveElement) break;
 
           emitActiveElementChange(nextActiveElement);
-
-          break;
-        }
-
-        case SystemKeys.LEFT: {
-          const { item } = currentFocusedElement;
-
-          if (!item) break;
-
-          const parent = getCurrentMenuControllerItem(item);
-
-          if (!parent) break;
-
-          const isDisabled =
-            parent.getAttribute("aria-disabled") === "true" ||
-            parent.hasAttribute("data-hidden") ||
-            parent.getAttribute("aria-hidden") === "true";
-
-          if (!isDisabled) emitActiveElementChange(parent);
-
-          dispatchDiscreteCustomEvent(parent, CollapseSubMenuEvent);
 
           break;
         }
@@ -403,7 +418,6 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           if (!nextActiveElement) break;
 
           emitActiveElementChange(nextActiveElement);
-          collapseInactiveExpandedDescendants();
 
           break;
         }
@@ -418,6 +432,19 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
     onKeyDown?.(event as React.KeyboardEvent<HTMLDivElement>);
   });
+
+  const refCallback = React.useCallback(
+    (node: HTMLDivElement | null) => {
+      handleRootRef(node);
+
+      if (!node) return;
+      if (!open) return;
+      if (document.activeElement === node) return;
+
+      node.focus();
+    },
+    [handleRootRef, open],
+  );
 
   const getActiveDescendant = () => {
     if (!activeElement) return undefined;
@@ -467,7 +494,7 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       {...otherProps}
       id={id}
       trapFocus
-      ref={handleRootRef}
+      ref={refCallback}
       onKeyDown={handleKeyDown}
       onExitTrap={handleExitTrap}
       onFocus={handleFocus}
