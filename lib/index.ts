@@ -51,6 +51,8 @@ export type {
   SeparatorItemProps as MenuSeparatorItemProps,
   SubMenuProps as MenuSubMenuProps,
 } from "./Menu";
+export * from "./Meter";
+export { default as Meter } from "./Meter";
 export * from "./Popper";
 export { default as Popper } from "./Popper";
 export * from "./Portal";
@@ -59,6 +61,8 @@ export * from "./PortalConfigProvider";
 export { default as PortalConfigProvider } from "./PortalConfigProvider";
 export * from "./PreserveAspectRatio";
 export { default as PreserveAspectRatio } from "./PreserveAspectRatio";
+export * from "./ProgressBar";
+export { default as ProgressBar } from "./ProgressBar";
 export * from "./Radio";
 export { default as Radio } from "./Radio";
 export * from "./RadioGroup";
