@@ -5,8 +5,17 @@ import { componentWithForwardedRef, remap } from "../utils";
 import { Root as RootSlot } from "./slots";
 
 export type RenderProps = {
+  /**
+   * The value of the meter.
+   */
   value: number;
+  /**
+   * The percentage value of the meter.
+   */
   percentageValue: number;
+  /**
+   * The text used to represent the value.
+   */
   valueText: string;
 };
 

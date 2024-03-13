@@ -5,9 +5,21 @@ import { componentWithForwardedRef, remap } from "../utils";
 import { Root as RootSlot } from "./slots";
 
 export type RenderProps = {
+  /**
+   * The value of the progress bar.
+   */
   value: number;
+  /**
+   * The percentage value of the progress bar.
+   */
   percentageValue: number;
+  /**
+   * The text used to represent the value.
+   */
   valueText: string;
+  /**
+   * Determines whether the progress bar is indeterminated or not.
+   */
   indeterminated: boolean;
 };
 
