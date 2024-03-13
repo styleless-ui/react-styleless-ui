@@ -85,7 +85,7 @@ export type Props = Omit<
   "defaultValue" | "defaultChecked"
 >;
 
-const MeterBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
+const ProgressBarBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     className: classNameProp,
     children: childrenProp,
@@ -146,6 +146,6 @@ const MeterBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   );
 };
 
-const Meter = componentWithForwardedRef(MeterBase, "Meter");
+const ProgressBar = componentWithForwardedRef(ProgressBarBase, "ProgressBar");
 
-export default Meter;
+export default ProgressBar;
