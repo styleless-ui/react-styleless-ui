@@ -61,7 +61,7 @@ type OwnProps = {
    */
   indeterminated?: boolean;
   /**
-   * The label of the menu.
+   * The label of the component.
    */
   label:
     | {
