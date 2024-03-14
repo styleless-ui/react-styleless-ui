@@ -1,5 +1,5 @@
 import * as React from "react";
-import { SystemError, SystemKeys } from "../internals";
+import { SystemError, SystemKeys, getLabelInfo } from "../internals";
 import type { MergeElementProps, PropWithRenderContext } from "../types";
 import {
   componentWithForwardedRef,
@@ -81,6 +81,24 @@ type OwnProps = {
    * Callback is called when an item is selected.
    */
   onSelectStateChange?: (selected: string[]) => void;
+  /**
+   * The label of the component.
+   */
+  label:
+    | {
+        /**
+         * The label to use as `aria-label` property.
+         */
+        screenReaderLabel: string;
+      }
+    | {
+        /**
+         * Identifies the element (or elements) that labels the component.
+         *
+         * @see {@link https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-labelledby MDN Web Docs} for more information.
+         */
+        labelledBy: string;
+      };
 };
 
 export type Props = Omit<
@@ -98,6 +116,7 @@ const TreeViewBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     defaultExpandedDescendants,
     defaultSelectedDescendants,
     selectability,
+    label,
     onSelectStateChange,
     onExpandStateChange,
     onKeyDown,
@@ -164,6 +183,14 @@ const TreeViewBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     getListItems: () => getListItems(id),
     activeDescendantElement: activeElement,
     onActiveDescendantElementChange: setActiveElement,
+  });
+
+  const labelInfo = getLabelInfo(label, "TreeView", {
+    customErrorMessage: [
+      "Invalid `label` property.",
+      "The `label` property must be in shape of " +
+        "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
+    ].join("\n"),
   });
 
   const emitSelectState = (selected: string[]) => {
@@ -529,6 +556,8 @@ const TreeViewBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       onBlur={handleBlur}
       aria-multiselectable={isSelectable ? isMultiSelect : undefined}
       aria-activedescendant={activeElement?.id ?? undefined}
+      aria-label={labelInfo.srOnlyLabel}
+      aria-labelledby={labelInfo.labelledBy}
       data-slot={RootSlot}
       className={className}
     >
