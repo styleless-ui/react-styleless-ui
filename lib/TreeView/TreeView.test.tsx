@@ -15,15 +15,16 @@ import { SubTreeLabel as SubTreeLabelSlot } from "./slots";
 describe("TreeView", () => {
   afterEach(jest.clearAllMocks);
 
-  itShouldMount(TreeView.Root, { selectability: false });
-  itSupportsStyle(TreeView.Root, { selectability: false });
-  itSupportsRef(TreeView.Root, { selectability: false }, HTMLDivElement);
-  itSupportsFocusEvents(
-    TreeView.Root,
-    { selectability: false },
-    "[role='tree']",
-  );
-  itSupportsDataSetProps(TreeView.Root, { selectability: false });
+  const mockRequiredProps: TreeView.RootProps = {
+    selectability: false,
+    label: { screenReaderLabel: "Label" },
+  };
+
+  itShouldMount(TreeView.Root, mockRequiredProps);
+  itSupportsStyle(TreeView.Root, mockRequiredProps);
+  itSupportsRef(TreeView.Root, mockRequiredProps, HTMLDivElement);
+  itSupportsFocusEvents(TreeView.Root, mockRequiredProps, "[role='tree']");
+  itSupportsDataSetProps(TreeView.Root, mockRequiredProps);
 
   it("should have the required classNames", async () => {
     const itemClassName: TreeView.ItemProps["className"] = props => {
@@ -60,6 +61,7 @@ describe("TreeView", () => {
 
     render(
       <TreeView.Root
+        label={{ screenReaderLabel: "Label" }}
         className={rootClassName}
         defaultExpandedDescendants={["2"]}
         selectability={"multi-select"}
@@ -143,6 +145,7 @@ describe("TreeView", () => {
   it("should have the required aria attributes", async () => {
     render(
       <TreeView.Root
+        label={{ screenReaderLabel: "Label" }}
         defaultExpandedDescendants={["2"]}
         defaultSelectedDescendants={["1"]}
         selectability={"multi-select"}
@@ -232,6 +235,7 @@ describe("TreeView", () => {
 
     const { unmount } = render(
       <TreeView.Root
+        label={{ screenReaderLabel: "Label" }}
         selectability={false}
         onExpandStateChange={handleExpandStateChange}
       >
@@ -338,6 +342,7 @@ describe("TreeView", () => {
 
     render(
       <TreeView.Root
+        label={{ screenReaderLabel: "Label" }}
         selectability={false}
         onExpandStateChange={handleExpandStateChange}
       >
@@ -410,6 +415,7 @@ describe("TreeView", () => {
 
     const { unmount } = render(
       <TreeView.Root
+        label={{ screenReaderLabel: "Label" }}
         selectability={"single-select"}
         onExpandStateChange={handleExpandStateChange}
         onSelectStateChange={handleSelectStateChange}
@@ -502,6 +508,7 @@ describe("TreeView", () => {
 
     render(
       <TreeView.Root
+        label={{ screenReaderLabel: "Label" }}
         selectability={"multi-select"}
         onExpandStateChange={handleExpandStateChange}
         onSelectStateChange={handleSelectStateChange}
@@ -580,6 +587,7 @@ describe("TreeView", () => {
 
     const { unmount } = render(
       <TreeView.Root
+        label={{ screenReaderLabel: "Label" }}
         selectability={"single-select"}
         onExpandStateChange={handleExpandStateChange}
         onSelectStateChange={handleSelectStateChange}
@@ -673,6 +681,7 @@ describe("TreeView", () => {
 
     render(
       <TreeView.Root
+        label={{ screenReaderLabel: "Label" }}
         selectability={"multi-select"}
         onExpandStateChange={handleExpandStateChange}
         onSelectStateChange={handleSelectStateChange}
