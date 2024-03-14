@@ -15,7 +15,7 @@ import ToggleGroup from "./ToggleGroup";
 
 const labelText = "Label";
 
-describe("CheckGroup", () => {
+describe("ToggleGroup", () => {
   afterEach(jest.clearAllMocks);
 
   itShouldMount(ToggleGroup, { label: labelText });
@@ -269,10 +269,14 @@ describe("CheckGroup", () => {
     expect(handleChange.mock.calls[0]?.join()).toBe("1");
 
     await userEvent.keyboard("[ArrowRight]");
-    expect(toggles[2]).toHaveFocus();
 
+    expect(toggles[2]).not.toHaveFocus();
+    expect(toggles[1]).toHaveFocus();
+
+    await userEvent.tab();
     await userEvent.keyboard("[Space]");
 
+    expect(toggles[2]).toHaveFocus();
     expect(toggles[2]).toHaveAttribute("data-active");
     expect(handleChange.mock.calls.length).toBe(2);
     expect(handleChange.mock.calls[1]?.join()).toBe("1,2");

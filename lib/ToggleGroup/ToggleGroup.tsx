@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Root as ToggleRootSlot } from "../Toggle/slots";
 import { SystemError, getLabelInfo } from "../internals";
 import type { Classes, MergeElementProps } from "../types";
 import {
@@ -94,6 +95,10 @@ const ToggleGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     multiple ? [] : "",
   );
 
+  const [forcedTabability, setForcedTabability] = React.useState<string | null>(
+    null,
+  );
+
   if (multiple && !Array.isArray(value)) {
     throw new SystemError(
       "The `value` and `defaultValue` " +
@@ -123,43 +128,33 @@ const ToggleGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     onChange?.(newValue);
   };
 
-  const toggles: [string, React.RefObject<HTMLButtonElement>][] = [];
-
-  const registerToggle = (
-    toggleValue: (typeof toggles)[number][0],
-    toggleRef: (typeof toggles)[number][1],
-  ) => {
-    if (!toggles.some(r => r[0] === toggleValue))
-      toggles.push([toggleValue, toggleRef]);
-  };
-
   React.useEffect(() => {
     if (!rootRef.current) return;
 
-    toggles.forEach(([v, tRef]) => {
-      if (!tRef.current) return;
+    if (value.length > 0) {
+      setForcedTabability(prev => (prev ? null : prev));
 
-      const isSelected = Array.isArray(value) ? value.includes(v) : value === v;
-      const isDisabled = tRef.current.hasAttribute("disabled");
+      return;
+    }
 
-      tRef.current.tabIndex = isDisabled ? -1 : isSelected ? 0 : -1;
-    });
-
-    const notTabable = toggles.filter(
-      ([_, tRef]) => tRef.current?.getAttribute("tabindex") !== "0",
+    const toggles = Array.from(
+      rootRef.current.querySelectorAll<HTMLElement>(
+        `[data-slot='${ToggleRootSlot}']`,
+      ),
     );
 
-    if (notTabable.length !== toggles.length) return;
+    const validToggles = toggles.filter(toggle => {
+      const isDisabled =
+        toggle.hasAttribute("disabled") ||
+        toggle.getAttribute("aria-disabled") === "true";
 
-    const toggle =
-      toggles.find(([_, tRef]) => !tRef.current?.hasAttribute("disabled")) ??
-      null;
+      return !isDisabled;
+    });
 
-    if (!toggle) return;
-    const [_, tRef] = toggle;
-
-    tRef.current?.setAttribute("tabindex", "0");
-  });
+    setForcedTabability(
+      validToggles?.[0]?.getAttribute("data-entityname") ?? null,
+    );
+  }, [value]);
 
   const renderLabel = () => {
     if (!labelProps.visibleLabel) return null;
@@ -187,10 +182,9 @@ const ToggleGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         value={{
           multiple,
           value,
-          toggles,
+          forcedTabability,
           keyboardActivationBehavior: keyboardActivationBehavior ?? "manual",
           onChange: handleChange,
-          registerToggle,
         }}
       >
         {renderLabel()}

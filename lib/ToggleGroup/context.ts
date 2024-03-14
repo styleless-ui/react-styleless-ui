@@ -3,17 +3,13 @@ import { type Props } from "./ToggleGroup";
 
 type ContextValue = {
   multiple: boolean;
+  forcedTabability: string | null;
   keyboardActivationBehavior: Exclude<
     Props["keyboardActivationBehavior"],
     undefined
   >;
   value: Exclude<Props["value"], undefined>;
-  toggles: [string, React.RefObject<HTMLButtonElement>][];
   onChange: (newActiveState: boolean, toggleValue: string) => void;
-  registerToggle: (
-    value: string,
-    ref: React.RefObject<HTMLButtonElement>,
-  ) => void;
 };
 
 const Context = React.createContext<ContextValue | null>(null);
