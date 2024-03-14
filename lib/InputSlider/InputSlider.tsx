@@ -153,7 +153,7 @@ type OwnProps = {
     valueText: string,
   ) => React.ReactNode;
   /**
-   * Accepts a function which returns a string value that provides a user-friendly name
+   * A function which returns a string value that provides a user-friendly name
    * for the current value of the slider. This is important for screen reader users.
    */
   setThumbValueText: (thumbValue: number) => string;
