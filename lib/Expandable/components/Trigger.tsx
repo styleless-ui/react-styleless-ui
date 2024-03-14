@@ -63,17 +63,21 @@ const TriggerBase = <E extends React.ElementType, R extends HTMLElement>(
 
   const refCallback = (node: R | null) => {
     setRef(ref, node);
+
     if (!node) return;
 
     const parent = node.closest(`[data-slot="${RootSlot}"]`);
 
     if (!parent) return;
 
-    const content = parent.querySelector<R>(`[data-slot="${ContentRootSlot}"]`);
+    const content = parent.querySelector<HTMLDivElement>(
+      `[data-slot="${ContentRootSlot}"]`,
+    );
 
     if (!content) return;
 
     node.setAttribute("aria-controls", content.id);
+    content.setAttribute("aria-labelledby", id);
   };
 
   return (

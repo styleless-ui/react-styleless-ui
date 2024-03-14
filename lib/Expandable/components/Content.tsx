@@ -57,13 +57,14 @@ const ContentBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
     if (!parent) return;
 
-    const trigger = parent.querySelector<HTMLDivElement>(
+    const trigger = parent.querySelector<HTMLElement>(
       `[data-slot="${TriggerRootSlot}"]`,
     );
 
     if (!trigger) return;
 
     node.setAttribute("aria-labelledby", trigger.id);
+    trigger.setAttribute("aria-controls", id);
   };
 
   return (
