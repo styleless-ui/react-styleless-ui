@@ -96,21 +96,27 @@ const ToggleBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     ? {
         value: toggleGroupCtx.value,
         onChange: toggleGroupCtx.onChange,
-        items: toggleGroupCtx.toggles,
       }
     : null;
+
+  const rootRef = React.useRef<HTMLButtonElement>(null);
 
   const checkBase = useCheckBase({
     value,
     autoFocus,
     disabled,
     checked: active,
-    toggle: true,
+    togglable: true,
     keyboardActivationBehavior: toggleGroupCtx?.keyboardActivationBehavior,
-    strategy: toggleGroupCtx?.multiple ? "check-control" : "radio-control",
+    selectMode: toggleGroupCtx?.multiple ? "multiple" : "single",
     defaultChecked: defaultActive,
     enterKeyFunctionality: "check",
     groupCtx,
+    getGroupElement: () => rootRef.current?.closest("[role='group']") ?? null,
+    getGroupItems: group =>
+      Array.from(
+        group.querySelectorAll<HTMLElement>(`[data-slot='${Slots.Root}']`),
+      ),
     onChange: onActiveChange,
     onBlur,
     onFocus,
@@ -118,7 +124,6 @@ const ToggleBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     onKeyUp,
   });
 
-  const rootRef = React.useRef<HTMLButtonElement>(null);
   const handleRef = useForkedRefs(ref, rootRef, checkBase.handleControllerRef);
 
   const renderProps: RenderProps = {
@@ -144,10 +149,6 @@ const ToggleBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
     if (!node) return;
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    toggleGroupCtx?.registerToggle(value!, rootRef);
-    if (!toggleGroupCtx) node.tabIndex = disabled ? -1 : 0;
-
     const accessibleName = computeAccessibleName(node);
 
     if (!accessibleName) {
@@ -167,10 +168,27 @@ const ToggleBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     }
   };
 
+  const calcTabIndex = () => {
+    if (disabled) return -1;
+    if (!toggleGroupCtx) return 0;
+    if (toggleGroupCtx.multiple) return 0;
+
+    const forcedTabableItem = toggleGroupCtx.forcedTabability;
+
+    if (forcedTabableItem && forcedTabableItem === value) return 0;
+
+    const isSelected = toggleGroupCtx.value === value;
+
+    if (!isSelected) return -1;
+
+    return 0;
+  };
+
   const dataAttrs = {
     "data-slot": Slots.Root,
     "data-active": renderProps.active ? "" : undefined,
     "data-disable": renderProps.disabled ? "" : undefined,
+    "data-entityname": value,
     "data-focus-visible": renderProps.focusedVisible ? "" : undefined,
   };
 
@@ -178,6 +196,7 @@ const ToggleBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     <button
       {...otherProps}
       className={className}
+      tabIndex={calcTabIndex()}
       type="button"
       ref={refCallback}
       disabled={disabled}

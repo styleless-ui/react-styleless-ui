@@ -129,14 +129,23 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     );
   }
 
+  const rootRef = React.useRef<HTMLButtonElement>(null);
+
   const checkBase = useCheckBase({
     value,
     groupCtx: radioGroupCtx,
     checked: checkedProp,
-    strategy: "radio-control",
     autoFocus,
     disabled,
     defaultChecked,
+    selectMode: "single",
+    togglable: false,
+    getGroupElement: () =>
+      rootRef.current?.closest("[role='radiogroup']") ?? null,
+    getGroupItems: group =>
+      Array.from(
+        group.querySelectorAll<HTMLElement>(`[data-slot='${Slots.Root}']`),
+      ),
     onChange,
     onBlur,
     onFocus,
@@ -146,8 +155,6 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const id = useDeterministicId(idProp, "styleless-ui__radio");
   const visibleLabelId = id ? `${id}__label` : undefined;
-
-  const rootRef = React.useRef<HTMLButtonElement>(null);
 
   const handleRef = useForkedRefs(ref, rootRef, checkBase.handleControllerRef);
 

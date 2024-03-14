@@ -140,6 +140,8 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     );
   }
 
+  const rootRef = React.useRef<HTMLButtonElement>(null);
+
   const checkBase = useCheckBase({
     value,
     autoFocus,
@@ -147,6 +149,13 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     checked: checkedProp,
     groupCtx: checkGroupCtx,
     defaultChecked,
+    selectMode: "multiple",
+    togglable: true,
+    getGroupElement: () => rootRef.current?.closest("[role='group']") ?? null,
+    getGroupItems: group =>
+      Array.from(
+        group.querySelectorAll<HTMLElement>(`[data-slot='${Slots.Root}']`),
+      ),
     onChange,
     onBlur,
     onFocus,
@@ -157,7 +166,7 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   const id = useDeterministicId(idProp, "styleless-ui__checkbox");
   const visibleLabelId = id ? `${id}__label` : undefined;
 
-  const handleRef = useForkedRefs(ref, checkBase.handleControllerRef);
+  const handleRef = useForkedRefs(ref, rootRef, checkBase.handleControllerRef);
 
   const labelProps = getLabelInfo(label, "Checkbox");
 

@@ -16,13 +16,15 @@ type GenericGroupContextValue = {
 };
 
 type CheckBaseProps = {
-  strategy?: "check-control" | "radio-control";
+  selectMode?: "multiple" | "single";
   enterKeyFunctionality?: "request-form-submit" | "check";
   keyboardActivationBehavior?: "manual" | "automatic";
+  getGroupElement: () => HTMLElement | null;
+  getGroupItems: (group: HTMLElement) => HTMLElement[];
   value?: string;
   groupCtx: GenericGroupContextValue | null;
   checked?: boolean;
-  toggle?: boolean;
+  togglable?: boolean;
   defaultChecked?: boolean;
   disabled?: boolean;
   autoFocus?: boolean;
@@ -39,6 +41,8 @@ const useCheckBase = (props: CheckBaseProps) => {
     value = "",
     groupCtx,
     defaultChecked,
+    getGroupElement,
+    getGroupItems,
     onBlur,
     onChange,
     onFocus,
@@ -46,9 +50,9 @@ const useCheckBase = (props: CheckBaseProps) => {
     onKeyUp,
     keyboardActivationBehavior = "automatic",
     enterKeyFunctionality = "request-form-submit",
-    strategy = "check-control",
+    selectMode = "check-control",
     autoFocus = false,
-    toggle = false,
+    togglable = false,
     disabled = false,
   } = props;
 
@@ -60,10 +64,10 @@ const useCheckBase = (props: CheckBaseProps) => {
     false,
   );
 
-  const isRadioControl = strategy === "radio-control";
+  const isSingleSelect = selectMode === "single";
 
   const checkedState = groupCtx
-    ? !isRadioControl
+    ? !isSingleSelect
       ? groupCtx.value.includes(value)
       : groupCtx.value === value
     : checked;
@@ -98,7 +102,7 @@ const useCheckBase = (props: CheckBaseProps) => {
 
   const emitChange = (newChecked: boolean) => {
     if (disabled || !isMounted()) return;
-    if (isRadioControl && checkedState && !toggle) return;
+    if (isSingleSelect && checkedState && !togglable) return;
 
     setChecked(newChecked);
     groupCtx?.onChange(newChecked, value);
@@ -159,18 +163,14 @@ const useCheckBase = (props: CheckBaseProps) => {
       }
 
       if (groupCtx && isFocusedVisible) {
-        if (!isRadioControl) return;
+        if (!isSingleSelect) return;
         if (!controllerRef.current) return;
 
-        const group = controllerRef.current.closest<HTMLElement>(
-          '[role="radiogroup"]',
-        );
+        const group = getGroupElement();
 
         if (!group) return;
 
-        const items = Array.from(
-          group.querySelectorAll<HTMLElement>('[role="radio"]'),
-        );
+        const items = getGroupItems(group);
 
         const currentItemIdx = items.findIndex(
           item => item.getAttribute("data-entityname") === value,
@@ -226,6 +226,10 @@ const useCheckBase = (props: CheckBaseProps) => {
             (currentItemIdx + 1) % items.length,
             true,
           );
+        } else if (event.key === SystemKeys.HOME) {
+          activeItem = getAvailableItem(0, true);
+        } else if (event.key === SystemKeys.END) {
+          activeItem = getAvailableItem(0, false);
         }
 
         if (activeItem) {
