@@ -51,7 +51,7 @@ type OwnProps = {
    */
   valueText: string;
   /**
-   * The label of the menu.
+   * The label of the component.
    */
   label:
     | {
