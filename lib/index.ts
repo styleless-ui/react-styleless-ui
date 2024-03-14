@@ -82,6 +82,18 @@ export type {
   TriggerClassNameProps as SelectTriggerClassNameProps,
   TriggerProps as SelectTriggerProps,
 } from "./Select";
+export * as SpinButton from "./SpinButton";
+export type {
+  DecrementButtonClassNameProps as SpinButtonDecrementButtonClassNameProps,
+  DecrementButtonProps as SpinButtonDecrementButtonProps,
+  DecrementButtonRenderProps as SpinButtonDecrementButtonRenderProps,
+  IncrementButtonClassNameProps as SpinButtonIncrementButtonClassNameProps,
+  IncrementButtonProps as SpinButtonIncrementButtonProps,
+  IncrementButtonRenderProps as SpinButtonIncrementButtonRenderProps,
+  RootClassNameProps as SpinButtonRootClassNameProps,
+  RootProps as SpinButtonRootProps,
+  RootRenderProps as SpinButtonRootRenderProps,
+} from "./SpinButton";
 export * from "./Switch";
 export { default as Switch } from "./Switch";
 export * as TabGroup from "./TabGroup";
