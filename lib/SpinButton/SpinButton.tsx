@@ -19,8 +19,17 @@ import { SpinButtonContext, type SpinButtonContextValue } from "./context";
 import { Root as RootSlot } from "./slots";
 
 export type RenderProps = {
+  /**
+   * The value of the component.
+   */
   value: number;
+  /**
+   * The percentage value of the component.
+   */
   percentageValue: number;
+  /**
+   * The text used to represent the value.
+   */
   valueText: string;
   /**
    * The `disabled` state of the component.
@@ -43,13 +52,44 @@ type OwnProps = {
    * The className applied to the component.
    */
   className?: PropWithRenderContext<string, ClassNameProps>;
+  /**
+   * The minimum allowed value of the spin button.
+   * Should not be greater than or equal to `max`.
+   */
   min: number;
+  /**
+   * The maximum allowed value of the spin button.
+   * Should not be less than or equal to `min`.
+   */
   max: number;
+  /**
+   * The value of the component.
+   */
   value?: number;
+  /**
+   * The default value. Use when the component's `value` state is not controlled.
+   */
   defaultValue?: number;
+  /**
+   * If `true`, the component will be disabled.
+   *
+   * @default false
+   */
   disabled?: boolean;
+  /**
+   * If `true`, the component will be focused automatically.
+   *
+   * @default false
+   */
   autoFocus?: boolean;
+  /**
+   * A function which returns a string value that provides a user-friendly name
+   * for the current value of the component. This is important for screen reader users.
+   */
   setValueText: (value: number) => string;
+  /**
+   * Callback is called when the value changes.
+   */
   onValueChange?: (value: number) => void;
   /**
    * The label of the component.
