@@ -35,9 +35,14 @@ type OwnProps = {
   className?: PropWithRenderContext<string, ClassNameProps>;
   /**
    * If `true`, the component will be disabled.
+   *
    * @default false
    */
   disabled?: boolean;
+  /**
+   * A value to replace `tabIndex` with.
+   */
+  overrideTabIndex?: number;
 };
 
 export type Props<E extends React.ElementType> = PolymorphicProps<E, OwnProps>;
@@ -51,6 +56,7 @@ const ButtonBase = <E extends React.ElementType, R extends HTMLElement>(
     children: childrenProp,
     id: idProp,
     as: RootNode = "button",
+    overrideTabIndex,
     onBlur,
     onFocus,
     onClick,
@@ -126,8 +132,13 @@ const ButtonBase = <E extends React.ElementType, R extends HTMLElement>(
       ? childrenProp(renderProps)
       : childrenProp;
 
+  let tabIndex = disabled ? -1 : 0;
+
+  if (overrideTabIndex) tabIndex = overrideTabIndex;
+
   return (
     <RootNode
+      {...otherProps}
       id={id}
       ref={refCallback}
       className={className}
@@ -138,8 +149,7 @@ const ButtonBase = <E extends React.ElementType, R extends HTMLElement>(
       onKeyDown={buttonBase.handleKeyDown}
       onKeyUp={buttonBase.handleKeyUp}
       data-slot={Slots.Root}
-      {...otherProps}
-      tabIndex={disabled ? -1 : 0}
+      tabIndex={tabIndex}
       data-disabled={disabled ? "" : undefined}
       data-focus-visible={buttonBase.isFocusedVisible ? "" : undefined}
     >
