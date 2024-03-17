@@ -134,7 +134,7 @@ const ButtonBase = <E extends React.ElementType, R extends HTMLElement>(
 
   let tabIndex = disabled ? -1 : 0;
 
-  if (overrideTabIndex) tabIndex = overrideTabIndex;
+  if (typeof overrideTabIndex !== "undefined") tabIndex = overrideTabIndex;
 
   return (
     <RootNode

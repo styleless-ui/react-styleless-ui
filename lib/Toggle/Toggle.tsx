@@ -52,6 +52,10 @@ type OwnProps = {
    */
   disabled?: boolean;
   /**
+   * A value to replace `tabIndex` with.
+   */
+  overrideTabIndex?: number;
+  /**
    * The Callback is fired when the state of `active` changes.
    */
   onActiveChange?: (activeState: boolean) => void;
@@ -67,6 +71,7 @@ const ToggleBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     value,
     children: childrenProp,
     className: classNameProp,
+    overrideTabIndex,
     defaultActive,
     active,
     autoFocus = false,
@@ -169,6 +174,7 @@ const ToggleBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   };
 
   const calcTabIndex = () => {
+    if (typeof overrideTabIndex !== "undefined") return overrideTabIndex;
     if (disabled) return -1;
     if (!toggleGroupCtx) return 0;
     if (toggleGroupCtx.multiple) return 0;
