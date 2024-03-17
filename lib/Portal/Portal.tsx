@@ -6,6 +6,7 @@ import { useIsomorphicValue } from "../utils";
 export type Props = {
   /**
    * A function that will resolve the container element for the portal.
+   * If not provided will opt-in `PortalConfigProvider` configuration as default behavior.
    *
    * Please note that this function is only called on the client-side.
    */
