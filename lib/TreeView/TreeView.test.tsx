@@ -10,7 +10,6 @@ import {
   userEvent,
 } from "../../tests/utils";
 import * as TreeView from "./index";
-import { SubTreeLabel as SubTreeLabelSlot } from "./slots";
 
 describe("TreeView", () => {
   afterEach(jest.clearAllMocks);
@@ -48,15 +47,12 @@ describe("TreeView", () => {
       });
     };
 
-    const subTreeClassName: TreeView.SubTreeProps["classes"] = props => {
+    const subTreeClassName: TreeView.SubTreeProps["className"] = props => {
       const { open } = props;
 
-      return {
-        root: classNames("treeview__subtree", {
-          "treeview__subtree--open": open,
-        }),
-        label: "treeview__subtree__label",
-      };
+      return classNames("treeview__subtree", {
+        "treeview__subtree--open": open,
+      });
     };
 
     render(
@@ -78,10 +74,7 @@ describe("TreeView", () => {
           data-testid="2"
           triggerContent={<div>File 2</div>}
           subTree={
-            <TreeView.SubTree
-              classes={subTreeClassName}
-              label="Sub Tree 1"
-            >
+            <TreeView.SubTree className={subTreeClassName}>
               <TreeView.Item
                 className={itemClassName}
                 value="3"
@@ -125,11 +118,6 @@ describe("TreeView", () => {
       "treeview__subtree",
       "treeview__subtree--open",
     );
-    expect(
-      screen
-        .getByRole("group")
-        .querySelector(`[data-slot="${SubTreeLabelSlot}"]`),
-    ).toHaveClass("treeview__subtree__label");
 
     await userEvent.tab();
 
@@ -160,7 +148,7 @@ describe("TreeView", () => {
           data-testid="2"
           triggerContent={<div>File 2</div>}
           subTree={
-            <TreeView.SubTree label={{ screenReaderLabel: "label" }}>
+            <TreeView.SubTree>
               <TreeView.Item
                 value="3"
                 data-testid="3"
@@ -213,7 +201,10 @@ describe("TreeView", () => {
     expect(screen.getByTestId("5")).toHaveAttribute("aria-posinset", "3");
     expect(screen.getByTestId("5")).toHaveAttribute("aria-setsize", "3");
 
-    expect(screen.getByRole("group")).toHaveAttribute("aria-label", "label");
+    expect(screen.getByRole("group")).toHaveAttribute(
+      "aria-labelledby",
+      screen.getByTestId("2").id,
+    );
 
     expect(screen.getByTestId("3")).not.toHaveAttribute("aria-expanded");
     expect(screen.getByTestId("3")).toHaveAttribute("aria-selected", "false");
@@ -249,7 +240,7 @@ describe("TreeView", () => {
           data-testid="2"
           triggerContent={<div>File 2</div>}
           subTree={
-            <TreeView.SubTree label={{ screenReaderLabel: "label" }}>
+            <TreeView.SubTree>
               <TreeView.Item
                 value="3"
                 data-testid="3"
@@ -356,7 +347,7 @@ describe("TreeView", () => {
           data-testid="2"
           triggerContent={<div>File 2</div>}
           subTree={
-            <TreeView.SubTree label={{ screenReaderLabel: "label" }}>
+            <TreeView.SubTree>
               <TreeView.Item
                 value="3"
                 disabled
@@ -431,7 +422,7 @@ describe("TreeView", () => {
           data-testid="2"
           triggerContent={<div>File 2</div>}
           subTree={
-            <TreeView.SubTree label={{ screenReaderLabel: "label" }}>
+            <TreeView.SubTree>
               <TreeView.Item
                 value="3"
                 data-testid="3"
@@ -523,7 +514,7 @@ describe("TreeView", () => {
           data-testid="2"
           triggerContent={<div>File 2</div>}
           subTree={
-            <TreeView.SubTree label={{ screenReaderLabel: "label" }}>
+            <TreeView.SubTree>
               <TreeView.Item
                 value="3"
                 disabled
@@ -602,7 +593,7 @@ describe("TreeView", () => {
           data-testid="2"
           triggerContent={<div data-testid="trigger-2">File 1</div>}
           subTree={
-            <TreeView.SubTree label={{ screenReaderLabel: "label" }}>
+            <TreeView.SubTree>
               <TreeView.Item
                 value="3"
                 data-testid="3"
@@ -696,7 +687,7 @@ describe("TreeView", () => {
           data-testid="2"
           triggerContent={<div data-testid="trigger-2">File 1</div>}
           subTree={
-            <TreeView.SubTree label={{ screenReaderLabel: "label" }}>
+            <TreeView.SubTree>
               <TreeView.Item
                 value="3"
                 data-testid="3"

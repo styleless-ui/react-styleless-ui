@@ -218,7 +218,7 @@ const TreeViewBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
     const collapsingDescendantSubTree =
       rootRef.current.querySelector<HTMLElement>(
-        `[data-for='${collapsingDescendantEntity}']`,
+        `[data-for-entity='${collapsingDescendantEntity}']`,
       );
 
     if (!collapsingDescendantSubTree) return;
@@ -351,7 +351,7 @@ const TreeViewBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
           if (!isExpandable) break;
 
-          const descendant = item.getAttribute("data-entityname");
+          const descendant = item.getAttribute("data-entity");
 
           if (!descendant) break;
 
@@ -383,7 +383,7 @@ const TreeViewBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
           const isExpandable = item.getAttribute("data-expandable") === "true";
 
-          const descendant = item.getAttribute("data-entityname");
+          const descendant = item.getAttribute("data-entity");
 
           if (!descendant) break;
 
@@ -415,7 +415,7 @@ const TreeViewBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
           const { item } = currentFocusedElement;
 
-          const descendant = item.getAttribute("data-entityname");
+          const descendant = item.getAttribute("data-entity");
 
           if (!descendant) break;
 
@@ -433,7 +433,7 @@ const TreeViewBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
           if (!isExpandable) break;
 
-          const descendant = item.getAttribute("data-entityname");
+          const descendant = item.getAttribute("data-entity");
 
           if (!descendant) break;
 
