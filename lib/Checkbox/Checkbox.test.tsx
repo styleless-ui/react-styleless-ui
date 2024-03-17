@@ -65,6 +65,25 @@ describe("Checkbox", () => {
     );
 
     expect(root).toHaveClass("root", "root--checked", "root--disabled");
+
+    rerender(
+      <Checkbox
+        {...mockRequiredProps}
+        checked
+        indeterminated
+        aria-controls="id1"
+        className={({ checked, disabled, focusedVisible, indeterminated }) =>
+          classNames("root", {
+            "root--disabled": disabled,
+            "root--checked": checked,
+            "root--focus-visible": focusedVisible,
+            "root--indeterminated": indeterminated,
+          })
+        }
+      />,
+    );
+
+    expect(root).toHaveClass("root", "root--checked", "root--indeterminated");
   });
 
   it("should have `aria-label='label'` property when `label={{ screenReaderLabel: 'label' }}`", () => {
