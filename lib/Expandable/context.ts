@@ -2,8 +2,7 @@ import * as React from "react";
 
 type ContextValue = {
   isExpanded: boolean;
-  setIsExpanded: (value: React.SetStateAction<boolean>) => void;
-  handleExpandChange: (expandState: boolean) => void;
+  emitExpandChange: (expandState: boolean) => void;
 };
 
 const Context = React.createContext<ContextValue | null>(null);
