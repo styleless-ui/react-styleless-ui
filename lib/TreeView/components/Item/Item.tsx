@@ -130,7 +130,7 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const isExpanded = ctx.isDescendantExpanded(value);
 
   const isActive = ctx.activeElement
-    ? ctx.activeElement.getAttribute("data-entityname") === value
+    ? ctx.activeElement.getAttribute("data-entity") === value
     : false;
 
   const expandedState = isParentNode ? isExpanded : undefined;
@@ -224,7 +224,7 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     });
   };
 
-  const itemContextValue: TreeViewItemContextValue = { isExpanded, value };
+  const itemContextValue: TreeViewItemContextValue = { isExpanded, value, id };
 
   return (
     <div
@@ -244,7 +244,7 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       data-expanded={expandedState ? "" : undefined}
       data-selected={selectedState ? "" : undefined}
       data-slot={ItemRootSlot}
-      data-entityname={value}
+      data-entity={value}
       className={className}
     >
       <TreeViewItemContext.Provider value={itemContextValue}>

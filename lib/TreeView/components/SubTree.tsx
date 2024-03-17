@@ -1,16 +1,9 @@
 import * as React from "react";
-import { getLabelInfo, logger } from "../../internals";
-import type {
-  ClassesWithRenderContext,
-  MergeElementProps,
-  PropWithRenderContext,
-} from "../../types";
+import { logger } from "../../internals";
+import type { MergeElementProps, PropWithRenderContext } from "../../types";
 import { componentWithForwardedRef, useDeterministicId } from "../../utils";
 import { LevelContext, SizeContext } from "../contexts";
-import {
-  SubTreeLabel as SubTreeLabelSlot,
-  SubTreeRoot as SubTreeRootSlot,
-} from "../slots";
+import { SubTreeRoot as SubTreeRootSlot } from "../slots";
 import { getValidChildren } from "../utils";
 import { TreeViewItemContext } from "./Item/context";
 
@@ -29,28 +22,9 @@ type OwnProps = {
    */
   children?: PropWithRenderContext<React.ReactNode, RenderProps>;
   /**
-   * Map of sub-components and their correlated classNames.
+   * The className applied to the component.
    */
-  classes?: ClassesWithRenderContext<"root" | "label", ClassNameProps>;
-  /**
-   * The label of the subtree.
-   */
-  label:
-    | string
-    | {
-        /**
-         * The label to use as `aria-label` property.
-         */
-        screenReaderLabel: string;
-      }
-    | {
-        /**
-         * Identifies the element (or elements) that labels the subtree.
-         *
-         * @see {@link https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-labelledby MDN Web Docs} for more information.
-         */
-        labelledBy: string;
-      };
+  className?: PropWithRenderContext<string, ClassNameProps>;
   /**
    * Used to keep mounting when more control is needed.\
    * Useful when controlling animation with React animation libraries.
@@ -62,21 +36,19 @@ type OwnProps = {
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,
-  "defaultValue" | "defaultChecked" | "className"
+  "defaultValue" | "defaultChecked"
 >;
 
 const SubTreeBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     id: idProp,
-    classes: classesProp,
+    className: classNameProp,
     children: childrenProp,
     keepMounted = false,
-    label,
     ...otherProps
   } = props;
 
   const id = useDeterministicId(idProp, "styleless-ui__treeview-subtree");
-  const visibleLabelId = id ? `${id}__label` : undefined;
 
   const currentLevel = React.useContext(LevelContext) ?? 1;
   const itemCtx = React.useContext(TreeViewItemContext);
@@ -103,31 +75,15 @@ const SubTreeBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       ? childrenProp(renderProps)
       : childrenProp;
 
-  const classes =
-    typeof classesProp === "function"
-      ? classesProp(classNameProps)
-      : classesProp;
+  const className =
+    typeof classNameProp === "function"
+      ? classNameProp(classNameProps)
+      : classNameProp;
 
   const { validChildren, sizeOfSet } = getValidChildren(
     children,
     "TreeView.SubTree",
   );
-
-  const labelProps = getLabelInfo(label, "TreeView.SubTree");
-
-  const renderLabel = () => {
-    if (!labelProps.visibleLabel) return null;
-
-    return (
-      <span
-        id={visibleLabelId}
-        data-slot={SubTreeLabelSlot}
-        className={classes?.label}
-      >
-        {labelProps.visibleLabel}
-      </span>
-    );
-  };
 
   if (!keepMounted && !openState) return null;
 
@@ -138,18 +94,14 @@ const SubTreeBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       inert={!openState ? "" : undefined}
       id={id}
       ref={ref}
-      className={classes?.root}
+      className={className}
       role="group"
       tabIndex={-1}
-      data-for={itemCtx.value}
+      aria-labelledby={itemCtx.id}
+      data-for-entity={itemCtx.value}
       data-slot={SubTreeRootSlot}
       data-open={openState ? "" : undefined}
-      aria-label={labelProps.srOnlyLabel}
-      aria-labelledby={
-        labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
-      }
     >
-      {renderLabel()}
       <LevelContext.Provider value={currentLevel + 1}>
         <SizeContext.Provider value={sizeOfSet}>
           {validChildren}
