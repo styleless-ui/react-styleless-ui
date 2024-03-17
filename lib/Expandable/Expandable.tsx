@@ -75,7 +75,7 @@ const ExpandableBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       ? childrenProp(renderProps)
       : childrenProp;
 
-  const handleExpandChange = (expandState: boolean) => {
+  const emitExpandChange = (expandState: boolean) => {
     setIsExpanded(expandState);
     onExpandChange?.(expandState);
   };
@@ -90,7 +90,10 @@ const ExpandableBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       data-expanded={isExpanded ? "" : undefined}
     >
       <ExpandableContext.Provider
-        value={{ isExpanded, setIsExpanded, handleExpandChange }}
+        value={{
+          isExpanded,
+          emitExpandChange,
+        }}
       >
         {children}
       </ExpandableContext.Provider>

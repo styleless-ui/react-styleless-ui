@@ -74,9 +74,9 @@ const ContentBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       ref={refCallback}
       className={className}
       role="region"
-      aria-hidden={!ctx.isExpanded}
       // @ts-expect-error React hasn't added `inert` yet
       inert={!ctx.isExpanded ? undefined : ""}
+      aria-hidden={!ctx.isExpanded}
       data-slot={ContentRootSlot}
       data-expanded={!ctx.isExpanded ? "" : undefined}
     >

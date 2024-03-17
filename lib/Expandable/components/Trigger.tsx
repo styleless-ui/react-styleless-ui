@@ -57,7 +57,7 @@ const TriggerBase = <E extends React.ElementType, R extends HTMLElement>(
   }
 
   const handleClick = (event: React.MouseEvent<R>) => {
-    ctx.handleExpandChange(!ctx.isExpanded);
+    ctx.emitExpandChange(!ctx.isExpanded);
     (onClick as React.MouseEventHandler<R>)?.(event);
   };
 
@@ -88,6 +88,7 @@ const TriggerBase = <E extends React.ElementType, R extends HTMLElement>(
       ref={refCallback}
       data-slot={TriggerRootSlot}
       aria-expanded={ctx.isExpanded}
+      data-expanded={ctx.isExpanded ? "" : undefined}
     />
   );
 };
