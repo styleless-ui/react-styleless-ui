@@ -113,7 +113,7 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     value,
     children: childrenProp,
     id: idProp,
-    className: classNameMap,
+    className: classNameProp,
     overrideTabIndex,
     defaultChecked,
     checked: checkedProp,
@@ -191,9 +191,9 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
       : childrenProp;
 
   const className =
-    typeof classNameMap === "function"
-      ? classNameMap(classNameProps)
-      : classNameMap;
+    typeof classNameProp === "function"
+      ? classNameProp(classNameProps)
+      : classNameProp;
 
   const refCallback = (node: HTMLButtonElement | null) => {
     handleRef(node);
