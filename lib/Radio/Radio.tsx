@@ -1,18 +1,16 @@
 import * as React from "react";
 import { RadioGroupContext } from "../RadioGroup/context";
 import { SystemError, getLabelInfo } from "../internals";
-import type { ClassesWithRenderContext, MergeElementProps } from "../types";
+import type { MergeElementProps, PropWithRenderContext } from "../types";
 import {
   componentWithForwardedRef,
   useCheckBase,
   useDeterministicId,
   useForkedRefs,
-  useHandleTargetLabelClick,
 } from "../utils";
-import { CheckIcon } from "./components";
 import * as Slots from "./slots";
 
-export type ClassNameProps = {
+export type RenderProps = {
   /**
    * The `checked` state of the radio.
    */
@@ -27,19 +25,21 @@ export type ClassNameProps = {
   focusedVisible: boolean;
 };
 
+export type ClassNameProps = RenderProps;
+
 type OwnProps = {
   /**
-   * Map of sub-components and their correlated classNames.
+   * The content of the component.
    */
-  classes?: ClassesWithRenderContext<
-    "root" | "label" | "check",
-    ClassNameProps
-  >;
+  children?: PropWithRenderContext<React.ReactNode, RenderProps>;
+  /**
+   * The className applied to the component.
+   */
+  className?: PropWithRenderContext<string, ClassNameProps>;
   /**
    * The label of the radio.
    */
   label:
-    | string
     | {
         /**
          * The label to use as `aria-label` property.
@@ -81,11 +81,7 @@ type OwnProps = {
   /**
    * The Callback is fired when the state changes.
    */
-  onChange?: (checkedState: boolean) => void;
-  /**
-   * The component to be used as the check element.
-   */
-  checkComponent?: React.ReactElement;
+  onCheckedChange?: (checkedState: boolean) => void;
   /**
    * A value to replace `tabIndex` with.
    */
@@ -98,22 +94,22 @@ type OwnProps = {
 
 export type Props = Omit<
   MergeElementProps<"button", OwnProps>,
-  "defaultValue" | "className"
+  "defaultValue" | "onChange"
 >;
 
 const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   const {
     label,
     value,
-    checkComponent,
+    children: childrenProp,
     defaultChecked,
     id: idProp,
     overrideTabIndex,
-    classes: classesMap,
+    className: classNameProp,
     checked: checkedProp,
     autoFocus = false,
     disabled = false,
-    onChange,
+    onCheckedChange,
     onBlur,
     onFocus,
     onKeyDown,
@@ -151,7 +147,7 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
       Array.from(
         group.querySelectorAll<HTMLElement>(`[data-slot='${Slots.Root}']`),
       ),
-    onChange,
+    onChange: onCheckedChange,
     onBlur,
     onFocus,
     onKeyDown,
@@ -159,52 +155,34 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   });
 
   const id = useDeterministicId(idProp, "styleless-ui__radio");
-  const visibleLabelId = id ? `${id}__label` : undefined;
 
   const handleRef = useForkedRefs(ref, rootRef, checkBase.handleControllerRef);
 
-  const labelProps = getLabelInfo(label, "Radio");
-
-  useHandleTargetLabelClick({
-    visibleLabelId,
-    labelInfo: labelProps,
-    onClick: () => checkBase.controllerRef.current?.click(),
+  const labelInfo = getLabelInfo(label, "Radio", {
+    customErrorMessage: [
+      "Invalid `label` property.",
+      "The `label` property must be in shape of " +
+        "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
+    ].join("\n"),
   });
 
-  const classNameProps: ClassNameProps = {
+  const renderProps: RenderProps = {
     disabled,
     checked: checkBase.checked,
     focusedVisible: checkBase.isFocusedVisible,
   };
 
-  const classes =
-    typeof classesMap === "function" ? classesMap(classNameProps) : classesMap;
+  const classNameProps: ClassNameProps = renderProps;
 
-  const renderIcon = () => {
-    if (!checkBase.checked) return null;
+  const children =
+    typeof childrenProp === "function"
+      ? childrenProp(renderProps)
+      : childrenProp;
 
-    return (
-      <CheckIcon
-        className={classes?.check}
-        slot={Slots.Check}
-        checkComponent={checkComponent}
-      />
-    );
-  };
-
-  const renderLabel = () => {
-    if (!labelProps.visibleLabel) return null;
-
-    return (
-      <label
-        id={visibleLabelId}
-        data-slot={Slots.Label}
-        className={classes?.label}
-      >
-        {labelProps.visibleLabel}
-      </label>
-    );
-  };
+  const className =
+    typeof classNameProp === "function"
+      ? classNameProp(classNameProps)
+      : classNameProp;
 
   const calcTabIndex = () => {
     if (typeof overrideTabIndex !== "undefined") return overrideTabIndex;
@@ -231,32 +209,27 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   };
 
   return (
-    <>
-      <button
-        {...otherProps}
-        id={id}
-        tabIndex={calcTabIndex()}
-        role="radio"
-        className={classes?.root}
-        type="button"
-        ref={handleRef}
-        disabled={disabled}
-        onFocus={checkBase.handleFocus}
-        onBlur={checkBase.handleBlur}
-        onKeyDown={checkBase.handleKeyDown}
-        onKeyUp={checkBase.handleKeyUp}
-        onClick={checkBase.handleClick}
-        aria-checked={checkBase.checked}
-        aria-label={labelProps.srOnlyLabel}
-        aria-labelledby={
-          labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
-        }
-        {...dataAttrs}
-      >
-        {renderIcon()}
-      </button>
-      {renderLabel()}
-    </>
+    <button
+      {...otherProps}
+      id={id}
+      tabIndex={calcTabIndex()}
+      role="radio"
+      className={className}
+      type="button"
+      ref={handleRef}
+      disabled={disabled}
+      onFocus={checkBase.handleFocus}
+      onBlur={checkBase.handleBlur}
+      onKeyDown={checkBase.handleKeyDown}
+      onKeyUp={checkBase.handleKeyUp}
+      onClick={checkBase.handleClick}
+      aria-checked={checkBase.checked}
+      aria-label={labelInfo.srOnlyLabel}
+      aria-labelledby={labelInfo.labelledBy}
+      {...dataAttrs}
+    >
+      {children}
+    </button>
   );
 };
 

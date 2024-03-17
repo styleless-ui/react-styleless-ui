@@ -1,6 +1,6 @@
 import * as React from "react";
 import { getLabelInfo } from "../internals";
-import type { Classes, MergeElementProps } from "../types";
+import type { MergeElementProps } from "../types";
 import {
   componentWithForwardedRef,
   useControlledProp,
@@ -16,14 +16,13 @@ type OwnProps = {
    */
   children?: React.ReactNode;
   /**
-   * Map of sub-components and their correlated classNames.
+   * The className applied to the component.
    */
-  classes?: Classes<"root" | "label">;
+  className?: string;
   /**
    * The label of the group.
    */
   label:
-    | string
     | {
         /**
          * The label to use as `aria-label` property.
@@ -54,12 +53,12 @@ type OwnProps = {
   /**
    * The Callback is fired when the state changes.
    */
-  onChange?: (selectedValue: string) => void;
+  onValueChange?: (selectedValue: string) => void;
 };
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,
-  "className" | "defaultChecked"
+  "onChange" | "defaultChecked"
 >;
 
 const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
@@ -67,10 +66,10 @@ const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     label,
     children,
     id: idProp,
-    classes,
+    className,
     defaultValue,
     value: valueProp,
-    onChange,
+    onValueChange,
     orientation = "vertical",
     ...otherProps
   } = props;
@@ -79,20 +78,25 @@ const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const handleRootRef = useForkedRefs(ref, rootRef);
 
   const id = useDeterministicId(idProp, "styleless-ui__radio-group");
-  const visibleLabelId = id ? `${id}__label` : undefined;
 
-  const labelProps = getLabelInfo(label, "RadioGroup");
+  const labelInfo = getLabelInfo(label, "RadioGroup", {
+    customErrorMessage: [
+      "Invalid `label` property.",
+      "The `label` property must be in shape of " +
+        "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
+    ].join("\n"),
+  });
 
   const [value, setValue] = useControlledProp(valueProp, defaultValue, "");
   const [forcedTabability, setForcedTabability] = React.useState<string | null>(
     null,
   );
 
-  const handleChange = (newCheckedState: boolean, inputValue: string) => {
+  const handleValueChange = (newCheckedState: boolean, inputValue: string) => {
     if (!newCheckedState) return;
 
     setValue(inputValue);
-    onChange?.(inputValue);
+    onValueChange?.(inputValue);
   };
 
   React.useEffect(() => {
@@ -119,43 +123,24 @@ const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     setForcedTabability(validRadios?.[0]?.getAttribute("data-entity") ?? null);
   }, [value]);
 
-  const renderLabel = () => {
-    if (!labelProps.visibleLabel) return null;
-
-    return (
-      <span
-        id={visibleLabelId}
-        data-slot={Slots.Label}
-        className={classes?.label}
-      >
-        {labelProps.visibleLabel}
-      </span>
-    );
-  };
-
   return (
-    <>
-      {renderLabel()}
-      <div
-        {...otherProps}
-        id={id}
-        ref={handleRootRef}
-        className={classes?.root}
-        data-slot={Slots.Root}
-        role="radiogroup"
-        aria-label={labelProps.srOnlyLabel}
-        aria-orientation={orientation}
-        aria-labelledby={
-          labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
-        }
+    <div
+      {...otherProps}
+      id={id}
+      ref={handleRootRef}
+      className={className}
+      data-slot={Slots.Root}
+      role="radiogroup"
+      aria-orientation={orientation}
+      aria-label={labelInfo.srOnlyLabel}
+      aria-labelledby={labelInfo.labelledBy}
+    >
+      <RadioGroupContext.Provider
+        value={{ value, onChange: handleValueChange, forcedTabability }}
       >
-        <RadioGroupContext.Provider
-          value={{ value, onChange: handleChange, forcedTabability }}
-        >
-          {children}
-        </RadioGroupContext.Provider>
-      </div>
-    </>
+        {children}
+      </RadioGroupContext.Provider>
+    </div>
   );
 };
 
