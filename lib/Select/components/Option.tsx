@@ -160,7 +160,7 @@ const OptionBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const dataAttrs = {
     "data-slot": OptionRootSlot,
-    "data-entityname": value,
+    "data-entity": value,
     "data-selected": isSelected ? "" : undefined,
     "data-active": isActive ? "" : undefined,
     "data-disabled": disabled ? "" : undefined,

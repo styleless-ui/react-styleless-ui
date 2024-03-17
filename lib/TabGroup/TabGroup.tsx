@@ -106,7 +106,7 @@ const TabGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     );
 
     const activeTabElement = tabs.find(
-      tab => tab.getAttribute("data-entityname") === activeTab,
+      tab => tab.getAttribute("data-entity") === activeTab,
     );
 
     if (!activeTabElement) return;
@@ -142,9 +142,7 @@ const TabGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       return !isDisabled;
     });
 
-    setForcedTabability(
-      validTabs?.[0]?.getAttribute("data-entityname") ?? null,
-    );
+    setForcedTabability(validTabs?.[0]?.getAttribute("data-entity") ?? null);
   }, [activeTab]);
 
   return (

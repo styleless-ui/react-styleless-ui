@@ -204,7 +204,7 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       aria-expanded={isExpandable ? expanded : undefined}
       aria-haspopup={isExpandable ? "menu" : undefined}
       data-slot={ItemRootSlot}
-      data-entityname={value}
+      data-entity={value}
       data-expandable={String(isExpandable)}
       data-active={baseItem.isActive ? "" : undefined}
       data-expanded={expanded ? "" : undefined}

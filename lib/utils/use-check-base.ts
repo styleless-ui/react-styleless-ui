@@ -173,7 +173,7 @@ const useCheckBase = (props: CheckBaseProps) => {
         const items = getGroupItems(group);
 
         const currentItemIdx = items.findIndex(
-          item => item.getAttribute("data-entityname") === value,
+          item => item.getAttribute("data-entity") === value,
         );
 
         const currentItem = items[currentItemIdx];

@@ -72,7 +72,7 @@ const PanelBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const dataAttrs = {
     "data-slot": PanelRootSlot,
     "data-active": active ? "" : undefined,
-    "data-entityname": value,
+    "data-entity": value,
   };
 
   const refCallback = (node: HTMLDivElement | null) => {
@@ -87,7 +87,7 @@ const PanelBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     const tabs = Array.from(root.querySelectorAll<HTMLElement>("[role='tab']"));
 
     const associatedTab = tabs.find(
-      tab => tab.getAttribute("data-entityname") === value,
+      tab => tab.getAttribute("data-entity") === value,
     );
 
     if (!associatedTab) {

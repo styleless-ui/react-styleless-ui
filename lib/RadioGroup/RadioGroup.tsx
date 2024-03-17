@@ -116,9 +116,7 @@ const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       return !isDisabled;
     });
 
-    setForcedTabability(
-      validRadios?.[0]?.getAttribute("data-entityname") ?? null,
-    );
+    setForcedTabability(validRadios?.[0]?.getAttribute("data-entity") ?? null);
   }, [value]);
 
   const renderLabel = () => {

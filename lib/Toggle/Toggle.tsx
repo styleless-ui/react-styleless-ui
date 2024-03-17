@@ -188,7 +188,7 @@ const ToggleBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     "data-slot": Slots.Root,
     "data-active": renderProps.active ? "" : undefined,
     "data-disable": renderProps.disabled ? "" : undefined,
-    "data-entityname": value,
+    "data-entity": value,
     "data-focus-visible": renderProps.focusedVisible ? "" : undefined,
   };
 
