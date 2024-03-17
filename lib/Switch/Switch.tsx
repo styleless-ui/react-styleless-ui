@@ -1,16 +1,15 @@
 import * as React from "react";
 import { getLabelInfo } from "../internals";
-import type { ClassesWithRenderContext, MergeElementProps } from "../types";
+import type { MergeElementProps, PropWithRenderContext } from "../types";
 import {
   componentWithForwardedRef,
   useCheckBase,
   useDeterministicId,
   useForkedRefs,
-  useHandleTargetLabelClick,
 } from "../utils";
 import * as Slots from "./slots";
 
-export type ClassNameProps = {
+export type RenderProps = {
   /**
    * The `checked` state of the switch.
    */
@@ -25,19 +24,21 @@ export type ClassNameProps = {
   focusedVisible: boolean;
 };
 
+export type ClassNameProps = RenderProps;
+
 type OwnProps = {
   /**
-   * Map of sub-components and their correlated classNames.
+   * The content of the component.
    */
-  classes?: ClassesWithRenderContext<
-    "root" | "label" | "thumb" | "track",
-    ClassNameProps
-  >;
+  children?: PropWithRenderContext<React.ReactNode, RenderProps>;
+  /**
+   * The className applied to the component.
+   */
+  className?: PropWithRenderContext<string, ClassNameProps>;
   /**
    * The label of the switch.
    */
   label:
-    | string
     | {
         /**
          * The label to use as `aria-label` property.
@@ -79,15 +80,7 @@ type OwnProps = {
   /**
    * The Callback is fired when the state changes.
    */
-  onChange?: (checkedState: boolean) => void;
-  /**
-   * The component to be used as the thumb element.
-   */
-  thumbComponent: React.ReactElement;
-  /**
-   * The component to be used as the track element.
-   */
-  trackComponent: React.ReactElement;
+  onCheckedChange?: (checkedState: boolean) => void;
   onFocus?: React.FocusEventHandler<HTMLButtonElement>;
   onBlur?: React.FocusEventHandler<HTMLButtonElement>;
   onKeyDown?: React.KeyboardEventHandler<HTMLButtonElement>;
@@ -96,22 +89,21 @@ type OwnProps = {
 
 export type Props = Omit<
   MergeElementProps<"button", OwnProps>,
-  "defaultValue" | "className"
+  "defaultValue" | "onChange" | "onChangeCapture"
 >;
 
 const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   const {
     label,
-    thumbComponent,
-    trackComponent,
     id: idProp,
-    classes: classesMap,
+    children: childrenProp,
+    className: classNameProp,
     defaultChecked,
     checked: checkedProp,
     overrideTabIndex,
     autoFocus = false,
     disabled = false,
-    onChange,
+    onCheckedChange,
     onBlur,
     onFocus,
     onKeyDown,
@@ -129,7 +121,7 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     togglable: true,
     getGroupElement: () => null,
     getGroupItems: () => [],
-    onChange,
+    onChange: onCheckedChange,
     onBlur,
     onFocus,
     onKeyDown,
@@ -137,34 +129,34 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   });
 
   const id = useDeterministicId(idProp, "styleless-ui__switch");
-  const visibleLabelId = id ? `${id}__label` : undefined;
 
   const handleRef = useForkedRefs(ref, checkBase.handleControllerRef);
 
-  const labelProps = getLabelInfo(label, "Switch");
+  const labelInfo = getLabelInfo(label, "Switch", {
+    customErrorMessage: [
+      "Invalid `label` property.",
+      "The `label` property must be in shape of " +
+        "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
+    ].join("\n"),
+  });
 
-  const classNameProps: ClassNameProps = {
+  const renderProps: RenderProps = {
     disabled,
     checked: checkBase.checked,
     focusedVisible: checkBase.isFocusedVisible,
   };
 
-  const classes =
-    typeof classesMap === "function" ? classesMap(classNameProps) : classesMap;
+  const classNameProps: ClassNameProps = renderProps;
 
-  const renderLabel = () => {
-    if (!labelProps.visibleLabel) return null;
+  const children =
+    typeof childrenProp === "function"
+      ? childrenProp(renderProps)
+      : childrenProp;
 
-    return (
-      <span
-        id={visibleLabelId}
-        data-slot={Slots.Label}
-        className={classes?.label}
-      >
-        {labelProps.visibleLabel}
-      </span>
-    );
-  };
+  const className =
+    typeof classNameProp === "function"
+      ? classNameProp(classNameProps)
+      : classNameProp;
 
   const dataAttrs = {
     "data-slot": Slots.Root,
@@ -173,56 +165,32 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     "data-checked": classNameProps.checked ? "" : undefined,
   };
 
-  useHandleTargetLabelClick({
-    visibleLabelId,
-    labelInfo: labelProps,
-    onClick: () => checkBase.controllerRef.current?.click(),
-  });
-
   let tabIndex = disabled ? -1 : 0;
 
   if (typeof overrideTabIndex !== "undefined") tabIndex = overrideTabIndex;
 
   return (
-    <>
-      {renderLabel()}
-      <button
-        {...otherProps}
-        id={id}
-        role="switch"
-        className={classes?.root}
-        type="button"
-        tabIndex={tabIndex}
-        ref={handleRef}
-        disabled={disabled}
-        onFocus={checkBase.handleFocus}
-        onBlur={checkBase.handleBlur}
-        onKeyDown={checkBase.handleKeyDown}
-        onKeyUp={checkBase.handleKeyUp}
-        onClick={checkBase.handleClick}
-        aria-checked={checkBase.checked}
-        aria-label={labelProps.srOnlyLabel}
-        aria-labelledby={
-          labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
-        }
-        {...dataAttrs}
-      >
-        <div
-          className={classes?.track}
-          data-slot={Slots.Track}
-          aria-hidden="true"
-        >
-          {trackComponent}
-        </div>
-        <div
-          className={classes?.thumb}
-          data-slot={Slots.Thumb}
-          aria-hidden="true"
-        >
-          {thumbComponent}
-        </div>
-      </button>
-    </>
+    <button
+      {...otherProps}
+      id={id}
+      role="switch"
+      className={className}
+      type="button"
+      tabIndex={tabIndex}
+      ref={handleRef}
+      disabled={disabled}
+      onFocus={checkBase.handleFocus}
+      onBlur={checkBase.handleBlur}
+      onKeyDown={checkBase.handleKeyDown}
+      onKeyUp={checkBase.handleKeyUp}
+      onClick={checkBase.handleClick}
+      aria-checked={checkBase.checked}
+      aria-label={labelInfo.srOnlyLabel}
+      aria-labelledby={labelInfo.labelledBy}
+      {...dataAttrs}
+    >
+      {children}
+    </button>
   );
 };
 

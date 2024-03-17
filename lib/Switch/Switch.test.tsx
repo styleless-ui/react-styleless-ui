@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import {
   itShouldMount,
   itSupportsDataSetProps,
@@ -12,53 +13,65 @@ import Switch, { type Props } from "./Switch";
 
 const labelText = "Label";
 
-const REQUIRED_PROPS: Props = {
-  label: labelText,
-  thumbComponent: <div />,
-  trackComponent: <div />,
-  classes: {
-    label: "label",
-    root: "root",
-    thumb: "thumb",
-    track: "track",
-  },
+const mockRequiredProps: Props = {
+  label: { screenReaderLabel: labelText },
 };
 
 describe("Switch", () => {
   afterEach(jest.clearAllMocks);
 
-  itShouldMount(Switch, REQUIRED_PROPS);
-  itSupportsStyle(Switch, REQUIRED_PROPS, "[role='switch']");
-  itSupportsRef(Switch, REQUIRED_PROPS, HTMLButtonElement);
-  itSupportsFocusEvents(Switch, REQUIRED_PROPS, "button");
-  itSupportsDataSetProps(Switch, REQUIRED_PROPS, "[role='switch']");
+  itShouldMount(Switch, mockRequiredProps);
+  itSupportsStyle(Switch, mockRequiredProps, "[role='switch']");
+  itSupportsRef(Switch, mockRequiredProps, HTMLButtonElement);
+  itSupportsFocusEvents(Switch, mockRequiredProps, "button");
+  itSupportsDataSetProps(Switch, mockRequiredProps, "[role='switch']");
 
   it("should have the required classNames", () => {
-    render(
+    const { rerender } = render(
       <Switch
-        {...REQUIRED_PROPS}
+        {...mockRequiredProps}
         checked
+        autoFocus
+        className={({ checked, disabled, focusedVisible }) =>
+          classNames("root", {
+            "root--checked": checked,
+            "root--disabled": disabled,
+            "root--focus-visible": focusedVisible,
+          })
+        }
       />,
     );
 
-    const sw = screen.getByRole("switch");
-    const label = sw.previousElementSibling;
-    const track = sw.firstElementChild;
-    const thumb = sw.lastElementChild;
+    expect(screen.getByRole("switch")).toHaveClass(
+      "root",
+      "root--checked",
+      "root--focus-visible",
+    );
 
-    expect(sw).toHaveClass("root");
-    expect(label).toHaveClass("label");
-    expect(track).toHaveClass("track");
-    expect(thumb).toHaveClass("thumb");
+    rerender(
+      <Switch
+        {...mockRequiredProps}
+        checked
+        disabled
+        className={({ checked, disabled, focusedVisible }) =>
+          classNames("root", {
+            "root--checked": checked,
+            "root--disabled": disabled,
+            "root--focus-visible": focusedVisible,
+          })
+        }
+      />,
+    );
+
+    expect(screen.getByRole("switch")).toHaveClass(
+      "root",
+      "root--checked",
+      "root--disabled",
+    );
   });
 
   it("should have `aria-label='label'` property when `label={{ screenReaderLabel: 'label' }}`", () => {
-    render(
-      <Switch
-        {...REQUIRED_PROPS}
-        label={{ screenReaderLabel: labelText }}
-      />,
-    );
+    render(<Switch {...mockRequiredProps} />);
 
     expect(screen.getByRole("switch")).toHaveAttribute("aria-label", labelText);
   });
@@ -66,7 +79,7 @@ describe("Switch", () => {
   it("should have `aria-labelledby='identifier'` property when `label={{ labelledBy: 'identifier' }}`", () => {
     render(
       <Switch
-        {...REQUIRED_PROPS}
+        {...mockRequiredProps}
         label={{ labelledBy: "identifier" }}
       />,
     );
@@ -78,7 +91,7 @@ describe("Switch", () => {
   });
 
   it("renders an unchecked switch when `checked={false}`", () => {
-    render(<Switch {...REQUIRED_PROPS} />);
+    render(<Switch {...mockRequiredProps} />);
 
     expect(screen.getByRole("switch")).not.toBeChecked();
   });
@@ -86,7 +99,7 @@ describe("Switch", () => {
   it("renders a checked switch when `checked={true}`", () => {
     render(
       <Switch
-        {...REQUIRED_PROPS}
+        {...mockRequiredProps}
         checked
       />,
     );
@@ -94,14 +107,14 @@ describe("Switch", () => {
     expect(screen.getByRole("switch")).toBeChecked();
   });
 
-  it("toggles `checked` state with mouse/keyboard interactions and calls `onChange` callback", async () => {
-    const handleChange = jest.fn<void, [checkedState: boolean]>();
+  it("toggles `checked` state with mouse/keyboard interactions and calls `onCheckedChange` callback", async () => {
+    const handleCheckedChange = jest.fn<void, [checkedState: boolean]>();
 
     userEvent.setup();
     render(
       <Switch
-        {...REQUIRED_PROPS}
-        onChange={handleChange}
+        {...mockRequiredProps}
+        onCheckedChange={handleCheckedChange}
       />,
     );
 
@@ -110,16 +123,16 @@ describe("Switch", () => {
     await userEvent.click(sw);
 
     expect(sw).toBeChecked();
-    expect(handleChange.mock.calls.length).toBe(1);
-    expect(handleChange.mock.calls[0]?.[0]).toBe(true);
+    expect(handleCheckedChange.mock.calls.length).toBe(1);
+    expect(handleCheckedChange.mock.calls[0]?.[0]).toBe(true);
 
     await userEvent.click(sw);
 
     expect(sw).not.toBeChecked();
-    expect(handleChange.mock.calls.length).toBe(2);
-    expect(handleChange.mock.calls[1]?.[0]).toBe(false);
+    expect(handleCheckedChange.mock.calls.length).toBe(2);
+    expect(handleCheckedChange.mock.calls[1]?.[0]).toBe(false);
 
-    handleChange.mockClear();
+    handleCheckedChange.mockClear();
 
     sw.focus();
     expect(sw).toHaveFocus();
@@ -127,71 +140,13 @@ describe("Switch", () => {
     await userEvent.keyboard("[Space]");
 
     expect(sw).toBeChecked();
-    expect(handleChange.mock.calls.length).toBe(1);
-    expect(handleChange.mock.calls[0]?.[0]).toBe(true);
+    expect(handleCheckedChange.mock.calls.length).toBe(1);
+    expect(handleCheckedChange.mock.calls[0]?.[0]).toBe(true);
 
     await userEvent.keyboard("[Space]");
 
     expect(sw).not.toBeChecked();
-    expect(handleChange.mock.calls.length).toBe(2);
-    expect(handleChange.mock.calls[1]?.[0]).toBe(false);
-  });
-
-  it("supports custom thumb component", () => {
-    render(
-      <Switch
-        {...REQUIRED_PROPS}
-        checked
-        thumbComponent={<div data-testid="t1"></div>}
-      />,
-    );
-
-    expect(screen.getByTestId("t1").tagName).toBe("DIV");
-
-    const ThumbComponent = ({ className }: { className?: string }) => (
-      <div
-        data-testid="t2"
-        className={className}
-      ></div>
-    );
-
-    render(
-      <Switch
-        {...REQUIRED_PROPS}
-        checked
-        thumbComponent={<ThumbComponent />}
-      />,
-    );
-
-    expect(screen.getByTestId("t2").tagName).toBe("DIV");
-  });
-
-  it("supports custom track component", () => {
-    render(
-      <Switch
-        {...REQUIRED_PROPS}
-        checked
-        trackComponent={<div data-testid="t1"></div>}
-      />,
-    );
-
-    expect(screen.getByTestId("t1").tagName).toBe("DIV");
-
-    const TrackComponent = ({ className }: { className?: string }) => (
-      <div
-        data-testid="t2"
-        className={className}
-      ></div>
-    );
-
-    render(
-      <Switch
-        {...REQUIRED_PROPS}
-        checked
-        trackComponent={<TrackComponent />}
-      />,
-    );
-
-    expect(screen.getByTestId("t2").tagName).toBe("DIV");
+    expect(handleCheckedChange.mock.calls.length).toBe(2);
+    expect(handleCheckedChange.mock.calls[1]?.[0]).toBe(false);
   });
 });
