@@ -157,42 +157,50 @@ type OwnProps = {
    * for the current value of the slider. This is important for screen reader users.
    */
   setThumbValueText: (thumbValue: number) => string;
-} & (
-  | {
-      multiThumb: false;
-      /**
-       * The label of the slider(s).
-       */
-      label: Label;
-      /**
-       * The value of the slider. For ranged sliders, provide an array with two values.
-       */
-      value?: number;
-      /**
-       * The default value of the slider. Use when the component is not controlled.
-       */
-      defaultValue?: number;
-      /**
-       * Callback fired when the slider's value changes.
-       */
-      onChange?: (value: number, activeThumb: ActiveThumb | null) => void;
-    }
-  | {
-      multiThumb: true;
-      label: [Label, Label];
-      value?: [number, number];
-      defaultValue?: [number, number];
-      onChange?: (
-        value: [number, number],
-        activeThumb: ActiveThumb | null,
-      ) => void;
-    }
-);
+};
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,
-  "className" | "defaultChecked"
->;
+  | "className"
+  | "defaultChecked"
+  | "defaultValue"
+  | "onChange"
+  | "onChangeCapture"
+> &
+  (
+    | {
+        multiThumb: false;
+        /**
+         * The label of the slider(s).
+         */
+        label: Label;
+        /**
+         * The value of the slider. For ranged sliders, provide an array with two values.
+         */
+        value?: number;
+        /**
+         * The default value of the slider. Use when the component is not controlled.
+         */
+        defaultValue?: number;
+        /**
+         * Callback fired when the slider's value changes.
+         */
+        onValueChange?: (
+          value: number,
+          activeThumb: ActiveThumb | null,
+        ) => void;
+      }
+    | {
+        multiThumb: true;
+        label: [Label, Label];
+        value?: [number, number];
+        defaultValue?: [number, number];
+        onValueChange?: (
+          value: [number, number],
+          activeThumb: ActiveThumb | null,
+        ) => void;
+      }
+  );
 
 const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
@@ -200,7 +208,7 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     min,
     step,
     stops,
-    onChange,
+    onValueChange,
     onClick,
     setThumbValueText,
     renderThumbValueText,
@@ -535,7 +543,7 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
     setValue(newValue);
     // @ts-expect-error It's fine!
-    onChange?.(newValue, activeThumbRef.current);
+    onValueChange?.(newValue, activeThumbRef.current);
   };
 
   const getActiveThumb = (eventTarget: HTMLDivElement): ActiveThumb => {
