@@ -36,7 +36,7 @@ export type RenderProps = {
   /**
    * The `open` state of the component.
    */
-  openState: boolean;
+  open: boolean;
 };
 
 export type ClassNameProps = RenderProps;
@@ -238,7 +238,7 @@ const PopperBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const renderProps: RenderProps = {
     placement,
-    openState: open,
+    open,
   };
 
   const classNameProps: ClassNameProps = renderProps;
