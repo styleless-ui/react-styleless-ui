@@ -171,7 +171,7 @@ const RadioItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       aria-disabled={disabled}
       aria-checked={isChecked}
       data-slot={ItemRootSlot}
-      data-entityname={value}
+      data-entity={value}
       data-active={baseItem.isActive ? "" : undefined}
       data-checked={isChecked ? "" : undefined}
       data-disabled={disabled ? "" : undefined}

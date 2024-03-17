@@ -356,7 +356,7 @@ describe("Menu", () => {
     expect(screen.getByTestId("i1")).toHaveAttribute("aria-haspopup", "menu");
     expect(screen.getByTestId("i1")).toHaveAttribute("data-active");
     expect(screen.getByTestId("i1")).toHaveAttribute(
-      "data-entityname",
+      "data-entity",
       screen.getByTestId("i1").id,
     );
 
@@ -365,7 +365,7 @@ describe("Menu", () => {
       screen.getByTestId("i1").id,
     );
     expect(screen.getByTestId("m1")).toHaveAttribute(
-      "data-for",
+      "data-for-entity",
       screen.getByTestId("i1").id,
     );
     expect(screen.getByTestId("m1")).toHaveAttribute(
@@ -382,7 +382,7 @@ describe("Menu", () => {
     expect(screen.getByTestId("m1i1")).not.toHaveAttribute("aria-haspopup");
     expect(screen.getByTestId("m1i1")).not.toHaveAttribute("aria-active");
     expect(screen.getByTestId("m1i1")).toHaveAttribute(
-      "data-entityname",
+      "data-entity",
       screen.getByTestId("m1i1").id,
     );
     expect(screen.getByTestId("m1i2")).toHaveAttribute(
@@ -393,7 +393,7 @@ describe("Menu", () => {
     expect(screen.getByTestId("m1i2")).not.toHaveAttribute("aria-haspopup");
     expect(screen.getByTestId("m1i2")).not.toHaveAttribute("aria-active");
     expect(screen.getByTestId("m1i2")).toHaveAttribute(
-      "data-entityname",
+      "data-entity",
       screen.getByTestId("m1i2").id,
     );
 
@@ -403,7 +403,7 @@ describe("Menu", () => {
     expect(screen.getByTestId("i3")).toBeChecked();
     expect(screen.getByTestId("i3")).not.toHaveAttribute("data-active");
     expect(screen.getByTestId("i3")).toHaveAttribute(
-      "data-entityname",
+      "data-entity",
       "show_bookmarks",
     );
 
@@ -411,7 +411,7 @@ describe("Menu", () => {
     expect(screen.getByTestId("i4")).not.toBeChecked();
     expect(screen.getByTestId("i4")).not.toHaveAttribute("data-active");
     expect(screen.getByTestId("i4")).toHaveAttribute(
-      "data-entityname",
+      "data-entity",
       "show_full_urls",
     );
 
@@ -420,22 +420,19 @@ describe("Menu", () => {
     expect(screen.getByTestId("i6")).not.toHaveAttribute("aria-haspopup");
     expect(screen.getByTestId("i6")).not.toHaveAttribute("data-active");
     expect(screen.getByTestId("i6")).toHaveAttribute(
-      "data-entityname",
+      "data-entity",
       screen.getByTestId("i6").id,
     );
 
     expect(screen.getByTestId("i8")).toHaveAttribute("aria-disabled", "false");
     expect(screen.getByTestId("i8")).toBeChecked();
     expect(screen.getByTestId("i8")).not.toHaveAttribute("data-active");
-    expect(screen.getByTestId("i8")).toHaveAttribute(
-      "data-entityname",
-      "pedro",
-    );
+    expect(screen.getByTestId("i8")).toHaveAttribute("data-entity", "pedro");
 
     expect(screen.getByTestId("i9")).toHaveAttribute("aria-disabled", "true");
     expect(screen.getByTestId("i9")).not.toBeChecked();
     expect(screen.getByTestId("i9")).not.toHaveAttribute("data-active");
-    expect(screen.getByTestId("i9")).toHaveAttribute("data-entityname", "colm");
+    expect(screen.getByTestId("i9")).toHaveAttribute("data-entity", "colm");
   });
 
   it("should properly move the active element by keyboard", async () => {

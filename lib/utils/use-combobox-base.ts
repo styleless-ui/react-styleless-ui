@@ -352,7 +352,7 @@ const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
 
         return text.includes(query.toLowerCase());
       })
-      .map(item => item.getAttribute("data-entityname") ?? "");
+      .map(item => item.getAttribute("data-entity") ?? "");
 
     onFilteredEntities(entities);
     onInputChange?.(event);

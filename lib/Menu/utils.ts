@@ -31,7 +31,9 @@ export const getTrees = (rootId: string, expanded: string[]) => {
 
   const submenus = expanded
     .map(expandedEntityName =>
-      document.querySelector<HTMLElement>(`[data-for='${expandedEntityName}']`),
+      document.querySelector<HTMLElement>(
+        `[data-for-entity='${expandedEntityName}']`,
+      ),
     )
     .filter(Boolean) as HTMLElement[];
 
@@ -54,7 +56,7 @@ export const getCurrentMenuControllerItem = (element: HTMLElement) => {
 
   if (!ownMenu) return null;
 
-  const controllerItemId = ownMenu.getAttribute("data-for");
+  const controllerItemId = ownMenu.getAttribute("data-for-entity");
 
   if (!controllerItemId) return null;
 
@@ -68,7 +70,9 @@ export const getInactiveExpandedDescendant = (rootId: string) => {
 
   return submenus
     .map(menu =>
-      menu.hasAttribute("data-open") ? menu.getAttribute("data-for") : null,
+      menu.hasAttribute("data-open")
+        ? menu.getAttribute("data-for-entity")
+        : null,
     )
     .filter(Boolean) as string[];
 };
@@ -159,7 +163,7 @@ export const getMenuItem = (event: React.MouseEvent) => {
     const isActive = menuItem.hasAttribute("data-active");
     const isExpandable = menuItem.getAttribute("data-expandable") === "true";
     const isExpanded = menuItem.hasAttribute("data-expanded");
-    const entityName = menuItem.getAttribute("data-entityname")!;
+    const entityName = menuItem.getAttribute("data-entity")!;
 
     return {
       element: menuItem,
@@ -208,7 +212,7 @@ export const useBaseItem = (props: {
 
   const isExpandable = type === "expandable-item";
   const isActive =
-    menuCtx?.activeElement?.getAttribute("data-entityname") === entityName;
+    menuCtx?.activeElement?.getAttribute("data-entity") === entityName;
 
   const handleClick = useEventCallback<React.MouseEvent<HTMLDivElement>>(
     event => {

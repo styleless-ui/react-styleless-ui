@@ -151,9 +151,7 @@ const ToggleGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       return !isDisabled;
     });
 
-    setForcedTabability(
-      validToggles?.[0]?.getAttribute("data-entityname") ?? null,
-    );
+    setForcedTabability(validToggles?.[0]?.getAttribute("data-entity") ?? null);
   }, [value]);
 
   const renderLabel = () => {

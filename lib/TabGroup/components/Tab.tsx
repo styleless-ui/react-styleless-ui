@@ -90,7 +90,7 @@ const TabBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
           );
 
           const currentTabIdx = tabs.findIndex(
-            tab => tab.getAttribute("data-entityname") === value,
+            tab => tab.getAttribute("data-entity") === value,
           );
 
           const currentTab = tabs[currentTabIdx];
@@ -208,7 +208,7 @@ const TabBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const dataAttrs = {
     "data-slot": TabRootSlot,
-    "data-entityname": value,
+    "data-entity": value,
     "data-selected": selected ? "" : undefined,
     "data-disabled": disabled ? "" : undefined,
     "data-focus-visible": buttonBase.isFocusedVisible ? "" : undefined,
@@ -244,7 +244,7 @@ const TabBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     );
 
     const correspondedPanel = panels.find(
-      panel => panel.getAttribute("data-entityname") === value,
+      panel => panel.getAttribute("data-entity") === value,
     );
 
     if (!correspondedPanel) {

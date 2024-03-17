@@ -221,7 +221,7 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     "data-disabled": classNameProps.disabled ? "" : undefined,
     "data-focus-visible": classNameProps.focusedVisible ? "" : undefined,
     "data-checked": classNameProps.checked ? "" : undefined,
-    "data-entityname": value,
+    "data-entity": value,
   };
 
   return (

@@ -113,7 +113,7 @@ const SubMenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       className={className}
       data-slot={SubMenuRootSlot}
       data-root-menu={menuCtx.id}
-      data-for={itemCtx.id}
+      data-for-entity={itemCtx.id}
     >
       {children}
     </BaseMenu>
