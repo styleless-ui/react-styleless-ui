@@ -138,10 +138,10 @@ describe("InputSlider", () => {
     expect(thumb).toHaveAttribute("aria-valuetext", "100.0 percent");
   });
 
-  it("changes `value` state with mouse/keyboard interactions and calls `onChange` callback", async () => {
-    const handleChange = jest.fn<
+  it("changes `value` state with mouse/keyboard interactions and calls `onValueChange` callback", async () => {
+    const handleValueChange = jest.fn<
       void,
-      Parameters<NonNullable<Props["onChange"]>>
+      Parameters<NonNullable<Props["onValueChange"]>>
     >();
 
     userEvent.setup();
@@ -150,7 +150,7 @@ describe("InputSlider", () => {
         {...requiredMockProps}
         data-testid="input-slider"
         classes={classNames}
-        onChange={handleChange}
+        onValueChange={handleValueChange}
         stops={[
           { label: "Step 0", value: 0 },
           { label: "Step 1", value: 15 },
@@ -172,15 +172,15 @@ describe("InputSlider", () => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     await userEvent.click(segmentLabel!);
 
-    expect(handleChange.mock.calls.length).toBe(1);
-    expect(handleChange.mock.calls[0]?.[0]).toBe(50);
+    expect(handleValueChange.mock.calls.length).toBe(1);
+    expect(handleValueChange.mock.calls[0]?.[0]).toBe(50);
 
     await userEvent.keyboard("[Tab]");
 
     expect(thumb).toHaveFocus();
 
     await userEvent.keyboard("[ArrowRight]");
-    expect(handleChange.mock.calls.length).toBe(2);
-    expect(handleChange.mock.calls[1]?.[0]).toBe(51);
+    expect(handleValueChange.mock.calls.length).toBe(2);
+    expect(handleValueChange.mock.calls[1]?.[0]).toBe(51);
   });
 });
