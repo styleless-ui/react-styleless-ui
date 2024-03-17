@@ -1,5 +1,4 @@
 export const Root = "Breadcrumb:Root";
-export const Label = "Breadcrumb:Label";
-export const List = "Breadcrumb:List";
+export const ListRoot = "Breadcrumb:List:Root";
 export const ItemRoot = "Breadcrumb:Item:Root";
 export const SeparatorItemRoot = "Breadcrumb:SeparatorItem:Root";

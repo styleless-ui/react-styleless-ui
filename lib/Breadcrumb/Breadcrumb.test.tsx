@@ -10,54 +10,54 @@ import {
 
 const labelText = "Breadcrumb";
 
-const REQUIRED_PROPS: Breadcrumb.RootProps = {
-  label: labelText,
-  classes: {
-    label: "label",
-    root: "root",
-    list: "list",
-  },
+const mockRequiredProps: Breadcrumb.RootProps = {
+  label: { screenReaderLabel: labelText },
 };
 
 describe("Breadcrumb", () => {
   afterEach(jest.clearAllMocks);
 
-  itShouldMount(Breadcrumb.Root, REQUIRED_PROPS);
-  itSupportsStyle(Breadcrumb.Root, REQUIRED_PROPS, "nav");
-  itSupportsRef(Breadcrumb.Root, REQUIRED_PROPS, HTMLElement);
-  itSupportsDataSetProps(Breadcrumb.Root, REQUIRED_PROPS, "nav");
+  itShouldMount(Breadcrumb.Root, mockRequiredProps);
+  itSupportsStyle(Breadcrumb.Root, mockRequiredProps, "nav");
+  itSupportsRef(Breadcrumb.Root, mockRequiredProps, HTMLElement);
+  itSupportsDataSetProps(Breadcrumb.Root, mockRequiredProps, "nav");
 
   it("should have the required classNames", () => {
     render(
-      <Breadcrumb.Root {...REQUIRED_PROPS}>
-        <Breadcrumb.Item className="item"></Breadcrumb.Item>
-        <Breadcrumb.SeparatorItem
-          className="separator"
-          separatorSymbol={"/"}
-        />
+      <Breadcrumb.Root
+        {...mockRequiredProps}
+        className="root"
+      >
+        <Breadcrumb.List
+          data-testid="list"
+          className="list"
+        >
+          <Breadcrumb.Item
+            data-testid="item"
+            className="item"
+          ></Breadcrumb.Item>
+          <Breadcrumb.SeparatorItem
+            data-testid="separator"
+            className="separator"
+            separatorSymbol={"/"}
+          />
+        </Breadcrumb.List>
       </Breadcrumb.Root>,
     );
 
     const nav = screen.getByRole("navigation");
-    const label = nav.previousElementSibling;
-    const list = nav.firstElementChild;
-    const item = list?.firstElementChild;
-    const separator = list?.lastElementChild;
+    const list = screen.getByTestId("list");
+    const item = screen.getByTestId("item");
+    const separator = screen.getByTestId("separator");
 
     expect(nav).toHaveClass("root");
-    expect(label).toHaveClass("label");
     expect(list).toHaveClass("list");
     expect(item).toHaveClass("item");
     expect(separator).toHaveClass("separator");
   });
 
   it("should have `aria-label='label'` property when `label={{ screenReaderLabel: 'label' }}`", () => {
-    render(
-      <Breadcrumb.Root
-        {...REQUIRED_PROPS}
-        label={{ screenReaderLabel: labelText }}
-      />,
-    );
+    render(<Breadcrumb.Root {...mockRequiredProps} />);
 
     expect(screen.getByRole("navigation")).toHaveAttribute(
       "aria-label",
@@ -68,7 +68,7 @@ describe("Breadcrumb", () => {
   it("should have `aria-labelledby='identifier'` property when `label={{ labelledBy: 'identifier' }}`", () => {
     render(
       <Breadcrumb.Root
-        {...REQUIRED_PROPS}
+        {...mockRequiredProps}
         label={{ labelledBy: "identifier" }}
       />,
     );

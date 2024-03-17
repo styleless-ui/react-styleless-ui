@@ -3,8 +3,9 @@ export { default as As } from "./As";
 export * as Breadcrumb from "./Breadcrumb";
 export type {
   ItemProps as BreadcrumbItemProps,
+  ListProps as BreadcrumbListProps,
   RootProps as BreadcrumbRootProps,
-  SeparatorItem as BreadcrumbSeparatorItemProps,
+  SeparatorItemProps as BreadcrumbSeparatorItemProps,
 } from "./Breadcrumb";
 export * from "./Button";
 export { default as Button } from "./Button";
