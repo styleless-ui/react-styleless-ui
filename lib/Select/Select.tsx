@@ -1,10 +1,6 @@
 import * as React from "react";
 import { SystemError, getLabelInfo, logger } from "../internals";
-import type {
-  ClassesWithRenderContext,
-  MergeElementProps,
-  PropWithRenderContext,
-} from "../types";
+import type { MergeElementProps, PropWithRenderContext } from "../types";
 import {
   componentWithForwardedRef,
   contains,
@@ -14,17 +10,16 @@ import {
   useElementsRegistry,
   useEventCallback,
   useEventListener,
-  useHandleTargetLabelClick,
 } from "../utils";
 import { SelectContext, type SelectContextValue } from "./context";
-import { Label as LabelSlot, Root as RootSlot } from "./slots";
+import { Root as RootSlot } from "./slots";
 import { noValueSelected } from "./utils";
 
 export type RenderProps = {
   /**
    * The `open` state of the component.
    */
-  openState: boolean;
+  open: boolean;
   /**
    * The `disabled` state of the component.
    */
@@ -40,14 +35,9 @@ export type RenderProps = {
   clearValues: <T extends HTMLElement>(event: React.MouseEvent<T>) => void;
 };
 
-export type ClassNameProps = Pick<RenderProps, "openState" | "disabled">;
+export type ClassNameProps = Pick<RenderProps, "open" | "disabled">;
 
-export type RegisteredElementsKeys =
-  | "root"
-  | "trigger"
-  | "list"
-  | "combobox"
-  | "label";
+export type RegisteredElementsKeys = "root" | "trigger" | "list" | "combobox";
 
 type OwnProps = {
   /**
@@ -55,14 +45,13 @@ type OwnProps = {
    */
   children?: PropWithRenderContext<React.ReactNode, RenderProps>;
   /**
-   * Map of sub-components and their correlated classNames.
+   * The className applied to the component.
    */
-  classes?: ClassesWithRenderContext<"root" | "label", ClassNameProps>;
+  className?: PropWithRenderContext<string, ClassNameProps>;
   /**
    * The label of the component.
    */
   label:
-    | string
     | {
         /**
          * The label to use as `aria-label` property.
@@ -127,40 +116,41 @@ type OwnProps = {
    * @default false
    */
   multiple: boolean;
-} & (
-  | {
-      multiple: false;
-      /**
-       * The default value. Use when the component's `value` state is not controlled.
-       */
-      defaultValue?: string;
-      /**
-       * The value of the select. It should be an array if `multiple={true}`.
-       */
-      value?: string;
-      /**
-       * Callback is called when the value changes.
-       */
-      onValueChange?: (currentValue: string) => void;
-    }
-  | {
-      multiple: true;
-      defaultValue?: string[];
-      value?: string[];
-      onValueChange?: (currentValue: string[]) => void;
-    }
-);
+};
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,
-  "defaultChecked" | "className"
->;
+  "defaultChecked" | "defaultValue" | "onChange" | "onChangeCapture"
+> &
+  (
+    | {
+        multiple: false;
+        /**
+         * The default value. Use when the component's `value` state is not controlled.
+         */
+        defaultValue?: string;
+        /**
+         * The value of the select. It should be an array if `multiple={true}`.
+         */
+        value?: string;
+        /**
+         * Callback is called when the value changes.
+         */
+        onValueChange?: (currentValue: string) => void;
+      }
+    | {
+        multiple: true;
+        defaultValue?: string[];
+        value?: string[];
+        onValueChange?: (currentValue: string[]) => void;
+      }
+  );
 
 const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     style: styleProp,
     id: idProp,
-    classes: classesProp,
+    className: classNameProp,
     children: childrenProp,
     keepMounted = false,
     disabled = false,
@@ -213,9 +203,13 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const id = useDeterministicId(idProp, "styleless-ui__select");
 
-  const visibleLabelId = `${id}__label`;
-
-  const labelInfo = getLabelInfo(label, "Select");
+  const labelInfo = getLabelInfo(label, "Select", {
+    customErrorMessage: [
+      "Invalid `label` property.",
+      "The `label` property must be in shape of " +
+        "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
+    ].join("\n"),
+  });
 
   const openList = () => {
     setIsListOpen(true);
@@ -309,18 +303,18 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     disabled,
     hasSelectedValues: isAnyOptionSelected,
     clearValues: handleClearValues,
-    openState: isListOpen,
+    open: isListOpen,
   };
 
   const classNameProps: ClassNameProps = {
     disabled,
-    openState: isListOpen,
+    open: isListOpen,
   };
 
-  const classes =
-    typeof classesProp === "function"
-      ? classesProp(classNameProps)
-      : classesProp;
+  const className =
+    typeof classNameProp === "function"
+      ? classNameProp(classNameProps)
+      : classNameProp;
 
   const children =
     typeof childrenProp === "function"
@@ -330,20 +324,6 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const refCallback = (node: HTMLDivElement | null) => {
     setRef(ref, node);
     rootRef.current = node;
-  };
-
-  const renderLabel = () => {
-    if (!labelInfo.visibleLabel) return null;
-
-    return (
-      <span
-        id={visibleLabelId}
-        data-slot={LabelSlot}
-        className={classes?.label}
-      >
-        {labelInfo.visibleLabel}
-      </span>
-    );
   };
 
   if (isListOpen && disabled) {
@@ -383,26 +363,11 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     const { registerElement, unregisterElement } = elementsRegistry;
 
     registerElement("root", id);
-    registerElement("label", visibleLabelId);
 
     return () => {
       unregisterElement("root");
-      unregisterElement("label");
     };
-  }, [elementsRegistry, id, visibleLabelId]);
-
-  useHandleTargetLabelClick({
-    visibleLabelId,
-    labelInfo,
-    onClick: () => {
-      if (disabled) return;
-
-      const triggerId = elementsRegistry.getElementId("trigger");
-      const triggerNode = document.getElementById(triggerId ?? "");
-
-      triggerNode?.focus();
-    },
-  });
+  }, [elementsRegistry, id]);
 
   if (typeof document !== "undefined") {
     /* eslint-disable react-hooks/rules-of-hooks */
@@ -437,23 +402,20 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   };
 
   return (
-    <>
-      {renderLabel()}
-      <div
-        {...otherProps}
-        // @ts-expect-error React hasn't added `inert` yet
-        inert={disabled ? "" : undefined}
-        style={style}
-        id={id}
-        ref={refCallback}
-        className={classes?.root}
-        {...dataAttrs}
-      >
-        <SelectContext.Provider value={context}>
-          {children}
-        </SelectContext.Provider>
-      </div>
-    </>
+    <div
+      {...otherProps}
+      // @ts-expect-error React hasn't added `inert` yet
+      inert={disabled ? "" : undefined}
+      style={style}
+      id={id}
+      ref={refCallback}
+      className={className}
+      {...dataAttrs}
+    >
+      <SelectContext.Provider value={context}>
+        {children}
+      </SelectContext.Provider>
+    </div>
   );
 };
 

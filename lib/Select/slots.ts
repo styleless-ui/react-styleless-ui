@@ -1,5 +1,4 @@
 export const Root = "Select:Root";
-export const Label = "Select:Label";
 export const TriggerRoot = "Select:Trigger:Root";
 export const TriggerPlaceholder = "Select:Trigger:Placeholder";
 export const TriggerInputSearch = "Select:Trigger:InputSearch";
