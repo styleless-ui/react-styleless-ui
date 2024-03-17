@@ -1,9 +1,9 @@
 import * as React from "react";
 import { getLabelInfo, logger } from "../../internals";
-import type { Classes, MergeElementProps } from "../../types";
+import type { MergeElementProps } from "../../types";
 import { componentWithForwardedRef, useDeterministicId } from "../../utils";
-import { TabGroupContext } from "../context";
-import { ListLabel as ListLabelSlot, ListRoot as ListRootSlot } from "../slots";
+import { TabGroupContext, TabGroupListContext } from "../context";
+import { ListRoot as ListRootSlot } from "../slots";
 
 type OwnProps = {
   /**
@@ -11,14 +11,13 @@ type OwnProps = {
    */
   children?: React.ReactNode;
   /**
-   * Map of sub-components and their correlated classNames.
+   * The className applied to the component.
    */
-  classes?: Classes<"root" | "label">;
+  className?: string;
   /**
    * The label of the tablist.
    */
   label:
-    | string
     | {
         /**
          * The label to use as `aria-label` property.
@@ -37,16 +36,15 @@ type OwnProps = {
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,
-  "className" | "defaultChecked" | "defaultValue"
+  "defaultChecked" | "defaultValue"
 >;
 
 const ListBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
-  const { label, children, id: idProp, classes, ...otherProps } = props;
+  const { label, children, id: idProp, className, ...otherProps } = props;
 
   const ctx = React.useContext(TabGroupContext);
 
   const id = useDeterministicId(idProp, "styleless-ui__tablist");
-  const visibleLabelId = id ? `${id}__label` : undefined;
 
   if (!ctx) {
     logger(
@@ -60,41 +58,30 @@ const ListBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     return null;
   }
 
-  const labelProps = getLabelInfo(label, "TabGroup.List");
-
-  const renderLabel = () => {
-    if (!labelProps.visibleLabel) return null;
-
-    return (
-      <span
-        id={visibleLabelId}
-        data-slot={ListLabelSlot}
-        className={classes?.label}
-      >
-        {labelProps.visibleLabel}
-      </span>
-    );
-  };
+  const labelInfo = getLabelInfo(label, "TabGroup.List", {
+    customErrorMessage: [
+      "Invalid `label` property.",
+      "The `label` property must be in shape of " +
+        "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
+    ].join("\n"),
+  });
 
   return (
-    <>
-      {renderLabel()}
-      <div
-        {...otherProps}
-        id={id}
-        ref={ref}
-        role="tablist"
-        data-slot={ListRootSlot}
-        className={classes?.root}
-        aria-label={labelProps.srOnlyLabel}
-        aria-labelledby={
-          labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
-        }
-        aria-orientation={ctx.orientation}
-      >
+    <div
+      {...otherProps}
+      id={id}
+      ref={ref}
+      role="tablist"
+      data-slot={ListRootSlot}
+      className={className}
+      aria-label={labelInfo.srOnlyLabel}
+      aria-labelledby={labelInfo.labelledBy}
+      aria-orientation={ctx.orientation}
+    >
+      <TabGroupListContext.Provider value={true}>
         {children}
-      </div>
-    </>
+      </TabGroupListContext.Provider>
+    </div>
   );
 };
 

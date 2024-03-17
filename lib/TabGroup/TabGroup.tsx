@@ -29,9 +29,9 @@ type OwnProps = {
    */
   defaultActiveTab?: string;
   /**
-   * The Callback is fired when the state changes.
+   * The Callback is fired when the active tab state changes.
    */
-  onChange?: (tabValue: string) => void;
+  onActiveTabChange?: (tabValue: string) => void;
   /**
    * Indicates whether the element's orientation is horizontal or vertical.
    * This effects the keyboard interactions.
@@ -48,14 +48,14 @@ type OwnProps = {
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,
-  "defaultChecked" | "defaultValue"
+  "defaultChecked" | "defaultValue" | "onChange" | "onChangeCapture"
 >;
 
 const TabGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     children: childrenProp,
     className,
-    onChange,
+    onActiveTabChange,
     defaultActiveTab,
     activeTab: activeTabProp,
     keyboardActivationBehavior = "manual",
@@ -95,7 +95,7 @@ const TabGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     if (!isMounted()) return;
 
     setActiveTab(tabValue);
-    onChange?.(tabValue);
+    onActiveTabChange?.(tabValue);
   };
 
   React.useEffect(() => {

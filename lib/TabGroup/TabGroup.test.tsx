@@ -21,13 +21,13 @@ describe("TabGroup", () => {
   itSupportsRef(TabGroup.Root, {}, HTMLDivElement);
   itSupportsDataSetProps(TabGroup.Root, {});
 
-  it("selects tabs with mouse interactions and calls `onChange` callback", async () => {
-    const handleChange = jest.fn<void, [tabValue: string]>();
+  it("selects tabs with mouse interactions and calls `onActiveTabChange` callback", async () => {
+    const handleActiveTabChange = jest.fn<void, [tabValue: string]>();
 
     userEvent.setup();
     render(
-      <TabGroup.Root onChange={handleChange}>
-        <TabGroup.List label={tabListLabel}>
+      <TabGroup.Root onActiveTabChange={handleActiveTabChange}>
+        <TabGroup.List label={{ screenReaderLabel: tabListLabel }}>
           <TabGroup.Tab value="0">Tab 1</TabGroup.Tab>
           <TabGroup.Tab value="1">Tab 2</TabGroup.Tab>
           <TabGroup.Tab value="2">Tab 3</TabGroup.Tab>
@@ -45,26 +45,26 @@ describe("TabGroup", () => {
 
     await userEvent.click(tabs[0]!);
 
-    expect(handleChange.mock.calls.length).toBe(1);
-    expect(handleChange.mock.calls[0]?.[0]).toBe("0");
+    expect(handleActiveTabChange.mock.calls.length).toBe(1);
+    expect(handleActiveTabChange.mock.calls[0]?.[0]).toBe("0");
     expect(screen.getAllByRole("tabpanel").length).toBe(1);
     expect(screen.getByRole("tabpanel")).toHaveTextContent(/panel 1/i);
 
     await userEvent.click(tabs[2]!);
 
-    expect(handleChange.mock.calls.length).toBe(2);
-    expect(handleChange.mock.calls[1]?.[0]).toBe("2");
+    expect(handleActiveTabChange.mock.calls.length).toBe(2);
+    expect(handleActiveTabChange.mock.calls[1]?.[0]).toBe("2");
     expect(screen.getAllByRole("tabpanel").length).toBe(1);
     expect(screen.getByRole("tabpanel")).toHaveTextContent(/panel 3/i);
   });
 
-  it("selects tabs with keyboard interactions and calls `onChange` callback", async () => {
-    const handleChange = jest.fn<void, [tabValue: string]>();
+  it("selects tabs with keyboard interactions and calls `onActiveTabChange` callback", async () => {
+    const handleActiveTabChange = jest.fn<void, [tabValue: string]>();
 
     userEvent.setup();
     render(
-      <TabGroup.Root onChange={handleChange}>
-        <TabGroup.List label={tabListLabel}>
+      <TabGroup.Root onActiveTabChange={handleActiveTabChange}>
+        <TabGroup.List label={{ screenReaderLabel: tabListLabel }}>
           <TabGroup.Tab value="0">Tab 1</TabGroup.Tab>
           <TabGroup.Tab value="1">Tab 2</TabGroup.Tab>
           <TabGroup.Tab value="2">Tab 3</TabGroup.Tab>
@@ -81,8 +81,8 @@ describe("TabGroup", () => {
     expect(tabs[0]).toHaveFocus();
     await userEvent.keyboard("[Space]");
 
-    expect(handleChange.mock.calls.length).toBe(1);
-    expect(handleChange.mock.calls[0]?.[0]).toBe("0");
+    expect(handleActiveTabChange.mock.calls.length).toBe(1);
+    expect(handleActiveTabChange.mock.calls[0]?.[0]).toBe("0");
     expect(screen.getAllByRole("tabpanel").length).toBe(1);
     expect(screen.getByRole("tabpanel")).toHaveTextContent(/panel 1/i);
 
@@ -90,8 +90,8 @@ describe("TabGroup", () => {
     expect(tabs[2]).toHaveFocus();
     await userEvent.keyboard("[Space]");
 
-    expect(handleChange.mock.calls.length).toBe(2);
-    expect(handleChange.mock.calls[1]?.[0]).toBe("2");
+    expect(handleActiveTabChange.mock.calls.length).toBe(2);
+    expect(handleActiveTabChange.mock.calls[1]?.[0]).toBe("2");
     expect(screen.getAllByRole("tabpanel").length).toBe(1);
     expect(screen.getByRole("tabpanel")).toHaveTextContent(/panel 3/i);
   });
@@ -102,7 +102,9 @@ describe("TabGroup.List", () => {
 
   const Base = () => (
     <TabGroup.Root>
-      <TabGroup.List label={"label"}></TabGroup.List>
+      <TabGroup.List
+        label={{ screenReaderLabel: tabListLabel }}
+      ></TabGroup.List>
     </TabGroup.Root>
   );
 
