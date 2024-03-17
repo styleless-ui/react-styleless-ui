@@ -73,6 +73,10 @@ type OwnProps = {
    */
   disabled?: boolean;
   /**
+   * A value to replace `tabIndex` with.
+   */
+  overrideTabIndex?: number;
+  /**
    * The Callback is fired when the state changes.
    */
   onChange?: (checkedState: boolean) => void;
@@ -104,6 +108,7 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     classes: classesMap,
     defaultChecked,
     checked: checkedProp,
+    overrideTabIndex,
     autoFocus = false,
     disabled = false,
     onChange,
@@ -174,6 +179,10 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     onClick: () => checkBase.controllerRef.current?.click(),
   });
 
+  let tabIndex = disabled ? -1 : 0;
+
+  if (typeof overrideTabIndex !== "undefined") tabIndex = overrideTabIndex;
+
   return (
     <>
       {renderLabel()}
@@ -183,7 +192,7 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
         role="switch"
         className={classes?.root}
         type="button"
-        tabIndex={disabled ? -1 : 0}
+        tabIndex={tabIndex}
         ref={handleRef}
         disabled={disabled}
         onFocus={checkBase.handleFocus}

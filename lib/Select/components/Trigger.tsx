@@ -67,6 +67,10 @@ type OwnProps = {
    */
   autoFocus?: boolean;
   /**
+   * A value to replace `tabIndex` with.
+   */
+  overrideTabIndex?: number;
+  /**
    * Transforms the display of selected values.
    * It should be used to alter the display of values.
    *
@@ -86,6 +90,7 @@ const TriggerBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     classes: classesProp,
     placeholder: placeholderProp,
     style: styleProp,
+    overrideTabIndex,
     children,
     onClick,
     onFocus,
@@ -269,7 +274,12 @@ const TriggerBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       "aria-labelledby": ctx.labelInfo.visibleLabel
         ? visibleLabelId
         : ctx.labelInfo.labelledBy,
-      tabIndex: ctx.disabled ? -1 : 0,
+      tabIndex:
+        typeof overrideTabIndex !== "undefined"
+          ? overrideTabIndex
+          : ctx.disabled
+          ? -1
+          : 0,
       onClick: comboboxBase.handleClick,
       onBlur: comboboxBase.handleBlur,
       onFocus: comboboxBase.handleFocus,

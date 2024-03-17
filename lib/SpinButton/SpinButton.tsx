@@ -109,6 +109,10 @@ type OwnProps = {
          */
         labelledBy: string;
       };
+  /**
+   * A value to replace `tabIndex` with.
+   */
+  overrideTabIndex?: number;
 };
 
 export type Props = Omit<MergeElementProps<"div", OwnProps>, "defaultChecked">;
@@ -122,6 +126,7 @@ const SpinButtonBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     defaultValue,
     className: classNameProp,
     children: childrenProp,
+    overrideTabIndex,
     label,
     disabled = false,
     autoFocus = false,
@@ -333,6 +338,10 @@ const SpinButtonBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     handleIncrease,
   };
 
+  let tabIndex = disabled ? -1 : 0;
+
+  if (typeof overrideTabIndex !== "undefined") tabIndex = overrideTabIndex;
+
   return (
     <div
       {...otherProps}
@@ -341,7 +350,7 @@ const SpinButtonBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       role="spinbutton"
       ref={handleRootRef}
       className={className}
-      tabIndex={disabled ? -1 : 0}
+      tabIndex={tabIndex}
       onKeyDown={handleKeyDown}
       onFocus={handleFocus}
       onBlur={handleBlur}

@@ -86,6 +86,10 @@ type OwnProps = {
    * The component to be used as the check element.
    */
   checkComponent?: React.ReactElement;
+  /**
+   * A value to replace `tabIndex` with.
+   */
+  overrideTabIndex?: number;
   onFocus?: React.FocusEventHandler<HTMLButtonElement>;
   onBlur?: React.FocusEventHandler<HTMLButtonElement>;
   onKeyDown?: React.KeyboardEventHandler<HTMLButtonElement>;
@@ -104,6 +108,7 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     checkComponent,
     defaultChecked,
     id: idProp,
+    overrideTabIndex,
     classes: classesMap,
     checked: checkedProp,
     autoFocus = false,
@@ -202,6 +207,7 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   };
 
   const calcTabIndex = () => {
+    if (typeof overrideTabIndex !== "undefined") return overrideTabIndex;
     if (disabled) return -1;
     if (!radioGroupCtx) return 0;
 

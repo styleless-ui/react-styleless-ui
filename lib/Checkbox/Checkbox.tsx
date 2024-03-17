@@ -96,6 +96,10 @@ type OwnProps = {
    * The component to be used as the check element.
    */
   checkComponent?: React.ReactElement;
+  /**
+   * A value to replace `tabIndex` with.
+   */
+  overrideTabIndex?: number;
   onFocus?: React.FocusEventHandler<HTMLButtonElement>;
   onBlur?: React.FocusEventHandler<HTMLButtonElement>;
   onKeyDown?: React.KeyboardEventHandler<HTMLButtonElement>;
@@ -114,6 +118,7 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     checkComponent,
     id: idProp,
     classes: classesMap,
+    overrideTabIndex,
     defaultChecked,
     checked: checkedProp,
     autoFocus = false,
@@ -248,6 +253,10 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     onClick: () => checkBase.controllerRef.current?.click(),
   });
 
+  let tabIndex = disabled ? -1 : 0;
+
+  if (typeof overrideTabIndex !== "undefined") tabIndex = overrideTabIndex;
+
   return (
     <>
       <button
@@ -261,7 +270,7 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
         onKeyDown={checkBase.handleKeyDown}
         onKeyUp={checkBase.handleKeyUp}
         onClick={checkBase.handleClick}
-        tabIndex={disabled ? -1 : 0}
+        tabIndex={tabIndex}
         type="button"
         role="checkbox"
         aria-label={labelProps.srOnlyLabel}
