@@ -104,7 +104,7 @@ type OwnProps = {
 
 export type Props = Omit<
   MergeElementProps<"button", OwnProps>,
-  "defaultValue" | "onChange"
+  "defaultValue" | "onChange" | "onChangeCapture"
 >;
 
 const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
