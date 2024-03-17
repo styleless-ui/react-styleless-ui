@@ -1,43 +1,45 @@
 import * as React from "react";
 import Portal from "../Portal";
-import type { ClassesWithRenderContext, MergeElementProps } from "../types";
+import { SystemError, SystemKeys } from "../internals";
+import type { MergeElementProps, PropWithRenderContext } from "../types";
 import {
   componentWithForwardedRef,
   useDeterministicId,
+  useEventListener,
   useIsMounted,
   useOnChange,
-  usePreviousValue,
   useScrollGuard,
 } from "../utils";
 import { DialogContext, type DialogContextValue } from "./context";
-import { Backdrop as BackdropSlot, Root as RootSlot } from "./slots";
+import { Root as RootSlot } from "./slots";
 
-export type ClassNameProps = {
+export type RenderProps = {
   /**
    * The `open` state of the component.
    */
-  openState: boolean;
+  open: boolean;
 };
+
+export type ClassNameProps = RenderProps;
 
 type OwnProps = {
   /**
    * The content of the tab dialog.
    */
-  children?: React.ReactNode;
+  children?: PropWithRenderContext<React.ReactNode, RenderProps>;
   /**
-   * Map of sub-components and their correlated classNames.
+   * The className applied to the component.
    */
-  classes?: ClassesWithRenderContext<"root" | "backdrop", ClassNameProps>;
+  className?: PropWithRenderContext<string, ClassNameProps>;
   /**
    * If `true`, the dialog will be opened.
    */
   open: boolean;
   /**
-   * The DOM node reference to focus when the dialog closes.
-   *
-   * If not provided, the previously focused element will be focused.
+   * Callback is called when the dialog is about to be closed.
+   * This function is required because it will be called when certain interactions occur.
    */
-  focusAfterClosed?: React.RefObject<HTMLElement>;
+  onClose: () => void;
   /**
    * `alertdialog`: An alert dialog is a modal dialog that
    * interrupts the user's workflow to communicate an
@@ -48,10 +50,6 @@ type OwnProps = {
    */
   role: "dialog" | "alertdialog";
   /**
-   * Callback fired when the backdrop is clicked.
-   */
-  onBackdropClick?: React.MouseEventHandler<HTMLDivElement>;
-  /**
    * Used to keep mounting when more control is needed.\
    * Useful when controlling animation with React animation libraries.
    * @default false
@@ -61,21 +59,24 @@ type OwnProps = {
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,
-  "className" | "defaultChecked" | "defaultValue"
+  "defaultChecked" | "defaultValue"
 >;
 
 const DialogBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     open,
-    children,
-    id: idProp,
     role,
+    id: idProp,
     keepMounted = false,
-    focusAfterClosed,
-    classes: classesProp,
-    onBackdropClick,
+    children: childrenProp,
+    className: classNameProp,
+    onClose: emitClose,
     ...otherProps
   } = props;
+
+  if (!emitClose) {
+    throw new SystemError("The `onClose` prop needs to be provided.", "Dialog");
+  }
 
   const isMounted = useIsMounted();
 
@@ -83,17 +84,18 @@ const DialogBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const previouslyFocusedElement = React.useRef<HTMLElement | null>(null);
 
-  const prevOpen = usePreviousValue(open);
-
   const { disablePageScroll, enablePageScroll } = useScrollGuard();
 
-  React.useEffect(() => {
-    if (!open && typeof prevOpen === "boolean" && open !== prevOpen) {
-      if (focusAfterClosed) {
-        focusAfterClosed.current?.focus();
+  useOnChange(open, currentOpen => {
+    if (!isMounted()) return;
 
-        return;
-      }
+    if (currentOpen) {
+      previouslyFocusedElement.current =
+        document.activeElement as HTMLElement | null;
+
+      disablePageScroll();
+    } else {
+      enablePageScroll();
 
       if (previouslyFocusedElement.current) {
         previouslyFocusedElement.current.focus();
@@ -103,37 +105,39 @@ const DialogBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
       document.body.focus();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, prevOpen]);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  React.useEffect(() => () => enablePageScroll(), []);
-
-  useOnChange(open, openState => {
-    if (!isMounted()) return;
-
-    previouslyFocusedElement.current =
-      document.activeElement as HTMLElement | null;
-
-    if (typeof prevOpen !== "boolean") return;
-
-    if (openState) disablePageScroll();
-    else enablePageScroll();
   });
 
-  const classNameProps: ClassNameProps = {
-    openState: open,
-  };
+  const renderProps: RenderProps = { open };
 
-  const classes =
-    typeof classesProp === "function"
-      ? classesProp(classNameProps)
-      : classesProp;
+  const classNameProps: ClassNameProps = renderProps;
 
-  const context = React.useMemo<DialogContextValue>(
-    () => ({ open, role }),
-    [role, open],
-  );
+  const children =
+    typeof childrenProp === "function"
+      ? childrenProp(renderProps)
+      : childrenProp;
+
+  const className =
+    typeof classNameProp === "function"
+      ? classNameProp(classNameProps)
+      : classNameProp;
+
+  const context: DialogContextValue = { open, role, emitClose };
+
+  if (document) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useEventListener(
+      {
+        target: document,
+        eventType: "keydown",
+        handler: event => {
+          event.preventDefault();
+
+          if (event.key === SystemKeys.ESCAPE) emitClose();
+        },
+      },
+      open,
+    );
+  }
 
   if (!keepMounted && !open) return null;
 
@@ -150,16 +154,10 @@ const DialogBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           {...otherProps}
           id={id}
           ref={ref}
-          className={classes?.root}
+          className={className}
           data-slot={RootSlot}
           data-open={open ? "" : undefined}
         >
-          <div
-            aria-hidden="true"
-            data-slot={BackdropSlot}
-            className={classes?.backdrop}
-            onClick={onBackdropClick}
-          />
           <DialogContext.Provider value={context}>
             {children}
           </DialogContext.Provider>

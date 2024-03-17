@@ -3,6 +3,7 @@ import * as React from "react";
 type ContextValue = {
   role: "dialog" | "alertdialog";
   open: boolean;
+  emitClose: () => void;
 };
 
 const Context = React.createContext<ContextValue | null>(null);

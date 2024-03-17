@@ -1,3 +1,4 @@
+export { default as Backdrop, type Props as BackdropProps } from "./Backdrop";
 export { default as Content, type Props as ContentProps } from "./Content";
 export {
   default as Description,
