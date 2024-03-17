@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import {
   itShouldMount,
   itSupportsDataSetProps,
@@ -12,48 +13,62 @@ import Checkbox, { type Props } from "./Checkbox";
 
 const labelText = "Label";
 
-const REQUIRED_PROPS: Props = {
-  label: labelText,
-  classes: {
-    label: "label",
-    root: "root",
-    check: "check",
-  },
+const mockRequiredProps: Props = {
+  label: { screenReaderLabel: labelText },
 };
 
 describe("Checkbox", () => {
   afterEach(jest.clearAllMocks);
 
-  itShouldMount(Checkbox, REQUIRED_PROPS);
-  itSupportsStyle(Checkbox, REQUIRED_PROPS);
-  itSupportsRef(Checkbox, REQUIRED_PROPS, HTMLButtonElement);
-  itSupportsFocusEvents(Checkbox, REQUIRED_PROPS, "button");
-  itSupportsDataSetProps(Checkbox, REQUIRED_PROPS);
+  itShouldMount(Checkbox, mockRequiredProps);
+  itSupportsStyle(Checkbox, mockRequiredProps);
+  itSupportsRef(Checkbox, mockRequiredProps, HTMLButtonElement);
+  itSupportsFocusEvents(Checkbox, mockRequiredProps, "button");
+  itSupportsDataSetProps(Checkbox, mockRequiredProps);
 
   it("should have the required classNames", () => {
-    render(
+    const { rerender } = render(
       <Checkbox
-        {...REQUIRED_PROPS}
+        {...mockRequiredProps}
         checked
+        autoFocus
+        className={({ checked, disabled, focusedVisible, indeterminated }) =>
+          classNames("root", {
+            "root--disabled": disabled,
+            "root--checked": checked,
+            "root--focus-visible": focusedVisible,
+            "root--indeterminated": indeterminated,
+          })
+        }
       />,
     );
 
-    const checkbox = screen.getByRole("checkbox");
-    const label = checkbox.nextElementSibling;
-    const check = checkbox.firstElementChild;
+    const root = screen.getByRole("checkbox");
 
-    expect(checkbox).toHaveClass("root");
-    expect(label).toHaveClass("label");
-    expect(check).toHaveClass("check");
+    expect(root).toHaveClass("root", "root--checked", "root--focus-visible");
+
+    rerender(
+      <Checkbox
+        {...mockRequiredProps}
+        checked
+        autoFocus
+        disabled
+        className={({ checked, disabled, focusedVisible, indeterminated }) =>
+          classNames("root", {
+            "root--disabled": disabled,
+            "root--checked": checked,
+            "root--focus-visible": focusedVisible,
+            "root--indeterminated": indeterminated,
+          })
+        }
+      />,
+    );
+
+    expect(root).toHaveClass("root", "root--checked", "root--disabled");
   });
 
   it("should have `aria-label='label'` property when `label={{ screenReaderLabel: 'label' }}`", () => {
-    render(
-      <Checkbox
-        {...REQUIRED_PROPS}
-        label={{ screenReaderLabel: labelText }}
-      />,
-    );
+    render(<Checkbox {...mockRequiredProps} />);
 
     expect(screen.getByRole("checkbox")).toHaveAttribute(
       "aria-label",
@@ -64,7 +79,7 @@ describe("Checkbox", () => {
   it("should have `aria-labelledby='identifier'` property when `label={{ labelledBy: 'identifier' }}`", () => {
     render(
       <Checkbox
-        {...REQUIRED_PROPS}
+        {...mockRequiredProps}
         label={{ labelledBy: "identifier" }}
       />,
     );
@@ -79,7 +94,7 @@ describe("Checkbox", () => {
     userEvent.setup();
     render(
       <Checkbox
-        {...REQUIRED_PROPS}
+        {...mockRequiredProps}
         indeterminated
         aria-controls="id1 id2"
       />,
@@ -99,7 +114,7 @@ describe("Checkbox", () => {
   });
 
   it("renders an unchecked checkbox when `checked={false}`", () => {
-    render(<Checkbox {...REQUIRED_PROPS} />);
+    render(<Checkbox {...mockRequiredProps} />);
 
     expect(screen.getByRole("checkbox")).not.toBeChecked();
   });
@@ -107,7 +122,7 @@ describe("Checkbox", () => {
   it("renders a checked checkbox when `checked={true}`", () => {
     render(
       <Checkbox
-        {...REQUIRED_PROPS}
+        {...mockRequiredProps}
         checked
       />,
     );
@@ -115,13 +130,13 @@ describe("Checkbox", () => {
     expect(screen.getByRole("checkbox")).toBeChecked();
   });
 
-  it("toggles `checked` state with mouse/keyboard interactions and calls `onChange` callback", async () => {
+  it("toggles `checked` state with mouse/keyboard interactions and calls `onCheckedChange` callback", async () => {
     const handleCheckedChange = jest.fn<void, [checkedState: boolean]>();
 
     userEvent.setup();
     render(
       <Checkbox
-        {...REQUIRED_PROPS}
+        {...mockRequiredProps}
         onCheckedChange={handleCheckedChange}
       />,
     );
@@ -156,54 +171,5 @@ describe("Checkbox", () => {
     expect(checkbox).not.toBeChecked();
     expect(handleCheckedChange.mock.calls.length).toBe(2);
     expect(handleCheckedChange.mock.calls[1]?.[0]).toBe(false);
-  });
-
-  it("supports custom check component", () => {
-    render(
-      <Checkbox
-        {...REQUIRED_PROPS}
-        checked
-        checkComponent={<div data-testid="t1"></div>}
-      />,
-    );
-
-    expect(screen.getByTestId("t1").tagName).toBe("DIV");
-
-    const CheckComponent = ({ className }: { className?: string }) => (
-      <div
-        data-testid="t2"
-        className={className}
-      ></div>
-    );
-
-    render(
-      <Checkbox
-        {...REQUIRED_PROPS}
-        checked
-        checkComponent={<CheckComponent />}
-      />,
-    );
-
-    expect(screen.getByTestId("t2").tagName).toBe("DIV");
-  });
-
-  it("should toggle check state when label is clicked.", async () => {
-    userEvent.setup();
-    render(<Checkbox {...REQUIRED_PROPS} />);
-
-    const checkbox = screen.getByRole("checkbox");
-    const label = checkbox.nextElementSibling;
-
-    expect(label).not.toBeUndefined();
-
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    await userEvent.click(label!);
-
-    expect(checkbox).toBeChecked();
-
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    await userEvent.click(label!);
-
-    expect(checkbox).not.toBeChecked();
   });
 });
