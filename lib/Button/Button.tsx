@@ -45,9 +45,15 @@ type OwnProps = {
   overrideTabIndex?: number;
 };
 
-export type Props<E extends React.ElementType> = PolymorphicProps<E, OwnProps>;
+export type Props<E extends React.ElementType = "button"> = PolymorphicProps<
+  E,
+  OwnProps
+>;
 
-const ButtonBase = <E extends React.ElementType, R extends HTMLElement>(
+const ButtonBase = <
+  E extends React.ElementType = "button",
+  R extends HTMLElement = HTMLButtonElement,
+>(
   props: Props<E>,
   ref: React.Ref<R>,
 ) => {
@@ -65,7 +71,7 @@ const ButtonBase = <E extends React.ElementType, R extends HTMLElement>(
     autoFocus,
     disabled = false,
     ...otherProps
-  } = props;
+  } = props as Props<"button">;
 
   const id = useDeterministicId(idProp, "styleless-ui__button");
 
