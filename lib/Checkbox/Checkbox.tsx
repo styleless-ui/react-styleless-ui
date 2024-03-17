@@ -1,18 +1,16 @@
 import * as React from "react";
 import { CheckGroupContext } from "../CheckGroup/context";
 import { SystemError, getLabelInfo, logger } from "../internals";
-import type { ClassesWithRenderContext, MergeElementProps } from "../types";
+import type { MergeElementProps, PropWithRenderContext } from "../types";
 import {
   componentWithForwardedRef,
   useCheckBase,
   useDeterministicId,
   useForkedRefs,
-  useHandleTargetLabelClick,
 } from "../utils";
-import { CheckIcon, IndeterminateIcon } from "./components";
 import * as Slots from "./slots";
 
-export type ClassNameProps = {
+export type RenderProps = {
   /**
    * The `checked` state of the checkbox.
    */
@@ -31,19 +29,21 @@ export type ClassNameProps = {
   focusedVisible: boolean;
 };
 
+export type ClassNameProps = RenderProps;
+
 type OwnProps = {
   /**
-   * Map of sub-components and their correlated classNames.
+   * The content of the component.
    */
-  classes?: ClassesWithRenderContext<
-    "root" | "label" | "check",
-    ClassNameProps
-  >;
+  children?: PropWithRenderContext<React.ReactNode, RenderProps>;
+  /**
+   * The className applied to the component.
+   */
+  className?: PropWithRenderContext<string, ClassNameProps>;
   /**
    * The label of the checkbox.
    */
   label:
-    | string
     | {
         /**
          * The label to use as `aria-label` property.
@@ -93,10 +93,6 @@ type OwnProps = {
    */
   onCheckedChange?: (checkedState: boolean) => void;
   /**
-   * The component to be used as the check element.
-   */
-  checkComponent?: React.ReactElement;
-  /**
    * A value to replace `tabIndex` with.
    */
   overrideTabIndex?: number;
@@ -108,16 +104,16 @@ type OwnProps = {
 
 export type Props = Omit<
   MergeElementProps<"button", OwnProps>,
-  "defaultValue" | "className" | "onChange"
+  "defaultValue" | "onChange"
 >;
 
 const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   const {
     label,
     value,
-    checkComponent,
+    children: childrenProp,
     id: idProp,
-    classes: classesMap,
+    className: classNameMap,
     overrideTabIndex,
     defaultChecked,
     checked: checkedProp,
@@ -169,21 +165,35 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   });
 
   const id = useDeterministicId(idProp, "styleless-ui__checkbox");
-  const visibleLabelId = id ? `${id}__label` : undefined;
 
   const handleRef = useForkedRefs(ref, rootRef, checkBase.handleControllerRef);
 
-  const labelProps = getLabelInfo(label, "Checkbox");
+  const labelInfo = getLabelInfo(label, "Checkbox", {
+    customErrorMessage: [
+      "Invalid `label` property.",
+      "The `label` property must be in shape of " +
+        "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
+    ].join("\n"),
+  });
 
-  const classesCtx: ClassNameProps = {
+  const renderProps: RenderProps = {
     disabled,
     indeterminated,
     checked: checkBase.checked,
     focusedVisible: checkBase.isFocusedVisible,
   };
 
-  const classes =
-    typeof classesMap === "function" ? classesMap(classesCtx) : classesMap;
+  const classNameProps: ClassNameProps = renderProps;
+
+  const children =
+    typeof childrenProp === "function"
+      ? childrenProp(renderProps)
+      : childrenProp;
+
+  const className =
+    typeof classNameMap === "function"
+      ? classNameMap(classNameProps)
+      : classNameMap;
 
   const refCallback = (node: HTMLButtonElement | null) => {
     handleRef(node);
@@ -202,90 +212,42 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     );
   };
 
-  const renderIcon = () => {
-    if (checkBase.checked) {
-      return (
-        <CheckIcon
-          className={classes?.check}
-          slot={Slots.Check}
-          checkComponent={checkComponent}
-        />
-      );
-    }
-
-    if (indeterminated) {
-      return (
-        <IndeterminateIcon
-          className={classes?.check}
-          slot={Slots.Check}
-          checkComponent={checkComponent}
-        />
-      );
-    }
-
-    return null;
-  };
-
-  const renderLabel = () => {
-    if (!labelProps.visibleLabel) return null;
-
-    return (
-      <span
-        id={visibleLabelId}
-        data-slot={Slots.Label}
-        className={classes?.label}
-      >
-        {labelProps.visibleLabel}
-      </span>
-    );
-  };
-
   const dataAttrs = {
     "data-slot": Slots.Root,
-    "data-disabled": classesCtx.disabled ? "" : undefined,
-    "data-focus-visible": classesCtx.focusedVisible ? "" : undefined,
-    "data-checked": classesCtx.checked ? "" : undefined,
+    "data-disabled": disabled ? "" : undefined,
+    "data-indeterminated": indeterminated ? "" : undefined,
+    "data-focus-visible": checkBase.isFocusedVisible ? "" : undefined,
+    "data-checked": checkBase.checked ? "" : undefined,
   };
-
-  useHandleTargetLabelClick({
-    visibleLabelId,
-    labelInfo: labelProps,
-    onClick: () => checkBase.controllerRef.current?.click(),
-  });
 
   let tabIndex = disabled ? -1 : 0;
 
   if (typeof overrideTabIndex !== "undefined") tabIndex = overrideTabIndex;
 
   return (
-    <>
-      <button
-        {...otherProps}
-        id={id}
-        className={classes?.root}
-        ref={refCallback}
-        disabled={disabled}
-        onFocus={checkBase.handleFocus}
-        onBlur={checkBase.handleBlur}
-        onKeyDown={checkBase.handleKeyDown}
-        onKeyUp={checkBase.handleKeyUp}
-        onClick={checkBase.handleClick}
-        tabIndex={tabIndex}
-        type="button"
-        role="checkbox"
-        aria-label={labelProps.srOnlyLabel}
-        aria-checked={
-          indeterminated && !checkBase.checked ? "mixed" : checkBase.checked
-        }
-        aria-labelledby={
-          labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
-        }
-        {...dataAttrs}
-      >
-        {renderIcon()}
-      </button>
-      {renderLabel()}
-    </>
+    <button
+      {...otherProps}
+      id={id}
+      className={className}
+      ref={refCallback}
+      disabled={disabled}
+      onFocus={checkBase.handleFocus}
+      onBlur={checkBase.handleBlur}
+      onKeyDown={checkBase.handleKeyDown}
+      onKeyUp={checkBase.handleKeyUp}
+      onClick={checkBase.handleClick}
+      tabIndex={tabIndex}
+      type="button"
+      role="checkbox"
+      aria-checked={
+        indeterminated && !checkBase.checked ? "mixed" : checkBase.checked
+      }
+      aria-label={labelInfo.srOnlyLabel}
+      aria-labelledby={labelInfo.labelledBy}
+      {...dataAttrs}
+    >
+      {children}
+    </button>
   );
 };
 

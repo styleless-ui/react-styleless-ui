@@ -1,6 +1,6 @@
 import * as React from "react";
 import { getLabelInfo } from "../internals";
-import type { Classes, MergeElementProps } from "../types";
+import type { MergeElementProps } from "../types";
 import {
   componentWithForwardedRef,
   useControlledProp,
@@ -15,14 +15,13 @@ type OwnProps = {
    */
   children?: React.ReactNode;
   /**
-   * Map of sub-components and their correlated classNames.
+   * The className applied to the component.
    */
-  classes?: Classes<"root" | "label">;
+  className?: string;
   /**
    * The label of the group.
    */
   label:
-    | string
     | {
         /**
          * The label to use as `aria-label` property.
@@ -53,12 +52,12 @@ type OwnProps = {
   /**
    * The Callback is fired when the state changes.
    */
-  onChange?: (selectedValues: string[]) => void;
+  onValueChange?: (selectedValues: string[]) => void;
 };
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,
-  "className" | "defaultChecked"
+  "defaultChecked" | "onChange"
 >;
 
 const CheckGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
@@ -66,65 +65,53 @@ const CheckGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     label,
     children,
     id: idProp,
-    classes,
+    className,
     defaultValue,
     value: valueProp,
-    onChange,
+    onValueChange,
     orientation = "vertical",
     ...otherProps
   } = props;
 
   const id = useDeterministicId(idProp, "styleless-ui__check-group");
-  const visibleLabelId = id ? `${id}__label` : undefined;
 
-  const labelProps = getLabelInfo(label, "CheckGroup");
+  const labelInfo = getLabelInfo(label, "CheckGroup", {
+    customErrorMessage: [
+      "Invalid `label` property.",
+      "The `label` property must be in shape of " +
+        "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
+    ].join("\n"),
+  });
 
   const [value, setValue] = useControlledProp(valueProp, defaultValue, []);
 
-  const handleChange = (newCheckedState: boolean, inputValue: string) => {
+  const handleValueChange = (newCheckedState: boolean, inputValue: string) => {
     const newValue = !newCheckedState
       ? value.filter(v => v !== inputValue)
       : value.concat(inputValue);
 
     setValue(newValue);
-    onChange?.(newValue);
-  };
-
-  const renderLabel = () => {
-    if (!labelProps.visibleLabel) return null;
-
-    return (
-      <span
-        id={visibleLabelId}
-        data-slot={Slots.Label}
-        className={classes?.label}
-      >
-        {labelProps.visibleLabel}
-      </span>
-    );
+    onValueChange?.(newValue);
   };
 
   return (
-    <>
-      {renderLabel()}
-      <div
-        {...otherProps}
-        role="group"
-        id={id}
-        ref={ref}
-        className={classes?.root}
-        data-slot={Slots.Root}
-        aria-label={labelProps.srOnlyLabel}
-        aria-orientation={orientation}
-        aria-labelledby={
-          labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
-        }
+    <div
+      {...otherProps}
+      role="group"
+      id={id}
+      ref={ref}
+      className={className}
+      data-slot={Slots.Root}
+      aria-orientation={orientation}
+      aria-label={labelInfo.srOnlyLabel}
+      aria-labelledby={labelInfo.labelledBy}
+    >
+      <CheckGroupContext.Provider
+        value={{ value, onChange: handleValueChange }}
       >
-        <CheckGroupContext.Provider value={{ value, onChange: handleChange }}>
-          {children}
-        </CheckGroupContext.Provider>
-      </div>
-    </>
+        {children}
+      </CheckGroupContext.Provider>
+    </div>
   );
 };
 
