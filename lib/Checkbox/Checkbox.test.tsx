@@ -116,13 +116,13 @@ describe("Checkbox", () => {
   });
 
   it("toggles `checked` state with mouse/keyboard interactions and calls `onChange` callback", async () => {
-    const handleChange = jest.fn<void, [checkedState: boolean]>();
+    const handleCheckedChange = jest.fn<void, [checkedState: boolean]>();
 
     userEvent.setup();
     render(
       <Checkbox
         {...REQUIRED_PROPS}
-        onChange={handleChange}
+        onCheckedChange={handleCheckedChange}
       />,
     );
 
@@ -131,16 +131,16 @@ describe("Checkbox", () => {
     await userEvent.click(checkbox);
 
     expect(checkbox).toBeChecked();
-    expect(handleChange.mock.calls.length).toBe(1);
-    expect(handleChange.mock.calls[0]?.[0]).toBe(true);
+    expect(handleCheckedChange.mock.calls.length).toBe(1);
+    expect(handleCheckedChange.mock.calls[0]?.[0]).toBe(true);
 
     await userEvent.click(checkbox);
 
     expect(checkbox).not.toBeChecked();
-    expect(handleChange.mock.calls.length).toBe(2);
-    expect(handleChange.mock.calls[1]?.[0]).toBe(false);
+    expect(handleCheckedChange.mock.calls.length).toBe(2);
+    expect(handleCheckedChange.mock.calls[1]?.[0]).toBe(false);
 
-    handleChange.mockClear();
+    handleCheckedChange.mockClear();
 
     checkbox.focus();
     expect(checkbox).toHaveFocus();
@@ -148,14 +148,14 @@ describe("Checkbox", () => {
     await userEvent.keyboard("[Space]");
 
     expect(checkbox).toBeChecked();
-    expect(handleChange.mock.calls.length).toBe(1);
-    expect(handleChange.mock.calls[0]?.[0]).toBe(true);
+    expect(handleCheckedChange.mock.calls.length).toBe(1);
+    expect(handleCheckedChange.mock.calls[0]?.[0]).toBe(true);
 
     await userEvent.keyboard("[Space]");
 
     expect(checkbox).not.toBeChecked();
-    expect(handleChange.mock.calls.length).toBe(2);
-    expect(handleChange.mock.calls[1]?.[0]).toBe(false);
+    expect(handleCheckedChange.mock.calls.length).toBe(2);
+    expect(handleCheckedChange.mock.calls[1]?.[0]).toBe(false);
   });
 
   it("supports custom check component", () => {
