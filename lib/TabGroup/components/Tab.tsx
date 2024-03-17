@@ -8,7 +8,7 @@ import {
   useEventCallback,
   useForkedRefs,
 } from "../../utils";
-import { TabGroupContext } from "../context";
+import { TabGroupContext, TabGroupListContext } from "../context";
 import { Root as RootSlot, TabRoot as TabRootSlot } from "../slots";
 
 export type RenderProps = {
@@ -69,6 +69,7 @@ const TabBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   } = props;
 
   const ctx = React.useContext(TabGroupContext);
+  const listCtx = React.useContext(TabGroupListContext);
 
   const id = useDeterministicId(idProp, "styleless-ui__tab");
 
@@ -184,6 +185,17 @@ const TabBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     );
 
     return null;
+  }
+
+  if (!listCtx) {
+    logger(
+      "You have to use this component as a children of <TabGroup.List> " +
+        "to provide accessibility features.",
+      {
+        scope: "TabGroup.List",
+        type: "warn",
+      },
+    );
   }
 
   const selected = ctx.activeTab === value;
