@@ -91,7 +91,7 @@ type OwnProps = {
   /**
    * The Callback is fired when the state changes.
    */
-  onChange?: (checkedState: boolean) => void;
+  onCheckedChange?: (checkedState: boolean) => void;
   /**
    * The component to be used as the check element.
    */
@@ -108,7 +108,7 @@ type OwnProps = {
 
 export type Props = Omit<
   MergeElementProps<"button", OwnProps>,
-  "defaultValue" | "className"
+  "defaultValue" | "className" | "onChange"
 >;
 
 const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
@@ -124,7 +124,7 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     autoFocus = false,
     disabled = false,
     indeterminated = false,
-    onChange,
+    onCheckedChange,
     onBlur,
     onFocus,
     onKeyDown,
@@ -161,7 +161,7 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
       Array.from(
         group.querySelectorAll<HTMLElement>(`[data-slot='${Slots.Root}']`),
       ),
-    onChange,
+    onChange: onCheckedChange,
     onBlur,
     onFocus,
     onKeyDown,
