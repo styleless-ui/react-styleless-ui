@@ -140,6 +140,7 @@ const ProgressBarBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       aria-label={labelInfo.srOnlyLabel}
       aria-labelledby={labelInfo.labelledBy}
       data-slot={RootSlot}
+      data-indeterminated={indeterminated ? "" : undefined}
     >
       {children}
     </div>
