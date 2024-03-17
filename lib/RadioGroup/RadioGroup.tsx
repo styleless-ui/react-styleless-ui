@@ -58,7 +58,7 @@ type OwnProps = {
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,
-  "onChange" | "defaultChecked"
+  "onChange" | "onChangeCapture" | "defaultChecked"
 >;
 
 const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {

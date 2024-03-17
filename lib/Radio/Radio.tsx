@@ -94,7 +94,7 @@ type OwnProps = {
 
 export type Props = Omit<
   MergeElementProps<"button", OwnProps>,
-  "defaultValue" | "onChange"
+  "defaultValue" | "onChange" | "onChangeCapture"
 >;
 
 const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
