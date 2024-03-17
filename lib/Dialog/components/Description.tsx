@@ -22,9 +22,15 @@ type OwnProps = {
   className?: string;
 };
 
-export type Props<E extends React.ElementType> = PolymorphicProps<E, OwnProps>;
+export type Props<E extends React.ElementType = "p"> = PolymorphicProps<
+  E,
+  OwnProps
+>;
 
-const DescriptionBase = <E extends React.ElementType, R extends HTMLElement>(
+const DescriptionBase = <
+  E extends React.ElementType = "p",
+  R extends HTMLElement = HTMLParagraphElement,
+>(
   props: Props<E>,
   ref: React.Ref<R>,
 ) => {
@@ -32,9 +38,9 @@ const DescriptionBase = <E extends React.ElementType, R extends HTMLElement>(
     className,
     children,
     id: idProp,
-    as: RootNode = "span",
+    as: RootNode = "p",
     ...otherProps
-  } = props;
+  } = props as Props<"p">;
 
   const id = useDeterministicId(idProp, "styleless-ui__dialog-description");
 
@@ -63,7 +69,7 @@ const DescriptionBase = <E extends React.ElementType, R extends HTMLElement>(
     <RootNode
       {...otherProps}
       id={id}
-      ref={refCallback}
+      ref={refCallback as React.LegacyRef<HTMLParagraphElement>}
       className={className}
       data-slot={DescriptionRootSlot}
     >

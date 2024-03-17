@@ -15,10 +15,12 @@ export * from "./Checkbox";
 export { default as Checkbox } from "./Checkbox";
 export * as Dialog from "./Dialog";
 export type {
+  BackdropProps as DialogBackdropProps,
   ContentProps as DialogContentProps,
   DescriptionProps as DialogDescriptionProps,
   RootClassNameProps as DialogRootClassNameProps,
   RootProps as DialogRootProps,
+  RootRenderProps as DialogRootRenderProps,
   TitleProps as DialogTitleProps,
 } from "./Dialog";
 export * as Expandable from "./Expandable";

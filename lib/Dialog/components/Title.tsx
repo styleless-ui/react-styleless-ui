@@ -22,9 +22,15 @@ type OwnProps = {
   className?: string;
 };
 
-export type Props<E extends React.ElementType> = PolymorphicProps<E, OwnProps>;
+export type Props<E extends React.ElementType = "h2"> = PolymorphicProps<
+  E,
+  OwnProps
+>;
 
-const TitleBase = <E extends React.ElementType, R extends HTMLElement>(
+const TitleBase = <
+  E extends React.ElementType = "h2",
+  R extends HTMLElement = HTMLHeadingElement,
+>(
   props: Props<E>,
   ref: React.Ref<R>,
 ) => {
@@ -32,9 +38,9 @@ const TitleBase = <E extends React.ElementType, R extends HTMLElement>(
     className,
     children,
     id: idProp,
-    as: RootNode = "strong",
+    as: RootNode = "h2",
     ...otherProps
-  } = props;
+  } = props as Props<"h2">;
 
   const id = useDeterministicId(idProp, "styleless-ui__dialog-title");
 
@@ -63,7 +69,7 @@ const TitleBase = <E extends React.ElementType, R extends HTMLElement>(
     <RootNode
       {...otherProps}
       id={id}
-      ref={refCallback}
+      ref={refCallback as React.LegacyRef<HTMLHeadingElement>}
       className={className}
       data-slot={TitleRootSlot}
     >

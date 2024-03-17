@@ -1,5 +1,4 @@
-import cls from "classnames";
-import * as React from "react";
+import classNames from "classnames";
 import * as Dialog from ".";
 import {
   itShouldMount,
@@ -15,17 +14,23 @@ import * as Slots from "./slots";
 describe("Dialog", () => {
   afterEach(jest.clearAllMocks);
 
-  itShouldMount(Dialog.Root, { role: "dialog", open: true });
-  itSupportsRef(Dialog.Root, { role: "dialog", open: true }, HTMLDivElement);
+  const mockRequiredProps: Dialog.RootProps = {
+    role: "dialog",
+    open: true,
+    onClose: () => void 0,
+  };
+
+  itShouldMount(Dialog.Root, mockRequiredProps);
+  itSupportsRef(Dialog.Root, mockRequiredProps, HTMLDivElement);
   itSupportsStyle(
     Dialog.Root,
-    { role: "dialog", open: true },
+    mockRequiredProps,
     `[data-slot='${Slots.Root}']`,
     { withPortal: true },
   );
   itSupportsDataSetProps(
     Dialog.Root,
-    { role: "dialog", open: true },
+    mockRequiredProps,
     `[data-slot='${Slots.Root}']`,
     { withPortal: true },
   );
@@ -33,27 +38,25 @@ describe("Dialog", () => {
   it("should have the required classNames", () => {
     render(
       <Dialog.Root
-        open
-        role="dialog"
+        {...mockRequiredProps}
         data-testid="dialog-root"
-        classes={({ openState }) => ({
-          root: cls("root", { "root--open": openState }),
-          backdrop: "backdrop",
-        })}
+        className={({ open }) => classNames("root", { "root--open": open })}
       >
+        <Dialog.Backdrop
+          data-testid="dialog-backdrop"
+          className="backdrop"
+        />
         <Dialog.Content
           className="content"
           data-testid="dialog-content"
         >
           <Dialog.Title
-            as="strong"
             className="title"
             data-testid="dialog-title"
           >
             Title
           </Dialog.Title>
           <Dialog.Description
-            as="p"
             className="description"
             data-testid="dialog-description"
           >
@@ -67,11 +70,13 @@ describe("Dialog", () => {
     );
 
     const root = screen.getByTestId("dialog-root");
+    const backdrop = screen.getByTestId("dialog-backdrop");
     const content = screen.getByTestId("dialog-content");
     const title = screen.getByTestId("dialog-title");
     const description = screen.getByTestId("dialog-description");
 
     expect(root).toHaveClass("root", "root--open");
+    expect(backdrop).toHaveClass("backdrop");
     expect(content).toHaveClass("content");
     expect(title).toHaveClass("title");
     expect(description).toHaveClass("description");
@@ -80,21 +85,16 @@ describe("Dialog", () => {
   it("should have `aria-labelledby` and `aria-describedby` attributes", () => {
     render(
       <Dialog.Root
-        open
-        role="dialog"
+        {...mockRequiredProps}
         data-testid="dialog-root"
       >
+        <Dialog.Backdrop
+          data-testid="dialog-backdrop"
+          className="backdrop"
+        />
         <Dialog.Content data-testid="dialog-content">
-          <Dialog.Title
-            as="strong"
-            data-testid="dialog-title"
-          >
-            Title
-          </Dialog.Title>
-          <Dialog.Description
-            as="p"
-            data-testid="dialog-description"
-          >
+          <Dialog.Title data-testid="dialog-title">Title</Dialog.Title>
+          <Dialog.Description data-testid="dialog-description">
             Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nostrum
             dolorum quod voluptas! Necessitatibus, velit perspiciatis odit
             laudantium impedit quos, non vitae id magnam sed dolore, aliquid
@@ -112,67 +112,44 @@ describe("Dialog", () => {
     expect(content).toHaveAttribute("aria-describedby", description.id);
   });
 
-  it("closes the dialog and focuses the specified `focusAfterClosed` element", () => {
-    const focusRef = React.createRef<HTMLButtonElement>();
-
-    const props: Dialog.RootProps = {
-      role: "dialog",
-      open: false,
-      focusAfterClosed: focusRef,
-    };
-
-    userEvent.setup();
-    const { rerender } = render(
-      <>
-        <button ref={focusRef}>Button</button>
-        <Dialog.Root
-          {...props}
-          open={true}
-        ></Dialog.Root>
-      </>,
-    );
-
-    rerender(
-      <>
-        <button ref={focusRef}>Button</button>
-        <Dialog.Root
-          {...props}
-          open={false}
-        ></Dialog.Root>
-      </>,
-    );
-
-    const focusBtn = screen.getByRole("button");
-
-    expect(focusBtn).toHaveFocus();
-  });
-
-  it("clicks the backdrop and calls `onBackdropClick` callback", async () => {
-    const handleBackdropClick = jest.fn<
-      void,
-      [event: React.MouseEvent<HTMLDivElement>]
-    >();
+  it("clicks the backdrop and calls `onClose` callback", async () => {
+    const handleClose = jest.fn<void, []>();
 
     userEvent.setup();
     render(
       <Dialog.Root
         open
         role="dialog"
-        onBackdropClick={handleBackdropClick}
-      />,
+        onClose={handleClose}
+      >
+        <Dialog.Backdrop data-testid="backdrop"></Dialog.Backdrop>
+        <Dialog.Content></Dialog.Content>
+      </Dialog.Root>,
     );
 
-    const portal = screen.getByRole("presentation");
-    const backdrop = portal.querySelector<HTMLElement>(
-      `[data-slot="${Slots.Backdrop}"]`,
-    );
+    const backdrop = screen.getByTestId("backdrop");
 
     expect(backdrop).toBeInTheDocument();
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    await userEvent.click(backdrop!);
+    await userEvent.click(backdrop);
 
-    expect(handleBackdropClick.mock.calls.length).toBe(1);
-    expect(handleBackdropClick.mock.calls[0]?.[0]).not.toBeFalsy();
+    expect(handleClose.mock.calls.length).toBe(1);
+  });
+
+  it("presses the escape and calls `onClose` callback", async () => {
+    const handleClose = jest.fn<void, []>();
+
+    userEvent.setup();
+    render(
+      <Dialog.Root
+        open
+        role="dialog"
+        onClose={handleClose}
+      ></Dialog.Root>,
+    );
+
+    await userEvent.keyboard("[Escape]");
+
+    expect(handleClose.mock.calls.length).toBe(1);
   });
 });
