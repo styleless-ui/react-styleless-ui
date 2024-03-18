@@ -144,6 +144,7 @@ const ButtonBase = <
 
   return (
     <RootNode
+      data-slot={Slots.Root}
       {...otherProps}
       id={id}
       ref={refCallback}
@@ -154,7 +155,6 @@ const ButtonBase = <
       onFocus={buttonBase.handleFocus}
       onKeyDown={buttonBase.handleKeyDown}
       onKeyUp={buttonBase.handleKeyUp}
-      data-slot={Slots.Root}
       tabIndex={tabIndex}
       data-disabled={disabled ? "" : undefined}
       data-focus-visible={buttonBase.isFocusedVisible ? "" : undefined}
@@ -164,6 +164,13 @@ const ButtonBase = <
   );
 };
 
-const Button = componentWithForwardedRef(ButtonBase, "Button");
+type PolymorphicComponent = <E extends React.ElementType = "button">(
+  props: Props<E>,
+) => JSX.Element | null;
+
+const Button: PolymorphicComponent = componentWithForwardedRef(
+  ButtonBase,
+  "Button",
+);
 
 export default Button;

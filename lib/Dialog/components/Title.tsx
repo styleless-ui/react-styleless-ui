@@ -78,6 +78,13 @@ const TitleBase = <
   );
 };
 
-const Title = componentWithForwardedRef(TitleBase, "Dialog.Title");
+type PolymorphicComponent = <E extends React.ElementType = "h2">(
+  props: Props<E>,
+) => JSX.Element | null;
+
+const Title: PolymorphicComponent = componentWithForwardedRef(
+  TitleBase,
+  "Dialog.Title",
+);
 
 export default Title;
