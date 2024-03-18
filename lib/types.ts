@@ -113,3 +113,7 @@ export type BoundingClientRect = {
 };
 
 export type VirtualElement = { getBoundingClientRect(): BoundingClientRect };
+
+export type Component<Props = EmptyObjectNotation> = (
+  props: Props,
+) => JSX.Element | null;
