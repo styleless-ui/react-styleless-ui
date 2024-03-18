@@ -29,9 +29,7 @@ export type {
   RootClassNameProps as ExpandableRootClassNameProps,
   RootProps as ExpandableRootProps,
   RootRenderProps as ExpandableRootRenderProps,
-  TriggerClassNameProps as ExpandableTriggerClassNameProps,
   TriggerProps as ExpandableTriggerProps,
-  TriggerRenderProps as ExpandableTriggerRenderProps,
 } from "./Expandable";
 export * from "./InputSlider";
 export { default as InputSlider } from "./InputSlider";
