@@ -6,23 +6,24 @@ import {
   useDeterministicId,
   useIsMounted,
   useOnChange,
-  usePreviousValue,
 } from "../utils";
 import { ToastContext } from "./context";
 import { Root as ToastRootSlot } from "./slots";
 
-export type ClassNameProps = {
+export type RenderProps = {
   /**
    * The `open` state of the component.
    */
-  openState: boolean;
+  open: boolean;
 };
+
+export type ClassNameProps = RenderProps;
 
 type OwnProps = {
   /**
    * The content of the toast.
    */
-  children?: React.ReactNode;
+  children?: PropWithRenderContext<React.ReactNode, RenderProps>;
   /**
    * The className applied to the toast.
    */
@@ -32,21 +33,17 @@ type OwnProps = {
    */
   open: boolean;
   /**
-   * The DOM node reference or selector to focus when the toast closes.
-   *
-   * If not provided, the previously focused element will be focused.
-   */
-  focusAfterClosed?: React.RefObject<HTMLElement> | string;
-  /**
    * The `status` role defines a live region containing advisory information for the user that is not important enough to be an `alert`.
    *
    * The `alert` role is for important, and usually time-sensitive, information.
+   *
    * @default "alert"
    */
   role: "alert" | "status";
   /**
    * Used to keep mounting when more control is needed.\
    * Useful when controlling animation with React animation libraries.
+   *
    * @default false
    */
   keepMounted?: boolean;
@@ -69,12 +66,11 @@ const ToastBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     style: styleProp,
     className: classNameProp,
+    children: childrenProp,
     id: idProp,
     open,
     duration,
     role,
-    children,
-    focusAfterClosed,
     onDurationEnd,
     keepMounted = false,
     ...otherProps
@@ -87,35 +83,35 @@ const ToastBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const timeoutRef = React.useRef<number>(NaN);
   const previouslyFocusedElement = React.useRef<HTMLElement | null>(null);
 
-  const prevOpen = usePreviousValue(open);
-
-  React.useEffect(() => {
-    if (!open && typeof prevOpen === "boolean" && open !== prevOpen) {
-      typeof focusAfterClosed === "string"
-        ? document.querySelector<HTMLElement>(focusAfterClosed)?.focus()
-        : typeof focusAfterClosed === "object"
-        ? focusAfterClosed.current?.focus()
-        : previouslyFocusedElement.current
-        ? previouslyFocusedElement.current.focus()
-        : document.body.focus();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, prevOpen]);
-
   React.useEffect(() => () => window.clearTimeout(timeoutRef.current), []);
 
   useOnChange(open, openState => {
     if (!isMounted()) return;
 
-    previouslyFocusedElement.current =
-      document.activeElement as HTMLElement | null;
+    if (openState) {
+      previouslyFocusedElement.current =
+        document.activeElement as HTMLElement | null;
 
-    if (openState && duration && onDurationEnd) {
-      timeoutRef.current = window.setTimeout(onDurationEnd, duration);
-    } else window.clearTimeout(timeoutRef.current);
+      if (duration && onDurationEnd) {
+        timeoutRef.current = window.setTimeout(onDurationEnd, duration);
+      }
+    } else {
+      window.clearTimeout(timeoutRef.current);
+
+      if (previouslyFocusedElement.current) {
+        previouslyFocusedElement.current.focus();
+      } else document.body.focus();
+    }
   });
 
-  const classNameProps: ClassNameProps = { openState: open };
+  const renderProps: RenderProps = { open };
+
+  const classNameProps: ClassNameProps = renderProps;
+
+  const children =
+    typeof childrenProp === "function"
+      ? childrenProp(renderProps)
+      : childrenProp;
 
   const className =
     typeof classNameProp === "function"
