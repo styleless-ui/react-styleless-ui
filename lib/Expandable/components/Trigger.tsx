@@ -1,7 +1,7 @@
 import * as React from "react";
-import Button, { type ButtonProps } from "../../Button";
+import Button from "../../Button";
 import { logger } from "../../internals";
-import type { PolymorphicProps, PropWithRenderContext } from "../../types";
+import type { PolymorphicProps } from "../../types";
 import {
   componentWithForwardedRef,
   setRef,
@@ -14,31 +14,24 @@ import {
   TriggerRoot as TriggerRootSlot,
 } from "../slots";
 
-export type RenderProps = {
-  disabled: boolean;
-  focusedVisible: boolean;
-};
+export type Props<E extends React.ElementType = typeof Button<"div">> =
+  PolymorphicProps<E>;
 
-export type ClassNameProps = RenderProps;
-
-type OwnProps = {
-  /**
-   * The content of the component.
-   */
-  children?: PropWithRenderContext<React.ReactNode, RenderProps>;
-  /**
-   * The className applied to the component.
-   */
-  className?: PropWithRenderContext<string, ClassNameProps>;
-};
-
-export type Props<E extends React.ElementType> = PolymorphicProps<E, OwnProps>;
-
-const TriggerBase = <E extends React.ElementType, R extends HTMLElement>(
+const TriggerBase = <
+  E extends React.ElementType = typeof Button<"div">,
+  R extends HTMLElement = HTMLDivElement,
+>(
   props: Props<E>,
   ref: React.Ref<R>,
 ) => {
-  const { id: idProp, onClick, ...otherProps } = props;
+  type TProps = Props<typeof Button<"div">>;
+
+  const {
+    as: RootNode = Button<"div">,
+    id: idProp,
+    onClick,
+    ...otherProps
+  } = props as TProps;
 
   const ctx = React.useContext(ExpandableContext);
 
@@ -58,7 +51,7 @@ const TriggerBase = <E extends React.ElementType, R extends HTMLElement>(
 
   const handleClick = (event: React.MouseEvent<R>) => {
     ctx.emitExpandChange(!ctx.isExpanded);
-    (onClick as React.MouseEventHandler<R>)?.(event);
+    onClick?.(event as unknown as React.MouseEvent<HTMLDivElement>);
   };
 
   const refCallback = (node: R | null) => {
@@ -81,11 +74,11 @@ const TriggerBase = <E extends React.ElementType, R extends HTMLElement>(
   };
 
   return (
-    <Button
-      {...(otherProps as ButtonProps<E>)}
+    <RootNode
+      {...otherProps}
       id={id}
-      onClick={handleClick}
-      ref={refCallback}
+      onClick={handleClick as unknown as TProps["onClick"]}
+      ref={refCallback as TProps["ref"]}
       data-slot={TriggerRootSlot}
       aria-expanded={ctx.isExpanded}
       data-expanded={ctx.isExpanded ? "" : undefined}
@@ -93,6 +86,15 @@ const TriggerBase = <E extends React.ElementType, R extends HTMLElement>(
   );
 };
 
-const Trigger = componentWithForwardedRef(TriggerBase, "Expandable.Trigger");
+type PolymorphicComponent = <
+  E extends React.ElementType = typeof Button<"div">,
+>(
+  props: Props<E>,
+) => JSX.Element | null;
+
+const Trigger: PolymorphicComponent = componentWithForwardedRef(
+  TriggerBase,
+  "Expandable.Trigger",
+);
 
 export default Trigger;

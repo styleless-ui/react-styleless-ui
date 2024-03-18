@@ -78,7 +78,11 @@ const DescriptionBase = <
   );
 };
 
-const Description = componentWithForwardedRef(
+type PolymorphicComponent = <E extends React.ElementType = "p">(
+  props: Props<E>,
+) => JSX.Element | null;
+
+const Description: PolymorphicComponent = componentWithForwardedRef(
   DescriptionBase,
   "Dialog.Description",
 );
