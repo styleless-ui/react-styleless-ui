@@ -1,17 +1,18 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from "react";
+import type { Component } from "../types";
 
 const componentWithForwardedRef = <
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  C extends React.ForwardRefRenderFunction<any, any>,
+  TComponent extends React.ForwardRefRenderFunction<any, any>,
 >(
-  component: C,
+  component: TComponent,
   name: string,
-): C => {
+): Component<Parameters<TComponent>[0]> => {
   const forwarded = React.forwardRef(component);
 
   forwarded.displayName = name;
 
-  return forwarded as unknown as C;
+  return forwarded as unknown as Component<Parameters<TComponent>[0]>;
 };
 
 export default componentWithForwardedRef;
