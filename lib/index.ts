@@ -108,9 +108,7 @@ export type {
 } from "./TabGroup";
 export * as Toast from "./Toast";
 export type {
-  ActionClassNameProps as ToastActionClassNameProps,
   ActionProps as ToastActionProps,
-  ActionRenderProps as ToastActionRenderProps,
   ContentProps as ToastContentProps,
   RootClassNameProps as ToastRootClassNameProps,
   RootProps as ToastRootProps,
