@@ -111,7 +111,6 @@ const TriggerBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const [isFocused, setIsFocused] = React.useState(false);
 
   const listId = ctx?.elementsRegistry.getElementId("list");
-  const visibleLabelId = ctx?.elementsRegistry.getElementId("label");
 
   const listOpenState = ctx?.isListOpen ?? false;
 
@@ -271,9 +270,7 @@ const TriggerBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       "aria-label": ctx.labelInfo.srOnlyLabel,
       "aria-disabled": ctx.disabled,
       "aria-autocomplete": ctx.searchable ? "list" : "none",
-      "aria-labelledby": ctx.labelInfo.visibleLabel
-        ? visibleLabelId
-        : ctx.labelInfo.labelledBy,
+      "aria-labelledby": ctx.labelInfo.labelledBy,
       tabIndex:
         typeof overrideTabIndex !== "undefined"
           ? overrideTabIndex
