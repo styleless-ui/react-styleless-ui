@@ -23,11 +23,11 @@ describe("Toggle", () => {
   it("should have the required classNames", async () => {
     const { rerender } = render(
       <Toggle
-        active
+        pressed
         disabled
-        className={({ active, disabled, focusedVisible }) =>
+        className={({ pressed, disabled, focusedVisible }) =>
           cls("toggle", {
-            "toggle--active": active,
+            "toggle--pressed": pressed,
             "toggle--disabled": disabled,
             "toggle--focus-visible": focusedVisible,
           })
@@ -42,14 +42,14 @@ describe("Toggle", () => {
     await userEvent.tab();
 
     expect(toggle).not.toHaveFocus();
-    expect(toggle).toHaveClass("toggle", "toggle--active", "toggle--disabled");
+    expect(toggle).toHaveClass("toggle", "toggle--pressed", "toggle--disabled");
 
     rerender(
       <Toggle
-        active
-        className={({ active, disabled, focusedVisible }) =>
+        pressed
+        className={({ pressed, disabled, focusedVisible }) =>
           cls("toggle", {
-            "toggle--active": active,
+            "toggle--pressed": pressed,
             "toggle--disabled": disabled,
             "toggle--focus-visible": focusedVisible,
           })
@@ -62,73 +62,73 @@ describe("Toggle", () => {
     await userEvent.tab();
     expect(toggle).toHaveClass(
       "toggle",
-      "toggle--active",
+      "toggle--pressed",
       "toggle--focus-visible",
     );
   });
 
-  it("renders an unpressed toggle when `active={false}`", () => {
+  it("renders an unpressed toggle when `pressed={false}`", () => {
     const { unmount: u1 } = render(<Toggle>Toggle</Toggle>);
 
-    expect(screen.getByRole("button")).not.toHaveAttribute("data-active");
+    expect(screen.getByRole("button")).not.toHaveAttribute("data-pressed");
 
     u1();
     const { unmount: u2 } = render(
-      <Toggle defaultActive={false}>Toggle</Toggle>,
+      <Toggle defaultPressed={false}>Toggle</Toggle>,
     );
 
-    expect(screen.getByRole("button")).not.toHaveAttribute("data-active");
+    expect(screen.getByRole("button")).not.toHaveAttribute("data-pressed");
 
     u2();
-    render(<Toggle active={false}>Toggle</Toggle>);
-    expect(screen.getByRole("button")).not.toHaveAttribute("data-active");
+    render(<Toggle pressed={false}>Toggle</Toggle>);
+    expect(screen.getByRole("button")).not.toHaveAttribute("data-pressed");
   });
 
-  it("renders a pressed toggle when `active={true}`", () => {
-    const { unmount: u1 } = render(<Toggle active={true}>Toggle</Toggle>);
+  it("renders a pressed toggle when `pressed={true}`", () => {
+    const { unmount: u1 } = render(<Toggle pressed={true}>Toggle</Toggle>);
 
-    expect(screen.getByRole("button")).toHaveAttribute("data-active");
+    expect(screen.getByRole("button")).toHaveAttribute("data-pressed");
 
     u1();
-    render(<Toggle defaultActive={true}>Toggle</Toggle>);
-    expect(screen.getByRole("button")).toHaveAttribute("data-active");
+    render(<Toggle defaultPressed={true}>Toggle</Toggle>);
+    expect(screen.getByRole("button")).toHaveAttribute("data-pressed");
   });
 
-  it("toggles `active` state with mouse/keyboard interactions and calls `onActiveChange` callback", async () => {
-    const handleActiveChange = jest.fn<void, [activeState: boolean]>();
+  it("toggles `pressed` state with mouse/keyboard interactions and calls `onActiveChange` callback", async () => {
+    const handlePressedChange = jest.fn<void, [pressed: boolean]>();
 
     userEvent.setup();
-    render(<Toggle onActiveChange={handleActiveChange}>Toggle</Toggle>);
+    render(<Toggle onPressedChange={handlePressedChange}>Toggle</Toggle>);
 
     const toggle = screen.getByRole("button");
 
     await userEvent.click(toggle);
 
-    expect(toggle).toHaveAttribute("data-active");
-    expect(handleActiveChange.mock.calls.length).toBe(1);
-    expect(handleActiveChange.mock.calls[0]?.[0]).toBe(true);
+    expect(toggle).toHaveAttribute("data-pressed");
+    expect(handlePressedChange.mock.calls.length).toBe(1);
+    expect(handlePressedChange.mock.calls[0]?.[0]).toBe(true);
 
     await userEvent.click(toggle);
 
-    expect(toggle).not.toHaveAttribute("data-active");
-    expect(handleActiveChange.mock.calls.length).toBe(2);
-    expect(handleActiveChange.mock.calls[1]?.[0]).toBe(false);
+    expect(toggle).not.toHaveAttribute("data-pressed");
+    expect(handlePressedChange.mock.calls.length).toBe(2);
+    expect(handlePressedChange.mock.calls[1]?.[0]).toBe(false);
 
-    handleActiveChange.mockClear();
+    handlePressedChange.mockClear();
 
     toggle.focus();
     expect(toggle).toHaveFocus();
 
     await userEvent.keyboard("[Space]");
 
-    expect(toggle).toHaveAttribute("data-active");
-    expect(handleActiveChange.mock.calls.length).toBe(1);
-    expect(handleActiveChange.mock.calls[0]?.[0]).toBe(true);
+    expect(toggle).toHaveAttribute("data-pressed");
+    expect(handlePressedChange.mock.calls.length).toBe(1);
+    expect(handlePressedChange.mock.calls[0]?.[0]).toBe(true);
 
     await userEvent.keyboard("[Enter]");
 
-    expect(toggle).not.toHaveAttribute("data-active");
-    expect(handleActiveChange.mock.calls.length).toBe(2);
-    expect(handleActiveChange.mock.calls[1]?.[0]).toBe(false);
+    expect(toggle).not.toHaveAttribute("data-pressed");
+    expect(handlePressedChange.mock.calls.length).toBe(2);
+    expect(handlePressedChange.mock.calls[1]?.[0]).toBe(false);
   });
 });

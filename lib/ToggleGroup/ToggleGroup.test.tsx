@@ -96,30 +96,30 @@ describe("ToggleGroup", () => {
 
     await userEvent.click(toggles[0]!);
 
-    expect(toggles[0]).not.toHaveAttribute("data-active");
+    expect(toggles[0]).not.toHaveAttribute("data-pressed");
     expect(handleChange.mock.calls.length).toBe(0);
 
     await userEvent.click(toggles[1]!);
 
-    expect(toggles[1]).toHaveAttribute("data-active");
+    expect(toggles[1]).toHaveAttribute("data-pressed");
     expect(handleChange.mock.calls.length).toBe(1);
     expect(handleChange.mock.calls[0]?.join()).toBe("1");
 
     await userEvent.click(toggles[1]!);
 
-    expect(toggles[1]).not.toHaveAttribute("data-active");
+    expect(toggles[1]).not.toHaveAttribute("data-pressed");
     expect(handleChange.mock.calls.length).toBe(2);
     expect(handleChange.mock.calls[1]?.join()).toBe("");
 
     await userEvent.click(toggles[1]!);
 
-    expect(toggles[1]).toHaveAttribute("data-active");
+    expect(toggles[1]).toHaveAttribute("data-pressed");
     expect(handleChange.mock.calls.length).toBe(3);
     expect(handleChange.mock.calls[2]?.join()).toBe("1");
 
     await userEvent.click(toggles[2]!);
 
-    expect(toggles[2]).toHaveAttribute("data-active");
+    expect(toggles[2]).toHaveAttribute("data-pressed");
     expect(handleChange.mock.calls.length).toBe(4);
     expect(handleChange.mock.calls[3]?.join()).toBe("2");
 
@@ -151,24 +151,24 @@ describe("ToggleGroup", () => {
 
     await userEvent.click(toggles[0]!);
 
-    expect(toggles[0]).not.toHaveAttribute("data-active");
+    expect(toggles[0]).not.toHaveAttribute("data-pressed");
     expect(handleChange.mock.calls.length).toBe(0);
 
     await userEvent.click(toggles[1]!);
 
-    expect(toggles[1]).toHaveAttribute("data-active");
+    expect(toggles[1]).toHaveAttribute("data-pressed");
     expect(handleChange.mock.calls.length).toBe(1);
     expect(handleChange.mock.calls[0]?.join()).toBe("1");
 
     await userEvent.click(toggles[2]!);
 
-    expect(toggles[2]).toHaveAttribute("data-active");
+    expect(toggles[2]).toHaveAttribute("data-pressed");
     expect(handleChange.mock.calls.length).toBe(2);
     expect(handleChange.mock.calls[1]?.join()).toBe("1,2");
 
     await userEvent.click(toggles[2]!);
 
-    expect(toggles[2]).not.toHaveAttribute("data-active");
+    expect(toggles[2]).not.toHaveAttribute("data-pressed");
     expect(handleChange.mock.calls.length).toBe(3);
     expect(handleChange.mock.calls[2]?.join()).toBe("1");
   });
@@ -198,7 +198,7 @@ describe("ToggleGroup", () => {
     act(() => void toggles[0]?.focus());
     await userEvent.keyboard("[Space]");
 
-    expect(toggles[0]).not.toHaveAttribute("data-active");
+    expect(toggles[0]).not.toHaveAttribute("data-pressed");
     expect(handleChange.mock.calls.length).toBe(0);
 
     await userEvent.tab();
@@ -206,19 +206,19 @@ describe("ToggleGroup", () => {
 
     await userEvent.keyboard("[Space]");
 
-    expect(toggles[1]).toHaveAttribute("data-active");
+    expect(toggles[1]).toHaveAttribute("data-pressed");
     expect(handleChange.mock.calls.length).toBe(1);
     expect(handleChange.mock.calls[0]?.join()).toBe("1");
 
     await userEvent.keyboard("[Enter]");
 
-    expect(toggles[1]).not.toHaveAttribute("data-active");
+    expect(toggles[1]).not.toHaveAttribute("data-pressed");
     expect(handleChange.mock.calls.length).toBe(2);
     expect(handleChange.mock.calls[1]?.join()).toBe("");
 
     await userEvent.keyboard("[Space]");
 
-    expect(toggles[1]).toHaveAttribute("data-active");
+    expect(toggles[1]).toHaveAttribute("data-pressed");
     expect(handleChange.mock.calls.length).toBe(3);
     expect(handleChange.mock.calls[2]?.join()).toBe("1");
 
@@ -227,7 +227,7 @@ describe("ToggleGroup", () => {
 
     await userEvent.keyboard("[Space]");
 
-    expect(toggles[2]).toHaveAttribute("data-active");
+    expect(toggles[2]).toHaveAttribute("data-pressed");
     expect(handleChange.mock.calls.length).toBe(4);
     expect(handleChange.mock.calls[3]?.join()).toBe("2");
 
@@ -256,7 +256,7 @@ describe("ToggleGroup", () => {
     act(() => void toggles[0]?.focus());
     await userEvent.keyboard("[Space]");
 
-    expect(toggles[0]).not.toHaveAttribute("data-active");
+    expect(toggles[0]).not.toHaveAttribute("data-pressed");
     expect(handleChange.mock.calls.length).toBe(0);
 
     await userEvent.tab();
@@ -264,7 +264,7 @@ describe("ToggleGroup", () => {
 
     await userEvent.keyboard("[Space]");
 
-    expect(toggles[1]).toHaveAttribute("data-active");
+    expect(toggles[1]).toHaveAttribute("data-pressed");
     expect(handleChange.mock.calls.length).toBe(1);
     expect(handleChange.mock.calls[0]?.join()).toBe("1");
 
@@ -277,13 +277,13 @@ describe("ToggleGroup", () => {
     await userEvent.keyboard("[Space]");
 
     expect(toggles[2]).toHaveFocus();
-    expect(toggles[2]).toHaveAttribute("data-active");
+    expect(toggles[2]).toHaveAttribute("data-pressed");
     expect(handleChange.mock.calls.length).toBe(2);
     expect(handleChange.mock.calls[1]?.join()).toBe("1,2");
 
     await userEvent.keyboard("[Enter]");
 
-    expect(toggles[2]).not.toHaveAttribute("data-active");
+    expect(toggles[2]).not.toHaveAttribute("data-pressed");
     expect(handleChange.mock.calls.length).toBe(3);
     expect(handleChange.mock.calls[2]?.join()).toBe("1");
   });

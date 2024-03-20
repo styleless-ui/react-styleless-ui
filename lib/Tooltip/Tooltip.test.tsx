@@ -122,8 +122,8 @@ describe("Tooltip", () => {
           resolveAnchor={anchorResolver}
           defaultOpen={true}
           data-other-attribute="test"
-          className={({ placement, openState }) =>
-            cls("root", placement, openState ? "open" : undefined)
+          className={({ placement, open }) =>
+            cls("root", placement, open ? "open" : undefined)
           }
         >
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia
@@ -150,8 +150,8 @@ describe("Tooltip", () => {
           resolveAnchor={anchorResolver}
           defaultOpen={true}
           data-other-attribute="test"
-          className={({ placement, openState }) =>
-            cls("root", placement, openState ? "open" : undefined)
+          className={({ placement, open }) =>
+            cls("root", placement, open ? "open" : undefined)
           }
         >
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia

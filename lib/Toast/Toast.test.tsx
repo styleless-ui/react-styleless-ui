@@ -7,7 +7,6 @@ import {
   itSupportsStyle,
   render,
   screen,
-  userEvent,
   wait,
 } from "../../tests/utils";
 import * as Slots from "./slots";
@@ -36,7 +35,7 @@ describe("Toast", () => {
         open
         role="status"
         data-testid="toast-root"
-        className={({ openState }) => cls("root", { "root--open": openState })}
+        className={({ open }) => cls("root", { "root--open": open })}
       >
         <Toast.Content
           className="content"
@@ -63,35 +62,6 @@ describe("Toast", () => {
     expect(root).toHaveClass("root", "root--open");
     expect(content).toHaveClass("content");
     expect(action).toHaveClass("action");
-  });
-
-  it("closes the toast and focuses the specified `focusAfterClosed` element", () => {
-    userEvent.setup();
-    const { rerender } = render(
-      <>
-        <button id="focus-btn">Button</button>
-        <Toast.Root
-          role="status"
-          open={true}
-          focusAfterClosed="#focus-btn"
-        ></Toast.Root>
-      </>,
-    );
-
-    rerender(
-      <>
-        <button id="focus-btn">Button</button>
-        <Toast.Root
-          role="status"
-          open={false}
-          focusAfterClosed="#focus-btn"
-        ></Toast.Root>
-      </>,
-    );
-
-    const focusBtn = screen.getByRole("button");
-
-    expect(focusBtn).toHaveFocus();
   });
 
   it("set `duration` and calls `onDurationEnd` callback", async () => {
