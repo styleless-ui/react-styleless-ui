@@ -26,7 +26,6 @@ describe("Expandable", () => {
       >
         <Expandable.Trigger
           disabled
-          as="button"
           className={({ disabled }) =>
             disabled ? "trigger disabled" : "trigger"
           }
