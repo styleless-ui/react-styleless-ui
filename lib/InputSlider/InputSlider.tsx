@@ -161,6 +161,7 @@ type OwnProps = {
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,
+  | "children"
   | "className"
   | "defaultChecked"
   | "defaultValue"
