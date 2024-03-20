@@ -11,9 +11,18 @@ import {
 import * as Slots from "./slots";
 
 export type RenderProps = {
+  /**
+   * The `disabled` state of the component.
+   */
   disabled: boolean;
-  active: boolean;
+  /**
+   * Determines whether it is focused-visible or not.
+   */
   focusedVisible: boolean;
+  /**
+   * The `pressed` state of the component.
+   */
+  pressed: boolean;
 };
 
 export type ClassNameProps = RenderProps;
@@ -37,15 +46,15 @@ type OwnProps = {
    */
   autoFocus?: boolean;
   /**
-   * If `true`, the toggle will be active.
+   * If `true`, the toggle will be pressed.
    * @default false
    */
-  active?: boolean;
+  pressed?: boolean;
   /**
-   * The default state of `active`. Use when the component is not controlled.
+   * The default state of `pressed`. Use when the component is not controlled.
    * @default false
    */
-  defaultActive?: boolean;
+  defaultPressed?: boolean;
   /**
    * If `true`, the toggle will be disabled.
    * @default false
@@ -56,9 +65,9 @@ type OwnProps = {
    */
   overrideTabIndex?: number;
   /**
-   * The Callback is fired when the state of `active` changes.
+   * The Callback is fired when the state of `pressed` changes.
    */
-  onActiveChange?: (activeState: boolean) => void;
+  onPressedChange?: (pressed: boolean) => void;
 };
 
 export type Props = Omit<
@@ -72,11 +81,11 @@ const ToggleBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     children: childrenProp,
     className: classNameProp,
     overrideTabIndex,
-    defaultActive,
-    active,
+    defaultPressed,
+    pressed,
     autoFocus = false,
     disabled = false,
-    onActiveChange,
+    onPressedChange,
     onBlur,
     onFocus,
     onKeyDown,
@@ -110,11 +119,11 @@ const ToggleBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     value,
     autoFocus,
     disabled,
-    checked: active,
+    checked: pressed,
     togglable: true,
     keyboardActivationBehavior: toggleGroupCtx?.keyboardActivationBehavior,
     selectMode: toggleGroupCtx?.multiple ? "multiple" : "single",
-    defaultChecked: defaultActive,
+    defaultChecked: defaultPressed,
     enterKeyFunctionality: "check",
     groupCtx,
     getGroupElement: () => rootRef.current?.closest("[role='group']") ?? null,
@@ -122,7 +131,7 @@ const ToggleBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
       Array.from(
         group.querySelectorAll<HTMLElement>(`[data-slot='${Slots.Root}']`),
       ),
-    onChange: onActiveChange,
+    onChange: onPressedChange,
     onBlur,
     onFocus,
     onKeyDown,
@@ -133,7 +142,7 @@ const ToggleBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const renderProps: RenderProps = {
     disabled,
-    active: checkBase.checked,
+    pressed: checkBase.checked,
     focusedVisible: checkBase.isFocusedVisible,
   };
 
@@ -192,8 +201,8 @@ const ToggleBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const dataAttrs = {
     "data-slot": Slots.Root,
-    "data-active": renderProps.active ? "" : undefined,
-    "data-disable": renderProps.disabled ? "" : undefined,
+    "data-pressed": renderProps.pressed ? "" : undefined,
+    "data-disabled": renderProps.disabled ? "" : undefined,
     "data-entity": value,
     "data-focus-visible": renderProps.focusedVisible ? "" : undefined,
   };
