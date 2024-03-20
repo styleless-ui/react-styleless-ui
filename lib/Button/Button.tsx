@@ -1,6 +1,10 @@
 import * as React from "react";
 import { logger } from "../internals";
-import type { PolymorphicProps, PropWithRenderContext } from "../types";
+import type {
+  PolymorphicComponent,
+  PolymorphicProps,
+  PropWithRenderContext,
+} from "../types";
 import {
   componentWithForwardedRef,
   computeAccessibleName,
@@ -164,13 +168,7 @@ const ButtonBase = <
   );
 };
 
-type PolymorphicComponent = <E extends React.ElementType = "button">(
-  props: Props<E>,
-) => JSX.Element | null;
-
-const Button: PolymorphicComponent = componentWithForwardedRef(
-  ButtonBase,
-  "Button",
-);
+const Button: PolymorphicComponent<"button", OwnProps> =
+  componentWithForwardedRef(ButtonBase, "Button");
 
 export default Button;

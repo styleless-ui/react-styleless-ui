@@ -1,7 +1,11 @@
 import * as React from "react";
 import Button from "../../Button";
 import { logger } from "../../internals";
-import type { PolymorphicProps } from "../../types";
+import type {
+  EmptyObjectNotation,
+  PolymorphicComponent,
+  PolymorphicProps,
+} from "../../types";
 import {
   componentWithForwardedRef,
   setRef,
@@ -14,24 +18,24 @@ import {
   TriggerRoot as TriggerRootSlot,
 } from "../slots";
 
-export type Props<E extends React.ElementType = typeof Button<"div">> =
+type DefaultElementType = typeof Button<"div">;
+
+export type Props<E extends React.ElementType = DefaultElementType> =
   PolymorphicProps<E>;
 
 const TriggerBase = <
-  E extends React.ElementType = typeof Button<"div">,
+  E extends React.ElementType = DefaultElementType,
   R extends HTMLElement = HTMLDivElement,
 >(
   props: Props<E>,
   ref: React.Ref<R>,
 ) => {
-  type TProps = Props<typeof Button<"div">>;
-
   const {
     as: RootNode = Button<"div">,
     id: idProp,
     onClick,
     ...otherProps
-  } = props as TProps;
+  } = props as Props<DefaultElementType>;
 
   const ctx = React.useContext(ExpandableContext);
 
@@ -77,8 +81,8 @@ const TriggerBase = <
     <RootNode
       {...otherProps}
       id={id}
-      onClick={handleClick as unknown as TProps["onClick"]}
-      ref={refCallback as TProps["ref"]}
+      onClick={handleClick as unknown as Props<DefaultElementType>["onClick"]}
+      ref={refCallback as Props<DefaultElementType>["ref"]}
       data-slot={TriggerRootSlot}
       aria-expanded={ctx.isExpanded}
       data-expanded={ctx.isExpanded ? "" : undefined}
@@ -86,15 +90,7 @@ const TriggerBase = <
   );
 };
 
-type PolymorphicComponent = <
-  E extends React.ElementType = typeof Button<"div">,
->(
-  props: Props<E>,
-) => JSX.Element | null;
-
-const Trigger: PolymorphicComponent = componentWithForwardedRef(
-  TriggerBase,
-  "Expandable.Trigger",
-);
+const Trigger: PolymorphicComponent<DefaultElementType, EmptyObjectNotation> =
+  componentWithForwardedRef(TriggerBase, "Expandable.Trigger");
 
 export default Trigger;

@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
+import type React from "react";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type KeyofBase = keyof any;
 
@@ -51,20 +53,6 @@ export type MergeElementProps<
   P = EmptyObjectNotation,
 > = Overwrite<React.ComponentPropsWithRef<E>, P>;
 
-export type PolymorphicProps<
-  E extends React.ElementType,
-  P = EmptyObjectNotation,
-> = MergeElementProps<
-  E,
-  P & {
-    /**
-     * The component used for the root node.
-     * Either a string to use a HTML element or a component.
-     */
-    as?: E;
-  }
->;
-
 /**
  * Helps create a type where at least one of the properties of an interface is required to exist.
  */
@@ -114,6 +102,51 @@ export type BoundingClientRect = {
 
 export type VirtualElement = { getBoundingClientRect(): BoundingClientRect };
 
-export type Component<Props = EmptyObjectNotation> = (
-  props: Props,
-) => JSX.Element | null;
+export type ComponentProps<E> = E extends (props: infer P) => JSX.Element | null
+  ? P
+  : E extends React.ElementType
+  ? React.ComponentProps<E>
+  : EmptyObjectNotation;
+
+export type EnsureCommonProps<E, P> = Overwrite<
+  P,
+  ("className" extends keyof P
+    ? Pick<P, "className">
+    : Pick<ComponentProps<E>, "className" & keyof ComponentProps<E>>) &
+    ("children" extends keyof P
+      ? Pick<P, "children">
+      : Pick<ComponentProps<E>, "children" & keyof ComponentProps<E>>)
+>;
+
+export type PolymorphicProps<
+  E extends React.ElementType,
+  P = EmptyObjectNotation,
+> = MergeElementProps<
+  E,
+  P & {
+    /**
+     * The component used for the root node.
+     * Either a string to use a HTML element or a component.
+     */
+    as?: E;
+  }
+>;
+
+export interface GenericComponent<
+  RootNode extends React.ElementType,
+  P = EmptyObjectNotation,
+> {
+  <E extends React.ElementType>(
+    props: PolymorphicProps<E, P>,
+  ): JSX.Element | null;
+  (props: MergeElementProps<RootNode, P>): JSX.Element | null;
+}
+
+export interface PolymorphicComponent<
+  TDefaultElementType extends React.ElementType,
+  P = EmptyObjectNotation,
+> {
+  <E extends React.ElementType = TDefaultElementType>(
+    props: PolymorphicProps<E, EnsureCommonProps<E, P>>,
+  ): JSX.Element | null;
+}

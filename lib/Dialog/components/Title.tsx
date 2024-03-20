@@ -1,6 +1,6 @@
 import * as React from "react";
 import { logger } from "../../internals";
-import type { PolymorphicProps } from "../../types";
+import type { PolymorphicComponent, PolymorphicProps } from "../../types";
 import {
   componentWithForwardedRef,
   useDeterministicId,
@@ -78,11 +78,7 @@ const TitleBase = <
   );
 };
 
-type PolymorphicComponent = <E extends React.ElementType = "h2">(
-  props: Props<E>,
-) => JSX.Element | null;
-
-const Title: PolymorphicComponent = componentWithForwardedRef(
+const Title: PolymorphicComponent<"h2", OwnProps> = componentWithForwardedRef(
   TitleBase,
   "Dialog.Title",
 );
