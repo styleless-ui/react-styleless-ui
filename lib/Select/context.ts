@@ -6,6 +6,7 @@ import type { RegisteredElementsKeys } from "./Select";
 type ContextValue = {
   isListOpen: boolean;
   disabled: boolean;
+  readOnly: boolean;
   keepMounted: boolean;
   multiple: boolean;
   searchable: boolean;
@@ -14,7 +15,6 @@ type ContextValue = {
   selectedValues: string | string[];
   labelInfo: LabelInfo;
   filteredEntities: null | string[];
-  valueLabelsMapRef: React.MutableRefObject<Map<string, string>>;
   elementsRegistry: ElementsRegistry<RegisteredElementsKeys>;
   closeListAndMaintainFocus: () => void;
   setActiveDescendant: React.Dispatch<React.SetStateAction<HTMLElement | null>>;

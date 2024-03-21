@@ -4,16 +4,16 @@ import type { MergeElementProps, PropWithRenderContext } from "../types";
 import {
   componentWithForwardedRef,
   contains,
-  setRef,
   useControlledProp,
   useDeterministicId,
   useElementsRegistry,
   useEventCallback,
   useEventListener,
+  useForkedRefs,
 } from "../utils";
 import { SelectContext, type SelectContextValue } from "./context";
 import { Root as RootSlot } from "./slots";
-import { noValueSelected } from "./utils";
+import { noValueSelected, normalizeValues } from "./utils";
 
 export type RenderProps = {
   /**
@@ -25,17 +25,50 @@ export type RenderProps = {
    */
   disabled: boolean;
   /**
+   * The `readOnly` state of the component.
+   */
+  readOnly: boolean;
+  /**
    * Determines whether an option is selected or not.
    */
   hasSelectedValues: boolean;
   /**
+   * Determines whether the component's select mode is multiple or not.
+   */
+  multiple: boolean;
+  /**
+   * Determines whether the component is searchable or not.
+   */
+  searchable: boolean;
+  /**
+   * An array of selected options.
+   */
+  values: string[];
+  /**
    * A helper function exposed for clear button (A button to clear selected values).
    * Should be used as a `onClick` event callback.
    */
-  clearValues: <T extends HTMLElement>(event: React.MouseEvent<T>) => void;
+  clearValues: (event: React.MouseEvent<HTMLElement>) => void;
+  /**
+   * A helper function exposed for handling option remove button
+   * (A button to remove an specific option from selected values).
+   *
+   * It gets option's entity value and returns a click event handler.
+   */
+  makeRemoveOption: (
+    optionEntityValue: string,
+  ) => (event: React.MouseEvent<HTMLElement>) => void;
 };
 
-export type ClassNameProps = Pick<RenderProps, "open" | "disabled">;
+export type ClassNameProps = Pick<
+  RenderProps,
+  | "open"
+  | "disabled"
+  | "hasSelectedValues"
+  | "readOnly"
+  | "multiple"
+  | "searchable"
+>;
 
 export type RegisteredElementsKeys = "root" | "trigger" | "list" | "combobox";
 
@@ -79,6 +112,12 @@ type OwnProps = {
    * @default false
    */
   disabled?: boolean;
+  /**
+   * If `true`, the select will be read-only.
+   *
+   * @default false
+   */
+  readOnly?: boolean;
   /**
    * If `true`, the select will have a searchbox.
    *
@@ -155,6 +194,7 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     keepMounted = false,
     disabled = false,
     searchable = false,
+    readOnly = false,
     multiple,
     defaultValue,
     value,
@@ -190,8 +230,6 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     multiple ? [] : "",
   );
 
-  const valueLabelsMapRef = React.useRef(new Map<string, string>());
-
   const [activeDescendant, setActiveDescendant] =
     React.useState<HTMLElement | null>(null);
 
@@ -200,6 +238,8 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   >(null);
 
   const rootRef = React.useRef<HTMLDivElement | null>(null);
+
+  const handleRootRef = useForkedRefs(rootRef, ref);
 
   const id = useDeterministicId(idProp, "styleless-ui__select");
 
@@ -238,7 +278,7 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const elementsRegistry = useElementsRegistry<RegisteredElementsKeys>();
 
   const handleOptionClick = (value: string) => {
-    if (disabled) return;
+    if (disabled || readOnly) return;
 
     let newValue: string | string[];
 
@@ -261,7 +301,7 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   };
 
   const handleOptionRemove = (value: string) => {
-    if (disabled) return;
+    if (disabled || readOnly) return;
 
     let newValue: string | string[];
 
@@ -272,7 +312,7 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   };
 
   const clearOptions = () => {
-    if (disabled) return;
+    if (disabled || readOnly) return;
 
     let newValue: string | string[];
 
@@ -293,22 +333,45 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   };
 
   const handleClearValues = (event: React.MouseEvent<HTMLElement>) => {
+    if (disabled || readOnly) return;
+
     event.stopPropagation();
 
     closeListAndMaintainFocus();
     clearOptions();
   };
 
+  const makeHandleOptionRemove =
+    (optionEntityValue: string) => (event: React.MouseEvent<HTMLElement>) => {
+      if (disabled || readOnly) return;
+
+      event.stopPropagation();
+
+      closeListAndMaintainFocus();
+      handleOptionRemove(optionEntityValue);
+    };
+
+  const values = normalizeValues(selectedValues);
+
   const renderProps: RenderProps = {
+    values,
     disabled,
+    searchable,
+    multiple,
+    readOnly,
+    open: isListOpen,
     hasSelectedValues: isAnyOptionSelected,
     clearValues: handleClearValues,
-    open: isListOpen,
+    makeRemoveOption: makeHandleOptionRemove,
   };
 
   const classNameProps: ClassNameProps = {
     disabled,
+    readOnly,
+    searchable,
+    multiple,
     open: isListOpen,
+    hasSelectedValues: isAnyOptionSelected,
   };
 
   const className =
@@ -321,21 +384,20 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       ? childrenProp(renderProps)
       : childrenProp;
 
-  const refCallback = (node: HTMLDivElement | null) => {
-    setRef(ref, node);
-    rootRef.current = node;
-  };
-
-  if (isListOpen && disabled) {
-    logger("You can't have an opened select menu when `disabled={true}`.", {
-      scope: "Select",
-      type: "warn",
-    });
+  if (isListOpen && (disabled || readOnly)) {
+    logger(
+      "You can't have an opened select menu when `disabled={true}` or `readOnly={true}`.",
+      {
+        scope: "Select",
+        type: "warn",
+      },
+    );
 
     closeList();
   }
 
   const context: SelectContextValue = {
+    readOnly,
     disabled,
     isListOpen,
     multiple,
@@ -345,7 +407,6 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     selectedValues,
     elementsRegistry,
     labelInfo,
-    valueLabelsMapRef,
     isAnyOptionSelected,
     filteredEntities,
     closeListAndMaintainFocus,
@@ -399,16 +460,17 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     "data-slot": RootSlot,
     "data-open": isListOpen ? "" : undefined,
     "data-disabled": disabled ? "" : undefined,
+    "data-readonly": readOnly ? "" : undefined,
   };
 
   return (
     <div
       {...otherProps}
       // @ts-expect-error React hasn't added `inert` yet
-      inert={disabled ? "" : undefined}
+      inert={disabled || readOnly ? "" : undefined}
       style={style}
       id={id}
-      ref={refCallback}
+      ref={handleRootRef}
       className={className}
       {...dataAttrs}
     >

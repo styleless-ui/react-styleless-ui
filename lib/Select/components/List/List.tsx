@@ -3,23 +3,22 @@ import { logger } from "../../../internals";
 import type { MergeElementProps, PropWithRenderContext } from "../../../types";
 import {
   componentWithForwardedRef,
-  isFragment,
-  setRef,
   useDeterministicId,
+  useForkedRefs,
+  useIsInitialRenderComplete,
 } from "../../../utils";
 import { SelectContext } from "../../context";
 import { ListRoot as ListRootSlot } from "../../slots";
-import EmptyStatement from "../EmptyStatement";
-import Group from "../Group";
-import Option from "../Option";
 import { calcSidePlacement } from "./utils";
 
-export type ClassNameProps = {
+export type RenderProps = {
   /**
    * The `open` state of the component.
    */
   open: boolean;
 };
+
+export type ClassNameProps = RenderProps;
 
 type OwnProps = {
   /**
@@ -29,7 +28,7 @@ type OwnProps = {
   /**
    * The content of the component.
    */
-  children?: React.ReactNode;
+  children?: PropWithRenderContext<React.ReactNode, RenderProps>;
 };
 
 export type Props = Omit<MergeElementProps<"div", OwnProps>, "">;
@@ -49,7 +48,11 @@ const ListBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const rootRef = React.useRef<HTMLDivElement>(null);
 
+  const handleRootRef = useForkedRefs(rootRef, ref);
+
   const [side, setSide] = React.useState<"top" | "bottom">("bottom");
+
+  const isInitialRenderComplete = useIsInitialRenderComplete();
 
   const previouslyFocusedElement = React.useRef<HTMLElement | null>(null);
 
@@ -96,13 +99,19 @@ const ListBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   };
 
   const refCallback = (node: HTMLDivElement | null) => {
-    setRef(rootRef, node);
-    setRef(ref, node);
+    handleRootRef(node);
 
     if (!node) return;
 
     const triggerId = ctx.elementsRegistry.getElementId("trigger");
+    const comboboxId = ctx.elementsRegistry.getElementId("combobox");
+
     const triggerNode = document.getElementById(triggerId ?? "");
+    const comboboxNode = document.getElementById(comboboxId ?? "");
+
+    comboboxNode?.setAttribute("aria-controls", id);
+
+    if (!isInitialRenderComplete) return;
 
     if (triggerNode) {
       setSide(calcSidePlacement(triggerNode, node));
@@ -115,46 +124,21 @@ const ListBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     }
   };
 
-  const children = React.Children.map(childrenProp, child => {
-    if (!React.isValidElement(child) || isFragment(child)) {
-      logger(
-        "The <Select.List> component doesn't accept `Fragment` or any invalid element as children.",
-        { scope: "Select.List", type: "error" },
-      );
-
-      return null;
-    }
-
-    if (
-      (child as React.ReactElement).type !== Option &&
-      (child as React.ReactElement).type !== Group &&
-      (child as React.ReactElement).type !== EmptyStatement
-    ) {
-      logger(
-        "The <Select.List> component only accepts " +
-          "<Select.Option>, <Select.Group>, and <Select.EmptyStatement> as children.",
-        { scope: "Select.List", type: "error" },
-      );
-
-      return null;
-    }
-
-    return child as React.ReactElement;
-  });
-
-  const renderCtx: ClassNameProps = {
-    open: ctx.isListOpen ?? false,
+  const renderProps: RenderProps = {
+    open: ctx.isListOpen,
   };
+
+  const classNameProps: ClassNameProps = renderProps;
+
+  const children =
+    typeof childrenProp === "function"
+      ? childrenProp(renderProps)
+      : childrenProp;
 
   const className =
     typeof classNameProp === "function"
-      ? classNameProp(renderCtx)
+      ? classNameProp(classNameProps)
       : classNameProp;
-
-  const dataAttrs = {
-    "data-slot": ListRootSlot,
-    "data-open": ctx.isListOpen,
-  };
 
   return (
     <div
@@ -168,7 +152,8 @@ const ListBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       role="listbox"
       aria-multiselectable={ctx.multiple}
       className={className}
-      {...dataAttrs}
+      data-slot={ListRootSlot}
+      data-open={ctx.isListOpen ? "" : undefined}
     >
       {children}
     </div>

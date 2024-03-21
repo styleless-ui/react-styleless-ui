@@ -14,10 +14,10 @@ const useElementsRegistry = <
 >(): ElementsRegistry<Key> => {
   const registryRef = React.useRef(new Map() as Registry<Key>);
 
-  const getRegistry = React.useCallback(() => registryRef.current, []);
-
   return React.useMemo(() => {
     type T = ElementsRegistry<Key>;
+
+    const getRegistry = () => registryRef.current;
 
     const registerElement: T["registerElement"] = (key, id) => {
       const registry = getRegistry();
@@ -43,7 +43,7 @@ const useElementsRegistry = <
       getElementId,
       getRegistry,
     };
-  }, [getRegistry]);
+  }, []);
 };
 
 export default useElementsRegistry;

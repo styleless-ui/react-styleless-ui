@@ -1,5 +1,6 @@
 import * as React from "react";
 import { flushSync } from "react-dom";
+import { SystemKeys } from "../../../internals";
 import {
   isPrintableKey,
   useEventCallback,
@@ -9,11 +10,11 @@ import {
   useIsomorphicLayoutEffect,
   useJumpToChar,
   useOnChange,
-} from ".";
-import { SystemKeys } from "../internals";
+} from "../../../utils";
 
 type Props<T extends HTMLElement> = {
   disabled: boolean;
+  readOnly: boolean;
   autoFocus: boolean;
   searchable: boolean;
   activeDescendant: HTMLElement | null;
@@ -22,10 +23,9 @@ type Props<T extends HTMLElement> = {
   onBlur?: React.FocusEventHandler<T>;
   onFocus?: React.FocusEventHandler<T>;
   onKeyDown?: React.KeyboardEventHandler<T>;
-  onKeyUp?: React.KeyboardEventHandler<T>;
   onPrintableKeyDown?: React.KeyboardEventHandler<T>;
   onEscapeKeyDown?: React.KeyboardEventHandler<T>;
-  onBackSpaceKeyDown?: React.KeyboardEventHandler<T>;
+  onBackspaceKeyDown?: React.KeyboardEventHandler<T>;
   onInputChange?: React.ChangeEventHandler<HTMLInputElement>;
   getListItems: () => HTMLElement[];
   onFilteredEntities: (entities: null | string[]) => void;
@@ -33,26 +33,26 @@ type Props<T extends HTMLElement> = {
   onActiveDescendantChange: (nextActiveDescendant: HTMLElement | null) => void;
 };
 
-const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
+export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
   const {
     onClick,
     onBlur,
     onFocus,
     onKeyDown,
-    onKeyUp,
     onInputChange,
     onPrintableKeyDown,
     onEscapeKeyDown,
-    onBackSpaceKeyDown,
+    onBackspaceKeyDown,
     getListItems,
     onActiveDescendantChange,
     onListOpenChange,
     onFilteredEntities,
     listOpenState,
     activeDescendant,
-    searchable = false,
-    disabled = false,
-    autoFocus = false,
+    searchable,
+    disabled,
+    readOnly,
+    autoFocus,
   } = props;
 
   const isMounted = useIsMounted();
@@ -76,10 +76,10 @@ const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
   const isSelectOnly = !searchable;
 
   const [isFocusedVisible, setIsFocusedVisible] = React.useState(() =>
-    disabled ? false : autoFocus,
+    disabled || readOnly ? false : autoFocus,
   );
 
-  if (disabled && isFocusedVisible) setIsFocusedVisible(false);
+  if ((disabled || readOnly) && isFocusedVisible) setIsFocusedVisible(false);
 
   // Sync focus visible states
   React.useEffect(() => void (isFocusVisibleRef.current = isFocusedVisible));
@@ -100,15 +100,16 @@ const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
   });
 
   const handleClick = useEventCallback<React.MouseEvent<T>>(event => {
-    event.preventDefault();
+    if (disabled || readOnly || !isMounted()) return;
 
-    if (disabled || !isMounted()) return;
+    event.preventDefault();
+    event.stopPropagation();
 
     onClick?.(event);
   });
 
   const handleFocus = useEventCallback<React.FocusEvent<T>>(event => {
-    if (disabled || !isMounted()) return;
+    if (disabled || readOnly || !isMounted()) return;
 
     // Fix for https://github.com/facebook/react/issues/7769
     if (!ref.current) ref.current = event.currentTarget;
@@ -121,7 +122,7 @@ const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
   });
 
   const handleBlur = useEventCallback<React.FocusEvent<T>>(event => {
-    if (disabled || !isMounted()) return;
+    if (disabled || readOnly || !isMounted()) return;
 
     handleBlurVisible(event);
 
@@ -131,9 +132,7 @@ const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
   });
 
   const handleKeyDown = useEventCallback<React.KeyboardEvent<T>>(event => {
-    if (disabled || !isMounted()) return;
-
-    onKeyDown?.(event);
+    if (disabled || readOnly || !isMounted()) return;
 
     const getAvailableItem = (
       items: (HTMLElement | null)[],
@@ -160,6 +159,21 @@ const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
       return item;
     };
 
+    const getInitialAvailableItem = (
+      items: (HTMLElement | null)[],
+      forward: boolean,
+    ) => {
+      const selectedItems = items.filter(item =>
+        item?.hasAttribute("data-selected"),
+      );
+
+      return getAvailableItem(
+        selectedItems.length > 0 ? selectedItems : items,
+        0,
+        forward,
+      );
+    };
+
     switch (event.key) {
       case SystemKeys.DOWN: {
         event.preventDefault();
@@ -170,22 +184,22 @@ const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
           });
 
           const items = getListItems();
-          const nextActive = getAvailableItem(items, 0, true);
+          const nextActive = getInitialAvailableItem(items, true);
 
           onActiveDescendantChange(nextActive);
 
-          return;
+          break;
         }
 
         const items = getListItems();
+        let nextActive: HTMLElement | null = null;
 
-        const currentIdx = activeDescendant
-          ? items.findIndex(item => item === activeDescendant)
-          : -1;
+        if (activeDescendant) {
+          const currentIdx = items.findIndex(item => item === activeDescendant);
+          const nextIdx = (currentIdx + 1) % items.length;
 
-        const nextIdx = (currentIdx + 1) % items.length;
-
-        const nextActive = getAvailableItem(items, nextIdx, true);
+          nextActive = getAvailableItem(items, nextIdx, true);
+        } else nextActive = getInitialAvailableItem(items, true);
 
         onActiveDescendantChange(nextActive);
 
@@ -201,25 +215,25 @@ const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
           });
 
           const items = getListItems();
-          const nextActive = getAvailableItem(items, 0, true);
+          const nextActive = getInitialAvailableItem(items, true);
 
           onActiveDescendantChange(nextActive);
 
-          return;
+          break;
         }
 
         const items = getListItems();
+        let nextActive: HTMLElement | null = null;
 
-        const currentIdx = activeDescendant
-          ? items.findIndex(item => item === activeDescendant)
-          : -1;
+        if (activeDescendant) {
+          const currentIdx = items.findIndex(item => item === activeDescendant);
+          const nextIdx =
+            currentIdx === -1
+              ? 0
+              : (currentIdx - 1 + items.length) % items.length;
 
-        const nextIdx =
-          currentIdx === -1
-            ? 0
-            : (currentIdx - 1 + items.length) % items.length;
-
-        const nextActive = getAvailableItem(items, nextIdx, false);
+          nextActive = getAvailableItem(items, nextIdx, false);
+        } else nextActive = getInitialAvailableItem(items, false);
 
         onActiveDescendantChange(nextActive);
 
@@ -229,21 +243,10 @@ const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
       case SystemKeys.HOME: {
         event.preventDefault();
 
-        if (!listOpenState) {
-          flushSync(() => {
-            onListOpenChange(true);
-          });
-
-          const items = getListItems();
-          const nextActive = getAvailableItem(items, 0, true);
-
-          onActiveDescendantChange(nextActive);
-
-          return;
-        }
+        if (!listOpenState) break;
 
         const items = getListItems();
-        const nextActive = getAvailableItem(items, 0, false);
+        const nextActive = getAvailableItem(items, 0, true);
 
         onActiveDescendantChange(nextActive);
 
@@ -253,18 +256,7 @@ const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
       case SystemKeys.END: {
         event.preventDefault();
 
-        if (!listOpenState) {
-          flushSync(() => {
-            onListOpenChange(true);
-          });
-
-          const items = getListItems();
-          const nextActive = getAvailableItem(items, items.length - 1, true);
-
-          onActiveDescendantChange(nextActive);
-
-          return;
-        }
+        if (!listOpenState) break;
 
         const items = getListItems();
         const nextActive = getAvailableItem(items, items.length - 1, false);
@@ -275,20 +267,25 @@ const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
       }
 
       case SystemKeys.ESCAPE: {
-        return onEscapeKeyDown?.(event);
+        event.preventDefault();
+        onEscapeKeyDown?.(event);
+
+        break;
       }
 
       case SystemKeys.TAB: {
-        return onListOpenChange(false);
+        onListOpenChange(false);
+        break;
       }
 
       case SystemKeys.BACKSPACE: {
-        return onBackSpaceKeyDown?.(event);
+        onBackspaceKeyDown?.(event);
+        break;
       }
 
       case SystemKeys.ENTER: {
         if (!listOpenState) {
-          if (!isSelectOnly) return;
+          if (!isSelectOnly) break;
 
           event.preventDefault();
           event.currentTarget.click();
@@ -307,16 +304,16 @@ const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
           if (!listOpenState) event.currentTarget.click();
           else activeDescendant?.click();
 
-          return;
+          break;
         }
 
         if (isSelectOnly) {
           if (isPrintableKey(event.key)) jumpToChar(event);
 
-          return;
+          break;
         }
 
-        if (!isPrintableKey(event.key)) return;
+        if (!isPrintableKey(event.key)) break;
 
         if (!listOpenState) onListOpenChange(true);
 
@@ -325,18 +322,14 @@ const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
         break;
       }
     }
-  });
 
-  const handleKeyUp = useEventCallback<React.KeyboardEvent<T>>(event => {
-    if (disabled || !isMounted()) return;
-
-    onKeyUp?.(event);
+    onKeyDown?.(event);
   });
 
   const handleQueryChange = useEventCallback<
     React.ChangeEvent<HTMLInputElement>
   >(event => {
-    if (disabled || !isMounted()) return;
+    if (disabled || readOnly || !isMounted()) return;
 
     const target = event.target;
 
@@ -365,7 +358,6 @@ const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
     handleClick,
     handleFocus,
     handleKeyDown,
-    handleKeyUp,
     handleRef,
   };
 };

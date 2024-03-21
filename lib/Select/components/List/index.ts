@@ -1,2 +1,6 @@
-export type * from "./List";
-export { default } from "./List";
+export {
+  default,
+  type ClassNameProps as ListClassNameProps,
+  type Props as ListProps,
+  type RenderProps as ListRenderProps,
+} from "./List";
