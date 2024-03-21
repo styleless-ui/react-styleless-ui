@@ -26,7 +26,6 @@ export type Diff<T, U> = T extends U ? never : T;
 /** Removes types from T that are not assignable to U */
 export type Filter<T, U> = T extends U ? T : never;
 
-/** Constructs a type by including null and undefined to Type. */
 export type Nullable<T> = { [P in keyof T]: T[P] | null | undefined };
 
 export type NotUndefined<T> = T extends undefined ? never : T;
@@ -47,11 +46,6 @@ export type OverridableStringUnion<
   T,
   U = EmptyObjectNotation,
 > = GenerateStringUnion<Overwrite<T, U>>;
-
-export type MergeElementProps<
-  E extends React.ElementType,
-  P = EmptyObjectNotation,
-> = Overwrite<React.ComponentPropsWithRef<E>, P>;
 
 /**
  * Helps create a type where at least one of the properties of an interface is required to exist.
@@ -75,6 +69,11 @@ export type RequireOnlyOne<T, Keys extends keyof T = keyof T> = Pick<
     [K in Keys]-?: Required<Pick<T, K>> &
       Partial<Record<Diff<Keys, K>, undefined>>;
   }[Keys];
+
+export type MergeElementProps<
+  E extends React.ElementType,
+  P = EmptyObjectNotation,
+> = Overwrite<React.ComponentPropsWithRef<E>, P>;
 
 export type Classes<StringUnion extends string> = Partial<
   Record<StringUnion, string>
@@ -150,3 +149,7 @@ export interface PolymorphicComponent<
     props: PolymorphicProps<E, EnsureCommonProps<E, P>>,
   ): JSX.Element | null;
 }
+
+export type BivarianceHack<TFunction extends AnyFunction> = {
+  bivarianceHack(...args: Parameters<TFunction>): ReturnType<TFunction>;
+}["bivarianceHack"];
