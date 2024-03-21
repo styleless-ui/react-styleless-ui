@@ -1,10 +1,7 @@
 export const Root = "Select:Root";
+export const ControllerRoot = "Select:Controller:Root";
 export const TriggerRoot = "Select:Trigger:Root";
-export const TriggerPlaceholder = "Select:Trigger:Placeholder";
-export const TriggerInputSearch = "Select:Trigger:InputSearch";
-export const TriggerValues = "Select:Trigger:Values";
 export const GroupRoot = "Select:Group:Root";
-export const GroupLabel = "Select:Group:Label";
 export const ListRoot = "Select:List:Root";
 export const OptionRoot = "Select:Option:Root";
 export const EmptyStatementRoot = "Select:EmptyStatement:Root";

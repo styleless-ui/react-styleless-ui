@@ -1,32 +1,37 @@
 import * as React from "react";
 import { getLabelInfo, logger } from "../../internals";
-import type { Classes, MergeElementProps } from "../../types";
+import type { MergeElementProps, PropWithRenderContext } from "../../types";
 import {
   componentWithForwardedRef,
-  isFragment,
+  setRef,
   useDeterministicId,
 } from "../../utils";
 import { SelectContext } from "../context";
-import {
-  GroupLabel as GroupLabelSlot,
-  GroupRoot as GroupRootSlot,
-} from "../slots";
-import Option, { type Props as OptionProps } from "./Option";
+import { GroupRoot as GroupRootSlot } from "../slots";
+
+export type RenderProps = {
+  /**
+   * The `hidden` state of the component.
+   * If no descendant option is visible, it's going to be `true`.
+   */
+  hidden: boolean;
+};
+
+export type ClassNameProps = RenderProps;
 
 type OwnProps = {
   /**
    * The content of the component.
    */
-  children?: React.ReactNode;
+  children?: PropWithRenderContext<React.ReactNode, RenderProps>;
   /**
-   * Map of sub-components and their correlated classNames.
+   * The className applied to the component.
    */
-  classes?: Classes<"root" | "label">;
+  className?: PropWithRenderContext<string, ClassNameProps>;
   /**
    * The label of the component.
    */
   label:
-    | string
     | {
         /**
          * The label to use as `aria-label` property.
@@ -45,25 +50,61 @@ type OwnProps = {
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,
-  "className" | "defaultChecked" | "defaultValue"
+  "defaultChecked" | "defaultValue"
 >;
 
 const GroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     id: idProp,
-    style: styleProp,
     label,
-    classes,
+    className: classNameProp,
     children: childrenProp,
     ...otherProps
   } = props;
 
   const id = useDeterministicId(idProp, "styleless-ui__select__group");
-  const visibleLabelId = id ? `${id}__label` : undefined;
 
-  const labelProps = getLabelInfo(label, "Select.Group");
+  const labelInfo = getLabelInfo(label, "Select.Group", {
+    customErrorMessage: [
+      "Invalid `label` property.",
+      "The `label` property must be in shape of " +
+        "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
+    ].join("\n"),
+  });
 
   const ctx = React.useContext(SelectContext);
+
+  const [isHidden, setIsHidden] = React.useState(false);
+
+  const refCallback = React.useCallback(
+    (node: HTMLDivElement | null) => {
+      setRef(ref, node);
+
+      if (!node) return;
+
+      const filtered = ctx?.filteredEntities;
+
+      if (filtered == null) return;
+
+      let hidden = false;
+
+      if (filtered.length === 0) hidden = true;
+      else {
+        const options = Array.from(
+          node.querySelectorAll<HTMLElement>("[role='option']"),
+        );
+
+        hidden = options.every(option => {
+          const entityName = option.getAttribute("data-entity");
+
+          return !filtered.some(entity => entity === entityName);
+        });
+      }
+
+      setIsHidden(hidden);
+    },
+    [ctx?.filteredEntities, ref],
+  );
 
   if (!ctx) {
     logger("You have to use this component as a descendant of <Select.Root>.", {
@@ -74,83 +115,35 @@ const GroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     return null;
   }
 
-  const children = React.Children.map(childrenProp, child => {
-    if (!React.isValidElement(child) || isFragment(child)) {
-      logger(
-        "The <Select.Group> component doesn't accept `Fragment` or any invalid element as children.",
-        { scope: "Select.Group", type: "error" },
-      );
-
-      return null;
-    }
-
-    if ((child as React.ReactElement).type !== Option) {
-      logger(
-        "The `<Select.Group>` component only accepts `<Select.Option>` as children.",
-        { scope: "Select.Group", type: "error" },
-      );
-
-      return null;
-    }
-
-    return child as React.ReactElement<OptionProps>;
-  });
-
-  if (React.Children.count(children) === 0) return null;
-
-  let isHidden = false;
-  const filteredEntities = ctx.filteredEntities;
-
-  if (filteredEntities != null) {
-    if (filteredEntities.length === 0) isHidden = true;
-    else {
-      isHidden = React.Children.toArray(children)
-        .filter(Boolean)
-        .every(child => {
-          const entityName = (child as React.ReactElement<OptionProps>).props
-            .value;
-
-          return !filteredEntities.some(entity => entity === entityName);
-        });
-    }
-  }
-
-  const renderLabel = () => {
-    if (!labelProps.visibleLabel) return null;
-
-    return (
-      <span
-        id={visibleLabelId}
-        data-slot={GroupLabelSlot}
-        className={classes?.label}
-      >
-        {labelProps.visibleLabel}
-      </span>
-    );
+  const renderProps: RenderProps = {
+    hidden: isHidden,
   };
 
-  const style: React.CSSProperties = {
-    ...(styleProp ?? {}),
-    display: isHidden ? "none" : undefined,
-  };
+  const classNameProps: ClassNameProps = renderProps;
+
+  const children =
+    typeof childrenProp === "function"
+      ? childrenProp(renderProps)
+      : childrenProp;
+
+  const className =
+    typeof classNameProp === "function"
+      ? classNameProp(classNameProps)
+      : classNameProp;
 
   return (
     <div
       {...otherProps}
       id={id}
-      style={style}
-      ref={ref}
+      ref={refCallback}
       role="group"
-      aria-label={labelProps.srOnlyLabel}
+      aria-label={labelInfo.srOnlyLabel}
+      aria-labelledby={labelInfo.labelledBy}
       aria-hidden={isHidden}
-      aria-labelledby={
-        labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
-      }
       data-slot={GroupRootSlot}
       data-hidden={isHidden ? "" : undefined}
-      className={classes?.root}
+      className={className}
     >
-      {renderLabel()}
       {children}
     </div>
   );

@@ -70,17 +70,21 @@ export * from "./RadioGroup";
 export { default as RadioGroup } from "./RadioGroup";
 export * as Select from "./Select";
 export type {
+  ControllerClassNameProps as SelectControllerClassNameProps,
+  ControllerProps as SelectControllerProps,
   EmptyStatementProps as SelectEmptyStatementProps,
+  GroupClassNameProps as SelectGroupClassNameProps,
   GroupProps as SelectGroupProps,
+  GroupRenderProps as SelectGroupRenderProps,
   ListClassNameProps as SelectListClassNameProps,
   ListProps as SelectListProps,
+  ListRenderProps as SelectListRenderProps,
   OptionClassNameProps as SelectOptionClassNameProps,
   OptionProps as SelectOptionProps,
   OptionRenderProps as SelectOptionRenderProps,
   RootClassNameProps as SelectRootClassNameProps,
   RootProps as SelectRootProps,
   RootRenderProps as SelectRootRenderProps,
-  TriggerClassNameProps as SelectTriggerClassNameProps,
   TriggerProps as SelectTriggerProps,
 } from "./Select";
 export * as SpinButton from "./SpinButton";

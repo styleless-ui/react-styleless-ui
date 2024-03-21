@@ -26,6 +26,11 @@ export type RenderProps = {
    * The `selected` state of the component.
    */
   selected: boolean;
+  /**
+   * The `hidden` state of the component.
+   * If it doesn't exist in the search results, it's going to be `true`.
+   */
+  hidden: boolean;
 };
 
 export type ClassNameProps = RenderProps;
@@ -84,16 +89,10 @@ const OptionBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const handleRootRef = useForkedRefs(rootRef, ref);
 
-  React.useEffect(() => {
-    const labelsMap = ctx?.valueLabelsMapRef.current;
-
-    if (!labelsMap) return;
-
-    labelsMap.set(value, valueLabel);
-  }, [ctx?.valueLabelsMapRef, value, valueLabel]);
-
   const handleClick = useEventCallback<React.MouseEvent<HTMLDivElement>>(
     event => {
+      if (disabled || ctx?.disabled || ctx?.readOnly) return;
+
       const comboboxId = ctx?.elementsRegistry.getElementId("combobox");
       const comboboxNode = document.getElementById(comboboxId ?? "");
 
@@ -105,6 +104,8 @@ const OptionBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const handleMouseEnter = useEventCallback<React.MouseEvent<HTMLDivElement>>(
     event => {
+      if (disabled || ctx?.disabled || ctx?.readOnly) return;
+
       if (event.currentTarget === rootRef.current) {
         ctx?.setActiveDescendant(rootRef.current);
       }
@@ -115,6 +116,8 @@ const OptionBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const handleMouseLeave = useEventCallback<React.MouseEvent<HTMLDivElement>>(
     event => {
+      if (disabled || ctx?.disabled || ctx?.readOnly) return;
+
       ctx?.setActiveDescendant(null);
 
       onMouseLeave?.(event);
@@ -144,18 +147,23 @@ const OptionBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     else isHidden = !filteredEntities.some(entity => entity === value);
   }
 
-  const renderCtx: RenderProps = {
+  const renderProps: RenderProps = {
     disabled,
+    hidden: isHidden,
     selected: isSelected,
     active: isActive,
   };
 
+  const classNameProps: ClassNameProps = renderProps;
+
   const children =
-    typeof childrenProp === "function" ? childrenProp(renderCtx) : childrenProp;
+    typeof childrenProp === "function"
+      ? childrenProp(renderProps)
+      : childrenProp;
 
   const className =
     typeof classNameProp === "function"
-      ? classNameProp(renderCtx)
+      ? classNameProp(classNameProps)
       : classNameProp;
 
   const dataAttrs = {
