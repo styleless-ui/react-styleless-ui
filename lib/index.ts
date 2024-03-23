@@ -31,8 +31,20 @@ export type {
   RootRenderProps as ExpandableRootRenderProps,
   TriggerProps as ExpandableTriggerProps,
 } from "./Expandable";
-export * from "./InputSlider";
-export { default as InputSlider } from "./InputSlider";
+export * as InputSlider from "./InputSlider";
+export type {
+  InfimumThumbClassNameProps as InputSliderInfimumThumbClassNameProps,
+  InfimumThumbProps as InputSliderInfimumThumbProps,
+  InfimumThumbRenderProps as InputSliderInfimumThumbRenderProps,
+  RangeProps as InputSliderRangeProps,
+  RootClassNameProps as InputSliderRootClassNameProps,
+  RootProps as InputSliderRootProps,
+  StopSegment as InputSliderStopSegment,
+  SupremumThumbClassNameProps as InputSliderSupremumThumbClassNameProps,
+  SupremumThumbProps as InputSliderSupremumThumbProps,
+  SupremumThumbRenderProps as InputSliderSupremumThumbRenderProps,
+  TrackProps as InputSliderTrackProps,
+} from "./InputSlider";
 export * as Menu from "./Menu";
 export type {
   CheckItemClassNameProps as MenuCheckItemClassNameProps,
@@ -133,4 +145,11 @@ export type {
   RootRenderProps as TreeViewRootRenderProps,
   SubTreeProps as TreeViewSubTreeProps,
 } from "./TreeView";
-export type { MergeElementProps, PolymorphicProps } from "./types";
+export type {
+  BoundingClientRect,
+  MergeElementProps,
+  PolymorphicComponent,
+  PolymorphicProps,
+  PropWithRenderContext,
+  VirtualElement,
+} from "./types";

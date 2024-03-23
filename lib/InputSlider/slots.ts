@@ -1,10 +1,5 @@
 export const Root = "InputSlider:Root";
-export const Track = "InputSlider:Track";
-export const Range = "InputSlider:Range";
-export const InfimumThumb = "InputSlider:Thumb:Infimum";
-export const SupremumThumb = "InputSlider:Thumb:Supremum";
-export const ThumbText = "InputSlider:Thumb:Text";
-export const Segments = "InputSlider:Segments";
-export const Segment = "InputSlider:Segment";
-export const SegmentMark = "InputSlider:Segment:Mark";
-export const SegmentLabel = "InputSlider:Segment:Label";
+export const TrackRoot = "InputSlider:Track:Root";
+export const RangeRoot = "InputSlider:Range:Root";
+export const InfimumThumbRoot = "InputSlider:Thumb:Infimum:Root";
+export const SupremumThumbRoot = "InputSlider:Thumb:Supremum:Root";

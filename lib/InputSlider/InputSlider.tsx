@@ -1,106 +1,84 @@
 import * as React from "react";
-import {
-  SystemError,
-  SystemKeys,
-  combineClasses,
-  disableUserSelectCSSProperties,
-  getLabelInfo,
-} from "../internals";
-import type { ClassesWithRenderContext, MergeElementProps } from "../types";
+import { SystemError, SystemKeys } from "../internals";
+import type { MergeElementProps, PropWithRenderContext } from "../types";
 import {
   clamp,
   componentWithForwardedRef,
   getBoundingClientRect,
   inLerp,
   remap,
-  useButtonBase,
   useControlledProp,
   useEventCallback,
   useEventListener,
   useForkedRefs,
   useIsMounted,
 } from "../utils";
-import { Segment, Thumb } from "./components";
+import { InputSliderContext, type InputSliderContextValue } from "./context";
 import * as Slots from "./slots";
+import type {
+  Orientation,
+  Positions,
+  StopSegment,
+  ThumbInfo,
+  ThumbState,
+  ThumbsInfo,
+} from "./types";
 import { getNearestThumb, getRelativeValue } from "./utils";
 
 type ActiveThumb = {
-  index: 0 | 1;
-  name: "infimum" | "supremum";
+  index: ThumbInfo["index"];
+  name: ThumbInfo["name"];
   element: HTMLDivElement;
 };
 
-type ThumbState = {
-  active: boolean;
-  zIndex: number;
-};
-
-export type Segment = { length: number; label?: string | React.ReactNode };
-
-export type ThumbInfo = {
-  index: 0 | 1;
-  name: "infimum" | "supremum";
-  value: number;
-  minValue: number;
-  maxValue: number;
-  state: ThumbState;
-  ref: React.RefCallback<HTMLDivElement | undefined>;
-  setState: React.Dispatch<React.SetStateAction<ThumbState>>;
-  label: { srOnlyLabel?: string; labelledBy?: string };
-};
-
-export type ClassNameProps = {
+export type RenderProps = {
+  /**
+   * The `value` state of the component.
+   */
+  value: number | [number, number];
   /**
    * The `disabled` state of the component.
    */
   disabled: boolean;
   /**
+   * The `readOnly` state of the component.
+   */
+  readOnly: boolean;
+  /**
+   * Determines whether any thumb is being dragged or not.
+   */
+  dragging: boolean;
+  /**
    * The orientation of the component.
    */
   orientation: "horizontal" | "vertical";
   /**
-   * The state of the infimum thumb component.
+   * The created stop segments associated with `stops` prop.
    */
-  infimumThumbState: { active: boolean; focusedVisible: boolean };
+  stopSegments: StopSegment[];
   /**
-   * The state of the supremum thumb component.
+   * A helper function which gets the index of a stop segment,
+   * then moves the nearest thumb to the position of that stop segment.
+   *
+   * Only works when there are stop segments created by `stops` prop.
    */
-  supremumThumbState: { active: boolean; focusedVisible: boolean };
+  goToStopSegment: (segmentIdx: number) => void;
 };
 
-type Label =
-  | {
-      /**
-       * The label to use as `aria-label` property.
-       */
-      screenReaderLabel: string;
-    }
-  | {
-      /**
-       * Identifies the element (or elements) that labels the component.
-       *
-       * @see {@link https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-labelledby MDN Web Docs} for more information.
-       */
-      labelledBy: string;
-    };
+export type ClassNameProps = Omit<
+  RenderProps,
+  "goToStopSegment" | "value" | "stopSegments"
+>;
 
 type OwnProps = {
   /**
-   * Map of sub-components and their correlated classNames.
+   * The content of the component.
    */
-  classes?: ClassesWithRenderContext<
-    | "root"
-    | "track"
-    | "range"
-    | "thumb"
-    | "infimumThumb"
-    | "supremumThumb"
-    | "segments"
-    | "segment"
-    | "segmentMark"
-    | "segmentLabel",
-    ClassNameProps
-  >;
+  children?: PropWithRenderContext<React.ReactNode, RenderProps>;
+  /**
+   * The className applied to the component.
+   */
+  className?: PropWithRenderContext<string, ClassNameProps>;
   /**
    * If `true`, the slider will be disabled.
    *
@@ -108,15 +86,19 @@ type OwnProps = {
    */
   disabled?: boolean;
   /**
+   * If `true`, the slider will be read-only.
+   *
+   * @default false
+   */
+  readOnly?: boolean;
+  /**
    * If `true`, the slider will be a ranged slider.
    */
   multiThumb: boolean;
   /**
    * The orientation of the slider.
-   *
-   * @default "horizontal"
    */
-  orientation?: "horizontal" | "vertical";
+  orientation: Orientation;
   /**
    * The minimum allowed value of the slider. Should not be greater than or equal to `max`.
    */
@@ -139,19 +121,10 @@ type OwnProps = {
    * When stops is a number, evenly-spaced stops will be created
    * (the number indicates the amount of stops to create).
    *
-   * When an array is provided, it should contain objects with value and an optional label keys.
+   * When an array of number is provided,
+   * each number indicates the position in which a stop is created.
    */
-  stops?: number | { value: number; label?: string | React.ReactNode }[];
-  /**
-   * Accepts a render function which returns a ReactNode to display the value text of the slider.
-   *
-   * The third parameter (`valueText`) is going to be the result of the `setThumbValueText` function.
-   */
-  renderThumbValueText?: (
-    thumbValue: number,
-    isOpen: boolean,
-    valueText: string,
-  ) => React.ReactNode;
+  stops?: number | number[];
   /**
    * A function which returns a string value that provides a user-friendly name
    * for the current value of the slider. This is important for screen reader users.
@@ -161,20 +134,16 @@ type OwnProps = {
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,
-  | "children"
-  | "className"
   | "defaultChecked"
   | "defaultValue"
+  | "value"
+  | "checked"
   | "onChange"
   | "onChangeCapture"
 > &
   (
     | {
         multiThumb: false;
-        /**
-         * The label of the slider(s).
-         */
-        label: Label;
         /**
          * The value of the slider. For ranged sliders, provide an array with two values.
          */
@@ -186,25 +155,21 @@ export type Props = Omit<
         /**
          * Callback fired when the slider's value changes.
          */
-        onValueChange?: (
-          value: number,
-          activeThumb: ActiveThumb | null,
-        ) => void;
+        onValueChange?: (value: number) => void;
       }
     | {
         multiThumb: true;
-        label: [Label, Label];
         value?: [number, number];
         defaultValue?: [number, number];
-        onValueChange?: (
-          value: [number, number],
-          activeThumb: ActiveThumb | null,
-        ) => void;
+        onValueChange?: (value: [number, number]) => void;
       }
   );
 
 const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
+    style: styleProp,
+    className: classNameProp,
+    children: childrenProp,
     max,
     min,
     step,
@@ -212,15 +177,12 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     onValueChange,
     onClick,
     setThumbValueText,
-    renderThumbValueText,
     value: valueProp,
     defaultValue,
-    label: labels,
-    classes: classesProp,
-    style: inlineStyle,
-    orientation = "horizontal",
+    orientation,
     multiThumb = false,
     disabled = false,
+    readOnly = false,
     ...otherProps
   } = props;
 
@@ -252,46 +214,20 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     multiThumb ? [min, max] : max,
   );
 
-  if (multiThumb) {
-    if (!Array.isArray(value)) {
-      throw new SystemError(
-        "The `value` and `defaultValue` " +
-          "should be an array of exactly two numbers when `multiThumb={true}.`",
-        "InputSlider",
-      );
-    }
-
-    if (!Array.isArray(labels)) {
-      throw new SystemError(
-        "The `label` property " +
-          "should be an array of exactly two labels when `multiThumb={true}.`",
-        "InputSlider",
-      );
-    }
+  if (multiThumb && !Array.isArray(value)) {
+    throw new SystemError(
+      "The `value` and `defaultValue` " +
+        "should be an array of exactly two numbers when `multiThumb={true}.`",
+      "InputSlider",
+    );
   }
 
-  if (!multiThumb) {
-    if (typeof value !== "number") {
-      throw new SystemError(
-        "The `value` and `defaultValue` " +
-          "should be a number when `multiThumb={false}.`",
-        "InputSlider",
-      );
-    }
-
-    if (
-      Array.isArray(labels) ||
-      (typeof labels !== "object" &&
-        !("screenReaderLabel" in labels) &&
-        !("labelledBy" in labels))
-    ) {
-      throw new SystemError(
-        "The `label` property " +
-          "should be an object of shape `{ screenReaderLabel: string }` " +
-          "or `{ labelledBy: string }` when `multiThumb={true}.`",
-        "InputSlider",
-      );
-    }
+  if (!multiThumb && typeof value !== "number") {
+    throw new SystemError(
+      "The `value` and `defaultValue` " +
+        "should be a number when `multiThumb={false}.`",
+      "InputSlider",
+    );
   }
 
   const valueState = (() => {
@@ -310,26 +246,32 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     } else return clamp(value, min, max);
   })();
 
-  const segments: Segment[] = React.useMemo(() => {
+  const stopSegments: StopSegment[] = React.useMemo(() => {
     if (typeof stops === "number") {
       if (stops === 0) return [];
 
       const segArr = Array(stops + 1).fill({
         length: 100 / stops,
-      }) as Segment[];
+      }) as StopSegment[];
 
-      return segArr.map((seg, idx) => ({ length: seg.length * idx }));
+      return segArr.map((seg, idx) => ({
+        length: seg.length * idx,
+        index: idx,
+      }));
     }
 
     if (!stops) return [];
 
-    return stops.reduce(
-      (result, { value, label }) => [
-        ...result,
-        { label, length: inLerp(0, max, value) * 100 },
-      ],
-      [] as Segment[],
-    );
+    return stops.reduce((result, currentStop, idx) => {
+      const segment: StopSegment = {
+        length: inLerp(0, max, currentStop) * 100,
+        index: idx,
+      };
+
+      result.push(segment);
+
+      return result;
+    }, [] as StopSegment[]);
   }, [stops, max]);
 
   const isMounted = useIsMounted();
@@ -339,17 +281,97 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const [isDragStarted, setIsDragStarted] = React.useState(false);
   const [isClickAllowed, setIsClickAllowed] = React.useState(true);
 
-  const [valueDisplayState, setValueDisplayState] = React.useState({
-    infimum: false,
-    supremum: false,
-  });
-
   const rootRef = React.useRef<HTMLDivElement>(null);
   const handleRootRef = useForkedRefs(ref, rootRef);
+
+  const infimumRef = React.useRef<HTMLDivElement>(null);
+  const supremumRef = React.useRef<HTMLDivElement>(null);
+
+  const [infimumState, setInfimumState] = React.useState<ThumbState>({
+    active: false,
+    zIndex: 1,
+  });
+
+  const [supremumState, setSupremumState] = React.useState<ThumbState>({
+    active: false,
+    zIndex: 1,
+  });
+
+  const getThumbsInfo = (): ThumbsInfo => {
+    const infimumValue = multiThumb ? (valueState as [number, number])[0] : min;
+
+    const supremumValue = multiThumb
+      ? (valueState as [number, number])[1]
+      : (valueState as number);
+
+    return {
+      infimum: {
+        index: 0,
+        name: "infimum",
+        value: infimumValue,
+        minValue: min,
+        maxValue: supremumValue,
+        ref: infimumRef,
+        state: infimumState,
+        setState: setInfimumState,
+      },
+      supremum: {
+        index: 1,
+        name: "supremum",
+        value: supremumValue,
+        minValue: infimumValue,
+        maxValue: max,
+        ref: supremumRef,
+        state: supremumState,
+        setState: setSupremumState,
+      },
+    };
+  };
+
+  const getPositions = (): Positions => {
+    const thumbsInfo = getThumbsInfo();
+
+    const infimum = inLerp(0, max, thumbsInfo.infimum.value) * 100;
+    const supremum = inLerp(max, 0, thumbsInfo.supremum.value) * 100;
+
+    const range = {
+      start: multiThumb ? infimum : 0,
+      end: multiThumb ? supremum : inLerp(max, 0, 100 - supremum) * 100,
+    };
+
+    return { infimum, supremum, range };
+  };
+
+  const emitValueChange = (newValue: number | [number, number]) => {
+    if (readOnly || disabled || !isMounted()) return;
+
+    setValue(newValue);
+    // @ts-expect-error It's fine!
+    onValueChange?.(newValue);
+  };
+
+  const getActiveThumb = (eventTarget: HTMLDivElement): ActiveThumb => {
+    const isInfimum = eventTarget === infimumRef.current;
+    const isSupremum = eventTarget === supremumRef.current;
+
+    return {
+      element: eventTarget,
+      index: isInfimum ? 0 : isSupremum ? 1 : 1,
+      name: isInfimum ? "infimum" : isSupremum ? "supremum" : "supremum",
+    };
+  };
+
+  const getThumbInfo = (index: 0 | 1): ThumbInfo => {
+    const thumbsInfo = getThumbsInfo();
+
+    return index === 0 ? thumbsInfo.infimum : thumbsInfo.supremum;
+  };
 
   const handleThumbKeyDown = useEventCallback<
     React.KeyboardEvent<HTMLDivElement>
   >(event => {
+    if (readOnly || disabled || !isMounted()) return;
+
     const increase = [
       SystemKeys.RIGHT,
       orientation === "horizontal" ? SystemKeys.UP : SystemKeys.DOWN,
@@ -360,7 +382,10 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       orientation === "horizontal" ? SystemKeys.DOWN : SystemKeys.UP,
     ].includes(event.key);
 
-    if (!increase && !decrease) return;
+    const goStart = event.key === SystemKeys.HOME;
+    const goEnd = event.key === SystemKeys.END;
+
+    if (!increase && !decrease && !goStart && !goEnd) return;
 
     event.preventDefault();
 
@@ -380,20 +405,36 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     let newValue: number;
 
     if (typeof step === "undefined") {
-      newValue = thumbInfo.value + (increase ? 1 : decrease ? -1 : 0);
+      if (goStart) newValue = min;
+      else if (goEnd) newValue = max;
+      else newValue = thumbInfo.value + (increase ? 1 : decrease ? -1 : 0);
     } else if (step === "snap") {
-      const stopNums = segments.map(segment => (segment.length * max) / 100);
-      const valIdx = stopNums.indexOf(thumbInfo.value);
-      const nextIdx = clamp(
-        increase ? valIdx + 1 : decrease ? valIdx - 1 : 0,
-        0,
-        stopNums.length - 1,
+      const stopNums = stopSegments.map(
+        segment => (segment.length * max) / 100,
       );
 
+      let nextIdx: number;
+
+      if (goStart) nextIdx = 0;
+      else if (goEnd) nextIdx = stopNums.length - 1;
+      else {
+        const valIdx = stopNums.indexOf(thumbInfo.value);
+
+        nextIdx = clamp(
+          increase ? valIdx + 1 : decrease ? valIdx - 1 : 0,
+          0,
+          stopNums.length - 1,
+        );
+      }
+
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      newValue = stopNums[nextIdx] ?? stopNums[0]!;
+      newValue = stopNums[nextIdx]!;
     } else {
-      newValue = thumbInfo.value + (increase ? step : decrease ? -step : 0);
+      if (goStart) newValue = min;
+      else if (goEnd) newValue = max;
+      else {
+        newValue = thumbInfo.value + (increase ? step : decrease ? -step : 0);
+      }
     }
 
     const relativeValue = clamp(newValue, relativeMin, relativeMax);
@@ -412,158 +453,10 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     } else emitValueChange(relativeValue);
   });
 
-  const {
-    handleBlur: handleInfimumBlur,
-    handleButtonRef: handleInfimumRef,
-    handleFocus: handleInfimumFocus,
-    handleKeyDown: handleInfimumKeyDown,
-    handleKeyUp: handleInfimumKeyUp,
-    isFocusedVisible: isInfimumFocusedVisible,
-  } = useButtonBase<HTMLDivElement>({
-    disabled,
-    onKeyDown: handleThumbKeyDown,
-  });
-
-  const {
-    handleBlur: handleSupremumBlur,
-    handleButtonRef: handleSupremumRef,
-    handleFocus: handleSupremumFocus,
-    handleKeyDown: handleSupremumKeyDown,
-    handleKeyUp: handleSupremumKeyUp,
-    isFocusedVisible: isSupremumFocusedVisible,
-  } = useButtonBase<HTMLDivElement>({
-    disabled,
-    onKeyDown: handleThumbKeyDown,
-  });
-
-  const infimumRef = React.useRef<HTMLDivElement>(null);
-  const supremumRef = React.useRef<HTMLDivElement>(null);
-
-  const handleInfimumThumbRef = useForkedRefs(infimumRef, handleInfimumRef);
-  const handleSupremumThumbRef = useForkedRefs(supremumRef, handleSupremumRef);
-
-  const [infimumState, setInfimumState] = React.useState<ThumbState>({
-    active: false,
-    zIndex: 1,
-  });
-
-  const [supremumStateRef, setSupremumState] = React.useState<ThumbState>({
-    active: false,
-    zIndex: 1,
-  });
-
-  React.useEffect(() => {
-    if (!isInfimumFocusedVisible) return;
-    if (!renderThumbValueText) return;
-
-    setValueDisplayState(s => ({ ...s, infimum: true }));
-    return () => {
-      setValueDisplayState(s => ({ ...s, infimum: false }));
-    };
-  }, [isInfimumFocusedVisible, renderThumbValueText]);
-
-  React.useEffect(() => {
-    if (!isSupremumFocusedVisible) return;
-    if (!renderThumbValueText) return;
-
-    setValueDisplayState(s => ({ ...s, supremum: true }));
-    return () => {
-      setValueDisplayState(s => ({ ...s, supremum: false }));
-    };
-  }, [isSupremumFocusedVisible, renderThumbValueText]);
-
-  const thumbs = (() => {
-    const infimumValue = multiThumb ? (valueState as [number, number])[0] : min;
-
-    const supremumValue = multiThumb
-      ? (valueState as [number, number])[1]
-      : (valueState as number);
-
-    const infimumLabelInfo = multiThumb
-      ? getLabelInfo((labels as [Label, Label])[0], "InputSlider", {
-          customErrorMessage: [
-            "Invalid `label` provided.",
-            "Each `label` property must be in shape of " +
-              "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
-          ].join("\n"),
-        })
-      : {};
-
-    const supremumLabelInfo = getLabelInfo(
-      multiThumb ? (labels as [Label, Label])[1] : (labels as Label),
-      "InputSlider",
-      {
-        customErrorMessage: [
-          "Invalid `label` provided.",
-          "Each `label` property must be in shape of " +
-            "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
-        ].join("\n"),
-      },
-    );
-
-    return {
-      infimum: {
-        index: 0,
-        name: "infimum",
-        value: infimumValue,
-        minValue: min,
-        maxValue: supremumValue,
-        ref: handleInfimumThumbRef,
-        state: infimumState,
-        setState: setInfimumState,
-        label: infimumLabelInfo,
-      } satisfies ThumbInfo,
-      supremum: {
-        index: 1,
-        name: "supremum",
-        value: supremumValue,
-        minValue: infimumValue,
-        maxValue: max,
-        ref: handleSupremumThumbRef,
-        state: supremumStateRef,
-        setState: setSupremumState,
-        label: supremumLabelInfo,
-      } satisfies ThumbInfo,
-    };
-  })();
-
-  const positions = (() => {
-    const infimum = inLerp(0, max, thumbs.infimum.value) * 100;
-    const supremum = inLerp(max, 0, thumbs.supremum.value) * 100;
-
-    const range = {
-      start: multiThumb ? infimum : 0,
-      end: multiThumb ? supremum : 100 - infimum,
-    };
-
-    return { infimum, supremum, range };
-  })();
-
-  const emitValueChange = (newValue: number | [number, number]) => {
-    if (disabled || !isMounted()) return;
-
-    setValue(newValue);
-    // @ts-expect-error It's fine!
-    onValueChange?.(newValue, activeThumbRef.current);
-  };
-
-  const getActiveThumb = (eventTarget: HTMLDivElement): ActiveThumb => {
-    const isInfimum = eventTarget === infimumRef.current;
-    const isSupremum = eventTarget === supremumRef.current;
-
-    return {
-      element: eventTarget,
-      index: isInfimum ? 0 : isSupremum ? 1 : 1,
-      name: isInfimum ? "infimum" : isSupremum ? "supremum" : "supremum",
-    };
-  };
-
-  const getThumbInfo = (index: 0 | 1): ThumbInfo =>
-    index === 0 ? thumbs.infimum : thumbs.supremum;
-
-  const handleDragStart = (
+  const handleThumbDragStart = (
     event: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>,
   ) => {
+    if (readOnly || disabled || !isMounted()) return;
     if (!rootRef.current) return;
 
     const activeThumb = getActiveThumb(event.currentTarget);
@@ -578,14 +471,10 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
     thumb.setState({ active: true, zIndex: 2 });
     oppositeThumb.setState(s => ({ ...s, zIndex: 1 }));
-
-    setValueDisplayState(s => ({
-      ...s,
-      [activeThumb.index === 0 ? "infimum" : "supremum"]: true,
-    }));
   };
 
   const handleDragEnd = (): void => {
+    if (readOnly || disabled || !isMounted()) return;
     if (!activeThumbRef.current) return;
 
     const activeThumb = activeThumbRef.current;
@@ -598,14 +487,10 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
     thumb.setState(s => ({ ...s, active: false }));
     activeThumbRef.current = null;
-
-    setValueDisplayState(s => ({
-      ...s,
-      [activeThumb.index === 0 ? "infimum" : "supremum"]: false,
-    }));
   };
 
   const handleDragging = (event: MouseEvent | TouchEvent) => {
+    if (readOnly || disabled || !isMounted()) return;
     if (!rootRef.current) return;
     if (!activeThumbRef.current) return;
 
@@ -620,7 +505,7 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     }
 
     let clientXOrY =
-      event.type === "touchstart"
+      event.type === "touchmove"
         ? (event as TouchEvent).touches[0]?.[
             orientation === "horizontal" ? "clientX" : "clientY"
           ] ?? 0
@@ -641,7 +526,7 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       clientXOrY,
       widthOrHeight,
       thumbInfo,
-      segments,
+      stopSegments,
       { max, step },
     );
 
@@ -660,7 +545,7 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   };
 
   const handleTrackClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (!isClickAllowed || disabled || !isMounted()) return;
+    if (!isClickAllowed || readOnly || disabled || !isMounted()) return;
     if (!rootRef.current) return;
 
     let clientXOrY =
@@ -684,7 +569,7 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       clientXOrY,
       widthOrHeight,
       thumb,
-      segments,
+      stopSegments,
       { max, step },
     );
 
@@ -704,51 +589,15 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     onClick?.(event);
   };
 
-  const handleMouseEnter = useEventCallback<React.MouseEvent<HTMLDivElement>>(
-    event => {
-      const activeThumb = getActiveThumb(event.currentTarget);
-      const thumb = getThumbInfo(activeThumb.index);
+  const goToStopSegment = (segmentIdx: number) => {
+    if (readOnly || disabled || !isMounted()) return;
+    if (stopSegments.length === 0) return;
 
-      if (thumb.state.active) return;
+    const segment = stopSegments[segmentIdx];
 
-      setValueDisplayState(s => ({
-        ...s,
-        [activeThumb.index === 0 ? "infimum" : "supremum"]: true,
-      }));
-    },
-  );
+    if (!segment) return;
 
-  const handleMouseLeave = useEventCallback<React.MouseEvent<HTMLDivElement>>(
-    event => {
-      const activeThumb = getActiveThumb(event.currentTarget);
-      const thumb = getThumbInfo(activeThumb.index);
-
-      if (thumb.state.active) return;
-
-      setValueDisplayState(s => ({
-        ...s,
-        [activeThumb.index === 0 ? "infimum" : "supremum"]: false,
-      }));
-    },
-  );
-
-  const handleSegmentLabelClick = useEventCallback<
-    React.MouseEvent<HTMLDivElement>
-  >(event => {
-    event.stopPropagation();
-
-    const parent = event.currentTarget.parentElement;
-
-    if (!parent) return;
-
-    const idxStringified = parent.getAttribute("data-segment-index");
-
-    if (!idxStringified) return;
-
-    const idx = Number(idxStringified);
-    const newValue = segments[idx]?.length;
-
-    if (typeof newValue === "undefined") return;
+    const newValue = segment.length;
 
     const thumb = getNearestThumb(newValue, {
       infimum: multiThumb ? getThumbInfo(0) : null,
@@ -772,155 +621,51 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         );
       }
     } else emitValueChange(relativeValue);
-  });
-
-  const infimumStyles: React.CSSProperties = {
-    position: "absolute",
-    transform:
-      orientation === "horizontal" ? "translateX(-50%)" : "translateY(-50%)",
-    zIndex: thumbs.infimum.state.zIndex,
-    ...{
-      horizontal: { left: `${positions.infimum}%` },
-      vertical: { top: `${positions.infimum}%` },
-    }[orientation],
   };
 
-  const supremumStyles: React.CSSProperties = {
-    position: "absolute",
-    transform:
-      orientation === "horizontal" ? "translateX(50%)" : "translateY(50%)",
-    zIndex: thumbs.supremum.state.zIndex,
-    ...{
-      horizontal: { right: `${positions.supremum}%` },
-      vertical: { bottom: `${positions.supremum}%` },
-    }[orientation],
-  };
-
-  const rangeStyles: React.CSSProperties = {
-    position: "absolute",
-    ...{
-      horizontal: {
-        left: `${positions.range.start}%`,
-        right: `${positions.range.end}%`,
-      },
-      vertical: {
-        top: `${positions.range.start}%`,
-        bottom: `${positions.range.end}%`,
-      },
-    }[orientation],
-  };
-
-  const trackStyles: React.CSSProperties = {
-    position: "relative",
-    ...{ horizontal: { width: "100%" }, vertical: { height: "100%" } }[
-      orientation
-    ],
+  const renderProps: RenderProps = {
+    value: valueState,
+    dragging: isDragStarted,
+    disabled,
+    readOnly,
+    orientation,
+    stopSegments,
+    goToStopSegment,
   };
 
   const classNameProps: ClassNameProps = {
     disabled,
+    readOnly,
     orientation,
-    infimumThumbState: {
-      active: activeThumbRef.current?.index === 0,
-      focusedVisible: isInfimumFocusedVisible,
-    },
-    supremumThumbState: {
-      active: activeThumbRef.current?.index === 1,
-      focusedVisible: isSupremumFocusedVisible,
-    },
+    dragging: isDragStarted,
   };
 
-  const classes =
-    typeof classesProp === "function"
-      ? classesProp(classNameProps)
-      : classesProp;
+  const children =
+    typeof childrenProp === "function"
+      ? childrenProp(renderProps)
+      : childrenProp;
 
-  const renderInfimumThumb = () => {
-    if (!multiThumb) return null;
+  const className =
+    typeof classNameProp === "function"
+      ? classNameProp(classNameProps)
+      : classNameProp;
 
-    const infimumProps = {
-      style: { ...infimumStyles, ...disableUserSelectCSSProperties },
-      onTouchStart: handleDragStart,
-      onMouseDown: handleDragStart,
-      onBlur: handleInfimumBlur,
-      onFocus: handleInfimumFocus,
-      onKeyDown: handleInfimumKeyDown,
-      onKeyUp: handleInfimumKeyUp,
-      onMouseEnter: renderThumbValueText ? handleMouseEnter : undefined,
-      onMouseLeave: renderThumbValueText ? handleMouseLeave : undefined,
-    };
-
-    return (
-      <Thumb
-        {...infimumProps}
-        orientation={orientation}
-        thumbInfo={thumbs.infimum}
-        className={combineClasses(classes?.thumb, classes?.infimumThumb)}
-        isActive={activeThumbRef.current?.index === 0}
-        isDisabled={disabled}
-        isFocusedVisible={isInfimumFocusedVisible}
-        isValueTextVisible={valueDisplayState.infimum}
-        valueText={setThumbValueText(thumbs.infimum.value)}
-        renderValueText={renderThumbValueText}
-      />
-    );
+  const style: React.CSSProperties = {
+    ...(styleProp ?? {}),
+    position: "relative",
+    direction: "ltr",
   };
 
-  const renderSupremumThumb = () => {
-    const supremumProps = {
-      style: { ...supremumStyles, ...disableUserSelectCSSProperties },
-      onTouchStart: handleDragStart,
-      onMouseDown: handleDragStart,
-      onBlur: handleSupremumBlur,
-      onFocus: handleSupremumFocus,
-      onKeyDown: handleSupremumKeyDown,
-      onKeyUp: handleSupremumKeyUp,
-      onMouseEnter: renderThumbValueText ? handleMouseEnter : undefined,
-      onMouseLeave: renderThumbValueText ? handleMouseLeave : undefined,
-    };
-
-    return (
-      <Thumb
-        {...supremumProps}
-        orientation={orientation}
-        thumbInfo={thumbs.supremum}
-        className={combineClasses(classes?.thumb, classes?.supremumThumb)}
-        isActive={activeThumbRef.current?.index === 1}
-        isDisabled={disabled}
-        isFocusedVisible={isSupremumFocusedVisible}
-        isValueTextVisible={valueDisplayState.supremum}
-        valueText={setThumbValueText(thumbs.supremum.value)}
-        renderValueText={renderThumbValueText}
-      />
-    );
-  };
-
-  const renderSegments = () => {
-    if (segments.length === 0) return null;
-
-    return (
-      <div
-        aria-hidden="true"
-        className={classes?.segments}
-        data-slot={Slots.Segments}
-      >
-        {segments.map(({ length, label }, idx) => (
-          <Segment
-            key={String(length) + String(idx) + String(label)}
-            orientation={orientation}
-            index={idx}
-            label={label}
-            length={length}
-            onSegmentLabelClick={handleSegmentLabelClick}
-            classes={{
-              root: classes?.segment,
-              mark: classes?.segmentMark,
-              label: classes?.segmentLabel,
-            }}
-          />
-        ))}
-      </div>
-    );
+  const context: InputSliderContextValue = {
+    disabled,
+    readOnly,
+    multiThumb,
+    orientation,
+    getPositions,
+    getThumbsInfo,
+    handleThumbDragStart,
+    handleThumbKeyDown,
+    setThumbValueText,
   };
 
   if (typeof document !== "undefined") {
@@ -961,30 +706,20 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   return (
     <div
       {...otherProps}
+      // @ts-expect-error React hasn't added `inert` yet
+      inert={!disabled ? undefined : ""}
       ref={handleRootRef}
-      style={{ ...(inlineStyle ?? {}), position: "relative", direction: "ltr" }}
-      className={classes?.root}
+      style={style}
+      className={className}
       onClick={handleTrackClick}
-      data-slot={Slots.Root}
       aria-orientation={orientation}
-      aria-disabled={disabled}
+      data-slot={Slots.Root}
+      data-disabled={disabled ? "" : undefined}
+      data-readonly={readOnly ? "" : undefined}
     >
-      <div
-        aria-hidden="true"
-        className={classes?.track}
-        data-slot={Slots.Track}
-        style={trackStyles}
-      >
-        <div
-          aria-hidden="true"
-          className={classes?.range}
-          data-slot={Slots.Range}
-          style={rangeStyles}
-        ></div>
-        {renderSegments()}
-      </div>
-      {renderInfimumThumb()}
-      {renderSupremumThumb()}
+      <InputSliderContext.Provider value={context}>
+        {children}
+      </InputSliderContext.Provider>
     </div>
   );
 };
