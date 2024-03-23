@@ -1,5 +1,6 @@
 import { clamp, remap } from "../utils";
-import { type Props, type Segment, type ThumbInfo } from "./InputSlider";
+import type { Props } from "./InputSlider";
+import type { StopSegment, ThumbInfo } from "./types";
 
 export const findNearestValue = (vals: number[], target: number) => {
   const midIdx = Math.floor(vals.length / 2);
@@ -7,8 +8,8 @@ export const findNearestValue = (vals: number[], target: number) => {
   let diff = Infinity;
   let nominee = target;
 
+  /* eslint-disable @typescript-eslint/no-non-null-assertion */
   const nominate = (idx: number) => {
-    /* eslint-disable @typescript-eslint/no-non-null-assertion */
     const val = vals[idx]!;
     const newDiff = Math.abs(target - val);
 
@@ -32,7 +33,7 @@ export const getRelativeValue = (
   clientXOrY: number,
   parentWidthOrHeight: number,
   thumbInfo: ThumbInfo,
-  segments: Segment[],
+  segments: StopSegment[],
   requiredProps: {
     max: Props["max"];
     step: Props["step"];
