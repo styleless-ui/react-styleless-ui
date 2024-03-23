@@ -26,6 +26,10 @@ export type Diff<T, U> = T extends U ? never : T;
 /** Removes types from T that are not assignable to U */
 export type Filter<T, U> = T extends U ? T : never;
 
+export type PickAsMandatory<T, K extends keyof T> = {
+  [P in K]-?: T[P];
+};
+
 export type Nullable<T> = { [P in keyof T]: T[P] | null | undefined };
 
 export type NotUndefined<T> = T extends undefined ? never : T;
