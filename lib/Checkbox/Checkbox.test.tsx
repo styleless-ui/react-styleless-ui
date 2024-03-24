@@ -236,7 +236,7 @@ describe("Checkbox", () => {
 
     handleCheckedChange.mockReset();
     unmount2();
-    render(
+    const { unmount: unmount3 } = render(
       <Checkbox
         {...mockRequiredProps}
         readOnly
@@ -255,6 +255,24 @@ describe("Checkbox", () => {
     await userEvent.keyboard("[Enter]");
 
     expect(handleCheckedChange.mock.calls.length).toBe(0);
+
+    await userEvent.click(getCheckbox());
+
+    expect(handleCheckedChange.mock.calls.length).toBe(0);
+
+    handleCheckedChange.mockReset();
+    unmount3();
+    render(
+      <Checkbox
+        {...mockRequiredProps}
+        disabled
+        onCheckedChange={handleCheckedChange}
+      />,
+    );
+
+    await userEvent.tab();
+
+    expect(getCheckbox()).not.toHaveFocus();
 
     await userEvent.click(getCheckbox());
 
