@@ -19,6 +19,10 @@ export type RenderProps = {
    */
   disabled: boolean;
   /**
+   * The `readOnly` state of the switch.
+   */
+  readOnly: boolean;
+  /**
    * The `:focus-visible` of the switch.
    */
   focusedVisible: boolean;
@@ -78,6 +82,12 @@ type OwnProps = {
    */
   disabled?: boolean;
   /**
+   * If `true`, the switch will be read-only.
+   *
+   * @default false
+   */
+  readOnly?: boolean;
+  /**
    * A value to replace `tabIndex` with.
    */
   overrideTabIndex?: number;
@@ -99,10 +109,11 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     children: childrenProp,
     className: classNameProp,
     defaultChecked,
-    checked: checkedProp,
+    checked,
     overrideTabIndex,
     autoFocus = false,
     disabled = false,
+    readOnly = false,
     onCheckedChange,
     onBlur,
     onFocus,
@@ -115,7 +126,8 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     groupCtx: null,
     autoFocus,
     disabled,
-    checked: checkedProp,
+    checked,
+    readOnly,
     defaultChecked,
     selectMode: "multiple",
     togglable: true,
@@ -142,7 +154,8 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const renderProps: RenderProps = {
     disabled,
-    checked: checkBase.checked,
+    readOnly,
+    checked: checkBase.checked as boolean,
     focusedVisible: checkBase.isFocusedVisible,
   };
 
@@ -160,9 +173,10 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const dataAttrs = {
     "data-slot": Slots.Root,
-    "data-disabled": classNameProps.disabled ? "" : undefined,
-    "data-focus-visible": classNameProps.focusedVisible ? "" : undefined,
-    "data-checked": classNameProps.checked ? "" : undefined,
+    "data-disabled": disabled ? "" : undefined,
+    "data-readonly": readOnly ? "" : undefined,
+    "data-focus-visible": checkBase.isFocusedVisible ? "" : undefined,
+    "data-checked": checkBase.checked ? "" : undefined,
   };
 
   let tabIndex = disabled ? -1 : 0;
@@ -187,6 +201,7 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
       onKeyUp={checkBase.handleKeyUp}
       onClick={checkBase.handleClick}
       aria-checked={checkBase.checked}
+      aria-readonly={readOnly}
       aria-label={labelInfo.srOnlyLabel}
       aria-labelledby={labelInfo.labelledBy}
       {...dataAttrs}

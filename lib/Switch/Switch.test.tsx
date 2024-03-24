@@ -27,36 +27,18 @@ describe("Switch", () => {
   itSupportsDataSetProps(Switch, mockRequiredProps, "[role='switch']");
 
   it("should have the required classNames", () => {
-    const { rerender } = render(
+    const { unmount } = render(
       <Switch
         {...mockRequiredProps}
         checked
         autoFocus
-        className={({ checked, disabled, focusedVisible }) =>
-          classNames("root", {
-            "root--checked": checked,
-            "root--disabled": disabled,
-            "root--focus-visible": focusedVisible,
-          })
-        }
-      />,
-    );
-
-    expect(screen.getByRole("switch")).toHaveClass(
-      "root",
-      "root--checked",
-      "root--focus-visible",
-    );
-
-    rerender(
-      <Switch
-        {...mockRequiredProps}
-        checked
         disabled
-        className={({ checked, disabled, focusedVisible }) =>
+        readOnly
+        className={({ checked, disabled, readOnly, focusedVisible }) =>
           classNames("root", {
-            "root--checked": checked,
             "root--disabled": disabled,
+            "root--readonly": readOnly,
+            "root--checked": checked,
             "root--focus-visible": focusedVisible,
           })
         }
@@ -67,6 +49,32 @@ describe("Switch", () => {
       "root",
       "root--checked",
       "root--disabled",
+      "root--readonly",
+    );
+
+    unmount();
+    render(
+      <Switch
+        {...mockRequiredProps}
+        checked
+        autoFocus
+        readOnly
+        className={({ checked, disabled, readOnly, focusedVisible }) =>
+          classNames("root", {
+            "root--disabled": disabled,
+            "root--readonly": readOnly,
+            "root--checked": checked,
+            "root--focus-visible": focusedVisible,
+          })
+        }
+      />,
+    );
+
+    expect(screen.getByRole("switch")).toHaveClass(
+      "root",
+      "root--checked",
+      "root--focus-visible",
+      "root--readonly",
     );
   });
 
@@ -111,42 +119,95 @@ describe("Switch", () => {
     const handleCheckedChange = jest.fn<void, [checkedState: boolean]>();
 
     userEvent.setup();
-    render(
+
+    const getSwitch = () => screen.getByRole("switch");
+
+    const { unmount: unmount1 } = render(
       <Switch
         {...mockRequiredProps}
         onCheckedChange={handleCheckedChange}
       />,
     );
 
-    const sw = screen.getByRole("switch");
+    await userEvent.click(getSwitch());
 
-    await userEvent.click(sw);
-
-    expect(sw).toBeChecked();
+    expect(getSwitch()).toBeChecked();
     expect(handleCheckedChange.mock.calls.length).toBe(1);
     expect(handleCheckedChange.mock.calls[0]?.[0]).toBe(true);
 
-    await userEvent.click(sw);
+    await userEvent.click(getSwitch());
 
-    expect(sw).not.toBeChecked();
+    expect(getSwitch()).not.toBeChecked();
     expect(handleCheckedChange.mock.calls.length).toBe(2);
     expect(handleCheckedChange.mock.calls[1]?.[0]).toBe(false);
 
-    handleCheckedChange.mockClear();
+    handleCheckedChange.mockReset();
+    unmount1();
+    const { unmount: unmount2 } = render(
+      <Switch
+        {...mockRequiredProps}
+        onCheckedChange={handleCheckedChange}
+      />,
+    );
 
-    sw.focus();
-    expect(sw).toHaveFocus();
+    await userEvent.tab();
+
+    expect(getSwitch()).toHaveFocus();
 
     await userEvent.keyboard("[Space]");
 
-    expect(sw).toBeChecked();
+    expect(getSwitch()).toBeChecked();
     expect(handleCheckedChange.mock.calls.length).toBe(1);
     expect(handleCheckedChange.mock.calls[0]?.[0]).toBe(true);
 
     await userEvent.keyboard("[Space]");
 
-    expect(sw).not.toBeChecked();
+    expect(getSwitch()).not.toBeChecked();
     expect(handleCheckedChange.mock.calls.length).toBe(2);
     expect(handleCheckedChange.mock.calls[1]?.[0]).toBe(false);
+
+    handleCheckedChange.mockReset();
+    unmount2();
+    const { unmount: unmount3 } = render(
+      <Switch
+        {...mockRequiredProps}
+        readOnly
+        onCheckedChange={handleCheckedChange}
+      />,
+    );
+
+    await userEvent.tab();
+
+    expect(getSwitch()).toHaveFocus();
+
+    await userEvent.keyboard("[Space]");
+
+    expect(handleCheckedChange.mock.calls.length).toBe(0);
+
+    await userEvent.keyboard("[Enter]");
+
+    expect(handleCheckedChange.mock.calls.length).toBe(0);
+
+    await userEvent.click(getSwitch());
+
+    expect(handleCheckedChange.mock.calls.length).toBe(0);
+
+    handleCheckedChange.mockReset();
+    unmount3();
+    render(
+      <Switch
+        {...mockRequiredProps}
+        disabled
+        onCheckedChange={handleCheckedChange}
+      />,
+    );
+
+    await userEvent.tab();
+
+    expect(getSwitch()).not.toHaveFocus();
+
+    await userEvent.click(getSwitch());
+
+    expect(handleCheckedChange.mock.calls.length).toBe(0);
   });
 });
