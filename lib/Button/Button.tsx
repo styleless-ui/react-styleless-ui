@@ -150,6 +150,8 @@ const ButtonBase = <
     <RootNode
       data-slot={Slots.Root}
       {...otherProps}
+      // @ts-expect-error React hasn't added `inert` yet
+      inert={disabled ? "" : undefined}
       id={id}
       ref={refCallback}
       className={className}
