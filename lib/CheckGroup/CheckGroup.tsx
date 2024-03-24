@@ -11,11 +11,11 @@ import * as Slots from "./slots";
 
 export type RenderProps = {
   /**
-   * The `readOnly` state of the checkbox.
+   * The `readOnly` state of the group.
    */
   readOnly: boolean;
   /**
-   * The `disabled` state of the checkbox.
+   * The `disabled` state of the group.
    */
   disabled: boolean;
 };
@@ -158,6 +158,7 @@ const CheckGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       aria-orientation={orientation}
       aria-label={labelInfo.srOnlyLabel}
       aria-labelledby={labelInfo.labelledBy}
+      aria-disabled={disabled}
     >
       <CheckGroupContext.Provider
         value={{ value, readOnly, disabled, onChange: handleValueChange }}
