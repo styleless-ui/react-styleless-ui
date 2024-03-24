@@ -100,17 +100,13 @@ type OwnProps = {
    */
   readOnly?: boolean;
   /**
-   * The Callback is fired when the state changes.
-   */
-  onCheckedChange?: (checkedState: boolean) => void;
-  /**
    * A value to replace `tabIndex` with.
    */
   overrideTabIndex?: number;
-  onFocus?: React.FocusEventHandler<HTMLButtonElement>;
-  onBlur?: React.FocusEventHandler<HTMLButtonElement>;
-  onKeyDown?: React.KeyboardEventHandler<HTMLButtonElement>;
-  onKeyUp?: React.KeyboardEventHandler<HTMLButtonElement>;
+  /**
+   * The Callback is fired when the state changes.
+   */
+  onCheckedChange?: (checkedState: boolean) => void;
 };
 
 export type Props = Omit<
