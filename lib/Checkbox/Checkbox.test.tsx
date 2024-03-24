@@ -27,35 +27,23 @@ describe("Checkbox", () => {
   itSupportsDataSetProps(Checkbox, mockRequiredProps);
 
   it("should have the required classNames", () => {
-    const { rerender } = render(
-      <Checkbox
-        {...mockRequiredProps}
-        checked
-        autoFocus
-        className={({ checked, disabled, focusedVisible, indeterminated }) =>
-          classNames("root", {
-            "root--disabled": disabled,
-            "root--checked": checked,
-            "root--focus-visible": focusedVisible,
-            "root--indeterminated": indeterminated,
-          })
-        }
-      />,
-    );
-
-    const root = screen.getByRole("checkbox");
-
-    expect(root).toHaveClass("root", "root--checked", "root--focus-visible");
-
-    rerender(
+    const { unmount } = render(
       <Checkbox
         {...mockRequiredProps}
         checked
         autoFocus
         disabled
-        className={({ checked, disabled, focusedVisible, indeterminated }) =>
+        readOnly
+        className={({
+          checked,
+          disabled,
+          readOnly,
+          focusedVisible,
+          indeterminated,
+        }) =>
           classNames("root", {
             "root--disabled": disabled,
+            "root--readonly": readOnly,
             "root--checked": checked,
             "root--focus-visible": focusedVisible,
             "root--indeterminated": indeterminated,
@@ -64,17 +52,60 @@ describe("Checkbox", () => {
       />,
     );
 
-    expect(root).toHaveClass("root", "root--checked", "root--disabled");
+    expect(screen.getByRole("checkbox")).toHaveClass(
+      "root",
+      "root--checked",
+      "root--disabled",
+      "root--readonly",
+    );
+
+    unmount();
+    const { rerender } = render(
+      <Checkbox
+        {...mockRequiredProps}
+        checked
+        autoFocus
+        readOnly
+        className={({
+          checked,
+          disabled,
+          readOnly,
+          focusedVisible,
+          indeterminated,
+        }) =>
+          classNames("root", {
+            "root--disabled": disabled,
+            "root--readonly": readOnly,
+            "root--checked": checked,
+            "root--focus-visible": focusedVisible,
+            "root--indeterminated": indeterminated,
+          })
+        }
+      />,
+    );
+
+    expect(screen.getByRole("checkbox")).toHaveClass(
+      "root",
+      "root--checked",
+      "root--focus-visible",
+      "root--readonly",
+    );
 
     rerender(
       <Checkbox
         {...mockRequiredProps}
-        checked
-        indeterminated
+        checked="indeterminated"
         aria-controls="id1"
-        className={({ checked, disabled, focusedVisible, indeterminated }) =>
+        className={({
+          checked,
+          disabled,
+          readOnly,
+          focusedVisible,
+          indeterminated,
+        }) =>
           classNames("root", {
             "root--disabled": disabled,
+            "root--readonly": readOnly,
             "root--checked": checked,
             "root--focus-visible": focusedVisible,
             "root--indeterminated": indeterminated,
@@ -83,7 +114,10 @@ describe("Checkbox", () => {
       />,
     );
 
-    expect(root).toHaveClass("root", "root--checked", "root--indeterminated");
+    expect(screen.getByRole("checkbox")).toHaveClass(
+      "root",
+      "root--indeterminated",
+    );
   });
 
   it("should have `aria-label='label'` property when `label={{ screenReaderLabel: 'label' }}`", () => {
@@ -114,7 +148,7 @@ describe("Checkbox", () => {
     render(
       <Checkbox
         {...mockRequiredProps}
-        indeterminated
+        defaultChecked="indeterminated"
         aria-controls="id1 id2"
       />,
     );
@@ -153,42 +187,77 @@ describe("Checkbox", () => {
     const handleCheckedChange = jest.fn<void, [checkedState: boolean]>();
 
     userEvent.setup();
-    render(
+
+    const getCheckbox = () => screen.getByRole("checkbox");
+
+    const { unmount: unmount1 } = render(
       <Checkbox
         {...mockRequiredProps}
         onCheckedChange={handleCheckedChange}
       />,
     );
 
-    const checkbox = screen.getByRole("checkbox");
+    await userEvent.click(getCheckbox());
 
-    await userEvent.click(checkbox);
-
-    expect(checkbox).toBeChecked();
+    expect(getCheckbox()).toBeChecked();
     expect(handleCheckedChange.mock.calls.length).toBe(1);
     expect(handleCheckedChange.mock.calls[0]?.[0]).toBe(true);
 
-    await userEvent.click(checkbox);
+    await userEvent.click(getCheckbox());
 
-    expect(checkbox).not.toBeChecked();
+    expect(getCheckbox()).not.toBeChecked();
     expect(handleCheckedChange.mock.calls.length).toBe(2);
     expect(handleCheckedChange.mock.calls[1]?.[0]).toBe(false);
 
-    handleCheckedChange.mockClear();
+    handleCheckedChange.mockReset();
+    unmount1();
+    const { unmount: unmount2 } = render(
+      <Checkbox
+        {...mockRequiredProps}
+        onCheckedChange={handleCheckedChange}
+      />,
+    );
 
-    checkbox.focus();
-    expect(checkbox).toHaveFocus();
+    await userEvent.tab();
+
+    expect(getCheckbox()).toHaveFocus();
 
     await userEvent.keyboard("[Space]");
 
-    expect(checkbox).toBeChecked();
+    expect(getCheckbox()).toBeChecked();
     expect(handleCheckedChange.mock.calls.length).toBe(1);
     expect(handleCheckedChange.mock.calls[0]?.[0]).toBe(true);
 
     await userEvent.keyboard("[Space]");
 
-    expect(checkbox).not.toBeChecked();
+    expect(getCheckbox()).not.toBeChecked();
     expect(handleCheckedChange.mock.calls.length).toBe(2);
     expect(handleCheckedChange.mock.calls[1]?.[0]).toBe(false);
+
+    handleCheckedChange.mockReset();
+    unmount2();
+    render(
+      <Checkbox
+        {...mockRequiredProps}
+        readOnly
+        onCheckedChange={handleCheckedChange}
+      />,
+    );
+
+    await userEvent.tab();
+
+    expect(getCheckbox()).toHaveFocus();
+
+    await userEvent.keyboard("[Space]");
+
+    expect(handleCheckedChange.mock.calls.length).toBe(0);
+
+    await userEvent.keyboard("[Enter]");
+
+    expect(handleCheckedChange.mock.calls.length).toBe(0);
+
+    await userEvent.click(getCheckbox());
+
+    expect(handleCheckedChange.mock.calls.length).toBe(0);
   });
 });
