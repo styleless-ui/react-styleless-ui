@@ -95,6 +95,12 @@ const CheckItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     entityName: value,
     type: "check-item",
     onClick: event => {
+      if (disabled) {
+        event.preventDefault();
+
+        return;
+      }
+
       const newChecked = !checked;
 
       onCheckedChange?.(newChecked);
@@ -156,6 +162,8 @@ const CheckItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   return (
     <div
       {...otherProps}
+      // @ts-expect-error React hasn't added `inert` yet
+      inert={disabled ? "" : undefined}
       id={id}
       ref={refCallback}
       className={className}

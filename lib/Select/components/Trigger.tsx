@@ -56,7 +56,11 @@ const TriggerBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const handleClick = useEventCallback<React.MouseEvent<HTMLDivElement>>(
     event => {
-      if (ctx?.disabled) return;
+      if (ctx?.disabled) {
+        event.preventDefault();
+
+        return;
+      }
 
       const combobox = getComboboxNode();
 

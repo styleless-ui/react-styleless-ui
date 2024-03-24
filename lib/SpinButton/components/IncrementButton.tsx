@@ -70,6 +70,12 @@ const IncrementButtonBase = (
   }
 
   const handleClick: React.MouseEventHandler<HTMLButtonElement> = event => {
+    if (ctx.disabled) {
+      event.preventDefault();
+
+      return;
+    }
+
     ctx.handleIncrease(1);
 
     onClick?.(event);

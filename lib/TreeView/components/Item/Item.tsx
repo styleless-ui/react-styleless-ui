@@ -104,7 +104,13 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     return null;
   }
 
-  const handleClick: React.MouseEventHandler = () => {
+  const handleClick: React.MouseEventHandler = event => {
+    if (disabled) {
+      event.preventDefault();
+
+      return;
+    }
+
     ctx.handleDescendantSelect(value);
 
     if (!subTree) return;
@@ -113,6 +119,12 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   };
 
   const handleMouseEnter: React.MouseEventHandler = event => {
+    if (disabled) {
+      event.preventDefault();
+
+      return;
+    }
+
     const item = event.currentTarget.closest<HTMLElement>("[role='treeitem']");
 
     if (!item) return;
@@ -120,7 +132,13 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     ctx.setActiveElement(item);
   };
 
-  const handleMouseLeave: React.MouseEventHandler = () => {
+  const handleMouseLeave: React.MouseEventHandler = event => {
+    if (disabled) {
+      event.preventDefault();
+
+      return;
+    }
+
     ctx.setActiveElement(null);
   };
 
@@ -176,19 +194,31 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
       const augmentedProps: React.ComponentPropsWithoutRef<"div"> = {
         onClick: event => {
-          if (disabled) return;
+          if (disabled) {
+            event.preventDefault();
+
+            return;
+          }
 
           handleClick(event);
           childProps.onClick?.(event);
         },
         onMouseEnter: event => {
-          if (disabled) return;
+          if (disabled) {
+            event.preventDefault();
+
+            return;
+          }
 
           handleMouseEnter(event);
           childProps.onMouseEnter?.(event);
         },
         onMouseLeave: event => {
-          if (disabled) return;
+          if (disabled) {
+            event.preventDefault();
+
+            return;
+          }
 
           handleMouseLeave(event);
           childProps.onMouseLeave?.(event);
@@ -229,6 +259,8 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   return (
     <div
       {...otherProps}
+      // @ts-expect-error React hasn't added `inert` yet
+      inert={disabled ? "" : undefined}
       id={id}
       ref={ref}
       role="treeitem"

@@ -211,6 +211,8 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   return (
     <button
       {...otherProps}
+      // @ts-expect-error React hasn't added `inert` yet
+      inert={disabled ? "" : undefined}
       id={id}
       tabIndex={calcTabIndex()}
       role="radio"

@@ -88,6 +88,12 @@ const RadioItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     entityName: value,
     type: "radio-item",
     onClick: event => {
+      if (disabled) {
+        event.preventDefault();
+
+        return;
+      }
+
       radioGroupCtx?.onValueChange(value);
 
       onSelect?.(event);
@@ -159,6 +165,8 @@ const RadioItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   return (
     <div
       {...otherProps}
+      // @ts-expect-error React hasn't added `inert` yet
+      inert={disabled ? "" : undefined}
       id={id}
       ref={refCallback}
       className={className}
