@@ -1,7 +1,8 @@
 import * as React from "react";
+import type { PickAsMandatory } from "../types";
+import type { Props } from "./SpinButton";
 
-type ContextValue = {
-  disabled: boolean;
+type ContextValue = PickAsMandatory<Props, "disabled" | "readOnly"> & {
   isUpperBoundDisabled: boolean;
   isLowerBoundDisabled: boolean;
   handleIncrease: (step: number) => void;
