@@ -270,6 +270,8 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   };
 
   const emitValueChange = (newValue: string | string[]) => {
+    if (disabled || readOnly) return;
+
     setSelectedValues(newValue);
     // @ts-expect-error It's fine!
     onValueChange?.(newValue);
@@ -333,7 +335,11 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   };
 
   const handleClearValues = (event: React.MouseEvent<HTMLElement>) => {
-    if (disabled || readOnly) return;
+    if (disabled || readOnly) {
+      event.preventDefault();
+
+      return;
+    }
 
     event.stopPropagation();
 
@@ -343,7 +349,11 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const makeHandleOptionRemove =
     (optionEntityValue: string) => (event: React.MouseEvent<HTMLElement>) => {
-      if (disabled || readOnly) return;
+      if (disabled || readOnly) {
+        event.preventDefault();
+
+        return;
+      }
 
       event.stopPropagation();
 
@@ -437,6 +447,7 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         target: document,
         eventType: "click",
         handler: useEventCallback<MouseEvent>(event => {
+          if (disabled || readOnly) return;
           if (!event.target) return;
           if (!rootRef.current) return;
           if (rootRef.current === event.target) return;

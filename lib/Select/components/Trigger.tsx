@@ -65,8 +65,10 @@ const TriggerBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       const combobox = getComboboxNode();
 
       combobox?.focus();
-      combobox?.click();
 
+      if (ctx?.readOnly) return;
+
+      combobox?.click();
       onClick?.(event);
     },
   );

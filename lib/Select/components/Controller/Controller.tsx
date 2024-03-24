@@ -104,11 +104,19 @@ const ControllerBase = (props: Props, ref: React.Ref<HTMLInputElement>) => {
       event => {
         event.preventDefault();
 
+        if (ctx?.disabled || ctx?.readOnly) return;
+
         ctx?.closeList();
       },
     ),
     onBackspaceKeyDown: useEventCallback<React.KeyboardEvent<HTMLElement>>(
-      () => {
+      event => {
+        if (ctx?.disabled || ctx?.readOnly) {
+          event.preventDefault();
+
+          return;
+        }
+
         if (ctx?.searchable) {
           const rootNode = rootRef.current;
 
@@ -133,6 +141,12 @@ const ControllerBase = (props: Props, ref: React.Ref<HTMLInputElement>) => {
       },
     ),
     onClick: useEventCallback<React.MouseEvent<HTMLElement>>(event => {
+      if (ctx?.disabled || ctx?.readOnly) {
+        event.preventDefault();
+
+        return;
+      }
+
       ctx?.toggleList();
 
       onClick?.(event as React.MouseEvent<HTMLInputElement>);
@@ -182,6 +196,7 @@ const ControllerBase = (props: Props, ref: React.Ref<HTMLInputElement>) => {
 
   const controllerProps = {
     id,
+    inert: disabled ? "" : undefined,
     ref: refCallback,
     role: "combobox",
     "aria-activedescendant": activeDescendant?.id,
