@@ -34,12 +34,19 @@ export type RenderProps = {
    */
   disabled: boolean;
   /**
+   * The `readOnly` state of the component.
+   */
+  readOnly: boolean;
+  /**
    * Determines whether it is focused-visible or not.
    */
   focusedVisible: boolean;
 };
 
-export type ClassNameProps = Pick<RenderProps, "disabled" | "focusedVisible">;
+export type ClassNameProps = Pick<
+  RenderProps,
+  "disabled" | "readOnly" | "focusedVisible"
+>;
 
 type OwnProps = {
   /**
@@ -74,6 +81,12 @@ type OwnProps = {
    * @default false
    */
   disabled?: boolean;
+  /**
+   * If `true`, the component will be read-only.
+   *
+   * @default false
+   */
+  readOnly?: boolean;
   /**
    * If `true`, the component will be focused automatically.
    *
@@ -127,6 +140,7 @@ const SpinButtonBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     label,
     disabled = false,
     autoFocus = false,
+    readOnly = false,
     setValueText,
     onValueChange,
     onKeyDown,
@@ -177,7 +191,7 @@ const SpinButtonBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const isLowerBoundDisabled = value <= min;
 
   const emitValueChange = (newValue: number) => {
-    if (disabled) return;
+    if (readOnly || disabled) return;
     if (value === newValue) return;
 
     setValue(newValue);
@@ -227,7 +241,7 @@ const SpinButtonBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   );
 
   const handleIncrease = (step: number) => {
-    if (disabled || isUpperBoundDisabled) return;
+    if (readOnly || disabled || isUpperBoundDisabled) return;
 
     const newValue = clamp(value + step, min, max);
 
@@ -235,7 +249,7 @@ const SpinButtonBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   };
 
   const handleDecrease = (step: number) => {
-    if (disabled || isLowerBoundDisabled) return;
+    if (readOnly || disabled || isLowerBoundDisabled) return;
 
     const newValue = clamp(value - step, min, max);
 
@@ -250,57 +264,59 @@ const SpinButtonBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         return;
       }
 
-      switch (event.key) {
-        case SystemKeys.UP: {
-          event.preventDefault();
+      if (!readOnly) {
+        switch (event.key) {
+          case SystemKeys.UP: {
+            event.preventDefault();
 
-          handleIncrease(1);
+            handleIncrease(1);
 
-          break;
-        }
+            break;
+          }
 
-        case SystemKeys.DOWN: {
-          event.preventDefault();
+          case SystemKeys.DOWN: {
+            event.preventDefault();
 
-          handleDecrease(1);
+            handleDecrease(1);
 
-          break;
-        }
+            break;
+          }
 
-        case SystemKeys.PAGE_UP: {
-          event.preventDefault();
+          case SystemKeys.PAGE_UP: {
+            event.preventDefault();
 
-          handleIncrease(5);
+            handleIncrease(5);
 
-          break;
-        }
+            break;
+          }
 
-        case SystemKeys.PAGE_DOWN: {
-          event.preventDefault();
+          case SystemKeys.PAGE_DOWN: {
+            event.preventDefault();
 
-          handleDecrease(5);
+            handleDecrease(5);
 
-          break;
-        }
+            break;
+          }
 
-        case SystemKeys.HOME: {
-          event.preventDefault();
+          case SystemKeys.HOME: {
+            event.preventDefault();
 
-          emitValueChange(min);
+            emitValueChange(min);
 
-          break;
-        }
+            break;
+          }
 
-        case SystemKeys.END: {
-          event.preventDefault();
+          case SystemKeys.END: {
+            event.preventDefault();
 
-          emitValueChange(max);
+            emitValueChange(max);
 
-          break;
-        }
+            break;
+          }
 
-        default: {
-          break;
+          default: {
+            break;
+          }
         }
       }
 
@@ -311,13 +327,15 @@ const SpinButtonBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const renderProps: RenderProps = {
     value,
     valueText,
-    percentageValue,
     disabled,
+    readOnly,
+    percentageValue,
     focusedVisible: isFocusedVisible,
   };
 
   const classNameProps: ClassNameProps = {
     disabled,
+    readOnly,
     focusedVisible: isFocusedVisible,
   };
 
@@ -333,6 +351,7 @@ const SpinButtonBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const context: SpinButtonContextValue = {
     disabled,
+    readOnly,
     isLowerBoundDisabled,
     isUpperBoundDisabled,
     handleDecrease,
@@ -356,6 +375,7 @@ const SpinButtonBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       onFocus={handleFocus}
       onBlur={handleBlur}
       aria-disabled={disabled}
+      aria-readonly={readOnly}
       aria-valuenow={value}
       aria-valuemin={min}
       aria-valuemax={max}
@@ -364,6 +384,7 @@ const SpinButtonBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       aria-labelledby={labelInfo.labelledBy}
       data-slot={RootSlot}
       data-disabled={disabled ? "" : undefined}
+      data-readonly={readOnly ? "" : undefined}
       data-focus-visible={isFocusedVisible ? "" : undefined}
     >
       <SpinButtonContext.Provider value={context}>
