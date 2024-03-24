@@ -80,97 +80,108 @@ const TabBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     onKeyUp,
     onKeyDown: useEventCallback<React.KeyboardEvent<HTMLButtonElement>>(
       event => {
-        if (ctx) {
-          const { keyboardActivationBehavior, orientation } = ctx;
+        if (disabled) {
+          event.preventDefault();
 
-          const list =
-            event.currentTarget.closest<HTMLElement>("[role='tablist']");
+          return;
+        }
 
-          const tabs = Array.from(
-            list?.querySelectorAll<HTMLElement>("[role='tab']") ?? [],
+        if (!ctx) return;
+
+        const { keyboardActivationBehavior, orientation } = ctx;
+
+        const list =
+          event.currentTarget.closest<HTMLElement>("[role='tablist']");
+
+        const tabs = Array.from(
+          list?.querySelectorAll<HTMLElement>("[role='tab']") ?? [],
+        );
+
+        const currentTabIdx = tabs.findIndex(
+          tab => tab.getAttribute("data-entity") === value,
+        );
+
+        const currentTab = tabs[currentTabIdx];
+
+        const dir = currentTab
+          ? window.getComputedStyle(currentTab).direction
+          : "ltr";
+
+        const goNext =
+          event.key ===
+          (orientation === "horizontal"
+            ? dir === "ltr"
+              ? SystemKeys.RIGHT
+              : SystemKeys.LEFT
+            : SystemKeys.DOWN);
+
+        const goPrev =
+          event.key ===
+          (orientation === "horizontal"
+            ? dir === "ltr"
+              ? SystemKeys.LEFT
+              : SystemKeys.RIGHT
+            : SystemKeys.UP);
+
+        const goFirst = event.key === SystemKeys.HOME;
+        const goLast = event.key === SystemKeys.END;
+
+        let activeTab: HTMLElement | null = null;
+
+        const getAvailableTab = (
+          idx: number,
+          forward: boolean,
+          prevIdxs: number[] = [],
+        ): HTMLElement | null => {
+          const tab = tabs[idx];
+
+          if (prevIdxs.includes(idx)) return null;
+          if (!tab) return null;
+
+          const newIdx =
+            (forward ? idx + 1 : idx - 1 + tabs.length) % tabs.length;
+
+          const isDisabled =
+            tab.hasAttribute("disabled") ||
+            tab.getAttribute("aria-disabled") === "true";
+
+          if (!isDisabled) return tab;
+
+          return getAvailableTab(newIdx, forward, [...prevIdxs, idx]);
+        };
+
+        if (goPrev) {
+          activeTab = getAvailableTab(
+            (currentTabIdx - 1 + tabs.length) % tabs.length,
+            false,
           );
+        } else if (goNext) {
+          activeTab = getAvailableTab((currentTabIdx + 1) % tabs.length, true);
+        } else if (goFirst) {
+          activeTab = getAvailableTab(0, true);
+        } else if (goLast) {
+          activeTab = getAvailableTab(tabs.length - 1, false);
+        }
 
-          const currentTabIdx = tabs.findIndex(
-            tab => tab.getAttribute("data-entity") === value,
-          );
+        if (activeTab) {
+          event.preventDefault();
 
-          const currentTab = tabs[currentTabIdx];
-
-          const dir = currentTab
-            ? window.getComputedStyle(currentTab).direction
-            : "ltr";
-
-          const goNext =
-            event.key ===
-            (orientation === "horizontal"
-              ? dir === "ltr"
-                ? SystemKeys.RIGHT
-                : SystemKeys.LEFT
-              : SystemKeys.DOWN);
-
-          const goPrev =
-            event.key ===
-            (orientation === "horizontal"
-              ? dir === "ltr"
-                ? SystemKeys.LEFT
-                : SystemKeys.RIGHT
-              : SystemKeys.UP);
-
-          const goFirst = event.key === SystemKeys.HOME;
-          const goLast = event.key === SystemKeys.END;
-
-          let activeTab: HTMLElement | null = null;
-
-          const getAvailableTab = (
-            idx: number,
-            forward: boolean,
-            prevIdxs: number[] = [],
-          ): HTMLElement | null => {
-            const tab = tabs[idx];
-
-            if (prevIdxs.includes(idx)) return null;
-            if (!tab) return null;
-
-            const newIdx =
-              (forward ? idx + 1 : idx - 1 + tabs.length) % tabs.length;
-
-            const isDisabled =
-              tab.hasAttribute("disabled") ||
-              tab.getAttribute("aria-disabled") === "true";
-
-            if (!isDisabled) return tab;
-
-            return getAvailableTab(newIdx, forward, [...prevIdxs, idx]);
-          };
-
-          if (goPrev) {
-            activeTab = getAvailableTab(
-              (currentTabIdx - 1 + tabs.length) % tabs.length,
-              false,
-            );
-          } else if (goNext) {
-            activeTab = getAvailableTab(
-              (currentTabIdx + 1) % tabs.length,
-              true,
-            );
-          } else if (goFirst) {
-            activeTab = getAvailableTab(0, true);
-          } else if (goLast) {
-            activeTab = getAvailableTab(tabs.length - 1, false);
-          }
-
-          if (activeTab) {
-            event.preventDefault();
-
-            activeTab.focus();
-            keyboardActivationBehavior === "automatic" && activeTab.click();
-          }
+          activeTab.focus();
+          keyboardActivationBehavior === "automatic" && activeTab.click();
         }
 
         onKeyDown?.(event);
       },
     ),
-    onClick: useEventCallback(() => void ctx?.onChange(value)),
+    onClick: useEventCallback(event => {
+      if (disabled) {
+        event.preventDefault();
+
+        return;
+      }
+
+      ctx?.onChange(value);
+    }),
   });
 
   const handleRef = useForkedRefs(ref, buttonBase.handleButtonRef);
@@ -274,6 +285,8 @@ const TabBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   return (
     <button
       {...otherProps}
+      // @ts-expect-error React hasn't added `inert` yet
+      inert={disabled ? "" : undefined}
       id={id}
       role="tab"
       type="button"

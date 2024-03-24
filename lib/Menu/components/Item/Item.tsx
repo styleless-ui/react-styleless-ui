@@ -98,15 +98,33 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     entityName: value,
     type: isExpandable ? "expandable-item" : "non-expandable-item",
     onClick: event => {
+      if (disabled) {
+        event.preventDefault();
+
+        return;
+      }
+
       onSelect?.(event);
       onClick?.(event);
     },
     onMouseEnter: event => {
+      if (disabled) {
+        event.preventDefault();
+
+        return;
+      }
+
       if (isExpandable && !expanded) setIsExpanded(true);
 
       onMouseEnter?.(event);
     },
     onMouseLeave: event => {
+      if (disabled) {
+        event.preventDefault();
+
+        return;
+      }
+
       if (isExpandable && expanded) setIsExpanded(false);
 
       onMouseLeave?.(event);
@@ -137,6 +155,7 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   }, []);
 
   React.useEffect(() => {
+    if (disabled) return;
     if (baseItem.isInvalid) return;
     if (!rootRef.current) return;
 
@@ -160,7 +179,7 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         handleCollapseSubMenu,
       );
     };
-  }, [baseItem.isInvalid]);
+  }, [baseItem.isInvalid, disabled]);
 
   if (baseItem.isInvalid) return null;
 
@@ -191,6 +210,8 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   return (
     <div
       {...otherProps}
+      // @ts-expect-error React hasn't added `inert` yet
+      inert={disabled ? "" : undefined}
       id={id}
       ref={refCallback}
       className={className}

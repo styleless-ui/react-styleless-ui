@@ -100,7 +100,11 @@ export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
   });
 
   const handleClick = useEventCallback<React.MouseEvent<T>>(event => {
-    if (disabled || readOnly || !isMounted()) return;
+    if (disabled || readOnly || !isMounted()) {
+      event.preventDefault();
+
+      return;
+    }
 
     event.preventDefault();
     event.stopPropagation();
@@ -109,7 +113,11 @@ export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
   });
 
   const handleFocus = useEventCallback<React.FocusEvent<T>>(event => {
-    if (disabled || readOnly || !isMounted()) return;
+    if (disabled || readOnly || !isMounted()) {
+      event.preventDefault();
+
+      return;
+    }
 
     // Fix for https://github.com/facebook/react/issues/7769
     if (!ref.current) ref.current = event.currentTarget;
@@ -122,7 +130,11 @@ export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
   });
 
   const handleBlur = useEventCallback<React.FocusEvent<T>>(event => {
-    if (disabled || readOnly || !isMounted()) return;
+    if (disabled || readOnly || !isMounted()) {
+      event.preventDefault();
+
+      return;
+    }
 
     handleBlurVisible(event);
 
@@ -132,7 +144,11 @@ export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
   });
 
   const handleKeyDown = useEventCallback<React.KeyboardEvent<T>>(event => {
-    if (disabled || readOnly || !isMounted()) return;
+    if (disabled || readOnly || !isMounted()) {
+      event.preventDefault();
+
+      return;
+    }
 
     const getAvailableItem = (
       items: (HTMLElement | null)[],
@@ -329,7 +345,11 @@ export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
   const handleQueryChange = useEventCallback<
     React.ChangeEvent<HTMLInputElement>
   >(event => {
-    if (disabled || readOnly || !isMounted()) return;
+    if (disabled || readOnly || !isMounted()) {
+      event.preventDefault();
+
+      return;
+    }
 
     const target = event.target;
 

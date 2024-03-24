@@ -216,7 +216,11 @@ export const useBaseItem = (props: {
 
   const handleClick = useEventCallback<React.MouseEvent<HTMLDivElement>>(
     event => {
-      if (disabled) return;
+      if (disabled) {
+        event.preventDefault();
+
+        return;
+      }
 
       if (!isExpandable) menuCtx?.emitClose();
 
@@ -226,7 +230,11 @@ export const useBaseItem = (props: {
 
   const handleMouseEnter = useEventCallback<React.MouseEvent<HTMLDivElement>>(
     event => {
-      if (disabled) return;
+      if (disabled) {
+        event.preventDefault();
+
+        return;
+      }
 
       const item = event.currentTarget as HTMLElement;
 
@@ -238,7 +246,11 @@ export const useBaseItem = (props: {
 
   const handleMouseLeave = useEventCallback<React.MouseEvent<HTMLDivElement>>(
     event => {
-      if (disabled) return;
+      if (disabled) {
+        event.preventDefault();
+
+        return;
+      }
 
       menuCtx?.emitActiveElementChange(null);
 

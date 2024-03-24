@@ -210,6 +210,8 @@ const ToggleBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   return (
     <button
       {...otherProps}
+      // @ts-expect-error React hasn't added `inert` yet
+      inert={disabled ? "" : undefined}
       className={className}
       tabIndex={calcTabIndex()}
       type="button"

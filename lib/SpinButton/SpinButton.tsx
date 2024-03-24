@@ -7,10 +7,8 @@ import {
   contains,
   remap,
   useControlledProp,
-  useDeterministicId,
   useEventCallback,
   useForkedRefs,
-  useHandleTargetLabelClick,
   useIsFocusVisible,
   useIsMounted,
   useIsomorphicLayoutEffect,
@@ -119,7 +117,6 @@ export type Props = Omit<MergeElementProps<"div", OwnProps>, "defaultChecked">;
 
 const SpinButtonBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
-    id: idProp,
     min,
     max,
     value: valueProp,
@@ -137,9 +134,6 @@ const SpinButtonBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     onBlur,
     ...otherProps
   } = props;
-
-  const id = useDeterministicId(idProp, "styleless-ui__spinbutton");
-  const visibleLabelId = `${id}__label`;
 
   const isMounted = useIsMounted();
 
@@ -183,6 +177,7 @@ const SpinButtonBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const isLowerBoundDisabled = value <= min;
 
   const emitValueChange = (newValue: number) => {
+    if (disabled) return;
     if (value === newValue) return;
 
     setValue(newValue);
@@ -191,7 +186,11 @@ const SpinButtonBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const handleFocus = useEventCallback<React.FocusEvent<HTMLDivElement>>(
     event => {
-      if (disabled || !isMounted()) return;
+      if (disabled || !isMounted()) {
+        event.preventDefault();
+
+        return;
+      }
 
       // Fix for https://github.com/facebook/react/issues/7769
       if (!rootRef.current) rootRef.current = event.currentTarget;
@@ -213,7 +212,11 @@ const SpinButtonBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const handleBlur = useEventCallback<React.FocusEvent<HTMLDivElement>>(
     event => {
-      if (disabled || !isMounted()) return;
+      if (disabled || !isMounted()) {
+        event.preventDefault();
+
+        return;
+      }
 
       handleBlurVisible(event);
 
@@ -241,59 +244,63 @@ const SpinButtonBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const handleKeyDown = useEventCallback<React.KeyboardEvent<HTMLDivElement>>(
     event => {
-      if (!disabled) {
-        switch (event.key) {
-          case SystemKeys.UP: {
-            event.preventDefault();
+      if (disabled) {
+        event.preventDefault();
 
-            handleIncrease(1);
+        return;
+      }
 
-            break;
-          }
+      switch (event.key) {
+        case SystemKeys.UP: {
+          event.preventDefault();
 
-          case SystemKeys.DOWN: {
-            event.preventDefault();
+          handleIncrease(1);
 
-            handleDecrease(1);
+          break;
+        }
 
-            break;
-          }
+        case SystemKeys.DOWN: {
+          event.preventDefault();
 
-          case SystemKeys.PAGE_UP: {
-            event.preventDefault();
+          handleDecrease(1);
 
-            handleIncrease(5);
+          break;
+        }
 
-            break;
-          }
+        case SystemKeys.PAGE_UP: {
+          event.preventDefault();
 
-          case SystemKeys.PAGE_DOWN: {
-            event.preventDefault();
+          handleIncrease(5);
 
-            handleDecrease(5);
+          break;
+        }
 
-            break;
-          }
+        case SystemKeys.PAGE_DOWN: {
+          event.preventDefault();
 
-          case SystemKeys.HOME: {
-            event.preventDefault();
+          handleDecrease(5);
 
-            emitValueChange(min);
+          break;
+        }
 
-            break;
-          }
+        case SystemKeys.HOME: {
+          event.preventDefault();
 
-          case SystemKeys.END: {
-            event.preventDefault();
+          emitValueChange(min);
 
-            emitValueChange(max);
+          break;
+        }
 
-            break;
-          }
+        case SystemKeys.END: {
+          event.preventDefault();
 
-          default: {
-            break;
-          }
+          emitValueChange(max);
+
+          break;
+        }
+
+        default: {
+          break;
         }
       }
 
@@ -323,12 +330,6 @@ const SpinButtonBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     typeof classNameProp === "function"
       ? classNameProp(classNameProps)
       : classNameProp;
-
-  useHandleTargetLabelClick({
-    visibleLabelId,
-    labelInfo,
-    onClick: () => void 0,
-  });
 
   const context: SpinButtonContextValue = {
     disabled,

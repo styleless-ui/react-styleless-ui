@@ -70,6 +70,12 @@ const DecrementButtonBase = (
   }
 
   const handleClick: React.MouseEventHandler<HTMLButtonElement> = event => {
+    if (ctx.disabled) {
+      event.preventDefault();
+
+      return;
+    }
+
     ctx.handleDecrease(1);
 
     onClick?.(event);

@@ -55,21 +55,25 @@ type OwnProps = {
       };
   /**
    * If `true`, the switch will be focused automatically.
+   *
    * @default false
    */
   autoFocus?: boolean;
   /**
    * If `true`, the switch will be checked.
+   *
    * @default false
    */
   checked?: boolean;
   /**
    * The default state of `checked`. Use when the component is not controlled.
+   *
    * @default false
    */
   defaultChecked?: boolean;
   /**
    * If `true`, the switch will be disabled.
+   *
    * @default false
    */
   disabled?: boolean;
@@ -81,10 +85,6 @@ type OwnProps = {
    * The Callback is fired when the state changes.
    */
   onCheckedChange?: (checkedState: boolean) => void;
-  onFocus?: React.FocusEventHandler<HTMLButtonElement>;
-  onBlur?: React.FocusEventHandler<HTMLButtonElement>;
-  onKeyDown?: React.KeyboardEventHandler<HTMLButtonElement>;
-  onKeyUp?: React.KeyboardEventHandler<HTMLButtonElement>;
 };
 
 export type Props = Omit<
@@ -172,6 +172,8 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   return (
     <button
       {...otherProps}
+      // @ts-expect-error React hasn't added `inert` yet
+      inert={disabled ? "" : undefined}
       id={id}
       role="switch"
       className={className}
