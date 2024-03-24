@@ -1,6 +1,5 @@
 import classNames from "classnames";
 import {
-  act,
   itShouldMount,
   itSupportsDataSetProps,
   itSupportsFocusEvents,
@@ -28,34 +27,17 @@ describe("Radio", () => {
   itSupportsDataSetProps(Radio, mockRequiredProps);
 
   it("should have the required classNames", () => {
-    const { rerender } = render(
+    const { unmount } = render(
       <Radio
         {...mockRequiredProps}
         checked
         autoFocus
-        className={({ checked, disabled, focusedVisible }) =>
-          classNames("root", {
-            "root--disabled": disabled,
-            "root--checked": checked,
-            "root--focus-visible": focusedVisible,
-          })
-        }
-      />,
-    );
-
-    const root = screen.getByRole("radio");
-
-    expect(root).toHaveClass("root", "root--checked", "root--focus-visible");
-
-    rerender(
-      <Radio
-        {...mockRequiredProps}
-        checked
         disabled
-        autoFocus
-        className={({ checked, disabled, focusedVisible }) =>
+        readOnly
+        className={({ checked, disabled, readOnly, focusedVisible }) =>
           classNames("root", {
             "root--disabled": disabled,
+            "root--readonly": readOnly,
             "root--checked": checked,
             "root--focus-visible": focusedVisible,
           })
@@ -63,7 +45,37 @@ describe("Radio", () => {
       />,
     );
 
-    expect(root).toHaveClass("root", "root--checked", "root--disabled");
+    expect(screen.getByRole("radio")).toHaveClass(
+      "root",
+      "root--checked",
+      "root--disabled",
+      "root--readonly",
+    );
+
+    unmount();
+    render(
+      <Radio
+        {...mockRequiredProps}
+        checked
+        autoFocus
+        readOnly
+        className={({ checked, disabled, readOnly, focusedVisible }) =>
+          classNames("root", {
+            "root--disabled": disabled,
+            "root--readonly": readOnly,
+            "root--checked": checked,
+            "root--focus-visible": focusedVisible,
+          })
+        }
+      />,
+    );
+
+    expect(screen.getByRole("radio")).toHaveClass(
+      "root",
+      "root--checked",
+      "root--focus-visible",
+      "root--readonly",
+    );
   });
 
   it("should have `aria-label='label'` property when `label={{ screenReaderLabel: 'label' }}`", () => {
@@ -103,40 +115,86 @@ describe("Radio", () => {
     expect(screen.getByRole("radio")).toBeChecked();
   });
 
-  it("toggles `checked` state from off to on with mouse/keyboard interactions and calls `onChange` callback", async () => {
-    const handleCheckedChange = jest.fn<void, [checkedState: boolean]>();
-
+  it("toggles `checked` state from off to on with mouse/keyboard interactions and calls `onCheckedChange` callback", async () => {
     userEvent.setup();
-    const { unmount } = render(
+
+    const handleCheckedChange = jest.fn<void, [checkedState: boolean]>();
+    const getRadio = () => screen.getByRole("radio");
+
+    const { unmount: unmount1 } = render(
       <Radio
         {...mockRequiredProps}
         onCheckedChange={handleCheckedChange}
       />,
     );
 
-    await userEvent.click(screen.getByRole("radio"));
+    await userEvent.click(getRadio());
 
-    expect(screen.getByRole("radio")).toBeChecked();
+    expect(getRadio()).toBeChecked();
     expect(handleCheckedChange.mock.calls.length).toBe(1);
     expect(handleCheckedChange.mock.calls[0]?.[0]).toBe(true);
 
     handleCheckedChange.mockClear();
-    unmount();
-    render(
+    unmount1();
+    const { unmount: unmount2 } = render(
       <Radio
         {...mockRequiredProps}
         onCheckedChange={handleCheckedChange}
       />,
     );
 
-    act(() => void screen.getByRole("radio").focus());
+    await userEvent.tab();
 
-    expect(screen.getByRole("radio")).toHaveFocus();
+    expect(getRadio()).toHaveFocus();
 
     await userEvent.keyboard("[Space]");
 
-    expect(screen.getByRole("radio")).toBeChecked();
+    expect(getRadio()).toBeChecked();
     expect(handleCheckedChange.mock.calls.length).toBe(1);
     expect(handleCheckedChange.mock.calls[0]?.[0]).toBe(true);
+
+    handleCheckedChange.mockReset();
+    unmount2();
+    const { unmount: unmount3 } = render(
+      <Radio
+        {...mockRequiredProps}
+        readOnly
+        onCheckedChange={handleCheckedChange}
+      />,
+    );
+
+    await userEvent.tab();
+
+    expect(getRadio()).toHaveFocus();
+
+    await userEvent.keyboard("[Space]");
+
+    expect(handleCheckedChange.mock.calls.length).toBe(0);
+
+    await userEvent.keyboard("[Enter]");
+
+    expect(handleCheckedChange.mock.calls.length).toBe(0);
+
+    await userEvent.click(getRadio());
+
+    expect(handleCheckedChange.mock.calls.length).toBe(0);
+
+    handleCheckedChange.mockReset();
+    unmount3();
+    render(
+      <Radio
+        {...mockRequiredProps}
+        disabled
+        onCheckedChange={handleCheckedChange}
+      />,
+    );
+
+    await userEvent.tab();
+
+    expect(getRadio()).not.toHaveFocus();
+
+    await userEvent.click(getRadio());
+
+    expect(handleCheckedChange.mock.calls.length).toBe(0);
   });
 });

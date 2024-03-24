@@ -16,6 +16,10 @@ export type RenderProps = {
    */
   checked: boolean;
   /**
+   * The `readOnly` state of the radio.
+   */
+  readOnly: boolean;
+  /**
    * The `disabled` state of the radio.
    */
   disabled: boolean;
@@ -60,36 +64,42 @@ type OwnProps = {
   value?: string;
   /**
    * If `true`, the radio will be focused automatically.
+   *
    * @default false
    */
   autoFocus?: boolean;
   /**
    * If `true`, the radio will be checked.
+   *
    * @default false
    */
   checked?: boolean;
   /**
    * The default state of `checked`. Use when the component is not controlled.
+   *
    * @default false
    */
   defaultChecked?: boolean;
   /**
    * If `true`, the radio will be disabled.
+   *
    * @default false
    */
   disabled?: boolean;
   /**
-   * The Callback is fired when the state changes.
+   * If `true`, the radio will be read-only.
+   *
+   * @default false
    */
-  onCheckedChange?: (checkedState: boolean) => void;
+  readOnly?: boolean;
   /**
    * A value to replace `tabIndex` with.
    */
   overrideTabIndex?: number;
-  onFocus?: React.FocusEventHandler<HTMLButtonElement>;
-  onBlur?: React.FocusEventHandler<HTMLButtonElement>;
-  onKeyDown?: React.KeyboardEventHandler<HTMLButtonElement>;
-  onKeyUp?: React.KeyboardEventHandler<HTMLButtonElement>;
+  /**
+   * The Callback is fired when the state changes.
+   */
+  onCheckedChange?: (checkedState: boolean) => void;
 };
 
 export type Props = Omit<
@@ -101,14 +111,15 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   const {
     label,
     value,
-    children: childrenProp,
+    checked,
     defaultChecked,
-    id: idProp,
     overrideTabIndex,
+    id: idProp,
+    children: childrenProp,
     className: classNameProp,
-    checked: checkedProp,
     autoFocus = false,
     disabled = false,
+    readOnly = false,
     onCheckedChange,
     onBlur,
     onFocus,
@@ -130,17 +141,28 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     );
   }
 
+  const isDisabled =
+    radioGroupCtx?.disabled != null ? radioGroupCtx.disabled : disabled;
+
+  const isReadOnly =
+    radioGroupCtx?.readOnly != null ? radioGroupCtx.readOnly : readOnly;
+
   const rootRef = React.useRef<HTMLButtonElement>(null);
 
   const checkBase = useCheckBase({
     value,
     groupCtx: radioGroupCtx,
-    checked: checkedProp,
     autoFocus,
-    disabled,
+    checked,
     defaultChecked,
+    disabled: isDisabled,
+    readOnly: isReadOnly,
     selectMode: "single",
     togglable: false,
+    onBlur,
+    onFocus,
+    onKeyDown,
+    onKeyUp,
     getGroupElement: () =>
       rootRef.current?.closest("[role='radiogroup']") ?? null,
     getGroupItems: group =>
@@ -148,10 +170,6 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
         group.querySelectorAll<HTMLElement>(`[data-slot='${Slots.Root}']`),
       ),
     onChange: onCheckedChange,
-    onBlur,
-    onFocus,
-    onKeyDown,
-    onKeyUp,
   });
 
   const id = useDeterministicId(idProp, "styleless-ui__radio");
@@ -167,8 +185,9 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   });
 
   const renderProps: RenderProps = {
-    disabled,
-    checked: checkBase.checked,
+    disabled: isDisabled,
+    readOnly: isReadOnly,
+    checked: checkBase.checked as boolean,
     focusedVisible: checkBase.isFocusedVisible,
   };
 
@@ -186,7 +205,7 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const calcTabIndex = () => {
     if (typeof overrideTabIndex !== "undefined") return overrideTabIndex;
-    if (disabled) return -1;
+    if (isDisabled) return -1;
     if (!radioGroupCtx) return 0;
 
     const forcedTabableItem = radioGroupCtx.forcedTabability;
@@ -202,9 +221,10 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const dataAttrs = {
     "data-slot": Slots.Root,
-    "data-disabled": classNameProps.disabled ? "" : undefined,
-    "data-focus-visible": classNameProps.focusedVisible ? "" : undefined,
-    "data-checked": classNameProps.checked ? "" : undefined,
+    "data-disabled": isDisabled ? "" : undefined,
+    "data-readonly": isReadOnly ? "" : undefined,
+    "data-focus-visible": checkBase.isFocusedVisible ? "" : undefined,
+    "data-checked": checkBase.checked ? "" : undefined,
     "data-entity": value,
   };
 
@@ -212,20 +232,21 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     <button
       {...otherProps}
       // @ts-expect-error React hasn't added `inert` yet
-      inert={disabled ? "" : undefined}
+      inert={isDisabled ? "" : undefined}
       id={id}
       tabIndex={calcTabIndex()}
       role="radio"
       className={className}
       type="button"
       ref={handleRef}
-      disabled={disabled}
+      disabled={isDisabled}
       onFocus={checkBase.handleFocus}
       onBlur={checkBase.handleBlur}
       onKeyDown={checkBase.handleKeyDown}
       onKeyUp={checkBase.handleKeyUp}
       onClick={checkBase.handleClick}
       aria-checked={checkBase.checked}
+      aria-readonly={isReadOnly}
       aria-label={labelInfo.srOnlyLabel}
       aria-labelledby={labelInfo.labelledBy}
       {...dataAttrs}
