@@ -91,7 +91,7 @@ const OptionBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const handleClick = useEventCallback<React.MouseEvent<HTMLDivElement>>(
     event => {
-      if (disabled || ctx?.disabled || ctx?.readOnly) {
+      if (disabled || ctx?.disabled) {
         event.preventDefault();
 
         return;
@@ -101,6 +101,9 @@ const OptionBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       const comboboxNode = document.getElementById(comboboxId ?? "");
 
       comboboxNode?.focus();
+
+      if (ctx?.readOnly) return;
+
       ctx?.handleOptionClick(value);
       onClick?.(event);
     },
@@ -108,11 +111,13 @@ const OptionBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const handleMouseEnter = useEventCallback<React.MouseEvent<HTMLDivElement>>(
     event => {
-      if (disabled || ctx?.disabled || ctx?.readOnly) {
+      if (disabled || ctx?.disabled) {
         event.preventDefault();
 
         return;
       }
+
+      if (ctx?.readOnly) return;
 
       if (event.currentTarget === rootRef.current) {
         ctx?.setActiveDescendant(rootRef.current);
@@ -124,11 +129,13 @@ const OptionBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const handleMouseLeave = useEventCallback<React.MouseEvent<HTMLDivElement>>(
     event => {
-      if (disabled || ctx?.disabled || ctx?.readOnly) {
+      if (disabled || ctx?.disabled) {
         event.preventDefault();
 
         return;
       }
+
+      if (ctx?.readOnly) return;
 
       ctx?.setActiveDescendant(null);
 

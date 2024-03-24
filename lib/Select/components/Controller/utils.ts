@@ -76,10 +76,10 @@ export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
   const isSelectOnly = !searchable;
 
   const [isFocusedVisible, setIsFocusedVisible] = React.useState(() =>
-    disabled || readOnly ? false : autoFocus,
+    disabled ? false : autoFocus,
   );
 
-  if ((disabled || readOnly) && isFocusedVisible) setIsFocusedVisible(false);
+  if (disabled && isFocusedVisible) setIsFocusedVisible(false);
 
   // Sync focus visible states
   React.useEffect(() => void (isFocusVisibleRef.current = isFocusedVisible));
@@ -92,6 +92,7 @@ export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
   }, []);
 
   useOnChange(listOpenState, currentOpenState => {
+    if (disabled || readOnly) return;
     if (currentOpenState) return;
     if (!(ref.current instanceof HTMLInputElement)) return;
 
@@ -100,20 +101,16 @@ export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
   });
 
   const handleClick = useEventCallback<React.MouseEvent<T>>(event => {
-    if (disabled || readOnly || !isMounted()) {
-      event.preventDefault();
-
-      return;
-    }
-
     event.preventDefault();
     event.stopPropagation();
+
+    if (disabled || readOnly || !isMounted()) return;
 
     onClick?.(event);
   });
 
   const handleFocus = useEventCallback<React.FocusEvent<T>>(event => {
-    if (disabled || readOnly || !isMounted()) {
+    if (disabled || !isMounted()) {
       event.preventDefault();
 
       return;
@@ -130,7 +127,7 @@ export const useComboboxBase = <T extends HTMLElement>(props: Props<T>) => {
   });
 
   const handleBlur = useEventCallback<React.FocusEvent<T>>(event => {
-    if (disabled || readOnly || !isMounted()) {
+    if (disabled || !isMounted()) {
       event.preventDefault();
 
       return;
