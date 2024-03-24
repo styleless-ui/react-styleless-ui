@@ -1,6 +1,6 @@
 import * as React from "react";
 import { getLabelInfo } from "../internals";
-import type { MergeElementProps } from "../types";
+import type { MergeElementProps, PropWithRenderContext } from "../types";
 import {
   componentWithForwardedRef,
   useControlledProp,
@@ -9,15 +9,28 @@ import {
 import { CheckGroupContext } from "./context";
 import * as Slots from "./slots";
 
+export type RenderProps = {
+  /**
+   * The `readOnly` state of the checkbox.
+   */
+  readOnly: boolean;
+  /**
+   * The `disabled` state of the checkbox.
+   */
+  disabled: boolean;
+};
+
+export type ClassNameProps = RenderProps;
+
 type OwnProps = {
   /**
    * The content of the group.
    */
-  children?: React.ReactNode;
+  children?: PropWithRenderContext<React.ReactNode, RenderProps>;
   /**
    * The className applied to the component.
    */
-  className?: string;
+  className?: PropWithRenderContext<string, ClassNameProps>;
   /**
    * The label of the group.
    */
@@ -38,6 +51,7 @@ type OwnProps = {
       };
   /**
    * The orientation of the group.
+   *
    * @default "vertical"
    */
   orientation?: "horizontal" | "vertical";
@@ -49,6 +63,22 @@ type OwnProps = {
    * The default value. Use when the component is not controlled.
    */
   defaultValue?: string[];
+  /**
+   * If `true`, the group will be disabled.
+   *
+   * This will force the descendant checkboxes to be disabled as well.
+   *
+   * @default false
+   */
+  disabled?: boolean;
+  /**
+   * If `true`, the group will be read-only.
+   *
+   * This will force the descendant checkboxes to be read-only as well.
+   *
+   * @default false
+   */
+  readOnly?: boolean;
   /**
    * The Callback is fired when the state changes.
    */
@@ -63,11 +93,13 @@ export type Props = Omit<
 const CheckGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     label,
-    children,
-    id: idProp,
-    className,
     defaultValue,
     value: valueProp,
+    children: childrenProp,
+    className: classNameProp,
+    id: idProp,
+    disabled,
+    readOnly,
     onValueChange,
     orientation = "vertical",
     ...otherProps
@@ -86,6 +118,8 @@ const CheckGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const [value, setValue] = useControlledProp(valueProp, defaultValue, []);
 
   const handleValueChange = (newCheckedState: boolean, inputValue: string) => {
+    if (disabled || readOnly) return;
+
     const newValue = !newCheckedState
       ? value.filter(v => v !== inputValue)
       : value.concat(inputValue);
@@ -94,9 +128,28 @@ const CheckGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     onValueChange?.(newValue);
   };
 
+  const renderProps: RenderProps = {
+    disabled: disabled ?? false,
+    readOnly: readOnly ?? false,
+  };
+
+  const classNameProps: ClassNameProps = renderProps;
+
+  const children =
+    typeof childrenProp === "function"
+      ? childrenProp(renderProps)
+      : childrenProp;
+
+  const className =
+    typeof classNameProp === "function"
+      ? classNameProp(classNameProps)
+      : classNameProp;
+
   return (
     <div
       {...otherProps}
+      // @ts-expect-error React hasn't added `inert` yet
+      inert={disabled ? "" : undefined}
       role="group"
       id={id}
       ref={ref}
@@ -107,7 +160,7 @@ const CheckGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       aria-labelledby={labelInfo.labelledBy}
     >
       <CheckGroupContext.Provider
-        value={{ value, onChange: handleValueChange }}
+        value={{ value, readOnly, disabled, onChange: handleValueChange }}
       >
         {children}
       </CheckGroupContext.Provider>

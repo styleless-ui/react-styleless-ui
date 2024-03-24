@@ -152,28 +152,34 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     );
   }
 
+  const isDisabled =
+    checkGroupCtx?.disabled != null ? checkGroupCtx.disabled : disabled;
+
+  const isReadOnly =
+    checkGroupCtx?.readOnly != null ? checkGroupCtx.readOnly : readOnly;
+
   const rootRef = React.useRef<HTMLButtonElement>(null);
 
   const checkBase = useCheckBase({
     value,
     autoFocus,
-    disabled,
-    readOnly,
     checked,
-    groupCtx: checkGroupCtx,
     defaultChecked,
+    disabled: isDisabled,
+    readOnly: isReadOnly,
+    groupCtx: checkGroupCtx,
     selectMode: "multiple",
     togglable: true,
+    onBlur,
+    onFocus,
+    onKeyDown,
+    onKeyUp,
     getGroupElement: () => rootRef.current?.closest("[role='group']") ?? null,
     getGroupItems: group =>
       Array.from(
         group.querySelectorAll<HTMLElement>(`[data-slot='${Slots.Root}']`),
       ),
     onChange: onCheckedChange,
-    onBlur,
-    onFocus,
-    onKeyDown,
-    onKeyUp,
   });
 
   const id = useDeterministicId(idProp, "styleless-ui__checkbox");
@@ -192,8 +198,8 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   const isChecked = isIndeterminated ? false : (checkBase.checked as boolean);
 
   const renderProps: RenderProps = {
-    disabled,
-    readOnly,
+    disabled: isDisabled,
+    readOnly: isReadOnly,
     indeterminated: isIndeterminated,
     checked: isChecked,
     focusedVisible: checkBase.isFocusedVisible,
@@ -230,8 +236,8 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const dataAttrs = {
     "data-slot": Slots.Root,
-    "data-disabled": disabled ? "" : undefined,
-    "data-readonly": readOnly ? "" : undefined,
+    "data-disabled": isDisabled ? "" : undefined,
+    "data-readonly": isReadOnly ? "" : undefined,
     "data-indeterminated": isIndeterminated ? "" : undefined,
     "data-focus-visible": checkBase.isFocusedVisible ? "" : undefined,
     "data-checked": isChecked ? "" : undefined,
@@ -245,11 +251,11 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     <button
       {...otherProps}
       // @ts-expect-error React hasn't added `inert` yet
-      inert={disabled ? "" : undefined}
+      inert={isDisabled ? "" : undefined}
       id={id}
       className={className}
       ref={refCallback}
-      disabled={disabled}
+      disabled={isDisabled}
       onFocus={checkBase.handleFocus}
       onBlur={checkBase.handleBlur}
       onKeyDown={checkBase.handleKeyDown}
@@ -259,7 +265,7 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
       type="button"
       role="checkbox"
       aria-checked={isIndeterminated ? "mixed" : isChecked}
-      aria-readonly={readOnly}
+      aria-readonly={isReadOnly}
       aria-label={labelInfo.srOnlyLabel}
       aria-labelledby={labelInfo.labelledBy}
       {...dataAttrs}

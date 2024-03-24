@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import classNames from "classnames";
 import {
-  act,
   itShouldMount,
   itSupportsDataSetProps,
   itSupportsRef,
@@ -30,13 +30,22 @@ describe("CheckGroup", () => {
     render(
       <CheckGroup
         {...mockRequiredProps}
-        className="root"
+        disabled
+        readOnly
+        className={({ disabled, readOnly }) =>
+          classNames("root", {
+            "root--disabled": disabled,
+            "root--readonly": readOnly,
+          })
+        }
       />,
     );
 
-    const root = screen.getByRole("group");
-
-    expect(root).toHaveClass("root");
+    expect(screen.getByRole("group")).toHaveClass(
+      "root",
+      "root--disabled",
+      "root--readonly",
+    );
   });
 
   it("should have `aria-label='label'` property when `label={{ screenReaderLabel: 'label' }}`", () => {
@@ -60,10 +69,12 @@ describe("CheckGroup", () => {
   });
 
   it("toggles `checked` state with mouse interactions and calls `onValueChange` callback", async () => {
-    const handleValueChange = jest.fn<void, [selectedValues: string[]]>();
-
     userEvent.setup();
-    render(
+
+    const handleValueChange = jest.fn<void, [selectedValues: string[]]>();
+    const getCheckboxes = () => screen.getAllByRole("checkbox");
+
+    const { unmount: unmount1 } = render(
       <CheckGroup
         {...mockRequiredProps}
         onValueChange={handleValueChange}
@@ -88,47 +99,107 @@ describe("CheckGroup", () => {
       </CheckGroup>,
     );
 
-    const boxes = screen.getAllByRole("checkbox");
+    await userEvent.click(getCheckboxes()[0]!);
 
-    expect(boxes[0]).not.toBeUndefined();
-    expect(boxes[1]).not.toBeUndefined();
-    expect(boxes[2]).not.toBeUndefined();
-
-    await userEvent.click(boxes[0]!);
-
-    expect(boxes[0]).not.toBeChecked();
+    expect(getCheckboxes()[0]!).not.toBeChecked();
     expect(handleValueChange.mock.calls.length).toBe(0);
 
-    await userEvent.click(boxes[1]!);
+    await userEvent.click(getCheckboxes()[1]!);
 
-    expect(boxes[1]).toBeChecked();
+    expect(getCheckboxes()[1]!).toBeChecked();
     expect(handleValueChange.mock.calls.length).toBe(1);
     expect(handleValueChange.mock.calls[0]?.join()).toBe("1");
 
-    await userEvent.click(boxes[1]!);
+    await userEvent.click(getCheckboxes()[1]!);
 
-    expect(boxes[1]).not.toBeChecked();
+    expect(getCheckboxes()[1]!).not.toBeChecked();
     expect(handleValueChange.mock.calls.length).toBe(2);
     expect(handleValueChange.mock.calls[1]?.join()).toBe("");
 
-    await userEvent.click(boxes[1]!);
+    await userEvent.click(getCheckboxes()[1]!);
 
-    expect(boxes[1]).toBeChecked();
+    expect(getCheckboxes()[1]!).toBeChecked();
     expect(handleValueChange.mock.calls.length).toBe(3);
     expect(handleValueChange.mock.calls[2]?.join()).toBe("1");
 
-    await userEvent.click(boxes[2]!);
+    await userEvent.click(getCheckboxes()[2]!);
 
-    expect(boxes[2]).toBeChecked();
+    expect(getCheckboxes()[2]!).toBeChecked();
     expect(handleValueChange.mock.calls.length).toBe(4);
     expect(handleValueChange.mock.calls[3]?.join()).toBe("1,2");
+
+    unmount1();
+    handleValueChange.mockReset();
+    const { unmount: unmount2 } = render(
+      <CheckGroup
+        {...mockRequiredProps}
+        readOnly
+        onValueChange={handleValueChange}
+      >
+        <Checkbox
+          label={{ screenReaderLabel: "item 0" }}
+          value="0"
+          disabled
+        />
+        <Checkbox
+          label={{ screenReaderLabel: "item 1" }}
+          value="1"
+        />
+      </CheckGroup>,
+    );
+
+    await userEvent.click(getCheckboxes()[0]!);
+
+    expect(getCheckboxes()[0]!).not.toBeChecked();
+    expect(getCheckboxes()[0]!).not.toHaveFocus();
+    expect(handleValueChange.mock.calls.length).toBe(0);
+
+    await userEvent.click(getCheckboxes()[1]!);
+
+    expect(getCheckboxes()[1]!).not.toBeChecked();
+    expect(getCheckboxes()[1]!).toHaveFocus();
+    expect(handleValueChange.mock.calls.length).toBe(0);
+
+    handleValueChange.mockReset();
+    unmount2();
+    render(
+      <CheckGroup
+        {...mockRequiredProps}
+        disabled
+        onValueChange={handleValueChange}
+      >
+        <Checkbox
+          label={{ screenReaderLabel: "item 0" }}
+          value="0"
+          disabled
+        />
+        <Checkbox
+          label={{ screenReaderLabel: "item 1" }}
+          value="1"
+        />
+      </CheckGroup>,
+    );
+
+    await userEvent.click(getCheckboxes()[0]!);
+
+    expect(getCheckboxes()[0]!).not.toBeChecked();
+    expect(getCheckboxes()[0]!).not.toHaveFocus();
+    expect(handleValueChange.mock.calls.length).toBe(0);
+
+    await userEvent.click(getCheckboxes()[1]!);
+
+    expect(getCheckboxes()[1]!).not.toBeChecked();
+    expect(getCheckboxes()[1]!).not.toHaveFocus();
+    expect(handleValueChange.mock.calls.length).toBe(0);
   });
 
   it("toggles `checked` state with keyboard interactions and calls `onValueChange` callback", async () => {
-    const handleValueChange = jest.fn<void, [selectedValues: string[]]>();
-
     userEvent.setup();
-    render(
+
+    const handleValueChange = jest.fn<void, [selectedValues: string[]]>();
+    const getCheckboxes = () => screen.getAllByRole("checkbox");
+
+    const { unmount: unmount1 } = render(
       <CheckGroup
         {...mockRequiredProps}
         onValueChange={handleValueChange}
@@ -153,42 +224,130 @@ describe("CheckGroup", () => {
       </CheckGroup>,
     );
 
-    const boxes = screen.getAllByRole("checkbox");
-
-    act(() => void boxes[0]?.focus());
-    await userEvent.keyboard("[Space]");
-
-    expect(boxes[0]).not.toBeChecked();
-    expect(handleValueChange.mock.calls.length).toBe(0);
-
     await userEvent.tab();
-    expect(boxes[1]).toHaveFocus();
+
+    expect(getCheckboxes()[0]!).not.toHaveFocus();
+    expect(getCheckboxes()[1]!).toHaveFocus();
 
     await userEvent.keyboard("[Space]");
 
-    expect(boxes[1]).toBeChecked();
+    expect(getCheckboxes()[1]!).toBeChecked();
     expect(handleValueChange.mock.calls.length).toBe(1);
     expect(handleValueChange.mock.calls[0]?.join()).toBe("1");
 
     await userEvent.keyboard("[Space]");
 
-    expect(boxes[1]).not.toBeChecked();
+    expect(getCheckboxes()[1]!).not.toBeChecked();
     expect(handleValueChange.mock.calls.length).toBe(2);
     expect(handleValueChange.mock.calls[1]?.join()).toBe("");
 
     await userEvent.keyboard("[Space]");
 
-    expect(boxes[1]).toBeChecked();
+    expect(getCheckboxes()[1]!).toBeChecked();
     expect(handleValueChange.mock.calls.length).toBe(3);
     expect(handleValueChange.mock.calls[2]?.join()).toBe("1");
 
     await userEvent.tab();
-    expect(boxes[2]).toHaveFocus();
+    expect(getCheckboxes()[2]!).toHaveFocus();
 
     await userEvent.keyboard("[Space]");
 
-    expect(boxes[2]).toBeChecked();
+    expect(getCheckboxes()[2]!).toBeChecked();
     expect(handleValueChange.mock.calls.length).toBe(4);
     expect(handleValueChange.mock.calls[3]?.join()).toBe("1,2");
+
+    handleValueChange.mockReset();
+    unmount1();
+    const { unmount: unmount2 } = render(
+      <CheckGroup
+        {...mockRequiredProps}
+        readOnly
+        onValueChange={handleValueChange}
+      >
+        <Checkbox
+          label={{ screenReaderLabel: "item 0" }}
+          value="0"
+          disabled
+        />
+        <Checkbox
+          label={{ screenReaderLabel: "item 1" }}
+          value="1"
+        />
+        <Checkbox
+          label={{ screenReaderLabel: "item 2" }}
+          value="2"
+        />
+        <Checkbox
+          label={{ screenReaderLabel: "item 3" }}
+          value="3"
+        />
+      </CheckGroup>,
+    );
+
+    await userEvent.tab();
+
+    expect(getCheckboxes()[0]!).not.toHaveFocus();
+    expect(getCheckboxes()[1]!).toHaveFocus();
+
+    await userEvent.keyboard("[Space]");
+
+    expect(getCheckboxes()[1]!).not.toBeChecked();
+    expect(handleValueChange.mock.calls.length).toBe(0);
+
+    await userEvent.keyboard("[Enter]");
+
+    expect(getCheckboxes()[1]!).not.toBeChecked();
+    expect(handleValueChange.mock.calls.length).toBe(0);
+
+    await userEvent.tab();
+
+    expect(getCheckboxes()[1]!).not.toHaveFocus();
+    expect(getCheckboxes()[2]!).toHaveFocus();
+
+    await userEvent.tab({ shift: true });
+
+    expect(getCheckboxes()[2]!).not.toHaveFocus();
+    expect(getCheckboxes()[1]!).toHaveFocus();
+
+    getCheckboxes().forEach(checkbox => {
+      expect(checkbox).toHaveAttribute("aria-readonly", "true");
+    });
+
+    handleValueChange.mockReset();
+    unmount2();
+    render(
+      <CheckGroup
+        {...mockRequiredProps}
+        disabled
+        onValueChange={handleValueChange}
+      >
+        <Checkbox
+          label={{ screenReaderLabel: "item 0" }}
+          value="0"
+          disabled
+        />
+        <Checkbox
+          label={{ screenReaderLabel: "item 1" }}
+          value="1"
+        />
+        <Checkbox
+          label={{ screenReaderLabel: "item 2" }}
+          value="2"
+        />
+        <Checkbox
+          label={{ screenReaderLabel: "item 3" }}
+          value="3"
+        />
+      </CheckGroup>,
+    );
+
+    await userEvent.tab();
+
+    expect(getCheckboxes()[0]!).not.toHaveFocus();
+    expect(getCheckboxes()[1]!).not.toHaveFocus();
+
+    getCheckboxes().forEach(checkbox => {
+      expect(checkbox).toBeDisabled();
+    });
   });
 });

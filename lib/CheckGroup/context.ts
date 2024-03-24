@@ -1,10 +1,11 @@
 import * as React from "react";
+import type { PickAsMandatory } from "../types";
 import { type Props } from "./CheckGroup";
 
-type ContextValue = {
-  value: Exclude<Props["value"], undefined>;
-  onChange: (newCheckedState: boolean, inputValue: string) => void;
-};
+type ContextValue = PickAsMandatory<Props, "value"> &
+  Pick<Props, "readOnly" | "disabled"> & {
+    onChange: (newCheckedState: boolean, inputValue: string) => void;
+  };
 
 const Context = React.createContext<ContextValue | null>(null);
 
