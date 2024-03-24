@@ -16,6 +16,10 @@ export type RenderProps = {
    */
   checked: boolean;
   /**
+   * The `readOnly` state of the checkbox.
+   */
+  readOnly: boolean;
+  /**
    * The `disabled` state of the checkbox.
    */
   disabled: boolean;
@@ -64,30 +68,37 @@ type OwnProps = {
   value?: string;
   /**
    * If `true`, the checkbox will be focused automatically.
+   *
    * @default false
    */
   autoFocus?: boolean;
   /**
    * If `true`, the checkbox will be checked.
+   *
+   * If `indeterminated`, the checkbox will appear indeterminate.
+   * This does not set the native input element to indeterminate due to inconsistent behavior across browsers.
+   *
    * @default false
    */
-  checked?: boolean;
+  checked?: boolean | "indeterminated";
   /**
    * The default state of `checked`. Use when the component is not controlled.
+   *
    * @default false
    */
-  defaultChecked?: boolean;
+  defaultChecked?: boolean | "indeterminated";
   /**
    * If `true`, the checkbox will be disabled.
+   *
    * @default false
    */
   disabled?: boolean;
   /**
-   * If `true`, the checkbox will appear indeterminate.
-   * This does not set the native input element to indeterminate due to inconsistent behavior across browsers.
-   * @default false;
+   * If `true`, the checkbox will be read-only.
+   *
+   * @default false
    */
-  indeterminated?: boolean;
+  readOnly?: boolean;
   /**
    * The Callback is fired when the state changes.
    */
@@ -116,10 +127,10 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     className: classNameProp,
     overrideTabIndex,
     defaultChecked,
-    checked: checkedProp,
+    checked,
     autoFocus = false,
     disabled = false,
-    indeterminated = false,
+    readOnly = false,
     onCheckedChange,
     onBlur,
     onFocus,
@@ -147,7 +158,8 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     value,
     autoFocus,
     disabled,
-    checked: checkedProp,
+    readOnly,
+    checked,
     groupCtx: checkGroupCtx,
     defaultChecked,
     selectMode: "multiple",
@@ -176,10 +188,14 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     ].join("\n"),
   });
 
+  const isIndeterminated = checkBase.checked === "indeterminated";
+  const isChecked = isIndeterminated ? false : (checkBase.checked as boolean);
+
   const renderProps: RenderProps = {
     disabled,
-    indeterminated,
-    checked: checkBase.checked,
+    readOnly,
+    indeterminated: isIndeterminated,
+    checked: isChecked,
     focusedVisible: checkBase.isFocusedVisible,
   };
 
@@ -199,7 +215,7 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     handleRef(node);
 
     if (!node) return;
-    if (!indeterminated) return;
+    if (!isIndeterminated) return;
 
     const controls = node.getAttribute("aria-controls");
 
@@ -215,9 +231,10 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   const dataAttrs = {
     "data-slot": Slots.Root,
     "data-disabled": disabled ? "" : undefined,
-    "data-indeterminated": indeterminated ? "" : undefined,
+    "data-readonly": readOnly ? "" : undefined,
+    "data-indeterminated": isIndeterminated ? "" : undefined,
     "data-focus-visible": checkBase.isFocusedVisible ? "" : undefined,
-    "data-checked": checkBase.checked ? "" : undefined,
+    "data-checked": isChecked ? "" : undefined,
   };
 
   let tabIndex = disabled ? -1 : 0;
@@ -227,6 +244,8 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   return (
     <button
       {...otherProps}
+      // @ts-expect-error React hasn't added `inert` yet
+      inert={disabled ? "" : undefined}
       id={id}
       className={className}
       ref={refCallback}
@@ -239,9 +258,8 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
       tabIndex={tabIndex}
       type="button"
       role="checkbox"
-      aria-checked={
-        indeterminated && !checkBase.checked ? "mixed" : checkBase.checked
-      }
+      aria-checked={isIndeterminated ? "mixed" : isChecked}
+      aria-readonly={readOnly}
       aria-label={labelInfo.srOnlyLabel}
       aria-labelledby={labelInfo.labelledBy}
       {...dataAttrs}
