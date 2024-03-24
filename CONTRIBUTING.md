@@ -54,16 +54,16 @@ git checkout next
 git pull upstream next
 ```
 
-4. Install the dependencies with yarn (npm isn't supported):
+4. Install the dependencies with `pnpm` (`npm` and `yarn` aren't supported):
 
 ```sh
-yarn install
+pnpm install
 ```
 
 5. Create a new topic branch:
 
 ```sh
-git checkout -b my-topic-branch
+git switch -c my-topic-branch
 ```
 
 6. Make changes, commit and push to your fork:
@@ -81,7 +81,7 @@ The core team is monitoring for Pull Requests. We will review your Pull Request 
 Start developing server and watch for code changes:
 
 ```sh
-yarn dev
+pnpm dev
 ```
 
 The local dev server is a NextJS app.
@@ -92,7 +92,7 @@ You can import codes and make changes to `/pages/index.tsx` page.
 You can build the project, including all type definitions, with:
 
 ```sh
-yarn build
+pnpm build
 ```
 
 ### Testing
@@ -100,19 +100,12 @@ yarn build
 To run all the tests, run:
 
 ```sh
-yarn test
-```
-
-To run a specific test, run:
-
-```sh
-# ie. yarn test Checkbox.test.tsx
-yarn test <filename>
+pnpm test
 ```
 
 ### Coding style
 
-Please follow the coding style of the project. StylelessUI uses prettier and eslint, so if possible, enable linting in your editor to get real-time feedback.
+Please follow the coding style of the project. StylelessUI uses `prettier` and `eslint`, so if possible, enable linting in your editor to get real-time feedback.
 
 ### Git Commit Messages
 
@@ -155,4 +148,4 @@ Please follow the coding style of the project. StylelessUI uses prettier and esl
 
 ## License
 
-By contributing your code to the styleless-ui/* GitHub repositories, you agree to license your contribution under the MIT license.
+By contributing your code to the `styleless-ui/*` GitHub repositories, you agree to license your contribution under the MIT license.
