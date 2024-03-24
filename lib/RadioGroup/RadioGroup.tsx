@@ -1,6 +1,6 @@
 import * as React from "react";
 import { getLabelInfo } from "../internals";
-import type { MergeElementProps } from "../types";
+import type { MergeElementProps, PropWithRenderContext } from "../types";
 import {
   componentWithForwardedRef,
   useControlledProp,
@@ -10,15 +10,28 @@ import {
 import { RadioGroupContext } from "./context";
 import * as Slots from "./slots";
 
+export type RenderProps = {
+  /**
+   * The `readOnly` state of the group.
+   */
+  readOnly: boolean;
+  /**
+   * The `disabled` state of the group.
+   */
+  disabled: boolean;
+};
+
+export type ClassNameProps = RenderProps;
+
 type OwnProps = {
   /**
    * The content of the group.
    */
-  children?: React.ReactNode;
+  children?: PropWithRenderContext<React.ReactNode, RenderProps>;
   /**
    * The className applied to the component.
    */
-  className?: string;
+  className?: PropWithRenderContext<string, ClassNameProps>;
   /**
    * The label of the group.
    */
@@ -51,6 +64,22 @@ type OwnProps = {
    */
   defaultValue?: string;
   /**
+   * If `true`, the group will be disabled.
+   *
+   * This will force the descendant radios to be disabled as well.
+   *
+   * @default false
+   */
+  disabled?: boolean;
+  /**
+   * If `true`, the group will be read-only.
+   *
+   * This will force the descendant radios to be read-only as well.
+   *
+   * @default false
+   */
+  readOnly?: boolean;
+  /**
    * The Callback is fired when the state changes.
    */
   onValueChange?: (selectedValue: string) => void;
@@ -64,11 +93,13 @@ export type Props = Omit<
 const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     label,
-    children,
     id: idProp,
-    className,
+    children: childrenProp,
+    className: classNameProp,
     defaultValue,
     value: valueProp,
+    disabled,
+    readOnly,
     onValueChange,
     orientation = "vertical",
     ...otherProps
@@ -93,6 +124,8 @@ const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   );
 
   const handleValueChange = (newCheckedState: boolean, inputValue: string) => {
+    if (disabled || readOnly) return;
+
     if (!newCheckedState) return;
 
     setValue(inputValue);
@@ -100,6 +133,7 @@ const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   };
 
   React.useEffect(() => {
+    if (disabled) return;
     if (!rootRef.current) return;
 
     if (value) {
@@ -121,11 +155,30 @@ const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     });
 
     setForcedTabability(validRadios?.[0]?.getAttribute("data-entity") ?? null);
-  }, [value]);
+  }, [value, disabled]);
+
+  const renderProps: RenderProps = {
+    disabled: disabled ?? false,
+    readOnly: readOnly ?? false,
+  };
+
+  const classNameProps: ClassNameProps = renderProps;
+
+  const children =
+    typeof childrenProp === "function"
+      ? childrenProp(renderProps)
+      : childrenProp;
+
+  const className =
+    typeof classNameProp === "function"
+      ? classNameProp(classNameProps)
+      : classNameProp;
 
   return (
     <div
       {...otherProps}
+      // @ts-expect-error React hasn't added `inert` yet
+      inert={disabled ? "" : undefined}
       id={id}
       ref={handleRootRef}
       className={className}
@@ -134,9 +187,17 @@ const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       aria-orientation={orientation}
       aria-label={labelInfo.srOnlyLabel}
       aria-labelledby={labelInfo.labelledBy}
+      aria-disabled={disabled}
+      aria-readonly={readOnly}
     >
       <RadioGroupContext.Provider
-        value={{ value, onChange: handleValueChange, forcedTabability }}
+        value={{
+          value,
+          readOnly,
+          disabled,
+          onChange: handleValueChange,
+          forcedTabability,
+        }}
       >
         {children}
       </RadioGroupContext.Provider>

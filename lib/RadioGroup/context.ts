@@ -1,11 +1,12 @@
 import * as React from "react";
+import type { PickAsMandatory } from "../types";
 import { type Props } from "./RadioGroup";
 
-type ContextValue = {
-  value: Exclude<Props["value"], undefined>;
-  forcedTabability: string | null;
-  onChange: (newCheckedState: boolean, inputValue: string) => void;
-};
+type ContextValue = PickAsMandatory<Props, "value"> &
+  Pick<Props, "disabled" | "readOnly"> & {
+    forcedTabability: string | null;
+    onChange: (newCheckedState: boolean, inputValue: string) => void;
+  };
 
 const Context = React.createContext<ContextValue | null>(null);
 
