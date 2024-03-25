@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Root as ToggleRootSlot } from "../Toggle/slots";
 import { SystemError, getLabelInfo } from "../internals";
-import type { Classes, MergeElementProps } from "../types";
+import type { MergeElementProps } from "../types";
 import {
   componentWithForwardedRef,
   useControlledProp,
@@ -17,14 +17,13 @@ type OwnProps = {
    */
   children?: React.ReactNode;
   /**
-   * Map of sub-components and their correlated classNames.
+   * The className applied to the component.
    */
-  classes?: Classes<"root" | "label" | "group">;
+  className?: string;
   /**
    * The label of the group.
    */
   label:
-    | string
     | {
         /**
          * The label to use as `aria-label` property.
@@ -40,21 +39,9 @@ type OwnProps = {
         labelledBy: string;
       };
   /**
-   * The value of the active toggle.
-   */
-  value?: string | string[];
-  /**
-   * The default value. Use when the component is not controlled.
-   */
-  defaultValue?: string | string[];
-  /**
-   * The Callback is fired when the state changes.
-   */
-  onChange?: (activeItems: string | string[]) => void;
-  /**
    * Determines whether a single or multiple items can be active at a time.
    */
-  multiple?: boolean;
+  multiple: boolean;
   /**
    * If `automatic`, toggles are automatically activated when they receive focus.
    * If `manual`, users activate a toggle by focusing them and pressing `Space` or `Enter`.
@@ -64,20 +51,43 @@ type OwnProps = {
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,
-  "className" | "defaultChecked"
->;
+  "checked" | "defaultChecked" | "onChange" | "onChangeCapture"
+> &
+  (
+    | {
+        multiple: true;
+        /**
+         * The value of the active toggle.
+         */
+        value?: string[];
+        /**
+         * The default value. Use when the component is not controlled.
+         */
+        defaultValue?: string[];
+        /**
+         * The Callback is fired when the state changes.
+         */
+        onValueChange?: (activeItems: string[]) => void;
+      }
+    | {
+        multiple: false;
+        value?: string;
+        defaultValue?: string;
+        onValueChange?: (activeItems: string) => void;
+      }
+  );
 
 const ToggleGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     label,
     children,
     id: idProp,
-    classes,
+    className,
     defaultValue,
     value: valueProp,
     multiple = false,
     keyboardActivationBehavior,
-    onChange,
+    onValueChange,
     ...otherProps
   } = props;
 
@@ -85,9 +95,8 @@ const ToggleGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const handleRootRef = useForkedRefs(ref, rootRef);
 
   const id = useDeterministicId(idProp, "styleless-ui__toggle-group");
-  const visibleLabelId = `${id}__label`;
 
-  const labelProps = getLabelInfo(label, "ToggleGroup");
+  const labelInfo = getLabelInfo(label, "ToggleGroup");
 
   const [value, setValue] = useControlledProp(
     valueProp,
@@ -125,7 +134,8 @@ const ToggleGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       : "";
 
     setValue(newValue);
-    onChange?.(newValue);
+    // @ts-expect-error It's fine!
+    onValueChange?.(newValue);
   };
 
   React.useEffect(() => {
@@ -154,26 +164,15 @@ const ToggleGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     setForcedTabability(validToggles?.[0]?.getAttribute("data-entity") ?? null);
   }, [value]);
 
-  const renderLabel = () => {
-    if (!labelProps.visibleLabel) return null;
-
-    return (
-      <span
-        id={visibleLabelId}
-        data-slot={Slots.Label}
-        className={classes?.label}
-      >
-        {labelProps.visibleLabel}
-      </span>
-    );
-  };
-
   return (
     <div
       {...otherProps}
       id={id}
       ref={handleRootRef}
-      className={classes?.root}
+      className={className}
+      role="group"
+      aria-label={labelInfo.srOnlyLabel}
+      aria-labelledby={labelInfo.labelledBy}
       data-slot={Slots.Root}
     >
       <ToggleGroupContext.Provider
@@ -185,18 +184,7 @@ const ToggleGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
           onChange: handleChange,
         }}
       >
-        {renderLabel()}
-        <div
-          role="group"
-          data-slot={Slots.Group}
-          className={classes?.group}
-          aria-label={labelProps.srOnlyLabel}
-          aria-labelledby={
-            labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
-          }
-        >
-          {children}
-        </div>
+        {children}
       </ToggleGroupContext.Provider>
     </div>
   );

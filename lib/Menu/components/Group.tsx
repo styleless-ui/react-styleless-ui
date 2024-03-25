@@ -1,11 +1,8 @@
 import * as React from "react";
 import { getLabelInfo } from "../../internals";
-import type { Classes, MergeElementProps } from "../../types";
+import type { MergeElementProps } from "../../types";
 import { componentWithForwardedRef, useDeterministicId } from "../../utils";
-import {
-  GroupLabel as GroupLabelSlot,
-  GroupRoot as GroupRootSlot,
-} from "../slots";
+import { GroupRoot as GroupRootSlot } from "../slots";
 
 type OwnProps = {
   /**
@@ -13,11 +10,13 @@ type OwnProps = {
    */
   children?: React.ReactNode;
   /**
-   * Map of sub-components and their correlated classNames.
+   * The className applied to the component.
    */
-  classes?: Classes<"root" | "label">;
+  className?: string;
+  /**
+   * The label of the group.
+   */
   label:
-    | string
     | {
         /**
          * The label to use as `aria-label` property.
@@ -36,46 +35,39 @@ type OwnProps = {
 
 export type Props = Omit<
   MergeElementProps<"div", OwnProps>,
-  "className" | "defaultChecked"
+  | "value"
+  | "defaultValue"
+  | "defaultChecked"
+  | "checked"
+  | "onChange"
+  | "onChangeCapture"
 >;
 
 const GroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
-  const { children, classes, label, id: idProp, ...otherProps } = props;
+  const { children, className, label, id: idProp, ...otherProps } = props;
 
   const id = useDeterministicId(idProp, "styleless-ui__menu-group");
-  const visibleLabelId = id ? `${id}__label` : undefined;
 
-  const labelProps = getLabelInfo(label, "Menu.Group");
-
-  const renderLabel = () => {
-    if (!labelProps.visibleLabel) return null;
-
-    return (
-      <span
-        id={visibleLabelId}
-        data-slot={GroupLabelSlot}
-        className={classes?.label}
-      >
-        {labelProps.visibleLabel}
-      </span>
-    );
-  };
+  const labelInfo = getLabelInfo(label, "Menu.Group", {
+    customErrorMessage: [
+      "Invalid `label` property.",
+      "The `label` property must be in shape of " +
+        "`{ screenReaderLabel: string; } | { labelledBy: string; }`",
+    ].join("\n"),
+  });
 
   return (
     <div
       {...otherProps}
       id={id}
       ref={ref}
-      className={classes?.root}
+      className={className}
       role="group"
       tabIndex={-1}
       data-slot={GroupRootSlot}
-      aria-label={labelProps.srOnlyLabel}
-      aria-labelledby={
-        labelProps.visibleLabel ? visibleLabelId : labelProps.labelledBy
-      }
+      aria-label={labelInfo.srOnlyLabel}
+      aria-labelledby={labelInfo.labelledBy}
     >
-      {renderLabel()}
       {children}
     </div>
   );
