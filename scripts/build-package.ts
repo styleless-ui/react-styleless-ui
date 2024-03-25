@@ -108,6 +108,8 @@ const createMainPackage = async () => {
         types: "./index.d.ts",
         main: "./index.js",
         module: "./esm/index.js",
+        engines: packageJSON.engines,
+        publishConfig: packageJSON.publishConfig,
         name: packageJSON.name,
         type: packageJSON.type,
         version: packageJSON.version,
