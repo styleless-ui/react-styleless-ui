@@ -1,7 +1,7 @@
 import * as React from "react";
 import { type LabelInfo } from "../internals";
-import { type ElementsRegistry } from "../utils";
 import type { RegisteredElementsKeys } from "./Select";
+import type { ElementsRegistry } from "./utils";
 
 type ContextValue = {
   isListOpen: boolean;
