@@ -37,6 +37,6 @@ jobs:
           registry-url: https://registry.npmjs.org/
 
       - name: "🚀 publish package"
-        run: npm publish ./dist/
+        run: npx tsx ./scripts/ci/publish-package.ts
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
