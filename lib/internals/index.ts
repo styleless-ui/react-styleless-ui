@@ -3,7 +3,6 @@ export { default as FocusRedirect } from "./FocusRedirect";
 export type * from "./FocusTrap";
 export { default as FocusTrap } from "./FocusTrap";
 export { default as SystemError } from "./SystemError";
-export { default as combineClasses } from "./combine-classes";
 export * from "./get-label-info";
 export { default as getLabelInfo } from "./get-label-info";
 export * from "./keys";
