@@ -1,5 +1,9 @@
 import * as React from "react";
-import { logger, visuallyHiddenCSSProperties } from "../../../internals";
+import {
+  logger,
+  resolvePropWithRenderContext,
+  visuallyHiddenCSSProperties,
+} from "../../../internals";
 import {
   type MergeElementProps,
   type PropWithRenderContext,
@@ -223,10 +227,7 @@ const ControllerBase = (props: Props, ref: React.Ref<HTMLInputElement>) => {
     focusedVisible: comboboxBase.isFocusedVisible,
   };
 
-  const className =
-    typeof classNameProp === "function"
-      ? classNameProp(classNameProps)
-      : classNameProp;
+  const className = resolvePropWithRenderContext(classNameProp, classNameProps);
 
   if (!searchable) {
     return (

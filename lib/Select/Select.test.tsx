@@ -1,5 +1,7 @@
 import classNames from "classnames";
+import type { FormEvent, FormEventHandler } from "react";
 import {
+  act,
   itShouldMount,
   itSupportsDataSetProps,
   itSupportsRef,
@@ -28,7 +30,7 @@ describe("Select", () => {
     `[data-slot='${RootSlot}']`,
   );
 
-  it("should have the required className", () => {
+  it("should have the required className", async () => {
     const optionClassName = ({
       active,
       disabled,
@@ -41,6 +43,8 @@ describe("Select", () => {
         "option--selected": selected,
         "option--hidden": hidden,
       });
+
+    userEvent.setup();
 
     render(
       <Select.Root
@@ -172,6 +176,10 @@ describe("Select", () => {
       "option--selected",
     );
     expect(option2).toHaveClass("option", "option--selected");
+
+    await userEvent.type(controller, "xyz");
+
+    expect(screen.getByTestId("group")).toHaveClass("group", "group--hidden");
   });
 
   it("should have the required attributes", () => {
@@ -881,5 +889,333 @@ describe("Select", () => {
     await userEvent.click(screen.getByTestId("o1"));
 
     expect(handleValueChange.mock.calls.length).toBe(4);
+  });
+
+  it("should be submitted with the form as part of a name/value pair", () => {
+    const handleSubmit = jest.fn<void, [FormEvent<HTMLFormElement>]>();
+
+    const submitHandler: FormEventHandler<HTMLFormElement> = event => {
+      event.preventDefault();
+      handleSubmit(event);
+    };
+
+    const getForm = () => screen.getByTestId<HTMLFormElement>("form");
+    const getFormData = () => new FormData(getForm());
+
+    const { rerender: rerender1, unmount } = render(
+      <form
+        data-testid="form"
+        onSubmit={submitHandler}
+      >
+        <Select.Root
+          searchable={true}
+          multiple={true}
+          label={{ screenReaderLabel: "Label" }}
+          value={[]}
+          name="n"
+        >
+          <Select.Trigger>
+            <Select.Controller />
+          </Select.Trigger>
+          <Select.List>
+            <Select.Option
+              id="o1"
+              disabled
+              value="0"
+              valueLabel="The Shawshank Redemption"
+            >
+              The Shawshank Redemption
+            </Select.Option>
+            <Select.Group label={{ screenReaderLabel: "Group" }}>
+              <Select.Option
+                id="o2"
+                value="1"
+                valueLabel="The Godfather"
+              >
+                The Godfather
+              </Select.Option>
+              <Select.Option
+                id="o3"
+                value="2"
+                valueLabel="The Godfather: Part 2"
+              >
+                The Godfather: Part 2
+              </Select.Option>
+            </Select.Group>
+          </Select.List>
+        </Select.Root>
+      </form>,
+    );
+
+    act(() => {
+      getForm().submit();
+    });
+
+    expect(handleSubmit.mock.calls.length).toBe(1);
+    expect(getFormData().get("n")).toBe(null);
+    expect(getFormData().getAll("n")).toEqual([]);
+
+    rerender1(
+      <form
+        data-testid="form"
+        onSubmit={submitHandler}
+      >
+        <Select.Root
+          searchable={true}
+          multiple={true}
+          label={{ screenReaderLabel: "Label" }}
+          value={["0", "1"]}
+          name="n"
+        >
+          <Select.Trigger>
+            <Select.Controller />
+          </Select.Trigger>
+          <Select.List>
+            <Select.Option
+              id="o1"
+              disabled
+              value="0"
+              valueLabel="The Shawshank Redemption"
+            >
+              The Shawshank Redemption
+            </Select.Option>
+            <Select.Group label={{ screenReaderLabel: "Group" }}>
+              <Select.Option
+                id="o2"
+                value="1"
+                valueLabel="The Godfather"
+              >
+                The Godfather
+              </Select.Option>
+              <Select.Option
+                id="o3"
+                value="2"
+                valueLabel="The Godfather: Part 2"
+              >
+                The Godfather: Part 2
+              </Select.Option>
+            </Select.Group>
+          </Select.List>
+        </Select.Root>
+      </form>,
+    );
+
+    act(() => {
+      getForm().submit();
+    });
+
+    expect(handleSubmit.mock.calls.length).toBe(2);
+    expect(getFormData().getAll("n")).toEqual(["1"]);
+
+    rerender1(
+      <form
+        data-testid="form"
+        onSubmit={submitHandler}
+      >
+        <Select.Root
+          searchable={true}
+          multiple={true}
+          label={{ screenReaderLabel: "Label" }}
+          value={["0", "1", "2"]}
+          name="n"
+          disabled
+        >
+          <Select.Trigger>
+            <Select.Controller />
+          </Select.Trigger>
+          <Select.List>
+            <Select.Option
+              id="o1"
+              disabled
+              value="0"
+              valueLabel="The Shawshank Redemption"
+            >
+              The Shawshank Redemption
+            </Select.Option>
+            <Select.Group label={{ screenReaderLabel: "Group" }}>
+              <Select.Option
+                id="o2"
+                value="1"
+                valueLabel="The Godfather"
+              >
+                The Godfather
+              </Select.Option>
+              <Select.Option
+                id="o3"
+                value="2"
+                valueLabel="The Godfather: Part 2"
+              >
+                The Godfather: Part 2
+              </Select.Option>
+            </Select.Group>
+          </Select.List>
+        </Select.Root>
+      </form>,
+    );
+
+    act(() => {
+      getForm().submit();
+    });
+
+    expect(handleSubmit.mock.calls.length).toBe(3);
+    expect(getFormData().getAll("n")).toEqual([]);
+
+    handleSubmit.mockReset();
+    unmount();
+    const { rerender: rerender2 } = render(
+      <form
+        data-testid="form"
+        onSubmit={submitHandler}
+      >
+        <Select.Root
+          searchable={true}
+          multiple={false}
+          label={{ screenReaderLabel: "Label" }}
+          value={""}
+          name="n"
+        >
+          <Select.Trigger>
+            <Select.Controller />
+          </Select.Trigger>
+          <Select.List>
+            <Select.Option
+              id="o1"
+              disabled
+              value="0"
+              valueLabel="The Shawshank Redemption"
+            >
+              The Shawshank Redemption
+            </Select.Option>
+            <Select.Group label={{ screenReaderLabel: "Group" }}>
+              <Select.Option
+                id="o2"
+                value="1"
+                valueLabel="The Godfather"
+              >
+                The Godfather
+              </Select.Option>
+              <Select.Option
+                id="o3"
+                value="2"
+                valueLabel="The Godfather: Part 2"
+              >
+                The Godfather: Part 2
+              </Select.Option>
+            </Select.Group>
+          </Select.List>
+        </Select.Root>
+      </form>,
+    );
+
+    act(() => {
+      getForm().submit();
+    });
+
+    expect(handleSubmit.mock.calls.length).toBe(1);
+    expect(getFormData().get("n")).toBe(null);
+
+    rerender2(
+      <form
+        data-testid="form"
+        onSubmit={submitHandler}
+      >
+        <Select.Root
+          searchable={true}
+          multiple={false}
+          label={{ screenReaderLabel: "Label" }}
+          value={"0"}
+          name="n"
+        >
+          <Select.Trigger>
+            <Select.Controller />
+          </Select.Trigger>
+          <Select.List>
+            <Select.Option
+              id="o1"
+              disabled
+              value="0"
+              valueLabel="The Shawshank Redemption"
+            >
+              The Shawshank Redemption
+            </Select.Option>
+            <Select.Group label={{ screenReaderLabel: "Group" }}>
+              <Select.Option
+                id="o2"
+                value="1"
+                valueLabel="The Godfather"
+              >
+                The Godfather
+              </Select.Option>
+              <Select.Option
+                id="o3"
+                value="2"
+                valueLabel="The Godfather: Part 2"
+              >
+                The Godfather: Part 2
+              </Select.Option>
+            </Select.Group>
+          </Select.List>
+        </Select.Root>
+      </form>,
+    );
+
+    act(() => {
+      getForm().submit();
+    });
+
+    expect(handleSubmit.mock.calls.length).toBe(2);
+    expect(getFormData().get("n")).toBe(null);
+
+    rerender2(
+      <form
+        data-testid="form"
+        onSubmit={submitHandler}
+      >
+        <Select.Root
+          searchable={true}
+          multiple={false}
+          label={{ screenReaderLabel: "Label" }}
+          value={"1"}
+          name="n"
+        >
+          <Select.Trigger>
+            <Select.Controller />
+          </Select.Trigger>
+          <Select.List>
+            <Select.Option
+              id="o1"
+              disabled
+              value="0"
+              valueLabel="The Shawshank Redemption"
+            >
+              The Shawshank Redemption
+            </Select.Option>
+            <Select.Group label={{ screenReaderLabel: "Group" }}>
+              <Select.Option
+                id="o2"
+                value="1"
+                valueLabel="The Godfather"
+              >
+                The Godfather
+              </Select.Option>
+              <Select.Option
+                id="o3"
+                value="2"
+                valueLabel="The Godfather: Part 2"
+              >
+                The Godfather: Part 2
+              </Select.Option>
+            </Select.Group>
+          </Select.List>
+        </Select.Root>
+      </form>,
+    );
+
+    act(() => {
+      getForm().submit();
+    });
+
+    expect(handleSubmit.mock.calls.length).toBe(3);
+    expect(getFormData().get("n")).toBe("1");
   });
 });

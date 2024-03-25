@@ -1,5 +1,5 @@
 import * as React from "react";
-import { logger } from "../../../internals";
+import { logger, resolvePropWithRenderContext } from "../../../internals";
 import type { MergeElementProps, PropWithRenderContext } from "../../../types";
 import {
   componentWithForwardedRef,
@@ -130,15 +130,8 @@ const ListBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const classNameProps: ClassNameProps = renderProps;
 
-  const children =
-    typeof childrenProp === "function"
-      ? childrenProp(renderProps)
-      : childrenProp;
-
-  const className =
-    typeof classNameProp === "function"
-      ? classNameProp(classNameProps)
-      : classNameProp;
+  const children = resolvePropWithRenderContext(childrenProp, renderProps);
+  const className = resolvePropWithRenderContext(classNameProp, classNameProps);
 
   return (
     <div
