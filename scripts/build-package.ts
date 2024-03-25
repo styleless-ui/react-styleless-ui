@@ -126,9 +126,26 @@ const createMainPackage = async () => {
   );
 };
 
+const createNPMRC = async () => {
+  const npmrcPath = path.join(distPath, ".npmrc");
+  const npmignorePath = path.join(distPath, ".npmignore");
+
+  await fs.writeFile(
+    npmrcPath,
+    [
+      "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}",
+      "registry=https://registry.npmjs.org/",
+      "always-auth=true",
+    ].join("\n"),
+  );
+
+  await fs.writeFile(npmignorePath, ".npmrc");
+};
+
 void (async () => {
   await createModulePackages();
   await createMainPackage();
+  await createNPMRC();
 
   await fs.copyFile(readme, path.join(distPath, README_FILE_NAME));
   await fs.copyFile(license, path.join(distPath, LICENSE_FILE_NAME));
