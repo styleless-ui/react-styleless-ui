@@ -1,5 +1,7 @@
 import classNames from "classnames";
+import type { FormEvent, FormEventHandler } from "react";
 import {
+  act,
   itShouldMount,
   itSupportsDataSetProps,
   itSupportsFocusEvents,
@@ -196,5 +198,81 @@ describe("Radio", () => {
     await userEvent.click(getRadio());
 
     expect(handleCheckedChange.mock.calls.length).toBe(0);
+  });
+
+  it("should be submitted with the form as part of a name/value pair", () => {
+    const handleSubmit = jest.fn<void, [FormEvent<HTMLFormElement>]>();
+
+    const submitHandler: FormEventHandler<HTMLFormElement> = event => {
+      event.preventDefault();
+      handleSubmit(event);
+    };
+
+    const getForm = () => screen.getByTestId<HTMLFormElement>("form");
+    const getFormData = () => new FormData(getForm());
+
+    const { rerender } = render(
+      <form
+        data-testid="form"
+        onSubmit={submitHandler}
+      >
+        <Radio
+          {...mockRequiredProps}
+          checked={false}
+          name="n"
+          value="v0"
+        />
+      </form>,
+    );
+
+    act(() => {
+      getForm().submit();
+    });
+
+    expect(handleSubmit.mock.calls.length).toBe(1);
+    expect(getFormData().get("n")).toBe(null);
+
+    rerender(
+      <form
+        data-testid="form"
+        onSubmit={submitHandler}
+      >
+        <Radio
+          {...mockRequiredProps}
+          checked={true}
+          name="n"
+          value="v0"
+        />
+      </form>,
+    );
+
+    act(() => {
+      getForm().submit();
+    });
+
+    expect(handleSubmit.mock.calls.length).toBe(2);
+    expect(getFormData().get("n")).toBe("v0");
+
+    rerender(
+      <form
+        data-testid="form"
+        onSubmit={submitHandler}
+      >
+        <Radio
+          {...mockRequiredProps}
+          disabled
+          checked={true}
+          name="n"
+          value="v0"
+        />
+      </form>,
+    );
+
+    act(() => {
+      getForm().submit();
+    });
+
+    expect(handleSubmit.mock.calls.length).toBe(3);
+    expect(getFormData().get("n")).toBe(null);
   });
 });

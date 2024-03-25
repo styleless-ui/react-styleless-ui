@@ -1,6 +1,6 @@
 import * as React from "react";
 import { RadioGroupContext } from "../RadioGroup/context";
-import { SystemError, getLabelInfo } from "../internals";
+import { SystemError, getLabelInfo, logger } from "../internals";
 import type { MergeElementProps, PropWithRenderContext } from "../types";
 import {
   componentWithForwardedRef,
@@ -60,6 +60,11 @@ type OwnProps = {
       };
   /**
    * The value of the radio.
+   *
+   * Opt-in this prop when using with RadioGroup or
+   * when using radio as a form control that has the `name` prop.
+   *
+   * Submitted with the form as part of a name/value pair.
    */
   value?: string;
   /**
@@ -97,6 +102,11 @@ type OwnProps = {
    */
   overrideTabIndex?: number;
   /**
+   * The name of the form control when submitted.
+   * Submitted with the form as part of a name/value pair.
+   */
+  name?: string;
+  /**
    * The Callback is fired when the state changes.
    */
   onCheckedChange?: (checkedState: boolean) => void;
@@ -111,6 +121,7 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
   const {
     label,
     value,
+    name: nameProp,
     checked,
     defaultChecked,
     overrideTabIndex,
@@ -130,16 +141,41 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const radioGroupCtx = React.useContext(RadioGroupContext);
 
-  if (radioGroupCtx && typeof value === "undefined") {
-    throw new SystemError(
-      [
-        "The `value` property is missing.",
-        "It's mandatory to provide a `value` property " +
-          "when <RadioGroup /> is a wrapper for <Radio />.",
-      ].join("\n"),
-      "Radio",
-    );
+  if (radioGroupCtx) {
+    if (typeof value === "undefined") {
+      throw new SystemError(
+        [
+          "The `value` property is missing.",
+          "It's mandatory to provide a `value` property " +
+            "when <RadioGroup /> is a wrapper for <Radio />.",
+        ].join("\n"),
+        "Radio",
+      );
+    }
+
+    if (typeof nameProp !== "undefined") {
+      logger(
+        "The `name` property shouldn't be set " +
+          "when <RadioGroup /> is a wrapper for <Radio />. " +
+          "Set the `name` property on the <RadioGroup /> instead.",
+        { scope: "Radio", type: "warn" },
+      );
+    }
+
+    if (
+      typeof checked !== "undefined" ||
+      typeof defaultChecked !== "undefined"
+    ) {
+      logger(
+        "The `checked` or `defaultChecked` props shouldn't be set " +
+          "when <RadioGroup /> is a wrapper for <Radio />. " +
+          "Set the checked props on the <RadioGroup /> instead.",
+        { scope: "Radio", type: "warn" },
+      );
+    }
   }
+
+  const name = radioGroupCtx?.name != null ? radioGroupCtx.name : nameProp;
 
   const isDisabled =
     radioGroupCtx?.disabled != null ? radioGroupCtx.disabled : disabled;
@@ -228,6 +264,19 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     "data-entity": value,
   };
 
+  const renderHiddenInput = () => {
+    if (!name || !value || !checkBase.checked) return null;
+
+    return (
+      <input
+        type="hidden"
+        name={name}
+        value={value}
+        disabled={isDisabled}
+      />
+    );
+  };
+
   return (
     <button
       {...otherProps}
@@ -252,6 +301,7 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
       {...dataAttrs}
     >
       {children}
+      {renderHiddenInput()}
     </button>
   );
 };
