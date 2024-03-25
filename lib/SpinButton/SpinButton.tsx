@@ -1,5 +1,9 @@
 import * as React from "react";
-import { SystemKeys, getLabelInfo } from "../internals";
+import {
+  SystemKeys,
+  getLabelInfo,
+  resolvePropWithRenderContext,
+} from "../internals";
 import type { MergeElementProps, PropWithRenderContext } from "../types";
 import {
   clamp,
@@ -339,15 +343,8 @@ const SpinButtonBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     focusedVisible: isFocusedVisible,
   };
 
-  const children =
-    typeof childrenProp === "function"
-      ? childrenProp(renderProps)
-      : childrenProp;
-
-  const className =
-    typeof classNameProp === "function"
-      ? classNameProp(classNameProps)
-      : classNameProp;
+  const children = resolvePropWithRenderContext(childrenProp, renderProps);
+  const className = resolvePropWithRenderContext(classNameProp, classNameProps);
 
   const context: SpinButtonContextValue = {
     disabled,

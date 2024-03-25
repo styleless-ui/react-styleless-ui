@@ -1,5 +1,9 @@
 import * as React from "react";
-import { disableUserSelectCSSProperties, logger } from "../../internals";
+import {
+  disableUserSelectCSSProperties,
+  logger,
+  resolvePropWithRenderContext,
+} from "../../internals";
 import type { MergeElementProps, PropWithRenderContext } from "../../types";
 import {
   componentWithForwardedRef,
@@ -149,15 +153,8 @@ const CheckItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     ...disableUserSelectCSSProperties,
   };
 
-  const children =
-    typeof childrenProp === "function"
-      ? childrenProp(renderProps)
-      : childrenProp;
-
-  const className =
-    typeof classNameProp === "function"
-      ? classNameProp(classNameProps)
-      : classNameProp;
+  const children = resolvePropWithRenderContext(childrenProp, renderProps);
+  const className = resolvePropWithRenderContext(classNameProp, classNameProps);
 
   return (
     <div

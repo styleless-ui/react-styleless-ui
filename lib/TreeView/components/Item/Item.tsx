@@ -1,5 +1,5 @@
 import * as React from "react";
-import { logger } from "../../../internals";
+import { logger, resolvePropWithRenderContext } from "../../../internals";
 import type { MergeElementProps, PropWithRenderContext } from "../../../types";
 import {
   componentWithForwardedRef,
@@ -164,16 +164,10 @@ const ItemBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const classNameProps: ClassNameProps = renderProps;
 
-  const className =
-    typeof classNameProp === "function"
-      ? classNameProp(classNameProps)
-      : classNameProp;
+  const className = resolvePropWithRenderContext(classNameProp, classNameProps);
 
   const renderTrigger = () => {
-    const trigger =
-      typeof triggerContent === "function"
-        ? triggerContent(renderProps)
-        : triggerContent;
+    const trigger = resolvePropWithRenderContext(triggerContent, renderProps);
 
     const triggerArr = React.Children.toArray(trigger);
 

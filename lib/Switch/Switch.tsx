@@ -1,5 +1,5 @@
 import * as React from "react";
-import { getLabelInfo } from "../internals";
+import { getLabelInfo, resolvePropWithRenderContext } from "../internals";
 import type { MergeElementProps, PropWithRenderContext } from "../types";
 import {
   componentWithForwardedRef,
@@ -173,15 +173,8 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const classNameProps: ClassNameProps = renderProps;
 
-  const children =
-    typeof childrenProp === "function"
-      ? childrenProp(renderProps)
-      : childrenProp;
-
-  const className =
-    typeof classNameProp === "function"
-      ? classNameProp(classNameProps)
-      : classNameProp;
+  const children = resolvePropWithRenderContext(childrenProp, renderProps);
+  const className = resolvePropWithRenderContext(classNameProp, classNameProps);
 
   const dataAttrs = {
     "data-slot": Slots.Root,

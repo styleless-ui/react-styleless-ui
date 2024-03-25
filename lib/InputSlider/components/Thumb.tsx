@@ -1,5 +1,8 @@
 import * as React from "react";
-import { disableUserSelectCSSProperties } from "../../internals";
+import {
+  disableUserSelectCSSProperties,
+  resolvePropWithRenderContext,
+} from "../../internals";
 import type { MergeElementProps, PropWithRenderContext } from "../../types";
 import {
   componentWithForwardedRef,
@@ -155,15 +158,8 @@ const ThumbBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const classNameProps: ClassNameProps = renderProps;
 
-  const children =
-    typeof childrenProp === "function"
-      ? childrenProp(renderProps)
-      : childrenProp;
-
-  const className =
-    typeof classNameProp === "function"
-      ? classNameProp(classNameProps)
-      : classNameProp;
+  const children = resolvePropWithRenderContext(childrenProp, renderProps);
+  const className = resolvePropWithRenderContext(classNameProp, classNameProps);
 
   const style: React.CSSProperties = {
     ...(styleProp ?? {}),
