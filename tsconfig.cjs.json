@@ -1,4 +1,7 @@
 {
   "extends": "./tsconfig.build.json",
-  "compilerOptions": { "module": "CommonJS", "outDir": "./dist" }
+  "compilerOptions": {
+    "module": "CommonJS",
+    "outDir": "./dist"
+  }
 }
