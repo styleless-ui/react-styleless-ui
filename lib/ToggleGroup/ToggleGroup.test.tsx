@@ -10,28 +10,28 @@ import {
   userEvent,
 } from "../../tests/utils";
 import Toggle from "../Toggle";
-import * as Slots from "./slots";
-import ToggleGroup from "./ToggleGroup";
+import ToggleGroup, { type Props } from "./ToggleGroup";
 
 const labelText = "Label";
 
 describe("ToggleGroup", () => {
   afterEach(jest.clearAllMocks);
 
-  itShouldMount(ToggleGroup, { label: labelText });
-  itSupportsStyle(ToggleGroup, { label: labelText });
-  itSupportsRef(ToggleGroup, { label: labelText }, HTMLDivElement);
-  itSupportsDataSetProps(ToggleGroup, { label: labelText });
+  const mockRequiredProps: Props = {
+    multiple: false,
+    label: { screenReaderLabel: labelText },
+  };
+
+  itShouldMount(ToggleGroup, mockRequiredProps);
+  itSupportsStyle(ToggleGroup, mockRequiredProps);
+  itSupportsRef(ToggleGroup, mockRequiredProps, HTMLDivElement);
+  itSupportsDataSetProps(ToggleGroup, mockRequiredProps);
 
   it("should have the required classNames", () => {
     render(
       <ToggleGroup
-        label={labelText}
-        classes={{
-          label: "toggle-group__label",
-          group: "toggle-group__group",
-          root: "toggle-group",
-        }}
+        {...mockRequiredProps}
+        className="toggle-group"
       >
         <Toggle
           value="0"
@@ -44,23 +44,27 @@ describe("ToggleGroup", () => {
       </ToggleGroup>,
     );
 
-    const group = screen.getByRole("group");
-    const root = group.parentElement;
-    const label = root?.querySelector(`[data-slot='${Slots.Label}']`);
-
-    expect(root).toHaveClass("toggle-group");
-    expect(group).toHaveClass("toggle-group__group");
-    expect(label).toHaveClass("toggle-group__label");
+    expect(screen.getByRole("group")).toHaveClass("toggle-group");
   });
 
   it("should have `aria-label='label'` property when `label={{ screenReaderLabel: 'label' }}`", () => {
-    render(<ToggleGroup label={{ screenReaderLabel: labelText }} />);
+    render(
+      <ToggleGroup
+        {...mockRequiredProps}
+        label={{ screenReaderLabel: labelText }}
+      />,
+    );
 
     expect(screen.getByRole("group")).toHaveAttribute("aria-label", labelText);
   });
 
   it("should have `aria-labelledby='identifier'` property when `label={{ labelledBy: 'identifier' }}`", () => {
-    render(<ToggleGroup label={{ labelledBy: "identifier" }} />);
+    render(
+      <ToggleGroup
+        {...mockRequiredProps}
+        label={{ labelledBy: "identifier" }}
+      />,
+    );
 
     expect(screen.getByRole("group")).toHaveAttribute(
       "aria-labelledby",
@@ -68,14 +72,14 @@ describe("ToggleGroup", () => {
     );
   });
 
-  it("toggles `value` state with mouse interactions and calls `onChange` callback", async () => {
-    const handleChange = jest.fn<void, [activeItems: string | string[]]>();
+  it("toggles `value` state with mouse interactions and calls `onValueChange` callback", async () => {
+    const handleValueChange = jest.fn<void, [activeItems: string | string[]]>();
 
     userEvent.setup();
     const { unmount } = render(
       <ToggleGroup
-        label={labelText}
-        onChange={handleChange}
+        {...mockRequiredProps}
+        onValueChange={handleValueChange}
       >
         <Toggle
           value="0"
@@ -97,40 +101,40 @@ describe("ToggleGroup", () => {
     await userEvent.click(toggles[0]!);
 
     expect(toggles[0]).not.toHaveAttribute("data-pressed");
-    expect(handleChange.mock.calls.length).toBe(0);
+    expect(handleValueChange.mock.calls.length).toBe(0);
 
     await userEvent.click(toggles[1]!);
 
     expect(toggles[1]).toHaveAttribute("data-pressed");
-    expect(handleChange.mock.calls.length).toBe(1);
-    expect(handleChange.mock.calls[0]?.join()).toBe("1");
+    expect(handleValueChange.mock.calls.length).toBe(1);
+    expect(handleValueChange.mock.calls[0]?.join()).toBe("1");
 
     await userEvent.click(toggles[1]!);
 
     expect(toggles[1]).not.toHaveAttribute("data-pressed");
-    expect(handleChange.mock.calls.length).toBe(2);
-    expect(handleChange.mock.calls[1]?.join()).toBe("");
+    expect(handleValueChange.mock.calls.length).toBe(2);
+    expect(handleValueChange.mock.calls[1]?.join()).toBe("");
 
     await userEvent.click(toggles[1]!);
 
     expect(toggles[1]).toHaveAttribute("data-pressed");
-    expect(handleChange.mock.calls.length).toBe(3);
-    expect(handleChange.mock.calls[2]?.join()).toBe("1");
+    expect(handleValueChange.mock.calls.length).toBe(3);
+    expect(handleValueChange.mock.calls[2]?.join()).toBe("1");
 
     await userEvent.click(toggles[2]!);
 
     expect(toggles[2]).toHaveAttribute("data-pressed");
-    expect(handleChange.mock.calls.length).toBe(4);
-    expect(handleChange.mock.calls[3]?.join()).toBe("2");
+    expect(handleValueChange.mock.calls.length).toBe(4);
+    expect(handleValueChange.mock.calls[3]?.join()).toBe("2");
 
     unmount();
-    handleChange.mockReset();
+    handleValueChange.mockReset();
     userEvent.setup();
     render(
       <ToggleGroup
+        label={{ screenReaderLabel: labelText }}
         multiple
-        label={labelText}
-        onChange={handleChange}
+        onValueChange={handleValueChange}
       >
         <Toggle
           value="0"
@@ -152,35 +156,35 @@ describe("ToggleGroup", () => {
     await userEvent.click(toggles[0]!);
 
     expect(toggles[0]).not.toHaveAttribute("data-pressed");
-    expect(handleChange.mock.calls.length).toBe(0);
+    expect(handleValueChange.mock.calls.length).toBe(0);
 
     await userEvent.click(toggles[1]!);
 
     expect(toggles[1]).toHaveAttribute("data-pressed");
-    expect(handleChange.mock.calls.length).toBe(1);
-    expect(handleChange.mock.calls[0]?.join()).toBe("1");
+    expect(handleValueChange.mock.calls.length).toBe(1);
+    expect(handleValueChange.mock.calls[0]?.join()).toBe("1");
 
     await userEvent.click(toggles[2]!);
 
     expect(toggles[2]).toHaveAttribute("data-pressed");
-    expect(handleChange.mock.calls.length).toBe(2);
-    expect(handleChange.mock.calls[1]?.join()).toBe("1,2");
+    expect(handleValueChange.mock.calls.length).toBe(2);
+    expect(handleValueChange.mock.calls[1]?.join()).toBe("1,2");
 
     await userEvent.click(toggles[2]!);
 
     expect(toggles[2]).not.toHaveAttribute("data-pressed");
-    expect(handleChange.mock.calls.length).toBe(3);
-    expect(handleChange.mock.calls[2]?.join()).toBe("1");
+    expect(handleValueChange.mock.calls.length).toBe(3);
+    expect(handleValueChange.mock.calls[2]?.join()).toBe("1");
   });
 
-  it("toggles `value` state with keyboard interactions and calls `onChange` callback", async () => {
+  it("toggles `value` state with keyboard interactions and calls `onValueChange` callback", async () => {
     const handleChange = jest.fn<void, [activeItems: string | string[]]>();
 
     userEvent.setup();
     const { unmount } = render(
       <ToggleGroup
-        label={labelText}
-        onChange={handleChange}
+        {...mockRequiredProps}
+        onValueChange={handleChange}
       >
         <Toggle
           value="0"
@@ -237,8 +241,8 @@ describe("ToggleGroup", () => {
     render(
       <ToggleGroup
         multiple
-        label={labelText}
-        onChange={handleChange}
+        label={{ screenReaderLabel: labelText }}
+        onValueChange={handleChange}
       >
         <Toggle
           value="0"

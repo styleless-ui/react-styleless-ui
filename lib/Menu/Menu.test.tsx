@@ -10,10 +10,6 @@ import {
 } from "../../tests/utils";
 import { createVirtualElement } from "../utils";
 import * as Menu from "./index";
-import {
-  GroupLabel as GroupLabelSlot,
-  RadioGroupLabel as RadioGroupLabelSlot,
-} from "./slots";
 
 describe("Menu", () => {
   afterEach(jest.clearAllMocks);
@@ -75,13 +71,8 @@ describe("Menu", () => {
         "menu__submenu--open": open,
       });
 
-    const groupClasses: Menu.GroupProps["classes"] = {
-      root: "menu__group",
-      label: "menu__group__label",
-    };
-
-    const radioGroupClasses: Menu.RadioGroupProps["classes"] = groupClasses;
-
+    const groupClassName = "menu__group";
+    const radioGroupClassName = groupClassName;
     const separatorClassName = "menu__separator-item";
 
     render(
@@ -95,8 +86,8 @@ describe("Menu", () => {
           resolveAnchor={() => document.getElementById("anchor")}
         >
           <Menu.Group
-            classes={groupClasses}
-            label={"G1"}
+            className={groupClassName}
+            label={{ screenReaderLabel: "G1" }}
             data-testid="g1"
           >
             <Menu.Item
@@ -130,7 +121,7 @@ describe("Menu", () => {
             className={separatorClassName}
           />
           <Menu.Group
-            classes={groupClasses}
+            className={groupClassName}
             data-testid="g2"
             label={{ screenReaderLabel: "G2" }}
           >
@@ -168,8 +159,8 @@ describe("Menu", () => {
             className={separatorClassName}
           />
           <Menu.RadioGroup
-            classes={radioGroupClasses}
-            label={"People"}
+            className={radioGroupClassName}
+            label={{ screenReaderLabel: "People" }}
             data-testid="g3"
             defaultValue="pedro"
           >
@@ -200,16 +191,6 @@ describe("Menu", () => {
     expect(screen.getByTestId("g1")).toHaveClass("menu__group");
     expect(screen.getByTestId("g2")).toHaveClass("menu__group");
     expect(screen.getByTestId("g3")).toHaveClass("menu__group");
-
-    expect(
-      screen.getByTestId("g1").querySelector(`[data-slot="${GroupLabelSlot}"]`),
-    ).toHaveClass("menu__group__label");
-
-    expect(
-      screen
-        .getByTestId("g3")
-        .querySelector(`[data-slot="${RadioGroupLabelSlot}"]`),
-    ).toHaveClass("menu__group__label");
 
     expect(screen.getByTestId("i1")).toHaveClass(
       "menu__item",
@@ -273,7 +254,7 @@ describe("Menu", () => {
           resolveAnchor={() => document.getElementById("anchor")}
         >
           <Menu.Group
-            label={"G1"}
+            label={{ screenReaderLabel: "G1" }}
             data-testid="g1"
           >
             <Menu.Item
@@ -318,7 +299,7 @@ describe("Menu", () => {
           </Menu.Item>
           <Menu.SeparatorItem data-testid="i7" />
           <Menu.RadioGroup
-            label={"People"}
+            label={{ screenReaderLabel: "People" }}
             data-testid="g3"
             defaultValue="pedro"
           >
@@ -454,7 +435,7 @@ describe("Menu", () => {
           resolveAnchor={() => document.getElementById("anchor")}
         >
           <Menu.Group
-            label={"G1"}
+            label={{ screenReaderLabel: "G1" }}
             data-testid="g1"
           >
             <Menu.Item
@@ -499,7 +480,7 @@ describe("Menu", () => {
           </Menu.Item>
           <Menu.SeparatorItem data-testid="i7" />
           <Menu.RadioGroup
-            label={"People"}
+            label={{ screenReaderLabel: "People" }}
             data-testid="g3"
             defaultValue="pedro"
           >
@@ -601,7 +582,7 @@ describe("Menu", () => {
           resolveAnchor={() => document.getElementById("anchor")}
         >
           <Menu.Group
-            label={"G1"}
+            label={{ screenReaderLabel: "G1" }}
             data-testid="g1"
           >
             <Menu.Item
@@ -648,7 +629,7 @@ describe("Menu", () => {
           </Menu.Item>
           <Menu.SeparatorItem data-testid="i7" />
           <Menu.RadioGroup
-            label={"People"}
+            label={{ screenReaderLabel: "People" }}
             data-testid="g3"
             defaultValue="pedro"
             onValueChange={handleValueChange}
@@ -719,7 +700,7 @@ describe("Menu", () => {
           resolveAnchor={() => document.getElementById("anchor")}
         >
           <Menu.Group
-            label={"G1"}
+            label={{ screenReaderLabel: "G1" }}
             data-testid="g1"
           >
             <Menu.Item
@@ -776,7 +757,7 @@ describe("Menu", () => {
           </Menu.Item>
           <Menu.SeparatorItem data-testid="i7" />
           <Menu.RadioGroup
-            label={"People"}
+            label={{ screenReaderLabel: "People" }}
             data-testid="g3"
             defaultValue="pedro"
             onValueChange={handleValueChange}
