@@ -1,5 +1,7 @@
 import classNames from "classnames";
+import type { FormEvent, FormEventHandler } from "react";
 import {
+  act,
   itShouldMount,
   itSupportsDataSetProps,
   itSupportsRef,
@@ -344,5 +346,243 @@ describe("InputSlider", () => {
     expect(getSupThumb()).toHaveAttribute("aria-valuenow", "20");
     expect(handleValueChange.mock.calls.length).toBe(6);
     expect(handleValueChange.mock.calls[5]?.[0]).toEqual([20, 20]);
+  });
+
+  it("should be submitted with the form as part of a name/value pair", () => {
+    const handleSubmit = jest.fn<void, [FormEvent<HTMLFormElement>]>();
+
+    const submitHandler: FormEventHandler<HTMLFormElement> = event => {
+      event.preventDefault();
+      handleSubmit(event);
+    };
+
+    const getForm = () => screen.getByTestId<HTMLFormElement>("form");
+    const getFormData = () => new FormData(getForm());
+
+    const { rerender: rerender1, unmount } = render(
+      <form
+        data-testid="form"
+        onSubmit={submitHandler}
+      >
+        <InputSlider.Root
+          multiThumb={true}
+          max={100}
+          min={0}
+          step={10}
+          setThumbValueText={v => String(v)}
+          orientation="horizontal"
+          value={[0, 100]}
+        >
+          <InputSlider.InfimumThumb
+            name="inf"
+            label={{ screenReaderLabel: "Infimum" }}
+          ></InputSlider.InfimumThumb>
+          <InputSlider.Track>
+            <InputSlider.Range />
+          </InputSlider.Track>
+          <InputSlider.SupremumThumb
+            name="sup"
+            label={{ screenReaderLabel: "Supremum" }}
+          ></InputSlider.SupremumThumb>
+        </InputSlider.Root>
+      </form>,
+    );
+
+    act(() => {
+      getForm().submit();
+    });
+
+    expect(handleSubmit.mock.calls.length).toBe(1);
+    expect(getFormData().get("inf")).toBe("0");
+    expect(getFormData().get("sup")).toBe("100");
+
+    rerender1(
+      <form
+        data-testid="form"
+        onSubmit={submitHandler}
+      >
+        <InputSlider.Root
+          multiThumb={true}
+          max={100}
+          min={0}
+          step={10}
+          setThumbValueText={v => String(v)}
+          orientation="horizontal"
+          value={[20, 80]}
+        >
+          <InputSlider.InfimumThumb
+            name="inf"
+            label={{ screenReaderLabel: "Infimum" }}
+          ></InputSlider.InfimumThumb>
+          <InputSlider.Track>
+            <InputSlider.Range />
+          </InputSlider.Track>
+          <InputSlider.SupremumThumb
+            name="sup"
+            label={{ screenReaderLabel: "Supremum" }}
+          ></InputSlider.SupremumThumb>
+        </InputSlider.Root>
+      </form>,
+    );
+
+    act(() => {
+      getForm().submit();
+    });
+
+    expect(handleSubmit.mock.calls.length).toBe(2);
+    expect(getFormData().get("inf")).toBe("20");
+    expect(getFormData().get("sup")).toBe("80");
+
+    rerender1(
+      <form
+        data-testid="form"
+        onSubmit={submitHandler}
+      >
+        <InputSlider.Root
+          multiThumb={true}
+          max={100}
+          min={0}
+          step={10}
+          setThumbValueText={v => String(v)}
+          orientation="horizontal"
+          value={[40, 50]}
+          disabled
+        >
+          <InputSlider.InfimumThumb
+            name="inf"
+            label={{ screenReaderLabel: "Infimum" }}
+          ></InputSlider.InfimumThumb>
+          <InputSlider.Track>
+            <InputSlider.Range />
+          </InputSlider.Track>
+          <InputSlider.SupremumThumb
+            name="sup"
+            label={{ screenReaderLabel: "Supremum" }}
+          ></InputSlider.SupremumThumb>
+        </InputSlider.Root>
+      </form>,
+    );
+
+    act(() => {
+      getForm().submit();
+    });
+
+    expect(handleSubmit.mock.calls.length).toBe(3);
+    expect(getFormData().get("inf")).toBe(null);
+    expect(getFormData().get("sup")).toBe(null);
+
+    handleSubmit.mockReset();
+    unmount();
+    const { rerender: rerender2 } = render(
+      <form
+        data-testid="form"
+        onSubmit={submitHandler}
+      >
+        <InputSlider.Root
+          multiThumb={false}
+          max={100}
+          min={0}
+          step={10}
+          setThumbValueText={v => String(v)}
+          orientation="horizontal"
+          value={0}
+        >
+          <InputSlider.InfimumThumb
+            name="inf"
+            label={{ screenReaderLabel: "Infimum" }}
+          ></InputSlider.InfimumThumb>
+          <InputSlider.Track>
+            <InputSlider.Range />
+          </InputSlider.Track>
+          <InputSlider.SupremumThumb
+            name="sup"
+            label={{ screenReaderLabel: "Supremum" }}
+          ></InputSlider.SupremumThumb>
+        </InputSlider.Root>
+      </form>,
+    );
+
+    act(() => {
+      getForm().submit();
+    });
+
+    expect(handleSubmit.mock.calls.length).toBe(1);
+    expect(getFormData().get("inf")).toBe(null);
+    expect(getFormData().get("sup")).toBe("0");
+
+    rerender2(
+      <form
+        data-testid="form"
+        onSubmit={submitHandler}
+      >
+        <InputSlider.Root
+          multiThumb={false}
+          max={100}
+          min={0}
+          step={10}
+          setThumbValueText={v => String(v)}
+          orientation="horizontal"
+          value={20}
+        >
+          <InputSlider.InfimumThumb
+            name="inf"
+            label={{ screenReaderLabel: "Infimum" }}
+          ></InputSlider.InfimumThumb>
+          <InputSlider.Track>
+            <InputSlider.Range />
+          </InputSlider.Track>
+          <InputSlider.SupremumThumb
+            name="sup"
+            label={{ screenReaderLabel: "Supremum" }}
+          ></InputSlider.SupremumThumb>
+        </InputSlider.Root>
+      </form>,
+    );
+
+    act(() => {
+      getForm().submit();
+    });
+
+    expect(handleSubmit.mock.calls.length).toBe(2);
+    expect(getFormData().get("inf")).toBe(null);
+    expect(getFormData().get("sup")).toBe("20");
+
+    rerender2(
+      <form
+        data-testid="form"
+        onSubmit={submitHandler}
+      >
+        <InputSlider.Root
+          multiThumb={false}
+          max={100}
+          min={0}
+          step={10}
+          setThumbValueText={v => String(v)}
+          orientation="horizontal"
+          value={40}
+          disabled
+        >
+          <InputSlider.InfimumThumb
+            name="inf"
+            label={{ screenReaderLabel: "Infimum" }}
+          ></InputSlider.InfimumThumb>
+          <InputSlider.Track>
+            <InputSlider.Range />
+          </InputSlider.Track>
+          <InputSlider.SupremumThumb
+            name="sup"
+            label={{ screenReaderLabel: "Supremum" }}
+          ></InputSlider.SupremumThumb>
+        </InputSlider.Root>
+      </form>,
+    );
+
+    act(() => {
+      getForm().submit();
+    });
+
+    expect(handleSubmit.mock.calls.length).toBe(3);
+    expect(getFormData().get("inf")).toBe(null);
+    expect(getFormData().get("sup")).toBe(null);
   });
 });
