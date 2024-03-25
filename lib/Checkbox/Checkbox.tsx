@@ -63,7 +63,12 @@ type OwnProps = {
         labelledBy: string;
       };
   /**
-   * The value of the checkbox. Use when it is a CheckGroup's child.
+   * The value of the checkbox.
+   *
+   * Opt-in this prop when using with CheckGroup or
+   * when using checkbox as a form control that has the `name` prop.
+   *
+   * Submitted with the form as part of a name/value pair.
    */
   value?: string;
   /**
@@ -104,6 +109,11 @@ type OwnProps = {
    */
   overrideTabIndex?: number;
   /**
+   * The name of the form control when submitted.
+   * Submitted with the form as part of a name/value pair.
+   */
+  name?: string;
+  /**
    * The Callback is fired when the state changes.
    */
   onCheckedChange?: (checkedState: boolean) => void;
@@ -124,6 +134,7 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     overrideTabIndex,
     defaultChecked,
     checked,
+    name: nameProp,
     autoFocus = false,
     disabled = false,
     readOnly = false,
@@ -137,16 +148,41 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const checkGroupCtx = React.useContext(CheckGroupContext);
 
-  if (checkGroupCtx && typeof value === "undefined") {
-    throw new SystemError(
-      [
-        "The `value` property is missing.",
-        "It's mandatory to provide a `value` property " +
-          "when <CheckGroup /> is a wrapper for <Checkbox />.",
-      ].join("\n"),
-      "Checkbox",
-    );
+  if (checkGroupCtx) {
+    if (typeof value === "undefined") {
+      throw new SystemError(
+        [
+          "The `value` property is missing.",
+          "It's mandatory to provide a `value` property " +
+            "when <CheckGroup /> is a wrapper for <Checkbox />.",
+        ].join("\n"),
+        "Checkbox",
+      );
+    }
+
+    if (typeof nameProp !== "undefined") {
+      logger(
+        "The `name` prop shouldn't be set " +
+          "when <CheckGroup /> is a wrapper for <Checkbox />. " +
+          "Set the `name` prop on the <CheckGroup /> instead.",
+        { scope: "Checkbox", type: "warn" },
+      );
+    }
+
+    if (
+      typeof checked !== "undefined" ||
+      typeof defaultChecked !== "undefined"
+    ) {
+      logger(
+        "The `checked` or `defaultChecked` props shouldn't be set " +
+          "when <CheckGroup /> is a wrapper for <Checkbox />. " +
+          "Set the checked props on the <CheckGroup /> instead.",
+        { scope: "Checkbox", type: "warn" },
+      );
+    }
   }
+
+  const name = checkGroupCtx?.name != null ? checkGroupCtx.name : nameProp;
 
   const isDisabled =
     checkGroupCtx?.disabled != null ? checkGroupCtx.disabled : disabled;
@@ -243,6 +279,19 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   if (typeof overrideTabIndex !== "undefined") tabIndex = overrideTabIndex;
 
+  const renderHiddenInput = () => {
+    if (!name || !value || !isChecked) return null;
+
+    return (
+      <input
+        type="hidden"
+        name={name}
+        value={value}
+        disabled={isDisabled}
+      />
+    );
+  };
+
   return (
     <button
       {...otherProps}
@@ -267,6 +316,7 @@ const CheckboxBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
       {...dataAttrs}
     >
       {children}
+      {renderHiddenInput()}
     </button>
   );
 };

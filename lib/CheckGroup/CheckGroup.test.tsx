@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import classNames from "classnames";
+import type { FormEvent, FormEventHandler } from "react";
 import {
+  act,
   itShouldMount,
   itSupportsDataSetProps,
   itSupportsRef,
@@ -349,5 +351,120 @@ describe("CheckGroup", () => {
     getCheckboxes().forEach(checkbox => {
       expect(checkbox).toBeDisabled();
     });
+  });
+
+  it("should be submitted with the form as part of a name/value pair", () => {
+    const handleSubmit = jest.fn<void, [FormEvent<HTMLFormElement>]>();
+
+    const submitHandler: FormEventHandler<HTMLFormElement> = event => {
+      event.preventDefault();
+      handleSubmit(event);
+    };
+
+    const getForm = () => screen.getByTestId<HTMLFormElement>("form");
+    const getFormData = () => new FormData(getForm());
+
+    const { rerender } = render(
+      <form
+        data-testid="form"
+        onSubmit={submitHandler}
+      >
+        <CheckGroup
+          {...mockRequiredProps}
+          value={[]}
+          name="n"
+        >
+          <Checkbox
+            label={{ screenReaderLabel: "Checkbox 0" }}
+            value="v0"
+            disabled
+          />
+          <Checkbox
+            label={{ screenReaderLabel: "Checkbox 1" }}
+            value="v1"
+          />
+          <Checkbox
+            label={{ screenReaderLabel: "Checkbox 2" }}
+            value="v2"
+          />
+        </CheckGroup>
+      </form>,
+    );
+
+    act(() => {
+      getForm().submit();
+    });
+
+    expect(handleSubmit.mock.calls.length).toBe(1);
+    expect(getFormData().getAll("n")).toEqual([]);
+
+    rerender(
+      <form
+        data-testid="form"
+        onSubmit={submitHandler}
+      >
+        <CheckGroup
+          {...mockRequiredProps}
+          value={["v0", "v1"]}
+          name="n"
+        >
+          <Checkbox
+            label={{ screenReaderLabel: "Checkbox 0" }}
+            value="v0"
+            disabled
+          />
+          <Checkbox
+            label={{ screenReaderLabel: "Checkbox 1" }}
+            value="v1"
+          />
+          <Checkbox
+            label={{ screenReaderLabel: "Checkbox 2" }}
+            value="v2"
+          />
+        </CheckGroup>
+      </form>,
+    );
+
+    act(() => {
+      getForm().submit();
+    });
+
+    expect(handleSubmit.mock.calls.length).toBe(2);
+    expect(getFormData().getAll("n")).toEqual(["v1"]);
+
+    rerender(
+      <form
+        data-testid="form"
+        onSubmit={submitHandler}
+      >
+        <CheckGroup
+          {...mockRequiredProps}
+          disabled
+          value={["v0", "v1", "v2"]}
+          name="n"
+        >
+          <Checkbox
+            label={{ screenReaderLabel: "Checkbox 0" }}
+            value="v0"
+            disabled
+          />
+          <Checkbox
+            label={{ screenReaderLabel: "Checkbox 1" }}
+            value="v1"
+          />
+          <Checkbox
+            label={{ screenReaderLabel: "Checkbox 2" }}
+            value="v2"
+          />
+        </CheckGroup>
+      </form>,
+    );
+
+    act(() => {
+      getForm().submit();
+    });
+
+    expect(handleSubmit.mock.calls.length).toBe(3);
+    expect(getFormData().getAll("n")).toEqual([]);
   });
 });

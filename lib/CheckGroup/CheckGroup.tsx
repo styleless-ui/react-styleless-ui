@@ -80,6 +80,11 @@ type OwnProps = {
    */
   readOnly?: boolean;
   /**
+   * The name of the form control when submitted.
+   * Submitted with the form as part of a name/value pair.
+   */
+  name?: string;
+  /**
    * The Callback is fired when the state changes.
    */
   onValueChange?: (selectedValues: string[]) => void;
@@ -100,6 +105,7 @@ const CheckGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     id: idProp,
     disabled,
     readOnly,
+    name,
     onValueChange,
     orientation = "vertical",
     ...otherProps
@@ -154,14 +160,15 @@ const CheckGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       id={id}
       ref={ref}
       className={className}
-      data-slot={Slots.Root}
       aria-orientation={orientation}
       aria-label={labelInfo.srOnlyLabel}
       aria-labelledby={labelInfo.labelledBy}
       aria-disabled={disabled}
+      data-slot={Slots.Root}
+      data-name={name}
     >
       <CheckGroupContext.Provider
-        value={{ value, readOnly, disabled, onChange: handleValueChange }}
+        value={{ value, name, readOnly, disabled, onChange: handleValueChange }}
       >
         {children}
       </CheckGroupContext.Provider>

@@ -3,7 +3,7 @@ import type { PickAsMandatory } from "../types";
 import { type Props } from "./CheckGroup";
 
 type ContextValue = PickAsMandatory<Props, "value"> &
-  Pick<Props, "readOnly" | "disabled"> & {
+  Pick<Props, "readOnly" | "disabled" | "name"> & {
     onChange: (newCheckedState: boolean, inputValue: string) => void;
   };
 
