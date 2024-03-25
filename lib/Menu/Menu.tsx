@@ -1,7 +1,12 @@
 import * as React from "react";
 import { type PopperProps } from "../Popper";
 import { Root as PopperRootSlot } from "../Popper/slots";
-import { SystemError, SystemKeys, getLabelInfo } from "../internals";
+import {
+  SystemError,
+  SystemKeys,
+  getLabelInfo,
+  useJumpToChar,
+} from "../internals";
 import type {
   MergeElementProps,
   PropWithRenderContext,
@@ -15,7 +20,6 @@ import {
   useEventCallback,
   useEventListener,
   useForkedRefs,
-  useJumpToChar,
   useOnChange,
 } from "../utils";
 import BaseMenu from "./BaseMenu";

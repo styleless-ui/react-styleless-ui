@@ -11,3 +11,4 @@ export { default as logger } from "./logger";
 export { default as prefixMessage } from "./prefix-message";
 export { default as resolvePropWithRenderContext } from "./resolve-prop-with-render-context";
 export * from "./styles";
+export { default as useJumpToChar } from "./use-jump-to-char";

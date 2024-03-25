@@ -1,6 +1,6 @@
 import * as React from "react";
 import { flushSync } from "react-dom";
-import { SystemKeys } from "../../../internals";
+import { SystemKeys, useJumpToChar } from "../../../internals";
 import {
   isPrintableKey,
   useEventCallback,
@@ -8,7 +8,6 @@ import {
   useIsFocusVisible,
   useIsMounted,
   useIsomorphicLayoutEffect,
-  useJumpToChar,
   useOnChange,
 } from "../../../utils";
 
