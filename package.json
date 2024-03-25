@@ -21,7 +21,7 @@
     "prod": "next build && next start",
     "test": "jest",
     "test:watch": "jest --watch",
-    "lint": "tsc --project tsconfig.lint.json && eslint \"**/*.{ts,tsx}\" --config .eslintrc --quiet --fix",
+    "lint": "tsc --project tsconfig.lint.json && eslint \"**/*.{ts,tsx}\" --config .eslintrc",
     "prettify": "prettier --write \"**/*.{ts,tsx,js,jsx,css,scss,json}\"",
     "clear": "rimraf dist",
     "prebuild": "npm-run-all clear prettify lint test",
