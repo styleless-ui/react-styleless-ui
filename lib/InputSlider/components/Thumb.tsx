@@ -37,6 +37,11 @@ export type SharedProps = {
    */
   overrideTabIndex?: number;
   /**
+   * The name of the form control when submitted.
+   * Submitted with the form as part of a name/value pair.
+   */
+  name?: string;
+  /**
    * If `true`, the thumb will be focused automatically.
    *
    * @default false
@@ -69,6 +74,7 @@ const ThumbBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     children: childrenProp,
     style: styleProp,
     autoFocus = false,
+    name,
     readOnly,
     overrideTabIndex,
     disabled,
@@ -82,11 +88,11 @@ const ThumbBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   } = props;
 
   const {
-    index,
+    index: thumbIndex,
+    name: thumbName,
+    ref: thumbRef,
     maxValue,
     minValue,
-    name,
-    ref: thumbRef,
     state,
     value,
   } = thumbInfo;
@@ -171,17 +177,30 @@ const ThumbBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         supremum: { bottom: `${position}%` },
         infimum: { top: `${position}%` },
       },
-    }[orientation][name],
+    }[orientation][thumbName],
     zIndex,
     position: "absolute",
     transform: `translate${orientation === "horizontal" ? "X" : "Y"}(${
-      name === "infimum" ? -50 : 50
+      thumbName === "infimum" ? -50 : 50
     }%)`,
   };
 
   let tabIndex = disabled ? -1 : 0;
 
   if (typeof overrideTabIndex !== "undefined") tabIndex = overrideTabIndex;
+
+  const renderHiddenInput = () => {
+    if (!name) return null;
+
+    return (
+      <input
+        type="hidden"
+        name={name}
+        value={value}
+        disabled={disabled}
+      />
+    );
+  };
 
   return (
     <div
@@ -200,13 +219,14 @@ const ThumbBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       aria-valuemax={maxValue}
       aria-disabled={disabled}
       aria-orientation={orientation}
-      data-thumb-index={index}
-      data-thumb-name={name}
+      data-thumb-index={thumbIndex}
+      data-thumb-name={thumbName}
       data-disabled={disabled ? "" : undefined}
       data-readonly={readOnly ? "" : undefined}
       data-focus-visible={isFocusedVisible ? "" : undefined}
     >
       {children}
+      {renderHiddenInput()}
     </div>
   );
 };
