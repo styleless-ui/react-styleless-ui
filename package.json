@@ -29,7 +29,7 @@
     "build:transpile:cjs": "tsc -p tsconfig.cjs.json",
     "build:transpile:esm": "tsc -p tsconfig.esm.json",
     "build:package": "tsx scripts/build-package.ts",
-    "build:minify": "tsx scripts/minify.ts"
+    "build:minify": "tsx scripts/minify-package.ts"
   },
   "devDependencies": {
     "@testing-library/dom": "^9.3.4",
