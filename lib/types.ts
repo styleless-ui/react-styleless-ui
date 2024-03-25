@@ -99,8 +99,8 @@ export type VirtualElement = { getBoundingClientRect(): BoundingClientRect };
 export type ComponentProps<E> = E extends (props: infer P) => JSX.Element | null
   ? P
   : E extends React.ElementType
-  ? React.ComponentProps<E>
-  : EmptyObjectNotation;
+    ? React.ComponentProps<E>
+    : EmptyObjectNotation;
 
 export type EnsureCommonProps<E, P> = Overwrite<
   P,
@@ -130,10 +130,8 @@ export interface GenericComponent<
   RootNode extends React.ElementType,
   P = EmptyObjectNotation,
 > {
-  <E extends React.ElementType>(
-    props: PolymorphicProps<E, P>,
-  ): JSX.Element | null;
-  (props: MergeElementProps<RootNode, P>): JSX.Element | null;
+  <E extends React.ElementType>(props: PolymorphicProps<E, P>): React.ReactNode;
+  (props: MergeElementProps<RootNode, P>): React.ReactNode;
 }
 
 export interface PolymorphicComponent<
@@ -142,7 +140,7 @@ export interface PolymorphicComponent<
 > {
   <E extends React.ElementType = TDefaultElementType>(
     props: PolymorphicProps<E, EnsureCommonProps<E, P>>,
-  ): JSX.Element | null;
+  ): React.ReactNode;
 }
 
 export type BivarianceHack<TFunction extends AnyFunction> = {

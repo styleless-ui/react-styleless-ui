@@ -215,8 +215,8 @@ const ControllerBase = (props: Props, ref: React.Ref<HTMLInputElement>) => {
       typeof overrideTabIndex !== "undefined"
         ? overrideTabIndex
         : disabled
-        ? -1
-        : 0,
+          ? -1
+          : 0,
     onClick: comboboxBase.handleClick,
     onBlur: comboboxBase.handleBlur,
     onFocus: comboboxBase.handleFocus,

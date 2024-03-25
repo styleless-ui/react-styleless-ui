@@ -22,8 +22,8 @@ const itSupportsDataSetProps = <T,>(
           ? (portal.querySelector(selector) as HTMLElement)
           : (container.querySelector(selector) as HTMLElement)
         : portal
-        ? (container.firstChild as HTMLElement)
-        : (container.firstChild as HTMLElement);
+          ? (container.firstChild as HTMLElement)
+          : (container.firstChild as HTMLElement);
     };
 
     const { container } = render(

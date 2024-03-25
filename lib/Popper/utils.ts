@@ -68,9 +68,9 @@ const getAlignmentSidesFromPlacement = (
     side.replace(
       /left|right|bottom|top/g,
       matched =>
-        ({ left: "right", right: "left", top: "bottom", bottom: "top" }[
+        ({ left: "right", right: "left", top: "bottom", bottom: "top" })[
           matched
-        ] ?? ""),
+        ] ?? "",
     ) as Side;
 
   let mainSide: Side =
@@ -79,8 +79,8 @@ const getAlignmentSidesFromPlacement = (
         ? "right"
         : "left"
       : alignment === "start"
-      ? "bottom"
-      : "top";
+        ? "bottom"
+        : "top";
 
   if (elementRects.anchorRect[length] > elementRects.popperRect[length])
     mainSide = _getOppositeSide(mainSide);
@@ -222,16 +222,22 @@ const getClippingRect = (element: Element): Rect => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const firstClippingAncestor = clippingAncestors[0]!;
 
-  const clippingRect = clippingAncestors.reduce((result, clippingAncestor) => {
-    const rect = _getClientRectFromClippingAncestor(element, clippingAncestor);
+  const clippingRect = clippingAncestors.reduce(
+    (result, clippingAncestor) => {
+      const rect = _getClientRectFromClippingAncestor(
+        element,
+        clippingAncestor,
+      );
 
-    result.top = Math.max(rect.top, result.top);
-    result.right = Math.min(rect.right, result.right);
-    result.bottom = Math.min(rect.bottom, result.bottom);
-    result.left = Math.max(rect.left, result.left);
+      result.top = Math.max(rect.top, result.top);
+      result.right = Math.min(rect.right, result.right);
+      result.bottom = Math.min(rect.bottom, result.bottom);
+      result.left = Math.max(rect.left, result.left);
 
-    return result;
-  }, _getClientRectFromClippingAncestor(element, firstClippingAncestor));
+      return result;
+    },
+    _getClientRectFromClippingAncestor(element, firstClippingAncestor),
+  );
 
   return {
     width: clippingRect.right - clippingRect.left,
@@ -554,7 +560,7 @@ export const suppressViewportOverflow = (
   const _getOppositeAlignment = (placement: Placement) =>
     placement.replace(
       /start|end/g,
-      matched => ({ start: "end", end: "start" }[matched] ?? ""),
+      matched => ({ start: "end", end: "start" })[matched] ?? "",
     ) as Placement;
 
   const _onlySides = (placement: Placement) =>

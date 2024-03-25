@@ -87,13 +87,15 @@ const TriggerBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
     if (!node) return;
 
-    node
-      .querySelectorAll<HTMLButtonElement>(
-        `:is([type='button'], a[href], button):not([data-slot='${ControllerRootSlot}'])`,
-      )
-      .forEach(el => {
-        el.tabIndex = -1;
-      });
+    const querySelector = [
+      `[type='button']:not([data-slot='${ControllerRootSlot}'])`,
+      `a[href]:not([data-slot='${ControllerRootSlot}'])`,
+      `button:not([data-slot='${ControllerRootSlot}'])`,
+    ].join(", ");
+
+    node.querySelectorAll<HTMLButtonElement>(querySelector).forEach(el => {
+      el.tabIndex = -1;
+    });
   };
 
   return (

@@ -521,8 +521,8 @@ const TreeViewBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     selectMode: isMultiSelect
       ? "multi-select"
       : isSingleSelect
-      ? "single-select"
-      : undefined,
+        ? "single-select"
+        : undefined,
   };
 
   const classNameProps: ClassNameProps = renderProps;
