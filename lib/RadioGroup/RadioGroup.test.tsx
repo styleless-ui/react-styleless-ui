@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import classNames from "classnames";
+import type { FormEvent, FormEventHandler } from "react";
 import {
+  act,
   itShouldMount,
   itSupportsDataSetProps,
   itSupportsRef,
@@ -347,5 +349,154 @@ describe("RadioGroup", () => {
     getRadios().forEach(radio => {
       expect(radio).toBeDisabled();
     });
+  });
+
+  it("should be submitted with the form as part of a name/value pair", () => {
+    const handleSubmit = jest.fn<void, [FormEvent<HTMLFormElement>]>();
+
+    const submitHandler: FormEventHandler<HTMLFormElement> = event => {
+      event.preventDefault();
+      handleSubmit(event);
+    };
+
+    const getForm = () => screen.getByTestId<HTMLFormElement>("form");
+    const getFormData = () => new FormData(getForm());
+
+    const { rerender } = render(
+      <form
+        data-testid="form"
+        onSubmit={submitHandler}
+      >
+        <RadioGroup
+          {...mockRequiredProps}
+          value=""
+          name="n"
+        >
+          <Radio
+            label={{ screenReaderLabel: "Radio 0" }}
+            value="v0"
+            disabled
+          />
+          <Radio
+            label={{ screenReaderLabel: "Radio 1" }}
+            value="v1"
+          />
+          <Radio
+            label={{ screenReaderLabel: "Radio 2" }}
+            value="v2"
+          />
+        </RadioGroup>
+      </form>,
+    );
+
+    act(() => {
+      getForm().submit();
+    });
+
+    expect(handleSubmit.mock.calls.length).toBe(1);
+    expect(getFormData().get("n")).toBe(null);
+
+    rerender(
+      <form
+        data-testid="form"
+        onSubmit={submitHandler}
+      >
+        <RadioGroup
+          {...mockRequiredProps}
+          value="0"
+          name="n"
+        >
+          <Radio
+            label={{ screenReaderLabel: "Radio 0" }}
+            value="v0"
+            disabled
+          />
+          <Radio
+            label={{ screenReaderLabel: "Radio 1" }}
+            value="v1"
+          />
+          <Radio
+            label={{ screenReaderLabel: "Radio 2" }}
+            value="v2"
+          />
+        </RadioGroup>
+      </form>,
+    );
+
+    act(() => {
+      getForm().submit();
+    });
+
+    expect(handleSubmit.mock.calls.length).toBe(2);
+    expect(getFormData().get("n")).toBe(null);
+
+    rerender(
+      <form
+        data-testid="form"
+        onSubmit={submitHandler}
+      >
+        <RadioGroup
+          {...mockRequiredProps}
+          disabled
+          value="v1"
+          name="n"
+        >
+          <Radio
+            label={{ screenReaderLabel: "Radio 0" }}
+            value="v0"
+            disabled
+          />
+          <Radio
+            label={{ screenReaderLabel: "Radio 1" }}
+            value="v1"
+          />
+          <Radio
+            label={{ screenReaderLabel: "Radio 2" }}
+            value="v2"
+          />
+        </RadioGroup>
+      </form>,
+    );
+
+    act(() => {
+      getForm().submit();
+    });
+
+    expect(handleSubmit.mock.calls.length).toBe(3);
+    expect(getFormData().get("n")).toBe(null);
+
+    rerender(
+      <form
+        data-testid="form"
+        onSubmit={submitHandler}
+      >
+        <RadioGroup
+          {...mockRequiredProps}
+          value="v2"
+          name="n"
+        >
+          <Radio
+            label={{ screenReaderLabel: "Radio 0" }}
+            value="v0"
+            disabled
+          />
+          <Radio
+            label={{ screenReaderLabel: "Radio 1" }}
+            value="v1"
+          />
+          <Radio
+            label={{ screenReaderLabel: "Radio 2" }}
+            value="v2"
+          />
+        </RadioGroup>
+      </form>,
+    );
+
+    act(() => {
+      getForm().submit();
+    });
+
+    expect(handleSubmit.mock.calls.length).toBe(4);
+    expect(getFormData().get("n")).toBe("v2");
   });
 });

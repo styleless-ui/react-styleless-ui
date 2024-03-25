@@ -80,6 +80,11 @@ type OwnProps = {
    */
   readOnly?: boolean;
   /**
+   * The name of the form control when submitted.
+   * Submitted with the form as part of a name/value pair.
+   */
+  name?: string;
+  /**
    * The Callback is fired when the state changes.
    */
   onValueChange?: (selectedValue: string) => void;
@@ -100,6 +105,7 @@ const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     value: valueProp,
     disabled,
     readOnly,
+    name,
     onValueChange,
     orientation = "vertical",
     ...otherProps
@@ -182,17 +188,19 @@ const RadioGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       id={id}
       ref={handleRootRef}
       className={className}
-      data-slot={Slots.Root}
       role="radiogroup"
       aria-orientation={orientation}
       aria-label={labelInfo.srOnlyLabel}
       aria-labelledby={labelInfo.labelledBy}
       aria-disabled={disabled}
       aria-readonly={readOnly}
+      data-slot={Slots.Root}
+      data-name={name}
     >
       <RadioGroupContext.Provider
         value={{
           value,
+          name,
           readOnly,
           disabled,
           onChange: handleValueChange,

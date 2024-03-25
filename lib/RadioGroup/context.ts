@@ -3,7 +3,7 @@ import type { PickAsMandatory } from "../types";
 import { type Props } from "./RadioGroup";
 
 type ContextValue = PickAsMandatory<Props, "value"> &
-  Pick<Props, "disabled" | "readOnly"> & {
+  Pick<Props, "disabled" | "readOnly" | "name"> & {
     forcedTabability: string | null;
     onChange: (newCheckedState: boolean, inputValue: string) => void;
   };
