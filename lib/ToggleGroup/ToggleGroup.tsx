@@ -130,8 +130,8 @@ const ToggleGroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
         ? (value as string[]).filter(v => v !== toggleValue)
         : (value as string[]).concat(toggleValue)
       : newActiveState
-      ? toggleValue
-      : "";
+        ? toggleValue
+        : "";
 
     setValue(newValue);
     // @ts-expect-error It's fine!

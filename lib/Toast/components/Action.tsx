@@ -1,6 +1,6 @@
 import * as React from "react";
 import Button from "../../Button";
-import type { PolymorphicProps } from "../../types";
+import type { PolymorphicComponent, PolymorphicProps } from "../../types";
 import { componentWithForwardedRef } from "../../utils";
 import { ActionRoot as ActionRootSlot } from "../slots";
 
@@ -28,13 +28,7 @@ const ActionBase = <
   );
 };
 
-type PolymorphicComponent = <
-  E extends React.ElementType = typeof Button<"button">,
->(
-  props: Props<E>,
-) => JSX.Element | null;
-
-const Action: PolymorphicComponent = componentWithForwardedRef(
+const Action: PolymorphicComponent<"button"> = componentWithForwardedRef(
   ActionBase,
   "Toast.Action",
 );
