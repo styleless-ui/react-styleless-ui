@@ -6,6 +6,9 @@
   "author": "mimshins <mostafa.sh.coderino@gmail.com>",
   "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "keywords": [
     "ui",
     "styleless-ui",
