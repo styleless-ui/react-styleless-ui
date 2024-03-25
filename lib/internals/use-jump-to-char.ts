@@ -1,6 +1,5 @@
 import * as React from "react";
-import { isPrintableKey } from "./is";
-import useEventCallback from "./use-event-callback";
+import { isPrintableKey, useEventCallback } from "../utils";
 
 type CharRecords = {
   index: number;

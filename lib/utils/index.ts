@@ -29,4 +29,3 @@ export { default as useIsFocusVisible } from "./use-is-focus-visible";
 export { default as useIsInitialRenderComplete } from "./use-is-initial-render-complete";
 export { default as useIsomorphicLayoutEffect } from "./use-isomorphic-layout-effect";
 export { default as useIsomorphicValue } from "./use-isomorphic-value";
-export { default as useJumpToChar } from "./use-jump-to-char";

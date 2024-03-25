@@ -1,5 +1,10 @@
 import * as React from "react";
-import { SystemError, SystemKeys, getLabelInfo } from "../internals";
+import {
+  SystemError,
+  SystemKeys,
+  getLabelInfo,
+  useJumpToChar,
+} from "../internals";
 import type { MergeElementProps, PropWithRenderContext } from "../types";
 import {
   componentWithForwardedRef,
@@ -9,7 +14,6 @@ import {
   useEventCallback,
   useEventListener,
   useForkedRefs,
-  useJumpToChar,
 } from "../utils";
 import {
   LevelContext,
