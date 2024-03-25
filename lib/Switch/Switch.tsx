@@ -92,6 +92,16 @@ type OwnProps = {
    */
   overrideTabIndex?: number;
   /**
+   * The name of the form control when submitted.
+   * Submitted with the form as part of a name/value pair.
+   */
+  name?: string;
+  /**
+   * The value of the form control when submitted.
+   * Submitted with the form as part of a name/value pair.
+   */
+  value?: string;
+  /**
    * The Callback is fired when the state changes.
    */
   onCheckedChange?: (checkedState: boolean) => void;
@@ -111,6 +121,8 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
     defaultChecked,
     checked,
     overrideTabIndex,
+    name,
+    value,
     autoFocus = false,
     disabled = false,
     readOnly = false,
@@ -183,6 +195,19 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   if (typeof overrideTabIndex !== "undefined") tabIndex = overrideTabIndex;
 
+  const renderHiddenInput = () => {
+    if (!name || !value || !checkBase.checked) return null;
+
+    return (
+      <input
+        type="hidden"
+        name={name}
+        value={value}
+        disabled={disabled}
+      />
+    );
+  };
+
   return (
     <button
       {...otherProps}
@@ -207,6 +232,7 @@ const SwitchBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
       {...dataAttrs}
     >
       {children}
+      {renderHiddenInput()}
     </button>
   );
 };
