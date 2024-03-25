@@ -1,0 +1,42 @@
+name: Publish
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: "📦 install dependencies"
+        run: pnpm install
+
+      - name: "🧱 build package"
+        run: pnpm build
+
+  publish-npm:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org/
+
+      - name: "🚀 publish package"
+        run: npx tsx ./scripts/ci/publish-package.ts
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}

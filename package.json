@@ -2,10 +2,21 @@
   "name": "@styleless-ui/react",
   "version": "1.0.0-rc.0",
   "description": "Completely unstyled, headless and accessible React UI components.",
-  "repository": "git@github.com:styleless-ui/react-styleless-ui.git",
   "author": "mimshins <mostafa.sh.coderino@gmail.com>",
   "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/styleless-ui/react-styleless-ui.git"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/",
+    "tag": "rc"
+  },
   "keywords": [
     "ui",
     "styleless-ui",

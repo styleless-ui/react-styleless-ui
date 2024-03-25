@@ -1,0 +1,35 @@
+name: CodeQL
+
+on:
+  push:
+    branches:
+      - "next"
+  pull_request:
+  schedule:
+    # on sunday of each month at 5:55
+    - cron: "55 5 * * 0"
+  workflow_call:
+
+jobs:
+  analyze:
+    name: "Analyze"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language:
+          - javascript
+          - typescript
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "🎬 Initialize CodeQL"
+        uses: github/codeql-action/init@v1
+        with:
+          languages: ${{ matrix.language }}
+
+      - name: "🏗️ Autobuild"
+        uses: github/codeql-action/autobuild@v1
+
+      - name: "🧐 Perform CodeQL Analysis"
+        uses: github/codeql-action/analyze@v1
