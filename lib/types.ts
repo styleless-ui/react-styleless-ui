@@ -79,18 +79,9 @@ export type MergeElementProps<
   P = EmptyObjectNotation,
 > = Overwrite<React.ComponentPropsWithRef<E>, P>;
 
-export type Classes<StringUnion extends string> = Partial<
-  Record<StringUnion, string>
->;
-
 export type PropWithRenderContext<Prop, RenderContext> =
   | Prop
   | ((ctx: RenderContext) => Prop);
-
-export type ClassesWithRenderContext<
-  StringUnion extends string,
-  RenderContext extends AnyObject,
-> = PropWithRenderContext<Classes<StringUnion>, RenderContext>;
 
 export type BoundingClientRect = {
   x: number;
