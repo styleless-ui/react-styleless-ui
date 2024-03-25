@@ -1,5 +1,11 @@
 import * as React from "react";
-import { SystemError, getLabelInfo, logger } from "../internals";
+import {
+  SystemError,
+  getLabelInfo,
+  logger,
+  resolvePropWithRenderContext,
+  visuallyHiddenCSSProperties,
+} from "../internals";
 import type { MergeElementProps, PropWithRenderContext } from "../types";
 import {
   componentWithForwardedRef,
@@ -13,7 +19,7 @@ import {
 } from "../utils";
 import { SelectContext, type SelectContextValue } from "./context";
 import { Root as RootSlot } from "./slots";
-import { noValueSelected, normalizeValues } from "./utils";
+import { getOptions, noValueSelected, normalizeValues } from "./utils";
 
 export type RenderProps = {
   /**
@@ -137,6 +143,11 @@ type OwnProps = {
    */
   defaultOpen?: boolean;
   /**
+   * The name of the form control when submitted.
+   * Submitted with the form as part of a name/value pair.
+   */
+  name?: string;
+  /**
    * Callback is called when the dropdown menu is about to be opened.
    */
   onOpen?: () => void;
@@ -195,6 +206,7 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     disabled = false,
     searchable = false,
     readOnly = false,
+    name,
     multiple,
     defaultValue,
     value,
@@ -384,15 +396,8 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     hasSelectedValues: isAnyOptionSelected,
   };
 
-  const className =
-    typeof classNameProp === "function"
-      ? classNameProp(classNameProps)
-      : classNameProp;
-
-  const children =
-    typeof childrenProp === "function"
-      ? childrenProp(renderProps)
-      : childrenProp;
+  const className = resolvePropWithRenderContext(classNameProp, classNameProps);
+  const children = resolvePropWithRenderContext(childrenProp, renderProps);
 
   if (isListOpen && (disabled || readOnly)) {
     logger(
@@ -474,6 +479,57 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     "data-readonly": readOnly ? "" : undefined,
   };
 
+  const renderHiddenInput = () => {
+    if (!name) return null;
+    if (selectedValues.length === 0) return null;
+
+    const renderOptions = () => {
+      const disabledOptions = getOptions(
+        React.Children.toArray(children),
+      ).filter(o => o.disabled);
+
+      const isOptionDisabled = (optionValue: string) =>
+        disabledOptions.some(o => o.value === optionValue);
+
+      if (!multiple) {
+        const optionValue = selectedValues as string;
+
+        if (isOptionDisabled(optionValue)) return null;
+
+        return <option value={optionValue} />;
+      }
+
+      return (selectedValues as string[]).map(value => {
+        if (isOptionDisabled(value)) return null;
+
+        return (
+          <option
+            key={value}
+            value={value}
+          />
+        );
+      });
+    };
+
+    return (
+      <select
+        // @ts-expect-error React hasn't added `inert` yet
+        inert=""
+        onFocus={e => void (e.preventDefault(), e.stopPropagation())}
+        onChange={() => void 0}
+        style={visuallyHiddenCSSProperties}
+        aria-hidden="true"
+        tabIndex={-1}
+        multiple={multiple}
+        disabled={disabled}
+        value={selectedValues}
+        name={name}
+      >
+        {renderOptions()}
+      </select>
+    );
+  };
+
   return (
     <div
       {...otherProps}
@@ -488,6 +544,7 @@ const SelectBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
       <SelectContext.Provider value={context}>
         {children}
       </SelectContext.Provider>
+      {renderHiddenInput()}
     </div>
   );
 };

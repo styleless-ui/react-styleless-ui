@@ -1,13 +1,14 @@
 import * as React from "react";
-import { getLabelInfo, logger } from "../../internals";
-import type { MergeElementProps, PropWithRenderContext } from "../../types";
 import {
-  componentWithForwardedRef,
-  setRef,
-  useDeterministicId,
-} from "../../utils";
+  getLabelInfo,
+  logger,
+  resolvePropWithRenderContext,
+} from "../../internals";
+import type { MergeElementProps, PropWithRenderContext } from "../../types";
+import { componentWithForwardedRef, useDeterministicId } from "../../utils";
 import { SelectContext } from "../context";
 import { GroupRoot as GroupRootSlot } from "../slots";
+import { getOptions } from "../utils";
 
 export type RenderProps = {
   /**
@@ -74,37 +75,29 @@ const GroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const ctx = React.useContext(SelectContext);
 
-  const [isHidden, setIsHidden] = React.useState(false);
+  const isHidden = React.useMemo(() => {
+    let hidden = false;
 
-  const refCallback = React.useCallback(
-    (node: HTMLDivElement | null) => {
-      setRef(ref, node);
+    const filtered = ctx?.filteredEntities;
 
-      if (!node) return;
-
-      const filtered = ctx?.filteredEntities;
-
-      if (filtered == null) return;
-
-      let hidden = false;
-
+    if (filtered != null) {
       if (filtered.length === 0) hidden = true;
       else {
-        const options = Array.from(
-          node.querySelectorAll<HTMLElement>("[role='option']"),
+        const options = getOptions(
+          React.Children.toArray(
+            resolvePropWithRenderContext(childrenProp, { hidden: false }),
+          ),
         );
 
-        hidden = options.every(option => {
-          const entityName = option.getAttribute("data-entity");
-
-          return !filtered.some(entity => entity === entityName);
-        });
+        hidden = options.every(
+          option => !filtered.some(entity => entity === option.value),
+        );
       }
+    }
 
-      setIsHidden(hidden);
-    },
-    [ctx?.filteredEntities, ref],
-  );
+    return hidden;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ctx?.filteredEntities]);
 
   if (!ctx) {
     logger("You have to use this component as a descendant of <Select.Root>.", {
@@ -121,21 +114,14 @@ const GroupBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const classNameProps: ClassNameProps = renderProps;
 
-  const children =
-    typeof childrenProp === "function"
-      ? childrenProp(renderProps)
-      : childrenProp;
-
-  const className =
-    typeof classNameProp === "function"
-      ? classNameProp(classNameProps)
-      : classNameProp;
+  const children = resolvePropWithRenderContext(childrenProp, renderProps);
+  const className = resolvePropWithRenderContext(classNameProp, classNameProps);
 
   return (
     <div
       {...otherProps}
       id={id}
-      ref={refCallback}
+      ref={ref}
       role="group"
       aria-label={labelInfo.srOnlyLabel}
       aria-labelledby={labelInfo.labelledBy}
