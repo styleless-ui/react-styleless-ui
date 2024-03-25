@@ -5,6 +5,7 @@ import {
   SystemError,
   SystemKeys,
   getLabelInfo,
+  resolvePropWithRenderContext,
   useJumpToChar,
 } from "../internals";
 import type {
@@ -460,15 +461,8 @@ const MenuBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const classNameProps = renderProps;
 
-  const children =
-    typeof childrenProp === "function"
-      ? childrenProp(renderProps)
-      : childrenProp;
-
-  const className =
-    typeof classNameProp === "function"
-      ? classNameProp(classNameProps)
-      : classNameProp;
+  const children = resolvePropWithRenderContext(childrenProp, renderProps);
+  const className = resolvePropWithRenderContext(classNameProp, classNameProps);
 
   const context: MenuContextValue = {
     id,

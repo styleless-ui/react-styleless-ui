@@ -1,6 +1,10 @@
 import * as React from "react";
 import { ToggleGroupContext } from "../ToggleGroup/context";
-import { SystemError, logger } from "../internals";
+import {
+  SystemError,
+  logger,
+  resolvePropWithRenderContext,
+} from "../internals";
 import type { MergeElementProps, PropWithRenderContext } from "../types";
 import {
   componentWithForwardedRef,
@@ -142,21 +146,14 @@ const ToggleBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const renderProps: RenderProps = {
     disabled,
-    pressed: checkBase.checked,
+    pressed: checkBase.checked as boolean,
     focusedVisible: checkBase.isFocusedVisible,
   };
 
   const classNameProps: ClassNameProps = renderProps;
 
-  const className =
-    typeof classNameProp === "function"
-      ? classNameProp(classNameProps)
-      : classNameProp;
-
-  const children =
-    typeof childrenProp === "function"
-      ? childrenProp(renderProps)
-      : childrenProp;
+  const className = resolvePropWithRenderContext(classNameProp, classNameProps);
+  const children = resolvePropWithRenderContext(childrenProp, renderProps);
 
   const refCallback = (node: HTMLButtonElement | null) => {
     handleRef(node);

@@ -1,6 +1,11 @@
 import * as React from "react";
 import { RadioGroupContext } from "../RadioGroup/context";
-import { SystemError, getLabelInfo, logger } from "../internals";
+import {
+  SystemError,
+  getLabelInfo,
+  logger,
+  resolvePropWithRenderContext,
+} from "../internals";
 import type { MergeElementProps, PropWithRenderContext } from "../types";
 import {
   componentWithForwardedRef,
@@ -229,15 +234,8 @@ const RadioBase = (props: Props, ref: React.Ref<HTMLButtonElement>) => {
 
   const classNameProps: ClassNameProps = renderProps;
 
-  const children =
-    typeof childrenProp === "function"
-      ? childrenProp(renderProps)
-      : childrenProp;
-
-  const className =
-    typeof classNameProp === "function"
-      ? classNameProp(classNameProps)
-      : classNameProp;
+  const children = resolvePropWithRenderContext(childrenProp, renderProps);
+  const className = resolvePropWithRenderContext(classNameProp, classNameProps);
 
   const calcTabIndex = () => {
     if (typeof overrideTabIndex !== "undefined") return overrideTabIndex;

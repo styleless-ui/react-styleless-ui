@@ -1,6 +1,10 @@
 import * as React from "react";
 import Portal from "../Portal";
-import { SystemError, SystemKeys } from "../internals";
+import {
+  SystemError,
+  SystemKeys,
+  resolvePropWithRenderContext,
+} from "../internals";
 import type { MergeElementProps, PropWithRenderContext } from "../types";
 import {
   componentWithForwardedRef,
@@ -111,15 +115,8 @@ const DialogBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const classNameProps: ClassNameProps = renderProps;
 
-  const children =
-    typeof childrenProp === "function"
-      ? childrenProp(renderProps)
-      : childrenProp;
-
-  const className =
-    typeof classNameProp === "function"
-      ? classNameProp(classNameProps)
-      : classNameProp;
+  const children = resolvePropWithRenderContext(childrenProp, renderProps);
+  const className = resolvePropWithRenderContext(classNameProp, classNameProps);
 
   const context: DialogContextValue = { open, role, emitClose };
 

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { logger } from "../internals";
+import { logger, resolvePropWithRenderContext } from "../internals";
 import type {
   PolymorphicComponent,
   PolymorphicProps,
@@ -132,15 +132,8 @@ const ButtonBase = <
     }
   };
 
-  const className =
-    typeof classNameProp === "function"
-      ? classNameProp(classNameProps)
-      : classNameProp;
-
-  const children =
-    typeof childrenProp === "function"
-      ? childrenProp(renderProps)
-      : childrenProp;
+  const className = resolvePropWithRenderContext(classNameProp, classNameProps);
+  const children = resolvePropWithRenderContext(childrenProp, renderProps);
 
   let tabIndex = disabled ? -1 : 0;
 

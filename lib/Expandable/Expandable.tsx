@@ -1,4 +1,5 @@
 import * as React from "react";
+import { resolvePropWithRenderContext } from "../internals";
 import type { MergeElementProps, PropWithRenderContext } from "../types";
 import { componentWithForwardedRef, useControlledProp } from "../utils";
 import { ExpandableContext } from "./context";
@@ -65,15 +66,8 @@ const ExpandableBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const classNameProps: ClassNameProps = renderProps;
 
-  const className =
-    typeof classNameProp === "function"
-      ? classNameProp(classNameProps)
-      : classNameProp;
-
-  const children =
-    typeof childrenProp === "function"
-      ? childrenProp(renderProps)
-      : childrenProp;
+  const className = resolvePropWithRenderContext(classNameProp, classNameProps);
+  const children = resolvePropWithRenderContext(childrenProp, renderProps);
 
   const emitExpandChange = (expandState: boolean) => {
     setIsExpanded(expandState);

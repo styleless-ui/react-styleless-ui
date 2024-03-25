@@ -1,5 +1,5 @@
 import * as React from "react";
-import { getLabelInfo } from "../internals";
+import { getLabelInfo, resolvePropWithRenderContext } from "../internals";
 import type { MergeElementProps, PropWithRenderContext } from "../types";
 import { componentWithForwardedRef, remap } from "../utils";
 import { Root as RootSlot } from "./slots";
@@ -101,15 +101,8 @@ const MeterBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
 
   const classNameProps: ClassNameProps = renderProps;
 
-  const children =
-    typeof childrenProp === "function"
-      ? childrenProp(renderProps)
-      : childrenProp;
-
-  const className =
-    typeof classNameProp === "function"
-      ? classNameProp(classNameProps)
-      : classNameProp;
+  const children = resolvePropWithRenderContext(childrenProp, renderProps);
+  const className = resolvePropWithRenderContext(classNameProp, classNameProps);
 
   return (
     <div

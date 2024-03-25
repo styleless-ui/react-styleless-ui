@@ -1,5 +1,9 @@
 import * as React from "react";
-import { SystemError, SystemKeys } from "../internals";
+import {
+  SystemError,
+  SystemKeys,
+  resolvePropWithRenderContext,
+} from "../internals";
 import type { MergeElementProps, PropWithRenderContext } from "../types";
 import {
   clamp,
@@ -640,15 +644,8 @@ const InputSliderBase = (props: Props, ref: React.Ref<HTMLDivElement>) => {
     dragging: isDragStarted,
   };
 
-  const children =
-    typeof childrenProp === "function"
-      ? childrenProp(renderProps)
-      : childrenProp;
-
-  const className =
-    typeof classNameProp === "function"
-      ? classNameProp(classNameProps)
-      : classNameProp;
+  const children = resolvePropWithRenderContext(childrenProp, renderProps);
+  const className = resolvePropWithRenderContext(classNameProp, classNameProps);
 
   const style: React.CSSProperties = {
     ...(styleProp ?? {}),
