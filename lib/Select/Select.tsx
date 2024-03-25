@@ -12,14 +12,18 @@ import {
   contains,
   useControlledProp,
   useDeterministicId,
-  useElementsRegistry,
   useEventCallback,
   useEventListener,
   useForkedRefs,
 } from "../utils";
 import { SelectContext, type SelectContextValue } from "./context";
 import { Root as RootSlot } from "./slots";
-import { getOptions, noValueSelected, normalizeValues } from "./utils";
+import {
+  getOptions,
+  noValueSelected,
+  normalizeValues,
+  useElementsRegistry,
+} from "./utils";
 
 export type RenderProps = {
   /**
