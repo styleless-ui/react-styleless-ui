@@ -9,4 +9,5 @@ export { default as getLabelInfo } from "./get-label-info";
 export * from "./keys";
 export { default as logger } from "./logger";
 export { default as prefixMessage } from "./prefix-message";
+export { default as resolvePropWithRenderContext } from "./resolve-prop-with-render-context";
 export * from "./styles";
